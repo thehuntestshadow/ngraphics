@@ -786,19 +786,18 @@
                         </button>
                     </div>
 
-                    <!-- Style/Theme -->
+                    <!-- Background Style -->
                     <div class="form-group">
                         <label class="form-label">
-                            Infographic Style
-                            <span class="hint">(optional)</span>
+                            Background Style
+                            <span class="hint">(adapts to product colors)</span>
                         </label>
                         <select class="form-select" id="infographicStyle">
-                            <option value="modern">Modern & Clean</option>
-                            <option value="minimalist">Minimalist</option>
-                            <option value="bold">Bold & Vibrant</option>
-                            <option value="elegant">Elegant & Premium</option>
-                            <option value="tech">Tech & Futuristic</option>
-                            <option value="natural">Natural & Organic</option>
+                            <option value="auto">Auto (Match Product Colors)</option>
+                            <option value="light">Light Background</option>
+                            <option value="dark">Dark Background</option>
+                            <option value="gradient">Subtle Gradient</option>
+                            <option value="transparent">Keep Original Background</option>
                         </select>
                     </div>
 
@@ -1215,17 +1214,16 @@
                 .map(input => input.value.trim())
                 .filter(val => val.length > 0);
 
-            // Style descriptions
+            // Style descriptions - simpler, focused on colors and background
             const styleDescriptions = {
-                modern: 'modern, clean design with smooth gradients and contemporary typography',
-                minimalist: 'minimalist design with lots of white space, simple icons, and subtle colors',
-                bold: 'bold and vibrant design with striking colors, dynamic shapes, and strong contrasts',
-                elegant: 'elegant and premium design with gold accents, sophisticated fonts, and luxury feel',
-                tech: 'futuristic tech design with neon accents, digital elements, and sci-fi aesthetics',
-                natural: 'natural and organic design with earth tones, botanical elements, and eco-friendly feel'
+                auto: 'Analyze the product colors and create a complementary color scheme. Match the background to harmonize with the product.',
+                light: 'Use a clean white or very light background with subtle accents that complement the product colors.',
+                dark: 'Use a dark/black background that makes the product stand out. Use light text and accents.',
+                gradient: 'Use a subtle gradient background derived from the product colors. Keep it simple and professional.',
+                transparent: 'Keep the original background from the product image. Only add text and minimal graphic elements.'
             };
 
-            const styleDesc = styleDescriptions[style] || styleDescriptions.modern;
+            const styleDesc = styleDescriptions[style] || styleDescriptions.auto;
 
             const hasImage = state.uploadedImageBase64 !== null;
 
@@ -1234,48 +1232,49 @@
 
             if (hasImage) {
                 // When product image is provided, instruct to build AROUND it
-                prompt = `I'm providing a product photo. Create a professional marketing infographic that showcases this EXACT product.
+                prompt = `I'm providing a product photo. Create a simple, clean marketing infographic.
 
 CRITICAL INSTRUCTIONS:
-- The product in the attached image must appear EXACTLY as shown - DO NOT modify, redraw, or alter the product itself
-- Place the product photo prominently in the composition (center or as the main focal point)
-- Build the infographic AROUND the product with decorative elements, text, and icons
-- Add a professional background that complements the product
-- Add visual elements (icons, badges, lines, shapes) pointing to or highlighting features
-
-PRODUCT TITLE: "${title}"
-
-PRODUCT FEATURES TO DISPLAY:
-${characteristics.map((c, i) => `${i + 1}. ${c}`).join('\n')}
-
-DESIGN STYLE: ${styleDesc}
-
-TEXT LANGUAGE: All text must be in ${language}${state.language === 'ro' ? ' with proper Romanian diacritics (ă, â, î, ș, ț)' : ''}
-
-Create an infographic layout with:
-- The product photo as the centerpiece (UNCHANGED)
-- Feature callouts with icons pointing to relevant parts
-- Professional typography for title and features
-- Decorative background elements
-- Marketing-ready composition`;
-            } else {
-                // When no image is provided, generate everything
-                prompt = `Create a professional marketing infographic for a product.
+- DO NOT modify the product itself - keep it EXACTLY as shown
+- Analyze the product's colors and the original background
+- ${styleDesc}
+- Keep the design simple and professional - don't overcrowd with elements
+- Text should be readable and contrast well with the background
 
 PRODUCT TITLE: "${title}"
 
 PRODUCT FEATURES:
-${characteristics.map((c, i) => `${i + 1}. ${c}`).join('\n')}
+${characteristics.map((c, i) => `• ${c}`).join('\n')}
 
-DESIGN STYLE: ${styleDesc}
+LANGUAGE: ${language}${state.language === 'ro' ? ' (use proper Romanian characters: ă, â, î, ș, ț)' : ''}
 
-TEXT LANGUAGE: All text must be in ${language}${state.language === 'ro' ? ' with proper Romanian diacritics (ă, â, î, ș, ț)' : ''}
+DESIGN GUIDELINES:
+- Place the product prominently (center or main focus)
+- Add the title in a clean, readable font
+- List features with simple icons or bullet points
+- Use colors that complement the product
+- Keep plenty of whitespace - less is more
+- Professional and modern, but simple`;
+            } else {
+                // When no image is provided, generate everything
+                prompt = `Create a simple, clean marketing infographic for a product.
 
-Create a marketing-ready infographic with:
-- Product title prominently displayed
-- Feature highlights with icons
-- Professional layout and typography
-- Clean, visually appealing composition`;
+PRODUCT TITLE: "${title}"
+
+PRODUCT FEATURES:
+${characteristics.map((c, i) => `• ${c}`).join('\n')}
+
+BACKGROUND STYLE: ${styleDesc}
+
+LANGUAGE: ${language}${state.language === 'ro' ? ' (use proper Romanian characters: ă, â, î, ș, ț)' : ''}
+
+DESIGN GUIDELINES:
+- Clean, simple layout
+- Title prominently displayed
+- Features listed with simple icons
+- Professional color scheme
+- Plenty of whitespace
+- Modern but minimal design`;
             }
 
             return prompt;
