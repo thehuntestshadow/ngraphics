@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Product Infographics Generator</title>
+    <style>
+        /* ============================================
+           CSS VARIABLES & RESET
+           ============================================ */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary: #64748b;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: all 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ============================================
+           LAYOUT
+           ============================================ */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ============================================
+           CARDS & PANELS
+           ============================================ */
+        .card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* ============================================
+           LANGUAGE TOGGLE
+           ============================================ */
+        .language-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-tertiary);
+            padding: 6px;
+            border-radius: 30px;
+        }
+
+        .lang-option {
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .lang-option.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .lang-option:hover:not(.active) {
+            background: var(--border);
+        }
+
+        /* ============================================
+           FORM ELEMENTS
+           ============================================ */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .form-label .hint {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: var(--transition);
+            background: var(--bg-secondary);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 44px;
+        }
+
+        /* ============================================
+           FILE UPLOAD
+           ============================================ */
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-tertiary);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 15px;
+            color: var(--text-muted);
+        }
+
+        .upload-text {
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .upload-hint {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .upload-input {
+            display: none;
+        }
+
+        /* Image Preview */
+        .image-preview {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .image-preview.visible {
+            display: block;
+        }
+
+        .preview-container {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow);
+        }
+
+        .remove-image {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 28px;
+            height: 28px;
+            background: var(--error);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        .remove-image:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        /* ============================================
+           CHARACTERISTICS INPUT
+           ============================================ */
+        .characteristics-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .char-item {
+            display: flex;
+            gap: 10px;
+        }
+
+        .char-item .form-input {
+            flex: 1;
+        }
+
+        .char-remove {
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .char-remove:hover {
+            background: var(--error);
+            color: white;
+        }
+
+        .add-char-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            border: 2px dashed var(--border);
+            background: transparent;
+            color: var(--primary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .add-char-btn:hover {
+            border-color: var(--primary);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        /* ============================================
+           BUTTONS
+           ============================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* ============================================
+           RESULT PANEL
+           ============================================ */
+        .result-panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .result-placeholder {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            min-height: 400px;
+        }
+
+        .placeholder-icon {
+            width: 80px;
+            height: 80px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .placeholder-text {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .placeholder-hint {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Loading State */
+        .loading-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            min-height: 400px;
+        }
+
+        .loading-container.visible {
+            display: flex;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .loading-status {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Generated Image */
+        .result-image-container {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .result-image-container.visible {
+            display: flex;
+        }
+
+        .result-image {
+            width: 100%;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .result-actions .btn {
+            flex: 1;
+        }
+
+        /* ============================================
+           API KEY INPUT
+           ============================================ */
+        .api-key-section {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .api-key-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .api-key-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            background: none;
+            border: none;
+        }
+
+        .api-key-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .api-key-input-group .form-input {
+            flex: 1;
+        }
+
+        /* ============================================
+           ERROR & STATUS MESSAGES
+           ============================================ */
+        .error-message {
+            display: none;
+            padding: 16px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: var(--radius-sm);
+            color: #991b1b;
+            margin-bottom: 20px;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+
+        .error-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .success-message {
+            display: none;
+            padding: 16px;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: var(--radius-sm);
+            color: #065f46;
+            margin-bottom: 20px;
+        }
+
+        .success-message.visible {
+            display: block;
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ============================================
+           UTILITIES
+           ============================================ */
+        .hidden {
+            display: none !important;
+        }
+
+        .mb-0 {
+            margin-bottom: 0 !important;
+        }
+
+        /* ============================================
+           RESPONSIVE ADJUSTMENTS
+           ============================================ */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .card-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+
+            .api-key-input-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ============================================
+         HEADER
+         ============================================ -->
+    <header>
+        <h1>AI Product Infographics Generator</h1>
+        <p>Create professional marketing infographics with AI</p>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- ============================================
+                 INPUT PANEL
+                 ============================================ -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Product Details</h2>
+                    <!-- Language Toggle -->
+                    <div class="language-toggle">
+                        <button class="lang-option active" data-lang="en">English</button>
+                        <button class="lang-option" data-lang="ro">Română</button>
+                    </div>
+                </div>
+
+                <!-- API Key Section -->
+                <div class="api-key-section">
+                    <div class="api-key-header">
+                        <label class="form-label mb-0">OpenRouter API Key</label>
+                        <button class="api-key-toggle" id="toggleApiKey">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <span>Show</span>
+                        </button>
+                    </div>
+                    <div class="api-key-input-group">
+                        <input type="password" class="form-input" id="apiKey" placeholder="sk-or-v1-...">
+                        <button class="btn btn-secondary" id="saveApiKey">Save</button>
+                    </div>
+                </div>
+
+                <!-- Error Message Display -->
+                <div class="error-message" id="errorMessage">
+                    <div class="error-title">Error</div>
+                    <div class="error-text"></div>
+                </div>
+
+                <!-- Success Message Display -->
+                <div class="success-message" id="successMessage">
+                    API key saved successfully!
+                </div>
+
+                <form id="infographicForm">
+                    <!-- AI Model Selection -->
+                    <div class="form-group">
+                        <label class="form-label">AI Model</label>
+                        <select class="form-select" id="aiModel">
+                            <optgroup label="Google Gemini">
+                                <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
+                                <option value="google/gemini-2.5-flash-image">Gemini 2.5 Flash Image</option>
+                                <option value="google/gemini-2.5-flash-image-preview">Gemini 2.5 Flash Image Preview</option>
+                                <option value="google/gemini-3-pro-image-preview">Gemini 3 Pro Image (Best Quality)</option>
+                            </optgroup>
+                            <optgroup label="OpenAI GPT Image">
+                                <option value="openai/gpt-5-image">GPT-5 Image</option>
+                                <option value="openai/gpt-5-image-mini">GPT-5 Image Mini (Faster)</option>
+                            </optgroup>
+                            <optgroup label="Black Forest Labs Flux">
+                                <option value="black-forest-labs/flux.2-pro">Flux 2 Pro</option>
+                                <option value="black-forest-labs/flux.2-max">Flux 2 Max (Highest Quality)</option>
+                                <option value="black-forest-labs/flux.2-flex">Flux 2 Flex (Best Text)</option>
+                            </optgroup>
+                            <optgroup label="Sourceful Riverflow">
+                                <option value="sourceful/riverflow-v2-fast-preview">Riverflow V2 Fast</option>
+                                <option value="sourceful/riverflow-v2-standard-preview">Riverflow V2 Standard</option>
+                                <option value="sourceful/riverflow-v2-max-preview">Riverflow V2 Max</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <!-- Product Photo Upload -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            Product Photo
+                            <span class="hint">(Reference image for the infographic)</span>
+                        </label>
+                        <div class="upload-area" id="uploadArea">
+                            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <p class="upload-text">Click to upload or drag and drop</p>
+                            <p class="upload-hint">PNG, JPG, JPEG, WebP (max 10MB)</p>
+                            <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp">
+                        </div>
+                        <div class="image-preview" id="imagePreview">
+                            <div class="preview-container">
+                                <img src="" alt="Preview" class="preview-image" id="previewImg">
+                                <button type="button" class="remove-image" id="removeImage">&times;</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Title -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            Product Title
+                            <span class="hint" id="titleHint">(in English)</span>
+                        </label>
+                        <input type="text" class="form-input" id="productTitle" placeholder="e.g., Premium Wireless Headphones" required>
+                    </div>
+
+                    <!-- Product Characteristics -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            Product Characteristics
+                            <span class="hint" id="charHint">(key features in English)</span>
+                        </label>
+                        <div class="characteristics-list" id="characteristicsList">
+                            <div class="char-item">
+                                <input type="text" class="form-input" placeholder="e.g., Active Noise Cancellation">
+                                <button type="button" class="char-remove" title="Remove">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="char-item">
+                                <input type="text" class="form-input" placeholder="e.g., 30-hour battery life">
+                                <button type="button" class="char-remove" title="Remove">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="char-item">
+                                <input type="text" class="form-input" placeholder="e.g., Bluetooth 5.3">
+                                <button type="button" class="char-remove" title="Remove">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" class="add-char-btn" id="addCharBtn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Add Characteristic
+                        </button>
+                    </div>
+
+                    <!-- Style/Theme -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            Infographic Style
+                            <span class="hint">(optional)</span>
+                        </label>
+                        <select class="form-select" id="infographicStyle">
+                            <option value="modern">Modern & Clean</option>
+                            <option value="minimalist">Minimalist</option>
+                            <option value="bold">Bold & Vibrant</option>
+                            <option value="elegant">Elegant & Premium</option>
+                            <option value="tech">Tech & Futuristic</option>
+                            <option value="natural">Natural & Organic</option>
+                        </select>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button type="submit" class="btn btn-primary" id="generateBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                        Generate Infographic
+                    </button>
+                </form>
+            </div>
+
+            <!-- ============================================
+                 RESULT PANEL
+                 ============================================ -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Generated Infographic</h2>
+                </div>
+
+                <div class="result-panel">
+                    <!-- Placeholder State -->
+                    <div class="result-placeholder" id="resultPlaceholder">
+                        <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <p class="placeholder-text">Your infographic will appear here</p>
+                        <p class="placeholder-hint">Fill in the product details and click Generate</p>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div class="loading-container" id="loadingContainer">
+                        <div class="spinner"></div>
+                        <p class="loading-text">Generating your infographic...</p>
+                        <p class="loading-status" id="loadingStatus">Preparing prompt...</p>
+                    </div>
+
+                    <!-- Result Image -->
+                    <div class="result-image-container" id="resultContainer">
+                        <img src="" alt="Generated Infographic" class="result-image" id="resultImage">
+                        <div class="result-actions">
+                            <button class="btn btn-success" id="downloadBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Download
+                            </button>
+                            <button class="btn btn-secondary" id="regenerateBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                </svg>
+                                Regenerate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Powered by OpenRouter AI &bull; Supports English and Romanian (ă, â, î, ș, ț)</p>
+    </footer>
+
+    <!-- ============================================
+         JAVASCRIPT
+         ============================================ -->
+    <script>
+        /**
+         * ============================================
+         * APPLICATION STATE
+         * ============================================
+         */
+        const state = {
+            language: 'en', // 'en' or 'ro'
+            apiKey: '',
+            uploadedImage: null,
+            uploadedImageBase64: null,
+            generatedImageUrl: null
+        };
+
+        /**
+         * ============================================
+         * DOM ELEMENTS
+         * ============================================
+         */
+        const elements = {
+            // Language
+            langOptions: document.querySelectorAll('.lang-option'),
+            titleHint: document.getElementById('titleHint'),
+            charHint: document.getElementById('charHint'),
+
+            // API Key
+            apiKeyInput: document.getElementById('apiKey'),
+            toggleApiKeyBtn: document.getElementById('toggleApiKey'),
+            saveApiKeyBtn: document.getElementById('saveApiKey'),
+
+            // Messages
+            errorMessage: document.getElementById('errorMessage'),
+            successMessage: document.getElementById('successMessage'),
+
+            // Form
+            form: document.getElementById('infographicForm'),
+            aiModel: document.getElementById('aiModel'),
+            uploadArea: document.getElementById('uploadArea'),
+            productPhoto: document.getElementById('productPhoto'),
+            imagePreview: document.getElementById('imagePreview'),
+            previewImg: document.getElementById('previewImg'),
+            removeImageBtn: document.getElementById('removeImage'),
+            productTitle: document.getElementById('productTitle'),
+            characteristicsList: document.getElementById('characteristicsList'),
+            addCharBtn: document.getElementById('addCharBtn'),
+            infographicStyle: document.getElementById('infographicStyle'),
+            generateBtn: document.getElementById('generateBtn'),
+
+            // Results
+            resultPlaceholder: document.getElementById('resultPlaceholder'),
+            loadingContainer: document.getElementById('loadingContainer'),
+            loadingStatus: document.getElementById('loadingStatus'),
+            resultContainer: document.getElementById('resultContainer'),
+            resultImage: document.getElementById('resultImage'),
+            downloadBtn: document.getElementById('downloadBtn'),
+            regenerateBtn: document.getElementById('regenerateBtn')
+        };
+
+        /**
+         * ============================================
+         * LANGUAGE HANDLING
+         * ============================================
+         */
+
+        // Language-specific placeholders and hints
+        const translations = {
+            en: {
+                titleHint: '(in English)',
+                charHint: '(key features in English)',
+                titlePlaceholder: 'e.g., Premium Wireless Headphones',
+                charPlaceholders: [
+                    'e.g., Active Noise Cancellation',
+                    'e.g., 30-hour battery life',
+                    'e.g., Bluetooth 5.3'
+                ]
+            },
+            ro: {
+                titleHint: '(în limba română)',
+                charHint: '(caracteristici în română)',
+                titlePlaceholder: 'ex., Căști Wireless Premium',
+                charPlaceholders: [
+                    'ex., Anulare Activă a Zgomotului',
+                    'ex., Autonomie 30 ore',
+                    'ex., Bluetooth 5.3'
+                ]
+            }
+        };
+
+        function updateLanguage(lang) {
+            state.language = lang;
+
+            // Update toggle buttons
+            elements.langOptions.forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.lang === lang);
+            });
+
+            // Update hints
+            const t = translations[lang];
+            elements.titleHint.textContent = t.titleHint;
+            elements.charHint.textContent = t.charHint;
+            elements.productTitle.placeholder = t.titlePlaceholder;
+
+            // Update characteristic placeholders
+            const charInputs = elements.characteristicsList.querySelectorAll('.form-input');
+            charInputs.forEach((input, index) => {
+                const placeholder = t.charPlaceholders[index] || t.charPlaceholders[0];
+                input.placeholder = placeholder;
+            });
+        }
+
+        elements.langOptions.forEach(opt => {
+            opt.addEventListener('click', () => updateLanguage(opt.dataset.lang));
+        });
+
+        /**
+         * ============================================
+         * API KEY HANDLING
+         * ============================================
+         */
+
+        // Load API key from localStorage
+        function loadApiKey() {
+            const savedKey = localStorage.getItem('openrouter_api_key');
+            if (savedKey) {
+                state.apiKey = savedKey;
+                elements.apiKeyInput.value = savedKey;
+            }
+        }
+
+        // Toggle API key visibility
+        elements.toggleApiKeyBtn.addEventListener('click', () => {
+            const isPassword = elements.apiKeyInput.type === 'password';
+            elements.apiKeyInput.type = isPassword ? 'text' : 'password';
+            elements.toggleApiKeyBtn.querySelector('span').textContent = isPassword ? 'Hide' : 'Show';
+        });
+
+        // Save API key
+        elements.saveApiKeyBtn.addEventListener('click', () => {
+            const key = elements.apiKeyInput.value.trim();
+            if (key) {
+                state.apiKey = key;
+                localStorage.setItem('openrouter_api_key', key);
+                showSuccess('API key saved successfully!');
+            } else {
+                showError('Please enter a valid API key');
+            }
+        });
+
+        /**
+         * ============================================
+         * IMAGE UPLOAD HANDLING
+         * ============================================
+         */
+
+        // Click to upload
+        elements.uploadArea.addEventListener('click', () => {
+            elements.productPhoto.click();
+        });
+
+        // Drag and drop
+        elements.uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            elements.uploadArea.classList.add('dragover');
+        });
+
+        elements.uploadArea.addEventListener('dragleave', () => {
+            elements.uploadArea.classList.remove('dragover');
+        });
+
+        elements.uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            elements.uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleImageUpload(files[0]);
+            }
+        });
+
+        // File input change
+        elements.productPhoto.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleImageUpload(e.target.files[0]);
+            }
+        });
+
+        // Handle image upload
+        function handleImageUpload(file) {
+            // Validate file type
+            const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                showError('Invalid file type. Please upload PNG, JPG, JPEG, or WebP.');
+                return;
+            }
+
+            // Validate file size (10MB max)
+            if (file.size > 10 * 1024 * 1024) {
+                showError('File too large. Maximum size is 10MB.');
+                return;
+            }
+
+            state.uploadedImage = file;
+
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                state.uploadedImageBase64 = e.target.result;
+                elements.previewImg.src = e.target.result;
+                elements.imagePreview.classList.add('visible');
+                elements.uploadArea.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Remove image
+        elements.removeImageBtn.addEventListener('click', () => {
+            state.uploadedImage = null;
+            state.uploadedImageBase64 = null;
+            elements.productPhoto.value = '';
+            elements.imagePreview.classList.remove('visible');
+            elements.uploadArea.style.display = 'block';
+        });
+
+        /**
+         * ============================================
+         * CHARACTERISTICS HANDLING
+         * ============================================
+         */
+
+        // Add characteristic
+        elements.addCharBtn.addEventListener('click', () => {
+            addCharacteristicItem();
+        });
+
+        function addCharacteristicItem() {
+            const t = translations[state.language];
+            const div = document.createElement('div');
+            div.className = 'char-item';
+            div.innerHTML = `
+                <input type="text" class="form-input" placeholder="${t.charPlaceholders[0]}">
+                <button type="button" class="char-remove" title="Remove">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            `;
+            elements.characteristicsList.appendChild(div);
+            attachRemoveHandler(div.querySelector('.char-remove'));
+        }
+
+        // Remove characteristic
+        function attachRemoveHandler(btn) {
+            btn.addEventListener('click', () => {
+                const items = elements.characteristicsList.querySelectorAll('.char-item');
+                if (items.length > 1) {
+                    btn.closest('.char-item').remove();
+                } else {
+                    showError('You need at least one characteristic');
+                }
+            });
+        }
+
+        // Attach handlers to initial remove buttons
+        document.querySelectorAll('.char-remove').forEach(attachRemoveHandler);
+
+        /**
+         * ============================================
+         * MESSAGE DISPLAY
+         * ============================================
+         */
+
+        function showError(message) {
+            elements.errorMessage.querySelector('.error-text').textContent = message;
+            elements.errorMessage.classList.add('visible');
+            elements.successMessage.classList.remove('visible');
+
+            setTimeout(() => {
+                elements.errorMessage.classList.remove('visible');
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            elements.successMessage.textContent = message;
+            elements.successMessage.classList.add('visible');
+            elements.errorMessage.classList.remove('visible');
+
+            setTimeout(() => {
+                elements.successMessage.classList.remove('visible');
+            }, 3000);
+        }
+
+        function updateLoadingStatus(status) {
+            elements.loadingStatus.textContent = status;
+        }
+
+        /**
+         * ============================================
+         * UI STATE MANAGEMENT
+         * ============================================
+         */
+
+        function showLoading() {
+            elements.resultPlaceholder.style.display = 'none';
+            elements.resultContainer.classList.remove('visible');
+            elements.loadingContainer.classList.add('visible');
+            elements.generateBtn.disabled = true;
+        }
+
+        function hideLoading() {
+            elements.loadingContainer.classList.remove('visible');
+            elements.generateBtn.disabled = false;
+        }
+
+        function showResult(imageUrl) {
+            hideLoading();
+            elements.resultImage.src = imageUrl;
+            elements.resultContainer.classList.add('visible');
+            state.generatedImageUrl = imageUrl;
+        }
+
+        function resetToPlaceholder() {
+            hideLoading();
+            elements.resultContainer.classList.remove('visible');
+            elements.resultPlaceholder.style.display = 'flex';
+        }
+
+        /**
+         * ============================================
+         * PROMPT GENERATION
+         * ============================================
+         */
+
+        function generatePrompt() {
+            const title = elements.productTitle.value.trim();
+            const style = elements.infographicStyle.value;
+            const language = state.language === 'ro' ? 'Romanian' : 'English';
+
+            // Get characteristics
+            const charInputs = elements.characteristicsList.querySelectorAll('.form-input');
+            const characteristics = Array.from(charInputs)
+                .map(input => input.value.trim())
+                .filter(val => val.length > 0);
+
+            // Style descriptions
+            const styleDescriptions = {
+                modern: 'modern, clean design with smooth gradients and contemporary typography',
+                minimalist: 'minimalist design with lots of white space, simple icons, and subtle colors',
+                bold: 'bold and vibrant design with striking colors, dynamic shapes, and strong contrasts',
+                elegant: 'elegant and premium design with gold accents, sophisticated fonts, and luxury feel',
+                tech: 'futuristic tech design with neon accents, digital elements, and sci-fi aesthetics',
+                natural: 'natural and organic design with earth tones, botanical elements, and eco-friendly feel'
+            };
+
+            const styleDesc = styleDescriptions[style] || styleDescriptions.modern;
+
+            const hasImage = state.uploadedImageBase64 !== null;
+
+            // Build the prompt - different approach based on whether image is provided
+            let prompt;
+
+            if (hasImage) {
+                // When product image is provided, instruct to build AROUND it
+                prompt = `I'm providing a product photo. Create a professional marketing infographic that showcases this EXACT product.
+
+CRITICAL INSTRUCTIONS:
+- The product in the attached image must appear EXACTLY as shown - DO NOT modify, redraw, or alter the product itself
+- Place the product photo prominently in the composition (center or as the main focal point)
+- Build the infographic AROUND the product with decorative elements, text, and icons
+- Add a professional background that complements the product
+- Add visual elements (icons, badges, lines, shapes) pointing to or highlighting features
+
+PRODUCT TITLE: "${title}"
+
+PRODUCT FEATURES TO DISPLAY:
+${characteristics.map((c, i) => `${i + 1}. ${c}`).join('\n')}
+
+DESIGN STYLE: ${styleDesc}
+
+TEXT LANGUAGE: All text must be in ${language}${state.language === 'ro' ? ' with proper Romanian diacritics (ă, â, î, ș, ț)' : ''}
+
+Create an infographic layout with:
+- The product photo as the centerpiece (UNCHANGED)
+- Feature callouts with icons pointing to relevant parts
+- Professional typography for title and features
+- Decorative background elements
+- Marketing-ready composition`;
+            } else {
+                // When no image is provided, generate everything
+                prompt = `Create a professional marketing infographic for a product.
+
+PRODUCT TITLE: "${title}"
+
+PRODUCT FEATURES:
+${characteristics.map((c, i) => `${i + 1}. ${c}`).join('\n')}
+
+DESIGN STYLE: ${styleDesc}
+
+TEXT LANGUAGE: All text must be in ${language}${state.language === 'ro' ? ' with proper Romanian diacritics (ă, â, î, ș, ț)' : ''}
+
+Create a marketing-ready infographic with:
+- Product title prominently displayed
+- Feature highlights with icons
+- Professional layout and typography
+- Clean, visually appealing composition`;
+            }
+
+            return prompt;
+        }
+
+        /**
+         * ============================================
+         * API INTEGRATION
+         * ============================================
+         */
+
+        async function generateInfographic() {
+            // Validate API key
+            if (!state.apiKey) {
+                showError('Please enter your OpenRouter API key first');
+                return;
+            }
+
+            // Validate title
+            const title = elements.productTitle.value.trim();
+            if (!title) {
+                showError('Please enter a product title');
+                return;
+            }
+
+            // Validate characteristics
+            const charInputs = elements.characteristicsList.querySelectorAll('.form-input');
+            const characteristics = Array.from(charInputs)
+                .map(input => input.value.trim())
+                .filter(val => val.length > 0);
+
+            if (characteristics.length === 0) {
+                showError('Please enter at least one product characteristic');
+                return;
+            }
+
+            showLoading();
+            updateLoadingStatus('Preparing prompt...');
+
+            const prompt = generatePrompt();
+            const model = elements.aiModel.value;
+
+            try {
+                updateLoadingStatus('Connecting to AI...');
+
+                // Build message content - include image if uploaded
+                let messageContent;
+
+                if (state.uploadedImageBase64) {
+                    // Multimodal request with image
+                    messageContent = [
+                        {
+                            type: 'text',
+                            text: prompt
+                        },
+                        {
+                            type: 'image_url',
+                            image_url: {
+                                url: state.uploadedImageBase64
+                            }
+                        }
+                    ];
+                } else {
+                    // Text-only request
+                    messageContent = prompt;
+                }
+
+                // OpenRouter uses chat completions endpoint with modalities for image generation
+                const requestBody = {
+                    model: model,
+                    messages: [
+                        {
+                            role: 'user',
+                            content: messageContent
+                        }
+                    ],
+                    modalities: ['image', 'text'],
+                    max_tokens: 4096
+                };
+
+                if (state.uploadedImageBase64) {
+                    updateLoadingStatus('Generating infographic with your product image...');
+                } else {
+                    updateLoadingStatus('Generating infographic...');
+                }
+
+                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${state.apiKey}`,
+                        'Content-Type': 'application/json',
+                        'HTTP-Referer': window.location.origin,
+                        'X-Title': 'AI Product Infographics Generator'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    const errorMsg = errorData.error?.message || errorData.message || `API error: ${response.status}`;
+                    throw new Error(errorMsg);
+                }
+
+                const data = await response.json();
+                console.log('API Response:', JSON.stringify(data, null, 2));
+
+                updateLoadingStatus('Processing result...');
+
+                // Handle the response - OpenRouter returns images in various formats
+                let imageUrl = null;
+
+                // Check for images in the response
+                const message = data.choices?.[0]?.message;
+                if (message) {
+                    // Check if content is an array (multimodal response)
+                    if (Array.isArray(message.content)) {
+                        for (const part of message.content) {
+                            // Standard image_url format
+                            if (part.type === 'image_url' && part.image_url?.url) {
+                                imageUrl = part.image_url.url;
+                                break;
+                            }
+                            // Some models return inline_data
+                            if (part.type === 'image' && part.source?.data) {
+                                const mimeType = part.source.media_type || 'image/png';
+                                imageUrl = `data:${mimeType};base64,${part.source.data}`;
+                                break;
+                            }
+                            // Gemini format with inline_data
+                            if (part.inline_data?.data) {
+                                const mimeType = part.inline_data.mime_type || 'image/png';
+                                imageUrl = `data:${mimeType};base64,${part.inline_data.data}`;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check for images array in the message (common format)
+                    if (!imageUrl && message.images && message.images.length > 0) {
+                        const img = message.images[0];
+                        if (typeof img === 'string') {
+                            // Direct base64 or URL string
+                            imageUrl = img.startsWith('data:') || img.startsWith('http') ? img : `data:image/png;base64,${img}`;
+                        } else if (img.url) {
+                            imageUrl = img.url;
+                        } else if (img.image_url?.url) {
+                            imageUrl = img.image_url.url;
+                        } else if (img.b64_json) {
+                            imageUrl = `data:image/png;base64,${img.b64_json}`;
+                        }
+                    }
+
+                    // Check for image directly in content (some Gemini responses)
+                    if (!imageUrl && message.content && typeof message.content === 'string') {
+                        // Check if content contains base64 image data
+                        const base64Match = message.content.match(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/);
+                        if (base64Match) {
+                            imageUrl = base64Match[0];
+                        }
+                    }
+                }
+
+                // Also check top-level data array (OpenAI-style format)
+                if (!imageUrl && data.data && data.data[0]) {
+                    if (data.data[0].url) {
+                        imageUrl = data.data[0].url;
+                    } else if (data.data[0].b64_json) {
+                        imageUrl = `data:image/png;base64,${data.data[0].b64_json}`;
+                    }
+                }
+
+                // Check for provider errors in the response
+                if (!imageUrl && data.error) {
+                    throw new Error(data.error.message || 'Provider returned an error');
+                }
+
+                if (!imageUrl) {
+                    throw new Error('No image was generated. The model may not support image generation or the response format was unexpected. Try a different model.');
+                }
+
+                showResult(imageUrl);
+                showSuccess('Infographic generated successfully!');
+
+            } catch (error) {
+                console.error('Generation error:', error);
+                hideLoading();
+                resetToPlaceholder();
+
+                let errorMessage = error.message;
+                if (errorMessage.includes('401')) {
+                    errorMessage = 'Invalid API key. Please check your OpenRouter API key.';
+                } else if (errorMessage.includes('429')) {
+                    errorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
+                } else if (errorMessage.includes('500') || errorMessage.includes('502') || errorMessage.includes('503')) {
+                    errorMessage = 'Server error. Please try a different model or try again later.';
+                } else if (errorMessage.includes('modalities')) {
+                    errorMessage = 'This model does not support image generation. Please select a different model.';
+                } else if (errorMessage.toLowerCase().includes('provider')) {
+                    errorMessage = 'Provider error: The AI service is temporarily unavailable. Please try again or select a different model.';
+                } else if (errorMessage.includes('capacity') || errorMessage.includes('overloaded')) {
+                    errorMessage = 'The model is currently at capacity. Please try again in a few moments or select a different model.';
+                } else if (errorMessage.includes('insufficient')) {
+                    errorMessage = 'Insufficient credits. Please add credits to your OpenRouter account.';
+                }
+
+                showError(errorMessage);
+            }
+        }
+
+        /**
+         * ============================================
+         * DOWNLOAD FUNCTIONALITY
+         * ============================================
+         */
+
+        async function downloadImage() {
+            if (!state.generatedImageUrl) {
+                showError('No image to download');
+                return;
+            }
+
+            try {
+                const response = await fetch(state.generatedImageUrl);
+                const blob = await response.blob();
+
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+
+                // Generate filename with timestamp
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                const title = elements.productTitle.value.trim().replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30);
+                a.download = `infographic_${title}_${timestamp}.png`;
+
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                showSuccess('Image downloaded successfully!');
+            } catch (error) {
+                // If fetch fails (CORS), try opening in new tab
+                window.open(state.generatedImageUrl, '_blank');
+                showSuccess('Image opened in new tab. Right-click to save.');
+            }
+        }
+
+        /**
+         * ============================================
+         * EVENT LISTENERS
+         * ============================================
+         */
+
+        // Form submission
+        elements.form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            generateInfographic();
+        });
+
+        // Download button
+        elements.downloadBtn.addEventListener('click', downloadImage);
+
+        // Regenerate button
+        elements.regenerateBtn.addEventListener('click', generateInfographic);
+
+        /**
+         * ============================================
+         * INITIALIZATION
+         * ============================================
+         */
+
+        function init() {
+            loadApiKey();
+            updateLanguage('en');
+        }
+
+        // Initialize on DOM ready
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Also init immediately if DOM already loaded
+        if (document.readyState !== 'loading') {
+            init();
+        }
+    </script>
+</body>
+</html>
