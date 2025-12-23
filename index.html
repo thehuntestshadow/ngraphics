@@ -601,6 +601,218 @@
         }
 
         /* ============================================
+           HISTORY PANEL
+           ============================================ */
+        .history-section {
+            margin-top: 30px;
+        }
+
+        .history-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .history-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .history-count {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .clear-history-btn {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .clear-history-btn:hover {
+            color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        .history-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: var(--transition);
+            background: var(--bg-tertiary);
+        }
+
+        .history-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .history-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .history-item-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 6px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .history-item:hover .history-item-overlay {
+            opacity: 1;
+        }
+
+        .history-item-date {
+            font-size: 0.7rem;
+            color: white;
+            text-align: center;
+        }
+
+        .history-item-delete {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .history-item:hover .history-item-delete {
+            opacity: 1;
+        }
+
+        .history-item-delete:hover {
+            background: var(--error);
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* History Modal */
+        .history-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .history-modal.visible {
+            display: flex;
+        }
+
+        .history-modal-content {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .history-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .history-modal-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .history-modal-close {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .history-modal-close:hover {
+            background: var(--error);
+            color: white;
+        }
+
+        .history-modal-body {
+            padding: 20px;
+            overflow: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .history-modal-body img {
+            max-width: 100%;
+            max-height: 60vh;
+            border-radius: var(--radius-sm);
+        }
+
+        .history-modal-footer {
+            display: flex;
+            gap: 12px;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .history-modal-footer .btn {
+            flex: 1;
+        }
+
+        /* ============================================
            RESPONSIVE ADJUSTMENTS
            ============================================ */
         @media (max-width: 600px) {
@@ -864,6 +1076,55 @@
         </div>
     </div>
 
+    <!-- History Section -->
+    <div class="container">
+        <div class="card history-section" id="historySection">
+            <div class="history-header">
+                <div>
+                    <span class="history-title">Generation History</span>
+                    <span class="history-count" id="historyCount"></span>
+                </div>
+                <button class="clear-history-btn" id="clearHistoryBtn">Clear All</button>
+            </div>
+            <div class="history-grid" id="historyGrid">
+                <!-- History items will be inserted here -->
+            </div>
+            <div class="history-empty" id="historyEmpty">
+                No generations yet. Create your first infographic!
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div class="history-modal" id="historyModal">
+        <div class="history-modal-content">
+            <div class="history-modal-header">
+                <span class="history-modal-title" id="modalTitle">Infographic</span>
+                <button class="history-modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="history-modal-body">
+                <img src="" alt="Infographic" id="modalImage">
+            </div>
+            <div class="history-modal-footer">
+                <button class="btn btn-success" id="modalDownload">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download
+                </button>
+                <button class="btn btn-secondary" id="modalUseAsBase">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                    </svg>
+                    Load to Editor
+                </button>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <p>Powered by OpenRouter AI &bull; Supports English and Romanian (ă, â, î, ș, ț)</p>
     </footer>
@@ -882,7 +1143,9 @@
             apiKey: '',
             uploadedImage: null,
             uploadedImageBase64: null,
-            generatedImageUrl: null
+            generatedImageUrl: null,
+            history: [],           // Array of {id, imageUrl, title, date}
+            selectedHistoryItem: null
         };
 
         /**
@@ -926,7 +1189,20 @@
             resultContainer: document.getElementById('resultContainer'),
             resultImage: document.getElementById('resultImage'),
             downloadBtn: document.getElementById('downloadBtn'),
-            regenerateBtn: document.getElementById('regenerateBtn')
+            regenerateBtn: document.getElementById('regenerateBtn'),
+
+            // History
+            historySection: document.getElementById('historySection'),
+            historyGrid: document.getElementById('historyGrid'),
+            historyCount: document.getElementById('historyCount'),
+            historyEmpty: document.getElementById('historyEmpty'),
+            clearHistoryBtn: document.getElementById('clearHistoryBtn'),
+            historyModal: document.getElementById('historyModal'),
+            modalTitle: document.getElementById('modalTitle'),
+            modalImage: document.getElementById('modalImage'),
+            closeModal: document.getElementById('closeModal'),
+            modalDownload: document.getElementById('modalDownload'),
+            modalUseAsBase: document.getElementById('modalUseAsBase')
         };
 
         /**
@@ -1189,12 +1465,187 @@
             elements.resultImage.src = imageUrl;
             elements.resultContainer.classList.add('visible');
             state.generatedImageUrl = imageUrl;
+
+            // Save to history
+            const title = elements.productTitle.value.trim() || 'Untitled';
+            addToHistory(imageUrl, title);
         }
 
         function resetToPlaceholder() {
             hideLoading();
             elements.resultContainer.classList.remove('visible');
             elements.resultPlaceholder.style.display = 'flex';
+        }
+
+        /**
+         * ============================================
+         * HISTORY MANAGEMENT
+         * ============================================
+         */
+
+        const HISTORY_KEY = 'infographic_history';
+        const MAX_HISTORY_ITEMS = 20;
+
+        // Load history from localStorage
+        function loadHistory() {
+            try {
+                const saved = localStorage.getItem(HISTORY_KEY);
+                if (saved) {
+                    state.history = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error('Failed to load history:', e);
+                state.history = [];
+            }
+            renderHistory();
+        }
+
+        // Save history to localStorage
+        function saveHistory() {
+            try {
+                localStorage.setItem(HISTORY_KEY, JSON.stringify(state.history));
+            } catch (e) {
+                console.error('Failed to save history:', e);
+                // If storage is full, remove oldest items
+                if (e.name === 'QuotaExceededError') {
+                    state.history = state.history.slice(0, Math.floor(state.history.length / 2));
+                    saveHistory();
+                }
+            }
+        }
+
+        // Add item to history
+        function addToHistory(imageUrl, title) {
+            const item = {
+                id: Date.now().toString(),
+                imageUrl: imageUrl,
+                title: title || 'Untitled',
+                date: new Date().toISOString()
+            };
+
+            // Add to beginning of array
+            state.history.unshift(item);
+
+            // Limit history size
+            if (state.history.length > MAX_HISTORY_ITEMS) {
+                state.history = state.history.slice(0, MAX_HISTORY_ITEMS);
+            }
+
+            saveHistory();
+            renderHistory();
+        }
+
+        // Delete item from history
+        function deleteFromHistory(id) {
+            state.history = state.history.filter(item => item.id !== id);
+            saveHistory();
+            renderHistory();
+        }
+
+        // Clear all history
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all history?')) {
+                state.history = [];
+                saveHistory();
+                renderHistory();
+            }
+        }
+
+        // Render history grid
+        function renderHistory() {
+            const grid = elements.historyGrid;
+            const empty = elements.historyEmpty;
+            const count = elements.historyCount;
+
+            // Update count
+            count.textContent = state.history.length > 0 ? `(${state.history.length})` : '';
+
+            // Show/hide empty state
+            if (state.history.length === 0) {
+                grid.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            empty.style.display = 'none';
+
+            // Render items
+            grid.innerHTML = state.history.map(item => {
+                const date = new Date(item.date);
+                const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                return `
+                    <div class="history-item" data-id="${item.id}">
+                        <img src="${item.imageUrl}" alt="${item.title}" loading="lazy">
+                        <div class="history-item-overlay">
+                            <div class="history-item-date">${dateStr}</div>
+                        </div>
+                        <button class="history-item-delete" data-id="${item.id}" title="Delete">&times;</button>
+                    </div>
+                `;
+            }).join('');
+
+            // Attach click handlers
+            grid.querySelectorAll('.history-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('history-item-delete')) {
+                        openHistoryModal(item.dataset.id);
+                    }
+                });
+            });
+
+            grid.querySelectorAll('.history-item-delete').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteFromHistory(btn.dataset.id);
+                });
+            });
+        }
+
+        // Open history modal
+        function openHistoryModal(id) {
+            const item = state.history.find(h => h.id === id);
+            if (!item) return;
+
+            state.selectedHistoryItem = item;
+            elements.modalTitle.textContent = item.title;
+            elements.modalImage.src = item.imageUrl;
+            elements.historyModal.classList.add('visible');
+        }
+
+        // Close history modal
+        function closeHistoryModal() {
+            elements.historyModal.classList.remove('visible');
+            state.selectedHistoryItem = null;
+        }
+
+        // Download from modal
+        function downloadFromModal() {
+            if (!state.selectedHistoryItem) return;
+
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            const title = state.selectedHistoryItem.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30);
+            link.download = `infographic_${title}_${timestamp}.png`;
+            link.href = state.selectedHistoryItem.imageUrl;
+            link.click();
+        }
+
+        // Load history item to current result
+        function loadHistoryToEditor() {
+            if (!state.selectedHistoryItem) return;
+
+            state.generatedImageUrl = state.selectedHistoryItem.imageUrl;
+            elements.resultImage.src = state.selectedHistoryItem.imageUrl;
+            elements.resultPlaceholder.style.display = 'none';
+            elements.resultContainer.classList.add('visible');
+
+            closeHistoryModal();
+            showSuccess('Image loaded to editor!');
+
+            // Scroll to result
+            elements.resultContainer.scrollIntoView({ behavior: 'smooth' });
         }
 
         /**
@@ -1540,6 +1991,26 @@ DESIGN GUIDELINES:
         // Regenerate button
         elements.regenerateBtn.addEventListener('click', generateInfographic);
 
+        // History event listeners
+        elements.clearHistoryBtn.addEventListener('click', clearHistory);
+        elements.closeModal.addEventListener('click', closeHistoryModal);
+        elements.modalDownload.addEventListener('click', downloadFromModal);
+        elements.modalUseAsBase.addEventListener('click', loadHistoryToEditor);
+
+        // Close modal on backdrop click
+        elements.historyModal.addEventListener('click', (e) => {
+            if (e.target === elements.historyModal) {
+                closeHistoryModal();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && elements.historyModal.classList.contains('visible')) {
+                closeHistoryModal();
+            }
+        });
+
         /**
          * ============================================
          * INITIALIZATION
@@ -1549,6 +2020,7 @@ DESIGN GUIDELINES:
         function init() {
             loadApiKey();
             updateLanguage('en');
+            loadHistory();
         }
 
         // Initialize on DOM ready
