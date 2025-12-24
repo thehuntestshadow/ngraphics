@@ -1006,6 +1006,7 @@
                         </label>
                         <select class="form-select" id="infographicStyle">
                             <option value="auto">Auto (Match Product Colors)</option>
+                            <option value="rich">Rich Callouts (Recommended)</option>
                             <option value="callout">Callout Lines (Technical)</option>
                             <option value="light">Light Background</option>
                             <option value="dark">Dark Background</option>
@@ -1669,7 +1670,8 @@
             // Style descriptions - simpler, focused on colors and background
             const styleDescriptions = {
                 auto: 'Analyze the product colors and create a complementary color scheme. Match the background to harmonize with the product.',
-                callout: 'Use thin lines/arrows pointing FROM specific parts of the product TO the corresponding feature text. Like a technical diagram with callout annotations. Each feature should have a line connecting to the relevant area of the product.',
+                rich: 'Analyze the product colors and use them for the design. Use THICK bold lines/arrows pointing from product parts to feature labels. Add matching decorative elements like icons, badges, shapes, and highlights that use the product color palette. Make it visually rich but cohesive.',
+                callout: 'Use thin lines/arrows pointing FROM specific parts of the product TO the corresponding feature text Each feature should have a line connecting to the relevant area of the product.',
                 light: 'Use a clean white or very light background with subtle accents that complement the product colors.',
                 dark: 'Use a dark/black background that makes the product stand out. Use light text and accents.',
                 gradient: 'Use a subtle gradient background derived from the product colors. Keep it simple and professional.',
