@@ -4,841 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Product Infographics Generator</title>
-    <style>
-        /* ============================================
-           CSS VARIABLES & RESET
-           ============================================ */
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --primary-light: #3b82f6;
-            --secondary: #64748b;
-            --success: #10b981;
-            --error: #ef4444;
-            --warning: #f59e0b;
-            --bg-primary: #f8fafc;
-            --bg-secondary: #ffffff;
-            --bg-tertiary: #f1f5f9;
-            --text-primary: #1e293b;
-            --text-secondary: #475569;
-            --text-muted: #94a3b8;
-            --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --radius: 12px;
-            --radius-sm: 8px;
-            --transition: all 0.2s ease;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        /* ============================================
-           LAYOUT
-           ============================================ */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            text-align: center;
-            padding: 40px 20px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            margin-bottom: 30px;
-        }
-
-        header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        header p {
-            opacity: 0.9;
-            font-size: 1.1rem;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-
-        @media (max-width: 900px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* ============================================
-           CARDS & PANELS
-           ============================================ */
-        .card {
-            background: var(--bg-secondary);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 24px;
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        /* ============================================
-           LANGUAGE TOGGLE
-           ============================================ */
-        .language-toggle {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--bg-tertiary);
-            padding: 6px;
-            border-radius: 30px;
-        }
-
-        .lang-option {
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: var(--transition);
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-        }
-
-        .lang-option.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .lang-option:hover:not(.active) {
-            background: var(--border);
-        }
-
-        /* ============================================
-           FORM ELEMENTS
-           ============================================ */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-        }
-
-        .form-label .hint {
-            font-weight: 400;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        .form-input,
-        .form-textarea,
-        .form-select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 1rem;
-            font-family: inherit;
-            transition: var(--transition);
-            background: var(--bg-secondary);
-        }
-
-        .form-input:focus,
-        .form-textarea:focus,
-        .form-select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .form-textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .form-select {
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 20px;
-            padding-right: 44px;
-        }
-
-        /* ============================================
-           FILE UPLOAD
-           ============================================ */
-        .upload-area {
-            border: 2px dashed var(--border);
-            border-radius: var(--radius);
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            background: var(--bg-tertiary);
-        }
-
-        .upload-area:hover {
-            border-color: var(--primary);
-            background: rgba(37, 99, 235, 0.05);
-        }
-
-        .upload-area.dragover {
-            border-color: var(--primary);
-            background: rgba(37, 99, 235, 0.1);
-        }
-
-        .upload-icon {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto 15px;
-            color: var(--text-muted);
-        }
-
-        .upload-text {
-            color: var(--text-secondary);
-            margin-bottom: 5px;
-        }
-
-        .upload-hint {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        .upload-input {
-            display: none;
-        }
-
-        /* Image Preview */
-        .image-preview {
-            margin-top: 15px;
-            display: none;
-        }
-
-        .image-preview.visible {
-            display: block;
-        }
-
-        .preview-container {
-            position: relative;
-            display: inline-block;
-            max-width: 100%;
-        }
-
-        .preview-image {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: var(--radius-sm);
-            box-shadow: var(--shadow);
-        }
-
-        .remove-image {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            width: 28px;
-            height: 28px;
-            background: var(--error);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            transition: var(--transition);
-        }
-
-        .remove-image:hover {
-            background: #dc2626;
-            transform: scale(1.1);
-        }
-
-        /* ============================================
-           CHARACTERISTICS INPUT
-           ============================================ */
-        .characteristics-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .char-item {
-            display: flex;
-            gap: 10px;
-        }
-
-        .char-item .form-input {
-            flex: 1;
-        }
-
-        .char-remove {
-            width: 44px;
-            height: 44px;
-            border: none;
-            background: var(--bg-tertiary);
-            color: var(--text-muted);
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .char-remove:hover {
-            background: var(--error);
-            color: white;
-        }
-
-        .add-char-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px;
-            border: 2px dashed var(--border);
-            background: transparent;
-            color: var(--primary);
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .add-char-btn:hover {
-            border-color: var(--primary);
-            background: rgba(37, 99, 235, 0.05);
-        }
-
-        /* ============================================
-           BUTTONS
-           ============================================ */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 14px 28px;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            width: 100%;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .btn-secondary {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
-        .btn-secondary:hover {
-            background: var(--border);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
-            color: white;
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        /* ============================================
-           RESULT PANEL
-           ============================================ */
-        .result-panel {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .result-placeholder {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 40px;
-            background: var(--bg-tertiary);
-            border-radius: var(--radius);
-            min-height: 400px;
-        }
-
-        .placeholder-icon {
-            width: 80px;
-            height: 80px;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        .placeholder-text {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-        }
-
-        .placeholder-hint {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* Loading State */
-        .loading-container {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 60px;
-            background: var(--bg-tertiary);
-            border-radius: var(--radius);
-            min-height: 400px;
-        }
-
-        .loading-container.visible {
-            display: flex;
-        }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-        }
-
-        .loading-status {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* Generated Image */
-        .result-image-container {
-            display: none;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .result-image-container.visible {
-            display: flex;
-        }
-
-        .result-image {
-            width: 100%;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .result-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .result-actions .btn {
-            flex: 1;
-        }
-
-        /* ============================================
-           API KEY INPUT
-           ============================================ */
-        .api-key-section {
-            background: var(--bg-tertiary);
-            border-radius: var(--radius-sm);
-            padding: 16px;
-            margin-bottom: 20px;
-        }
-
-        .api-key-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .api-key-toggle {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--primary);
-            cursor: pointer;
-            font-size: 0.9rem;
-            background: none;
-            border: none;
-        }
-
-        .api-key-input-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .api-key-input-group .form-input {
-            flex: 1;
-        }
-
-        /* ============================================
-           ERROR & STATUS MESSAGES
-           ============================================ */
-        .error-message {
-            display: none;
-            padding: 16px;
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            border-radius: var(--radius-sm);
-            color: #991b1b;
-            margin-bottom: 20px;
-        }
-
-        .error-message.visible {
-            display: block;
-        }
-
-        .error-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .success-message {
-            display: none;
-            padding: 16px;
-            background: #ecfdf5;
-            border: 1px solid #a7f3d0;
-            border-radius: var(--radius-sm);
-            color: #065f46;
-            margin-bottom: 20px;
-        }
-
-        .success-message.visible {
-            display: block;
-        }
-
-        /* ============================================
-           FOOTER
-           ============================================ */
-        footer {
-            text-align: center;
-            padding: 30px 20px;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* ============================================
-           UTILITIES
-           ============================================ */
-        .hidden {
-            display: none !important;
-        }
-
-        .mb-0 {
-            margin-bottom: 0 !important;
-        }
-
-        /* ============================================
-           HISTORY PANEL
-           ============================================ */
-        .history-section {
-            margin-top: 30px;
-        }
-
-        .history-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-
-        .history-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .history-count {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .clear-history-btn {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: var(--transition);
-        }
-
-        .clear-history-btn:hover {
-            color: var(--error);
-            background: rgba(239, 68, 68, 0.1);
-        }
-
-        .history-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 12px;
-        }
-
-        .history-item {
-            position: relative;
-            aspect-ratio: 1;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: var(--transition);
-            background: var(--bg-tertiary);
-        }
-
-        .history-item:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-
-        .history-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .history-item-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 6px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.7));
-            opacity: 0;
-            transition: var(--transition);
-        }
-
-        .history-item:hover .history-item-overlay {
-            opacity: 1;
-        }
-
-        .history-item-date {
-            font-size: 0.7rem;
-            color: white;
-            text-align: center;
-        }
-
-        .history-item-delete {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            width: 22px;
-            height: 22px;
-            background: rgba(0,0,0,0.6);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            opacity: 0;
-            transition: var(--transition);
-        }
-
-        .history-item:hover .history-item-delete {
-            opacity: 1;
-        }
-
-        .history-item-delete:hover {
-            background: var(--error);
-        }
-
-        .history-empty {
-            text-align: center;
-            padding: 30px;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* History Modal */
-        .history-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .history-modal.visible {
-            display: flex;
-        }
-
-        .history-modal-content {
-            background: var(--bg-secondary);
-            border-radius: var(--radius);
-            max-width: 90vw;
-            max-height: 90vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .history-modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .history-modal-title {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .history-modal-close {
-            width: 32px;
-            height: 32px;
-            background: var(--bg-tertiary);
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: var(--text-secondary);
-            transition: var(--transition);
-        }
-
-        .history-modal-close:hover {
-            background: var(--error);
-            color: white;
-        }
-
-        .history-modal-body {
-            padding: 20px;
-            overflow: auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .history-modal-body img {
-            max-width: 100%;
-            max-height: 60vh;
-            border-radius: var(--radius-sm);
-        }
-
-        .history-modal-footer {
-            display: flex;
-            gap: 12px;
-            padding: 16px 20px;
-            border-top: 1px solid var(--border);
-        }
-
-        .history-modal-footer .btn {
-            flex: 1;
-        }
-
-        /* ============================================
-           RESPONSIVE ADJUSTMENTS
-           ============================================ */
-        @media (max-width: 600px) {
-            header h1 {
-                font-size: 1.5rem;
-            }
-
-            .card {
-                padding: 16px;
-            }
-
-            .card-header {
-                flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
-            }
-
-            .result-actions {
-                flex-direction: column;
-            }
-
-            .api-key-input-group {
-                flex-direction: column;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- ============================================
@@ -860,7 +26,7 @@
                     <!-- Language Toggle -->
                     <div class="language-toggle">
                         <button class="lang-option active" data-lang="en">English</button>
-                        <button class="lang-option" data-lang="ro">Română</button>
+                        <button class="lang-option" data-lang="ro">Romana</button>
                     </div>
                 </div>
 
@@ -902,7 +68,7 @@
                                 <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
                                 <option value="google/gemini-2.5-flash-image">Gemini 2.5 Flash Image</option>
                                 <option value="google/gemini-2.5-flash-image-preview">Gemini 2.5 Flash Image Preview</option>
-                                <option value="google/gemini-3-pro-image-preview">Gemini 3 Pro Image (Best Quality)</option>
+                                <option value="google/gemini-3-pro-image-preview" selected>Gemini 3 Pro Image (Best Quality)</option>
                             </optgroup>
                             <optgroup label="OpenAI GPT Image">
                                 <option value="openai/gpt-5-image">GPT-5 Image</option>
@@ -943,6 +109,11 @@
                                 <button type="button" class="remove-image" id="removeImage">&times;</button>
                             </div>
                         </div>
+                        <!-- Auto-enhance toggle -->
+                        <label class="enhance-toggle">
+                            <input type="checkbox" id="autoEnhance">
+                            Auto-enhance image (brightness/contrast)
+                        </label>
                     </div>
 
                     <!-- Product Title -->
@@ -958,11 +129,30 @@
                     <div class="form-group">
                         <label class="form-label">
                             Product Characteristics
-                            <span class="hint" id="charHint">(key features in English)</span>
+                            <span class="hint" id="charHint">(key features - star important ones)</span>
                         </label>
                         <div class="characteristics-list" id="characteristicsList">
                             <div class="char-item">
+                                <button type="button" class="char-star" title="Mark as primary feature">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                    </svg>
+                                </button>
                                 <input type="text" class="form-input" placeholder="e.g., Active Noise Cancellation">
+                                <select class="form-select char-icon-select" title="Suggested icon">
+                                    <option value="auto">Auto icon</option>
+                                    <option value="battery">Battery</option>
+                                    <option value="bolt">Lightning</option>
+                                    <option value="wifi">WiFi</option>
+                                    <option value="bluetooth">Bluetooth</option>
+                                    <option value="headphones">Audio</option>
+                                    <option value="camera">Camera</option>
+                                    <option value="shield">Shield</option>
+                                    <option value="water">Water</option>
+                                    <option value="star">Star</option>
+                                    <option value="check">Check</option>
+                                    <option value="none">No icon</option>
+                                </select>
                                 <button type="button" class="char-remove" title="Remove">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -971,7 +161,26 @@
                                 </button>
                             </div>
                             <div class="char-item">
+                                <button type="button" class="char-star" title="Mark as primary feature">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                    </svg>
+                                </button>
                                 <input type="text" class="form-input" placeholder="e.g., 30-hour battery life">
+                                <select class="form-select char-icon-select" title="Suggested icon">
+                                    <option value="auto">Auto icon</option>
+                                    <option value="battery">Battery</option>
+                                    <option value="bolt">Lightning</option>
+                                    <option value="wifi">WiFi</option>
+                                    <option value="bluetooth">Bluetooth</option>
+                                    <option value="headphones">Audio</option>
+                                    <option value="camera">Camera</option>
+                                    <option value="shield">Shield</option>
+                                    <option value="water">Water</option>
+                                    <option value="star">Star</option>
+                                    <option value="check">Check</option>
+                                    <option value="none">No icon</option>
+                                </select>
                                 <button type="button" class="char-remove" title="Remove">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -980,7 +189,26 @@
                                 </button>
                             </div>
                             <div class="char-item">
+                                <button type="button" class="char-star" title="Mark as primary feature">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                    </svg>
+                                </button>
                                 <input type="text" class="form-input" placeholder="e.g., Bluetooth 5.3">
+                                <select class="form-select char-icon-select" title="Suggested icon">
+                                    <option value="auto">Auto icon</option>
+                                    <option value="battery">Battery</option>
+                                    <option value="bolt">Lightning</option>
+                                    <option value="wifi">WiFi</option>
+                                    <option value="bluetooth">Bluetooth</option>
+                                    <option value="headphones">Audio</option>
+                                    <option value="camera">Camera</option>
+                                    <option value="shield">Shield</option>
+                                    <option value="water">Water</option>
+                                    <option value="star">Star</option>
+                                    <option value="check">Check</option>
+                                    <option value="none">No icon</option>
+                                </select>
                                 <button type="button" class="char-remove" title="Remove">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -1013,6 +241,222 @@
                             <option value="gradient">Subtle Gradient</option>
                             <option value="transparent">Keep Original Background</option>
                         </select>
+                    </div>
+
+                    <!-- Advanced Options -->
+                    <div class="advanced-section" id="advancedSection">
+                        <button type="button" class="advanced-toggle" id="advancedToggle">
+                            <span>Advanced Options</span>
+                            <svg class="advanced-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                        <div class="advanced-content">
+                            <div class="advanced-grid">
+
+                                <!-- SECTION: Layout & Composition -->
+                                <div class="section-header">Layout & Composition</div>
+
+                                <!-- Layout Template -->
+                                <div class="form-group">
+                                    <label class="form-label">Layout Template</label>
+                                    <select class="form-select" id="layoutTemplate">
+                                        <option value="auto">Auto</option>
+                                        <option value="center">Product Center</option>
+                                        <option value="left">Product Left</option>
+                                        <option value="right">Product Right</option>
+                                        <option value="top">Product Top</option>
+                                        <option value="grid">Grid Layout</option>
+                                        <option value="hero">Hero Layout</option>
+                                    </select>
+                                </div>
+
+                                <!-- Aspect Ratio -->
+                                <div class="form-group">
+                                    <label class="form-label">Aspect Ratio</label>
+                                    <select class="form-select" id="aspectRatio">
+                                        <option value="auto">Auto</option>
+                                        <option value="1:1">1:1 Square</option>
+                                        <option value="2:3">2:3 Portrait</option>
+                                        <option value="4:5">4:5 Portrait</option>
+                                        <option value="16:9">16:9 Landscape</option>
+                                        <option value="9:16">9:16 Story</option>
+                                    </select>
+                                </div>
+
+                                <!-- Product Focus -->
+                                <div class="form-group">
+                                    <label class="form-label">Product Focus</label>
+                                    <select class="form-select" id="productFocus">
+                                        <option value="auto">Auto</option>
+                                        <option value="full">Full Product</option>
+                                        <option value="closeup">Close-up Detail</option>
+                                        <option value="angle">Dynamic Angle</option>
+                                        <option value="context">In Context</option>
+                                        <option value="floating">Floating</option>
+                                        <option value="multiple">Multiple Views</option>
+                                    </select>
+                                </div>
+
+                                <!-- Variations -->
+                                <div class="form-group">
+                                    <label class="form-label">Variations</label>
+                                    <select class="form-select" id="variations">
+                                        <option value="1">1 Image</option>
+                                        <option value="2">2 Images</option>
+                                        <option value="4">4 Images</option>
+                                    </select>
+                                </div>
+
+                                <!-- SECTION: Visual Style -->
+                                <div class="section-header">Visual Style</div>
+
+                                <!-- Visual Density -->
+                                <div class="form-group advanced-full-width">
+                                    <div class="slider-group">
+                                        <div class="slider-header">
+                                            <span class="slider-label">Visual Density</span>
+                                            <span class="slider-value" id="visualDensityValue">Balanced</span>
+                                        </div>
+                                        <input type="range" class="form-slider" id="visualDensity" min="1" max="5" value="3">
+                                        <div class="slider-labels">
+                                            <span>Minimal</span>
+                                            <span>Rich</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Font Style -->
+                                <div class="form-group">
+                                    <label class="form-label">Font Style</label>
+                                    <select class="form-select" id="fontStyle">
+                                        <option value="auto">Auto</option>
+                                        <option value="modern">Modern Sans-Serif</option>
+                                        <option value="classic">Classic Serif</option>
+                                        <option value="bold">Bold & Heavy</option>
+                                        <option value="playful">Playful & Rounded</option>
+                                        <option value="technical">Technical Mono</option>
+                                        <option value="elegant">Elegant & Thin</option>
+                                    </select>
+                                </div>
+
+                                <!-- Icon Style -->
+                                <div class="form-group">
+                                    <label class="form-label">Icon Style</label>
+                                    <select class="form-select" id="iconStyle">
+                                        <option value="auto">Auto</option>
+                                        <option value="flat">Flat</option>
+                                        <option value="outlined">Outlined</option>
+                                        <option value="3d">3D</option>
+                                        <option value="minimal">Minimal</option>
+                                        <option value="none">None</option>
+                                    </select>
+                                </div>
+
+                                <!-- SECTION: Colors & Background -->
+                                <div class="section-header">Colors & Background</div>
+
+                                <!-- Color Harmony -->
+                                <div class="form-group">
+                                    <label class="form-label">Color Harmony</label>
+                                    <select class="form-select" id="colorHarmony">
+                                        <option value="match">Match Product</option>
+                                        <option value="complementary">Complementary</option>
+                                        <option value="analogous">Analogous</option>
+                                        <option value="triadic">Triadic</option>
+                                        <option value="monochrome">Monochrome</option>
+                                        <option value="contrast">High Contrast</option>
+                                    </select>
+                                </div>
+
+                                <!-- Background Complexity -->
+                                <div class="form-group">
+                                    <label class="form-label">Background Type</label>
+                                    <select class="form-select" id="backgroundComplexity">
+                                        <option value="auto">Auto</option>
+                                        <option value="solid">Solid Color</option>
+                                        <option value="subtle">Subtle Texture</option>
+                                        <option value="textured">Textured</option>
+                                        <option value="gradient">Gradient</option>
+                                        <option value="pattern">Pattern</option>
+                                        <option value="environmental">Environmental</option>
+                                    </select>
+                                </div>
+
+                                <!-- Brand Colors -->
+                                <div class="form-group advanced-full-width">
+                                    <label class="form-label">
+                                        Brand Colors
+                                        <span class="hint">(comma-separated hex codes)</span>
+                                    </label>
+                                    <input type="text" class="form-input" id="brandColors" placeholder="#FF5733, #2563eb, #10b981">
+                                </div>
+
+                                <!-- SECTION: Style Reference -->
+                                <div class="section-header">Style Reference</div>
+
+                                <!-- Style Reference Upload -->
+                                <div class="form-group advanced-full-width">
+                                    <label class="form-label">
+                                        Style Reference
+                                        <span class="hint">(optional image to match style)</span>
+                                    </label>
+                                    <div class="style-ref-container">
+                                        <div class="style-upload-area" id="styleUploadArea">
+                                            <svg class="style-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                                <polyline points="21 15 16 10 5 21"></polyline>
+                                            </svg>
+                                            <p class="style-upload-text">Click to upload style reference</p>
+                                            <input type="file" class="upload-input" id="styleReference" accept="image/png,image/jpeg,image/jpg,image/webp">
+                                        </div>
+                                        <div class="style-preview-container" id="stylePreviewContainer" style="display: none;">
+                                            <img src="" alt="Style Reference" class="style-preview-image" id="stylePreviewImg">
+                                            <button type="button" class="style-preview-remove" id="removeStyleRef">&times;</button>
+                                        </div>
+                                        <!-- Style Strength Slider -->
+                                        <div class="style-strength-slider" id="styleStrengthSlider">
+                                            <div class="slider-group" style="margin-top: 12px;">
+                                                <div class="slider-header">
+                                                    <span class="slider-label">Style Influence</span>
+                                                    <span class="slider-value" id="styleStrengthValue">70%</span>
+                                                </div>
+                                                <input type="range" class="form-slider" id="styleStrength" min="10" max="100" value="70">
+                                                <div class="slider-labels">
+                                                    <span>Subtle</span>
+                                                    <span>Strong</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SECTION: Generation Settings -->
+                                <div class="section-header">Generation Settings</div>
+
+                                <!-- Seed -->
+                                <div class="form-group advanced-full-width">
+                                    <label class="form-label">Seed</label>
+                                    <div class="seed-group">
+                                        <input type="number" class="form-input" id="seedInput" placeholder="Random" min="0" max="999999999">
+                                        <label class="seed-random">
+                                            <input type="checkbox" id="randomSeed" checked>
+                                            Random
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Negative Prompts -->
+                                <div class="form-group advanced-full-width">
+                                    <label class="form-label">
+                                        Negative Prompts
+                                        <span class="hint">(what to avoid)</span>
+                                    </label>
+                                    <textarea class="form-textarea" id="negativePrompt" rows="2" placeholder="e.g., clipart style, busy backgrounds, small text, watermarks"></textarea>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Generate Button -->
@@ -1054,7 +498,30 @@
 
                     <!-- Result Image -->
                     <div class="result-image-container" id="resultContainer">
+                        <!-- Single image display -->
                         <img src="" alt="Generated Infographic" class="result-image" id="resultImage">
+
+                        <!-- Grid for multiple variations (hidden by default) -->
+                        <div class="result-grid" id="resultGrid" style="display: none;"></div>
+
+                        <!-- Seed display -->
+                        <div class="seed-display" id="seedDisplay" style="display: none;">
+                            <span>Seed:</span>
+                            <code id="seedValue"></code>
+                            <button class="seed-copy-btn" id="copySeedBtn">Copy</button>
+                        </div>
+
+                        <!-- SEO Alt Text -->
+                        <div class="alt-text-section" id="altTextSection" style="display: none;">
+                            <div class="alt-text-header">
+                                <span class="alt-text-label">SEO Alt Text</span>
+                                <button class="alt-text-copy" id="copyAltText">Copy</button>
+                            </div>
+                            <div class="alt-text-content" id="altTextContent">
+                                <span class="alt-text-loading">Generating alt text...</span>
+                            </div>
+                        </div>
+
                         <div class="result-actions">
                             <button class="btn btn-success" id="downloadBtn">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1071,6 +538,88 @@
                                 </svg>
                                 Regenerate
                             </button>
+                        </div>
+
+                        <!-- Feedback Section -->
+                        <div class="feedback-section">
+                            <label class="feedback-label">Adjust this infographic</label>
+                            <textarea class="feedback-textarea" id="feedbackTextarea" placeholder="Describe what to change, e.g., 'Make the background darker', 'Move the title to the top', 'Use larger font for features'"></textarea>
+                            <div class="feedback-actions">
+                                <button class="btn btn-adjust" id="adjustBtn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                    Adjust
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Watermark Section -->
+                        <div class="watermark-section" id="watermarkSection">
+                            <button type="button" class="watermark-toggle" id="watermarkToggle">
+                                <span>Add Watermark</span>
+                                <svg class="advanced-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="watermark-content">
+                                <!-- Tabs -->
+                                <div class="watermark-tabs">
+                                    <button type="button" class="watermark-tab active" data-tab="text">Text</button>
+                                    <button type="button" class="watermark-tab" data-tab="logo">Logo</button>
+                                </div>
+
+                                <!-- Text Watermark -->
+                                <div class="watermark-tab-content active" id="watermarkTextTab">
+                                    <input type="text" class="form-input" id="watermarkText" placeholder="Enter watermark text">
+                                </div>
+
+                                <!-- Logo Watermark -->
+                                <div class="watermark-tab-content" id="watermarkLogoTab">
+                                    <input type="file" id="watermarkLogo" accept="image/png,image/jpeg,image/webp" style="display: none;">
+                                    <button type="button" class="btn btn-secondary" id="uploadLogoBtn" style="width: 100%;">
+                                        Upload Logo
+                                    </button>
+                                    <img src="" alt="Logo preview" class="watermark-logo-preview" id="watermarkLogoPreview" style="display: none;">
+                                </div>
+
+                                <!-- Position -->
+                                <label class="form-label" style="margin-top: 12px; margin-bottom: 6px;">Position</label>
+                                <div class="watermark-position-grid">
+                                    <button type="button" class="watermark-position-btn" data-pos="tl">TL</button>
+                                    <button type="button" class="watermark-position-btn" data-pos="tc">TC</button>
+                                    <button type="button" class="watermark-position-btn" data-pos="tr">TR</button>
+                                    <button type="button" class="watermark-position-btn" data-pos="ml">ML</button>
+                                    <button type="button" class="watermark-position-btn" data-pos="mc">MC</button>
+                                    <button type="button" class="watermark-position-btn" data-pos="mr">MR</button>
+                                    <button type="button" class="watermark-position-btn" data-pos="bl">BL</button>
+                                    <button type="button" class="watermark-position-btn active" data-pos="bc">BC</button>
+                                    <button type="button" class="watermark-position-btn" data-pos="br">BR</button>
+                                </div>
+
+                                <!-- Opacity -->
+                                <div class="watermark-slider-group">
+                                    <div class="watermark-slider-label">
+                                        <span>Opacity</span>
+                                        <span id="opacityValue">50%</span>
+                                    </div>
+                                    <input type="range" class="watermark-slider" id="watermarkOpacity" min="10" max="100" value="50">
+                                </div>
+
+                                <!-- Size (for logo) -->
+                                <div class="watermark-slider-group" id="watermarkSizeGroup" style="display: none;">
+                                    <div class="watermark-slider-label">
+                                        <span>Size</span>
+                                        <span id="sizeValue">20%</span>
+                                    </div>
+                                    <input type="range" class="watermark-slider" id="watermarkSize" min="5" max="50" value="20">
+                                </div>
+
+                                <button type="button" class="btn btn-primary watermark-apply-btn" id="applyWatermark">
+                                    Apply Watermark
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1093,6 +642,24 @@
             </div>
             <div class="history-empty" id="historyEmpty">
                 No generations yet. Create your first infographic!
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox / Zoom View -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <button class="lightbox-close" id="lightboxClose">&times;</button>
+            <img src="" alt="Zoomed Image" class="lightbox-image" id="lightboxImage">
+            <div class="lightbox-controls">
+                <button class="lightbox-btn" id="lightboxDownload">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download
+                </button>
             </div>
         </div>
     </div>
@@ -1128,912 +695,9 @@
     </div>
 
     <footer>
-        <p>Powered by OpenRouter AI &bull; Supports English and Romanian (ă, â, î, ș, ț)</p>
+        <p>Powered by OpenRouter AI &bull; Supports English and Romanian (a, a, i, s, t) &bull; Ctrl+Enter to generate</p>
     </footer>
 
-    <!-- ============================================
-         JAVASCRIPT
-         ============================================ -->
-    <script>
-        /**
-         * ============================================
-         * APPLICATION STATE
-         * ============================================
-         */
-        const state = {
-            language: 'en', // 'en' or 'ro'
-            apiKey: '',
-            uploadedImage: null,
-            uploadedImageBase64: null,
-            generatedImageUrl: null,
-            history: [],           // Array of {id, imageUrl, title, date}
-            selectedHistoryItem: null
-        };
-
-        /**
-         * ============================================
-         * DOM ELEMENTS
-         * ============================================
-         */
-        const elements = {
-            // Language
-            langOptions: document.querySelectorAll('.lang-option'),
-            titleHint: document.getElementById('titleHint'),
-            charHint: document.getElementById('charHint'),
-
-            // API Key
-            apiKeyInput: document.getElementById('apiKey'),
-            toggleApiKeyBtn: document.getElementById('toggleApiKey'),
-            saveApiKeyBtn: document.getElementById('saveApiKey'),
-
-            // Messages
-            errorMessage: document.getElementById('errorMessage'),
-            successMessage: document.getElementById('successMessage'),
-
-            // Form
-            form: document.getElementById('infographicForm'),
-            aiModel: document.getElementById('aiModel'),
-            uploadArea: document.getElementById('uploadArea'),
-            productPhoto: document.getElementById('productPhoto'),
-            imagePreview: document.getElementById('imagePreview'),
-            previewImg: document.getElementById('previewImg'),
-            removeImageBtn: document.getElementById('removeImage'),
-            productTitle: document.getElementById('productTitle'),
-            characteristicsList: document.getElementById('characteristicsList'),
-            addCharBtn: document.getElementById('addCharBtn'),
-            infographicStyle: document.getElementById('infographicStyle'),
-            generateBtn: document.getElementById('generateBtn'),
-
-            // Results
-            resultPlaceholder: document.getElementById('resultPlaceholder'),
-            loadingContainer: document.getElementById('loadingContainer'),
-            loadingStatus: document.getElementById('loadingStatus'),
-            resultContainer: document.getElementById('resultContainer'),
-            resultImage: document.getElementById('resultImage'),
-            downloadBtn: document.getElementById('downloadBtn'),
-            regenerateBtn: document.getElementById('regenerateBtn'),
-
-            // History
-            historySection: document.getElementById('historySection'),
-            historyGrid: document.getElementById('historyGrid'),
-            historyCount: document.getElementById('historyCount'),
-            historyEmpty: document.getElementById('historyEmpty'),
-            clearHistoryBtn: document.getElementById('clearHistoryBtn'),
-            historyModal: document.getElementById('historyModal'),
-            modalTitle: document.getElementById('modalTitle'),
-            modalImage: document.getElementById('modalImage'),
-            closeModal: document.getElementById('closeModal'),
-            modalDownload: document.getElementById('modalDownload'),
-            modalUseAsBase: document.getElementById('modalUseAsBase')
-        };
-
-        /**
-         * ============================================
-         * LANGUAGE HANDLING
-         * ============================================
-         */
-
-        // Language-specific placeholders and hints
-        const translations = {
-            en: {
-                titleHint: '(in English)',
-                charHint: '(key features in English)',
-                titlePlaceholder: 'e.g., Premium Wireless Headphones',
-                charPlaceholders: [
-                    'e.g., Active Noise Cancellation',
-                    'e.g., 30-hour battery life',
-                    'e.g., Bluetooth 5.3'
-                ]
-            },
-            ro: {
-                titleHint: '(în limba română)',
-                charHint: '(caracteristici în română)',
-                titlePlaceholder: 'ex., Căști Wireless Premium',
-                charPlaceholders: [
-                    'ex., Anulare Activă a Zgomotului',
-                    'ex., Autonomie 30 ore',
-                    'ex., Bluetooth 5.3'
-                ]
-            }
-        };
-
-        function updateLanguage(lang) {
-            state.language = lang;
-
-            // Update toggle buttons
-            elements.langOptions.forEach(opt => {
-                opt.classList.toggle('active', opt.dataset.lang === lang);
-            });
-
-            // Update hints
-            const t = translations[lang];
-            elements.titleHint.textContent = t.titleHint;
-            elements.charHint.textContent = t.charHint;
-            elements.productTitle.placeholder = t.titlePlaceholder;
-
-            // Update characteristic placeholders
-            const charInputs = elements.characteristicsList.querySelectorAll('.form-input');
-            charInputs.forEach((input, index) => {
-                const placeholder = t.charPlaceholders[index] || t.charPlaceholders[0];
-                input.placeholder = placeholder;
-            });
-        }
-
-        elements.langOptions.forEach(opt => {
-            opt.addEventListener('click', () => updateLanguage(opt.dataset.lang));
-        });
-
-        /**
-         * ============================================
-         * API KEY HANDLING
-         * ============================================
-         */
-
-        // Load API key from localStorage
-        function loadApiKey() {
-            const savedKey = localStorage.getItem('openrouter_api_key');
-            if (savedKey) {
-                state.apiKey = savedKey;
-                elements.apiKeyInput.value = savedKey;
-            }
-        }
-
-        // Toggle API key visibility
-        elements.toggleApiKeyBtn.addEventListener('click', () => {
-            const isPassword = elements.apiKeyInput.type === 'password';
-            elements.apiKeyInput.type = isPassword ? 'text' : 'password';
-            elements.toggleApiKeyBtn.querySelector('span').textContent = isPassword ? 'Hide' : 'Show';
-        });
-
-        // Save API key
-        elements.saveApiKeyBtn.addEventListener('click', () => {
-            const key = elements.apiKeyInput.value.trim();
-            if (key) {
-                state.apiKey = key;
-                localStorage.setItem('openrouter_api_key', key);
-                showSuccess('API key saved successfully!');
-            } else {
-                showError('Please enter a valid API key');
-            }
-        });
-
-        /**
-         * ============================================
-         * IMAGE UPLOAD HANDLING
-         * ============================================
-         */
-
-        // Click to upload
-        elements.uploadArea.addEventListener('click', () => {
-            elements.productPhoto.click();
-        });
-
-        // Drag and drop
-        elements.uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            elements.uploadArea.classList.add('dragover');
-        });
-
-        elements.uploadArea.addEventListener('dragleave', () => {
-            elements.uploadArea.classList.remove('dragover');
-        });
-
-        elements.uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            elements.uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleImageUpload(files[0]);
-            }
-        });
-
-        // File input change
-        elements.productPhoto.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleImageUpload(e.target.files[0]);
-            }
-        });
-
-        // Handle image upload
-        function handleImageUpload(file) {
-            // Validate file type
-            const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
-            if (!validTypes.includes(file.type)) {
-                showError('Invalid file type. Please upload PNG, JPG, JPEG, or WebP.');
-                return;
-            }
-
-            // Validate file size (10MB max)
-            if (file.size > 10 * 1024 * 1024) {
-                showError('File too large. Maximum size is 10MB.');
-                return;
-            }
-
-            state.uploadedImage = file;
-
-            // Create preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                state.uploadedImageBase64 = e.target.result;
-                elements.previewImg.src = e.target.result;
-                elements.imagePreview.classList.add('visible');
-                elements.uploadArea.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Remove image
-        elements.removeImageBtn.addEventListener('click', () => {
-            state.uploadedImage = null;
-            state.uploadedImageBase64 = null;
-            elements.productPhoto.value = '';
-            elements.imagePreview.classList.remove('visible');
-            elements.uploadArea.style.display = 'block';
-        });
-
-        /**
-         * ============================================
-         * CHARACTERISTICS HANDLING
-         * ============================================
-         */
-
-        // Add characteristic
-        elements.addCharBtn.addEventListener('click', () => {
-            addCharacteristicItem();
-        });
-
-        function addCharacteristicItem() {
-            const t = translations[state.language];
-            const div = document.createElement('div');
-            div.className = 'char-item';
-            div.innerHTML = `
-                <input type="text" class="form-input" placeholder="${t.charPlaceholders[0]}">
-                <button type="button" class="char-remove" title="Remove">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            `;
-            elements.characteristicsList.appendChild(div);
-            attachRemoveHandler(div.querySelector('.char-remove'));
-        }
-
-        // Remove characteristic
-        function attachRemoveHandler(btn) {
-            btn.addEventListener('click', () => {
-                const items = elements.characteristicsList.querySelectorAll('.char-item');
-                if (items.length > 1) {
-                    btn.closest('.char-item').remove();
-                } else {
-                    showError('You need at least one characteristic');
-                }
-            });
-        }
-
-        // Attach handlers to initial remove buttons
-        document.querySelectorAll('.char-remove').forEach(attachRemoveHandler);
-
-        /**
-         * ============================================
-         * MESSAGE DISPLAY
-         * ============================================
-         */
-
-        function showError(message) {
-            elements.errorMessage.querySelector('.error-text').textContent = message;
-            elements.errorMessage.classList.add('visible');
-            elements.successMessage.classList.remove('visible');
-
-            setTimeout(() => {
-                elements.errorMessage.classList.remove('visible');
-            }, 5000);
-        }
-
-        function showSuccess(message) {
-            elements.successMessage.textContent = message;
-            elements.successMessage.classList.add('visible');
-            elements.errorMessage.classList.remove('visible');
-
-            setTimeout(() => {
-                elements.successMessage.classList.remove('visible');
-            }, 3000);
-        }
-
-        function updateLoadingStatus(status) {
-            elements.loadingStatus.textContent = status;
-        }
-
-        /**
-         * ============================================
-         * UI STATE MANAGEMENT
-         * ============================================
-         */
-
-        function showLoading() {
-            elements.resultPlaceholder.style.display = 'none';
-            elements.resultContainer.classList.remove('visible');
-            elements.loadingContainer.classList.add('visible');
-            elements.generateBtn.disabled = true;
-        }
-
-        function hideLoading() {
-            elements.loadingContainer.classList.remove('visible');
-            elements.generateBtn.disabled = false;
-        }
-
-        function showResult(imageUrl) {
-            hideLoading();
-            elements.resultImage.src = imageUrl;
-            elements.resultContainer.classList.add('visible');
-            state.generatedImageUrl = imageUrl;
-
-            // Save to history
-            const title = elements.productTitle.value.trim() || 'Untitled';
-            addToHistory(imageUrl, title);
-        }
-
-        function resetToPlaceholder() {
-            hideLoading();
-            elements.resultContainer.classList.remove('visible');
-            elements.resultPlaceholder.style.display = 'flex';
-        }
-
-        /**
-         * ============================================
-         * HISTORY MANAGEMENT
-         * ============================================
-         */
-
-        const HISTORY_KEY = 'infographic_history';
-        const MAX_HISTORY_ITEMS = 20;
-
-        // Load history from localStorage
-        function loadHistory() {
-            try {
-                const saved = localStorage.getItem(HISTORY_KEY);
-                if (saved) {
-                    state.history = JSON.parse(saved);
-                }
-            } catch (e) {
-                console.error('Failed to load history:', e);
-                state.history = [];
-            }
-            renderHistory();
-        }
-
-        // Save history to localStorage
-        function saveHistory() {
-            try {
-                localStorage.setItem(HISTORY_KEY, JSON.stringify(state.history));
-            } catch (e) {
-                console.error('Failed to save history:', e);
-                // If storage is full, remove oldest items
-                if (e.name === 'QuotaExceededError') {
-                    state.history = state.history.slice(0, Math.floor(state.history.length / 2));
-                    saveHistory();
-                }
-            }
-        }
-
-        // Add item to history
-        function addToHistory(imageUrl, title) {
-            const item = {
-                id: Date.now().toString(),
-                imageUrl: imageUrl,
-                title: title || 'Untitled',
-                date: new Date().toISOString()
-            };
-
-            // Add to beginning of array
-            state.history.unshift(item);
-
-            // Limit history size
-            if (state.history.length > MAX_HISTORY_ITEMS) {
-                state.history = state.history.slice(0, MAX_HISTORY_ITEMS);
-            }
-
-            saveHistory();
-            renderHistory();
-        }
-
-        // Delete item from history
-        function deleteFromHistory(id) {
-            state.history = state.history.filter(item => item.id !== id);
-            saveHistory();
-            renderHistory();
-        }
-
-        // Clear all history
-        function clearHistory() {
-            if (confirm('Are you sure you want to clear all history?')) {
-                state.history = [];
-                saveHistory();
-                renderHistory();
-            }
-        }
-
-        // Render history grid
-        function renderHistory() {
-            const grid = elements.historyGrid;
-            const empty = elements.historyEmpty;
-            const count = elements.historyCount;
-
-            // Update count
-            count.textContent = state.history.length > 0 ? `(${state.history.length})` : '';
-
-            // Show/hide empty state
-            if (state.history.length === 0) {
-                grid.style.display = 'none';
-                empty.style.display = 'block';
-                return;
-            }
-
-            grid.style.display = 'grid';
-            empty.style.display = 'none';
-
-            // Render items
-            grid.innerHTML = state.history.map(item => {
-                const date = new Date(item.date);
-                const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-                return `
-                    <div class="history-item" data-id="${item.id}">
-                        <img src="${item.imageUrl}" alt="${item.title}" loading="lazy">
-                        <div class="history-item-overlay">
-                            <div class="history-item-date">${dateStr}</div>
-                        </div>
-                        <button class="history-item-delete" data-id="${item.id}" title="Delete">&times;</button>
-                    </div>
-                `;
-            }).join('');
-
-            // Attach click handlers
-            grid.querySelectorAll('.history-item').forEach(item => {
-                item.addEventListener('click', (e) => {
-                    if (!e.target.classList.contains('history-item-delete')) {
-                        openHistoryModal(item.dataset.id);
-                    }
-                });
-            });
-
-            grid.querySelectorAll('.history-item-delete').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    deleteFromHistory(btn.dataset.id);
-                });
-            });
-        }
-
-        // Open history modal
-        function openHistoryModal(id) {
-            const item = state.history.find(h => h.id === id);
-            if (!item) return;
-
-            state.selectedHistoryItem = item;
-            elements.modalTitle.textContent = item.title;
-            elements.modalImage.src = item.imageUrl;
-            elements.historyModal.classList.add('visible');
-        }
-
-        // Close history modal
-        function closeHistoryModal() {
-            elements.historyModal.classList.remove('visible');
-            state.selectedHistoryItem = null;
-        }
-
-        // Download from modal
-        function downloadFromModal() {
-            if (!state.selectedHistoryItem) return;
-
-            const link = document.createElement('a');
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-            const title = state.selectedHistoryItem.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30);
-            link.download = `infographic_${title}_${timestamp}.png`;
-            link.href = state.selectedHistoryItem.imageUrl;
-            link.click();
-        }
-
-        // Load history item to current result
-        function loadHistoryToEditor() {
-            if (!state.selectedHistoryItem) return;
-
-            state.generatedImageUrl = state.selectedHistoryItem.imageUrl;
-            elements.resultImage.src = state.selectedHistoryItem.imageUrl;
-            elements.resultPlaceholder.style.display = 'none';
-            elements.resultContainer.classList.add('visible');
-
-            closeHistoryModal();
-            showSuccess('Image loaded to editor!');
-
-            // Scroll to result
-            elements.resultContainer.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        /**
-         * ============================================
-         * PROMPT GENERATION
-         * ============================================
-         */
-
-        function generatePrompt() {
-            const title = elements.productTitle.value.trim();
-            const style = elements.infographicStyle.value;
-            const language = state.language === 'ro' ? 'Romanian' : 'English';
-
-            // Get characteristics
-            const charInputs = elements.characteristicsList.querySelectorAll('.form-input');
-            const characteristics = Array.from(charInputs)
-                .map(input => input.value.trim())
-                .filter(val => val.length > 0);
-
-            // Style descriptions - simpler, focused on colors and background
-            const styleDescriptions = {
-                auto: 'Analyze the product colors and create a complementary color scheme. Match the background to harmonize with the product.',
-                rich: 'Analyze the product colors and use them for the design. Use THICK bold lines/arrows pointing from product parts to feature labels. Add matching decorative elements like icons, badges, shapes, and highlights that use the product color palette. Make it visually rich but cohesive.',
-                callout: 'Use thin lines/arrows pointing FROM specific parts of the product TO the corresponding feature text Each feature should have a line connecting to the relevant area of the product.',
-                light: 'Use a clean white or very light background with subtle accents that complement the product colors.',
-                dark: 'Use a dark/black background that makes the product stand out. Use light text and accents.',
-                gradient: 'Use a subtle gradient background derived from the product colors. Keep it simple and professional.',
-                transparent: 'Keep the original background from the product image. Only add text and minimal graphic elements.'
-            };
-
-            const styleDesc = styleDescriptions[style] || styleDescriptions.auto;
-
-            const hasImage = state.uploadedImageBase64 !== null;
-
-            // Build the prompt - different approach based on whether image is provided
-            let prompt;
-
-            if (hasImage) {
-                // When product image is provided, instruct to build AROUND it
-                prompt = `I'm providing a product photo. Create a simple, clean marketing infographic.
-
-CRITICAL INSTRUCTIONS:
-- DO NOT modify the product itself - keep it EXACTLY as shown
-- Analyze the product's colors and the original background
-- ${styleDesc}
-- Keep the design simple and professional - don't overcrowd with elements
-- Text should be readable and contrast well with the background
-
-PRODUCT TITLE: "${title}"
-
-PRODUCT FEATURES:
-${characteristics.map((c, i) => `• ${c}`).join('\n')}
-
-LANGUAGE: ${language}${state.language === 'ro' ? ' (use proper Romanian characters: ă, â, î, ș, ț)' : ''}
-
-DESIGN GUIDELINES:
-- Place the product prominently (center or main focus)
-- Add the title in a clean, readable font
-- List features with simple icons or bullet points
-- Use colors that complement the product
-- Keep plenty of whitespace - less is more
-- Professional and modern, but simple`;
-            } else {
-                // When no image is provided, generate everything
-                prompt = `Create a simple, clean marketing infographic for a product.
-
-PRODUCT TITLE: "${title}"
-
-PRODUCT FEATURES:
-${characteristics.map((c, i) => `• ${c}`).join('\n')}
-
-BACKGROUND STYLE: ${styleDesc}
-
-LANGUAGE: ${language}${state.language === 'ro' ? ' (use proper Romanian characters: ă, â, î, ș, ț)' : ''}
-
-DESIGN GUIDELINES:
-- Clean, simple layout
-- Title prominently displayed
-- Features listed with simple icons
-- Professional color scheme
-- Plenty of whitespace
-- Modern but minimal design`;
-            }
-
-            return prompt;
-        }
-
-        /**
-         * ============================================
-         * API INTEGRATION
-         * ============================================
-         */
-
-        async function generateInfographic() {
-            // Validate API key
-            if (!state.apiKey) {
-                showError('Please enter your OpenRouter API key first');
-                return;
-            }
-
-            // Validate title
-            const title = elements.productTitle.value.trim();
-            if (!title) {
-                showError('Please enter a product title');
-                return;
-            }
-
-            // Validate characteristics
-            const charInputs = elements.characteristicsList.querySelectorAll('.form-input');
-            const characteristics = Array.from(charInputs)
-                .map(input => input.value.trim())
-                .filter(val => val.length > 0);
-
-            if (characteristics.length === 0) {
-                showError('Please enter at least one product characteristic');
-                return;
-            }
-
-            showLoading();
-            updateLoadingStatus('Preparing prompt...');
-
-            const prompt = generatePrompt();
-            const model = elements.aiModel.value;
-
-            try {
-                updateLoadingStatus('Connecting to AI...');
-
-                // Build message content - include image if uploaded
-                let messageContent;
-
-                if (state.uploadedImageBase64) {
-                    // Multimodal request with image
-                    messageContent = [
-                        {
-                            type: 'text',
-                            text: prompt
-                        },
-                        {
-                            type: 'image_url',
-                            image_url: {
-                                url: state.uploadedImageBase64
-                            }
-                        }
-                    ];
-                } else {
-                    // Text-only request
-                    messageContent = prompt;
-                }
-
-                // OpenRouter uses chat completions endpoint with modalities for image generation
-                const requestBody = {
-                    model: model,
-                    messages: [
-                        {
-                            role: 'user',
-                            content: messageContent
-                        }
-                    ],
-                    modalities: ['image', 'text'],
-                    max_tokens: 4096
-                };
-
-                if (state.uploadedImageBase64) {
-                    updateLoadingStatus('Generating infographic with your product image...');
-                } else {
-                    updateLoadingStatus('Generating infographic...');
-                }
-
-                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${state.apiKey}`,
-                        'Content-Type': 'application/json',
-                        'HTTP-Referer': window.location.origin,
-                        'X-Title': 'AI Product Infographics Generator'
-                    },
-                    body: JSON.stringify(requestBody)
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    const errorMsg = errorData.error?.message || errorData.message || `API error: ${response.status}`;
-                    throw new Error(errorMsg);
-                }
-
-                const data = await response.json();
-                console.log('API Response:', JSON.stringify(data, null, 2));
-
-                updateLoadingStatus('Processing result...');
-
-                // Handle the response - OpenRouter returns images in various formats
-                let imageUrl = null;
-
-                // Check for images in the response
-                const message = data.choices?.[0]?.message;
-                if (message) {
-                    // Check if content is an array (multimodal response)
-                    if (Array.isArray(message.content)) {
-                        for (const part of message.content) {
-                            // Standard image_url format
-                            if (part.type === 'image_url' && part.image_url?.url) {
-                                imageUrl = part.image_url.url;
-                                break;
-                            }
-                            // Some models return inline_data
-                            if (part.type === 'image' && part.source?.data) {
-                                const mimeType = part.source.media_type || 'image/png';
-                                imageUrl = `data:${mimeType};base64,${part.source.data}`;
-                                break;
-                            }
-                            // Gemini format with inline_data
-                            if (part.inline_data?.data) {
-                                const mimeType = part.inline_data.mime_type || 'image/png';
-                                imageUrl = `data:${mimeType};base64,${part.inline_data.data}`;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check for images array in the message (common format)
-                    if (!imageUrl && message.images && message.images.length > 0) {
-                        const img = message.images[0];
-                        if (typeof img === 'string') {
-                            // Direct base64 or URL string
-                            imageUrl = img.startsWith('data:') || img.startsWith('http') ? img : `data:image/png;base64,${img}`;
-                        } else if (img.url) {
-                            imageUrl = img.url;
-                        } else if (img.image_url?.url) {
-                            imageUrl = img.image_url.url;
-                        } else if (img.b64_json) {
-                            imageUrl = `data:image/png;base64,${img.b64_json}`;
-                        }
-                    }
-
-                    // Check for image directly in content (some Gemini responses)
-                    if (!imageUrl && message.content && typeof message.content === 'string') {
-                        // Check if content contains base64 image data
-                        const base64Match = message.content.match(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/);
-                        if (base64Match) {
-                            imageUrl = base64Match[0];
-                        }
-                    }
-                }
-
-                // Also check top-level data array (OpenAI-style format)
-                if (!imageUrl && data.data && data.data[0]) {
-                    if (data.data[0].url) {
-                        imageUrl = data.data[0].url;
-                    } else if (data.data[0].b64_json) {
-                        imageUrl = `data:image/png;base64,${data.data[0].b64_json}`;
-                    }
-                }
-
-                // Check for provider errors in the response
-                if (!imageUrl && data.error) {
-                    throw new Error(data.error.message || 'Provider returned an error');
-                }
-
-                if (!imageUrl) {
-                    throw new Error('No image was generated. The model may not support image generation or the response format was unexpected. Try a different model.');
-                }
-
-                showResult(imageUrl);
-                showSuccess('Infographic generated successfully!');
-
-            } catch (error) {
-                console.error('Generation error:', error);
-                hideLoading();
-                resetToPlaceholder();
-
-                let errorMessage = error.message;
-                if (errorMessage.includes('401')) {
-                    errorMessage = 'Invalid API key. Please check your OpenRouter API key.';
-                } else if (errorMessage.includes('429')) {
-                    errorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
-                } else if (errorMessage.includes('500') || errorMessage.includes('502') || errorMessage.includes('503')) {
-                    errorMessage = 'Server error. Please try a different model or try again later.';
-                } else if (errorMessage.includes('modalities')) {
-                    errorMessage = 'This model does not support image generation. Please select a different model.';
-                } else if (errorMessage.toLowerCase().includes('provider')) {
-                    errorMessage = 'Provider error: The AI service is temporarily unavailable. Please try again or select a different model.';
-                } else if (errorMessage.includes('capacity') || errorMessage.includes('overloaded')) {
-                    errorMessage = 'The model is currently at capacity. Please try again in a few moments or select a different model.';
-                } else if (errorMessage.includes('insufficient')) {
-                    errorMessage = 'Insufficient credits. Please add credits to your OpenRouter account.';
-                }
-
-                showError(errorMessage);
-            }
-        }
-
-        /**
-         * ============================================
-         * DOWNLOAD FUNCTIONALITY
-         * ============================================
-         */
-
-        async function downloadImage() {
-            if (!state.generatedImageUrl) {
-                showError('No image to download');
-                return;
-            }
-
-            try {
-                const response = await fetch(state.generatedImageUrl);
-                const blob = await response.blob();
-
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-
-                // Generate filename with timestamp
-                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-                const title = elements.productTitle.value.trim().replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30);
-                a.download = `infographic_${title}_${timestamp}.png`;
-
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-
-                showSuccess('Image downloaded successfully!');
-            } catch (error) {
-                // If fetch fails (CORS), try opening in new tab
-                window.open(state.generatedImageUrl, '_blank');
-                showSuccess('Image opened in new tab. Right-click to save.');
-            }
-        }
-
-        /**
-         * ============================================
-         * EVENT LISTENERS
-         * ============================================
-         */
-
-        // Form submission
-        elements.form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            generateInfographic();
-        });
-
-        // Download button
-        elements.downloadBtn.addEventListener('click', downloadImage);
-
-        // Regenerate button
-        elements.regenerateBtn.addEventListener('click', generateInfographic);
-
-        // History event listeners
-        elements.clearHistoryBtn.addEventListener('click', clearHistory);
-        elements.closeModal.addEventListener('click', closeHistoryModal);
-        elements.modalDownload.addEventListener('click', downloadFromModal);
-        elements.modalUseAsBase.addEventListener('click', loadHistoryToEditor);
-
-        // Close modal on backdrop click
-        elements.historyModal.addEventListener('click', (e) => {
-            if (e.target === elements.historyModal) {
-                closeHistoryModal();
-            }
-        });
-
-        // Close modal on Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && elements.historyModal.classList.contains('visible')) {
-                closeHistoryModal();
-            }
-        });
-
-        /**
-         * ============================================
-         * INITIALIZATION
-         * ============================================
-         */
-
-        function init() {
-            loadApiKey();
-            updateLanguage('en');
-            loadHistory();
-        }
-
-        // Initialize on DOM ready
-        document.addEventListener('DOMContentLoaded', init);
-
-        // Also init immediately if DOM already loaded
-        if (document.readyState !== 'loading') {
-            init();
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
