@@ -3,660 +3,1022 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Product Infographics Generator</title>
+    <title>NGRAPHICS - AI Product Infographics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- ============================================
-         HEADER
-         ============================================ -->
-    <header>
-        <h1>AI Product Infographics Generator</h1>
-        <p>Create professional marketing infographics with AI</p>
+    <!-- Noise overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Gradient orbs for atmosphere -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <div class="logo-mark">
+                    <svg viewBox="0 0 40 40" fill="none">
+                        <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title">NGRAPHICS</span>
+                    <span class="logo-subtitle">AI Infographic Studio</span>
+                </div>
+            </div>
+            <div class="header-controls">
+                <div class="language-toggle">
+                    <button class="lang-btn" data-lang="en">EN</button>
+                    <button class="lang-btn active" data-lang="ro">RO</button>
+                </div>
+                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+                <div class="api-status" id="apiStatus">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Not Connected</span>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <div class="container">
-        <div class="main-content">
-            <!-- ============================================
-                 INPUT PANEL
-                 ============================================ -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Product Details</h2>
-                    <!-- Language Toggle -->
-                    <div class="language-toggle">
-                        <button class="lang-option active" data-lang="en">English</button>
-                        <button class="lang-option" data-lang="ro">Romana</button>
+    <!-- Main Application -->
+    <main class="app-main">
+        <div class="app-grid">
+
+            <!-- Left Panel: Configuration -->
+            <section class="panel panel-config">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="title-number">01</span>
+                        Configure
+                    </h2>
+                </div>
+
+                <!-- Error/Success Messages -->
+                <div class="message message-error" id="errorMessage">
+                    <div class="message-icon">!</div>
+                    <div class="message-content">
+                        <span class="error-text"></span>
+                    </div>
+                </div>
+                <div class="message message-success" id="successMessage">
+                    <div class="message-icon">✓</div>
+                    <div class="message-content">Saved successfully</div>
+                </div>
+
+                <!-- Templates & Presets Section -->
+                <div class="templates-section">
+                    <div class="templates-header">
+                        <div class="section-label">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <path d="M3 9h18M9 21V9"/>
+                                </svg>
+                            </span>
+                            Templates & Presets
+                        </div>
+                    </div>
+                    <div class="templates-content">
+                        <!-- Platform Presets -->
+                        <div class="presets-row">
+                            <span class="presets-label">Platform:</span>
+                            <div class="presets-buttons" id="platformPresets">
+                                <button type="button" class="preset-btn" data-preset="amazon" title="Amazon (1500x1500, white bg)">
+                                    <span class="preset-icon">A</span>
+                                </button>
+                                <button type="button" class="preset-btn" data-preset="shopify" title="Shopify (2048x2048)">
+                                    <span class="preset-icon">S</span>
+                                </button>
+                                <button type="button" class="preset-btn" data-preset="instagram" title="Instagram (1080x1080)">
+                                    <span class="preset-icon">IG</span>
+                                </button>
+                                <button type="button" class="preset-btn" data-preset="instagram-story" title="Instagram Story (1080x1920)">
+                                    <span class="preset-icon">ST</span>
+                                </button>
+                                <button type="button" class="preset-btn" data-preset="facebook" title="Facebook (1200x628)">
+                                    <span class="preset-icon">FB</span>
+                                </button>
+                                <button type="button" class="preset-btn" data-preset="etsy" title="Etsy (2000x2000)">
+                                    <span class="preset-icon">E</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Custom Templates -->
+                        <div class="templates-row">
+                            <select class="select-field select-sm" id="templateSelect">
+                                <option value="">Load template...</option>
+                            </select>
+                            <button type="button" class="btn-template" id="saveTemplateBtn" title="Save current settings as template">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                                    <polyline points="17,21 17,13 7,13 7,21"/>
+                                    <polyline points="7,3 7,8 15,8"/>
+                                </svg>
+                            </button>
+                            <button type="button" class="btn-template btn-danger" id="deleteTemplateBtn" title="Delete selected template">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3,6 5,6 21,6"/>
+                                    <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- API Key Section -->
-                <div class="api-key-section">
-                    <div class="api-key-header">
-                        <label class="form-label mb-0">OpenRouter API Key</label>
-                        <button class="api-key-toggle" id="toggleApiKey">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                <circle cx="12" cy="12" r="3"></circle>
-                            </svg>
-                            <span>Show</span>
-                        </button>
-                    </div>
-                    <div class="api-key-input-group">
-                        <input type="password" class="form-input" id="apiKey" placeholder="sk-or-v1-...">
-                        <button class="btn btn-secondary" id="saveApiKey">Save</button>
-                    </div>
-                </div>
-
-                <!-- Error Message Display -->
-                <div class="error-message" id="errorMessage">
-                    <div class="error-title">Error</div>
-                    <div class="error-text"></div>
-                </div>
-
-                <!-- Success Message Display -->
-                <div class="success-message" id="successMessage">
-                    API key saved successfully!
-                </div>
-
-                <form id="infographicForm">
-                    <!-- AI Model Selection -->
-                    <div class="form-group">
-                        <label class="form-label">AI Model</label>
-                        <select class="form-select" id="aiModel">
-                            <optgroup label="Google Gemini">
-                                <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
-                                <option value="google/gemini-2.5-flash-image">Gemini 2.5 Flash Image</option>
-                                <option value="google/gemini-2.5-flash-image-preview">Gemini 2.5 Flash Image Preview</option>
-                                <option value="google/gemini-3-pro-image-preview" selected>Gemini 3 Pro Image (Best Quality)</option>
-                            </optgroup>
-                            <optgroup label="OpenAI GPT Image">
-                                <option value="openai/gpt-5-image">GPT-5 Image</option>
-                                <option value="openai/gpt-5-image-mini">GPT-5 Image Mini (Faster)</option>
-                            </optgroup>
-                            <optgroup label="Black Forest Labs Flux">
-                                <option value="black-forest-labs/flux.2-pro">Flux 2 Pro</option>
-                                <option value="black-forest-labs/flux.2-max">Flux 2 Max (Highest Quality)</option>
-                                <option value="black-forest-labs/flux.2-flex">Flux 2 Flex (Best Text)</option>
-                            </optgroup>
-                            <optgroup label="Sourceful Riverflow">
-                                <option value="sourceful/riverflow-v2-fast-preview">Riverflow V2 Fast</option>
-                                <option value="sourceful/riverflow-v2-standard-preview">Riverflow V2 Standard</option>
-                                <option value="sourceful/riverflow-v2-max-preview">Riverflow V2 Max</option>
-                            </optgroup>
-                        </select>
-                    </div>
-
+                <form id="infographicForm" class="config-form">
                     <!-- Product Photo Upload -->
-                    <div class="form-group">
-                        <label class="form-label">
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </span>
                             Product Photo
-                            <span class="hint">(Reference image for the infographic)</span>
-                        </label>
-                        <div class="upload-area" id="uploadArea">
-                            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                <polyline points="21 15 16 10 5 21"></polyline>
-                            </svg>
-                            <p class="upload-text">Click to upload or drag and drop</p>
-                            <p class="upload-hint">PNG, JPG, JPEG, WebP (max 10MB)</p>
+                            <span class="label-hint">Reference image</span>
+                        </div>
+                        <div class="upload-zone" id="uploadArea">
+                            <div class="upload-content">
+                                <div class="upload-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                        <polyline points="17,8 12,3 7,8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                </div>
+                                <p class="upload-text">Drop image or click to upload</p>
+                                <p class="upload-formats">PNG, JPG, WebP • Max 10MB</p>
+                            </div>
                             <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp">
                         </div>
                         <div class="image-preview" id="imagePreview">
-                            <div class="preview-container">
-                                <img src="" alt="Preview" class="preview-image" id="previewImg">
-                                <button type="button" class="remove-image" id="removeImage">&times;</button>
-                            </div>
+                            <img src="" alt="Preview" class="preview-img" id="previewImg">
+                            <button type="button" class="preview-remove" id="removeImage">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
                         </div>
-                        <!-- Auto-enhance toggle -->
-                        <label class="enhance-toggle">
+                        <label class="checkbox-field">
                             <input type="checkbox" id="autoEnhance">
-                            Auto-enhance image (brightness/contrast)
+                            <span class="checkbox-mark"></span>
+                            Auto-enhance (brightness/contrast)
                         </label>
-                    </div>
-
-                    <!-- Product Title -->
-                    <div class="form-group">
-                        <label class="form-label">
-                            Product Title
-                            <span class="hint" id="titleHint">(in English)</span>
-                        </label>
-                        <input type="text" class="form-input" id="productTitle" placeholder="e.g., Premium Wireless Headphones" required>
-                    </div>
-
-                    <!-- Product Characteristics -->
-                    <div class="form-group">
-                        <label class="form-label">
-                            Product Characteristics
-                            <span class="hint" id="charHint">(key features - star important ones)</span>
-                        </label>
-                        <div class="characteristics-list" id="characteristicsList">
-                            <div class="char-item">
-                                <button type="button" class="char-star" title="Mark as primary feature">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                    </svg>
-                                </button>
-                                <input type="text" class="form-input" placeholder="e.g., Active Noise Cancellation">
-                                <select class="form-select char-icon-select" title="Suggested icon">
-                                    <option value="auto">Auto icon</option>
-                                    <option value="battery">Battery</option>
-                                    <option value="bolt">Lightning</option>
-                                    <option value="wifi">WiFi</option>
-                                    <option value="bluetooth">Bluetooth</option>
-                                    <option value="headphones">Audio</option>
-                                    <option value="camera">Camera</option>
-                                    <option value="shield">Shield</option>
-                                    <option value="water">Water</option>
-                                    <option value="star">Star</option>
-                                    <option value="check">Check</option>
-                                    <option value="none">No icon</option>
-                                </select>
-                                <button type="button" class="char-remove" title="Remove">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="char-item">
-                                <button type="button" class="char-star" title="Mark as primary feature">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                    </svg>
-                                </button>
-                                <input type="text" class="form-input" placeholder="e.g., 30-hour battery life">
-                                <select class="form-select char-icon-select" title="Suggested icon">
-                                    <option value="auto">Auto icon</option>
-                                    <option value="battery">Battery</option>
-                                    <option value="bolt">Lightning</option>
-                                    <option value="wifi">WiFi</option>
-                                    <option value="bluetooth">Bluetooth</option>
-                                    <option value="headphones">Audio</option>
-                                    <option value="camera">Camera</option>
-                                    <option value="shield">Shield</option>
-                                    <option value="water">Water</option>
-                                    <option value="star">Star</option>
-                                    <option value="check">Check</option>
-                                    <option value="none">No icon</option>
-                                </select>
-                                <button type="button" class="char-remove" title="Remove">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="char-item">
-                                <button type="button" class="char-star" title="Mark as primary feature">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                    </svg>
-                                </button>
-                                <input type="text" class="form-input" placeholder="e.g., Bluetooth 5.3">
-                                <select class="form-select char-icon-select" title="Suggested icon">
-                                    <option value="auto">Auto icon</option>
-                                    <option value="battery">Battery</option>
-                                    <option value="bolt">Lightning</option>
-                                    <option value="wifi">WiFi</option>
-                                    <option value="bluetooth">Bluetooth</option>
-                                    <option value="headphones">Audio</option>
-                                    <option value="camera">Camera</option>
-                                    <option value="shield">Shield</option>
-                                    <option value="water">Water</option>
-                                    <option value="star">Star</option>
-                                    <option value="check">Check</option>
-                                    <option value="none">No icon</option>
-                                </select>
-                                <button type="button" class="char-remove" title="Remove">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        <button type="button" class="add-char-btn" id="addCharBtn">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="5" x2="12" y2="19"></line>
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <!-- AI Feature Extraction -->
+                        <button type="button" class="btn-analyze" id="analyzeImageBtn" style="display: none;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
                             </svg>
-                            Add Characteristic
+                            <span>Analyze with AI</span>
+                            <span class="analyze-hint">Extract title & features</span>
                         </button>
                     </div>
 
-                    <!-- Background Style -->
-                    <div class="form-group">
-                        <label class="form-label">
+                    <!-- Product Title -->
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 7V4h16v3"/>
+                                    <path d="M9 20h6"/>
+                                    <path d="M12 4v16"/>
+                                </svg>
+                            </span>
+                            Product Title
+                            <span class="label-hint" id="titleHint">(in English)</span>
+                        </div>
+                        <input type="text" class="input-field" id="productTitle" placeholder="e.g., Premium Wireless Headphones" required>
+                    </div>
+
+                    <!-- Product Characteristics -->
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="8" y1="6" x2="21" y2="6"/>
+                                    <line x1="8" y1="12" x2="21" y2="12"/>
+                                    <line x1="8" y1="18" x2="21" y2="18"/>
+                                    <line x1="3" y1="6" x2="3.01" y2="6"/>
+                                    <line x1="3" y1="12" x2="3.01" y2="12"/>
+                                    <line x1="3" y1="18" x2="3.01" y2="18"/>
+                                </svg>
+                            </span>
+                            Features
+                            <span class="label-hint" id="charHint">Star = primary</span>
+                        </div>
+                        <div class="characteristics-list" id="characteristicsList">
+                            <div class="char-item">
+                                <button type="button" class="char-star" title="Mark as primary">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                    </svg>
+                                </button>
+                                <input type="text" class="input-field" placeholder="e.g., Active Noise Cancellation">
+                                <select class="select-mini char-icon-select">
+                                    <option value="auto">Auto</option>
+                                    <option value="battery">Battery</option>
+                                    <option value="bolt">Lightning</option>
+                                    <option value="wifi">WiFi</option>
+                                    <option value="bluetooth">Bluetooth</option>
+                                    <option value="headphones">Audio</option>
+                                    <option value="camera">Camera</option>
+                                    <option value="shield">Shield</option>
+                                    <option value="water">Water</option>
+                                    <option value="star">Star</option>
+                                    <option value="check">Check</option>
+                                    <option value="none">None</option>
+                                </select>
+                                <button type="button" class="char-remove" title="Remove">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"/>
+                                        <line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="char-item">
+                                <button type="button" class="char-star" title="Mark as primary">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                    </svg>
+                                </button>
+                                <input type="text" class="input-field" placeholder="e.g., 30-hour battery life">
+                                <select class="select-mini char-icon-select">
+                                    <option value="auto">Auto</option>
+                                    <option value="battery">Battery</option>
+                                    <option value="bolt">Lightning</option>
+                                    <option value="wifi">WiFi</option>
+                                    <option value="bluetooth">Bluetooth</option>
+                                    <option value="headphones">Audio</option>
+                                    <option value="camera">Camera</option>
+                                    <option value="shield">Shield</option>
+                                    <option value="water">Water</option>
+                                    <option value="star">Star</option>
+                                    <option value="check">Check</option>
+                                    <option value="none">None</option>
+                                </select>
+                                <button type="button" class="char-remove" title="Remove">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"/>
+                                        <line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="char-item">
+                                <button type="button" class="char-star" title="Mark as primary">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                    </svg>
+                                </button>
+                                <input type="text" class="input-field" placeholder="e.g., Bluetooth 5.3">
+                                <select class="select-mini char-icon-select">
+                                    <option value="auto">Auto</option>
+                                    <option value="battery">Battery</option>
+                                    <option value="bolt">Lightning</option>
+                                    <option value="wifi">WiFi</option>
+                                    <option value="bluetooth">Bluetooth</option>
+                                    <option value="headphones">Audio</option>
+                                    <option value="camera">Camera</option>
+                                    <option value="shield">Shield</option>
+                                    <option value="water">Water</option>
+                                    <option value="star">Star</option>
+                                    <option value="check">Check</option>
+                                    <option value="none">None</option>
+                                </select>
+                                <button type="button" class="char-remove" title="Remove">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"/>
+                                        <line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add" id="addCharBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Add Feature
+                        </button>
+                    </div>
+
+                    <!-- Style Selection -->
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 2a14.5 14.5 0 000 20 14.5 14.5 0 000-20"/>
+                                    <path d="M2 12h20"/>
+                                </svg>
+                            </span>
                             Background Style
-                            <span class="hint">(adapts to product colors)</span>
-                        </label>
-                        <select class="form-select" id="infographicStyle">
-                            <option value="auto">Auto (Match Product Colors)</option>
-                            <option value="rich">Rich Callouts (Recommended)</option>
-                            <option value="callout">Callout Lines (Technical)</option>
-                            <option value="light">Light Background</option>
-                            <option value="dark">Dark Background</option>
-                            <option value="gradient">Subtle Gradient</option>
-                            <option value="transparent">Keep Original Background</option>
+                        </div>
+                        <div class="style-grid">
+                            <label class="style-option">
+                                <input type="radio" name="style" value="auto" checked>
+                                <span class="style-card">
+                                    <span class="style-preview style-auto"></span>
+                                    <span class="style-name">Auto</span>
+                                </span>
+                            </label>
+                            <label class="style-option">
+                                <input type="radio" name="style" value="rich">
+                                <span class="style-card">
+                                    <span class="style-preview style-rich"></span>
+                                    <span class="style-name">Rich</span>
+                                </span>
+                            </label>
+                            <label class="style-option">
+                                <input type="radio" name="style" value="callout">
+                                <span class="style-card">
+                                    <span class="style-preview style-callout"></span>
+                                    <span class="style-name">Technical</span>
+                                </span>
+                            </label>
+                            <label class="style-option">
+                                <input type="radio" name="style" value="light">
+                                <span class="style-card">
+                                    <span class="style-preview style-light"></span>
+                                    <span class="style-name">Light</span>
+                                </span>
+                            </label>
+                            <label class="style-option">
+                                <input type="radio" name="style" value="dark">
+                                <span class="style-card">
+                                    <span class="style-preview style-dark"></span>
+                                    <span class="style-name">Dark</span>
+                                </span>
+                            </label>
+                            <label class="style-option">
+                                <input type="radio" name="style" value="gradient">
+                                <span class="style-card">
+                                    <span class="style-preview style-gradient"></span>
+                                    <span class="style-name">Gradient</span>
+                                </span>
+                            </label>
+                        </div>
+                        <!-- Hidden select for JS compatibility -->
+                        <select class="hidden" id="infographicStyle">
+                            <option value="auto">Auto</option>
+                            <option value="rich">Rich</option>
+                            <option value="callout">Callout</option>
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="gradient">Gradient</option>
+                            <option value="transparent">Transparent</option>
                         </select>
                     </div>
 
                     <!-- Advanced Options -->
                     <div class="advanced-section" id="advancedSection">
                         <button type="button" class="advanced-toggle" id="advancedToggle">
-                            <span>Advanced Options</span>
-                            <svg class="advanced-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"></polyline>
+                            <span class="toggle-label">Advanced Options</span>
+                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
                             </svg>
                         </button>
                         <div class="advanced-content">
-                            <div class="advanced-grid">
-
-                                <!-- SECTION: Layout & Composition -->
-                                <div class="section-header">Layout & Composition</div>
-
-                                <!-- Layout Template -->
-                                <div class="form-group">
-                                    <label class="form-label">Layout Template</label>
-                                    <select class="form-select" id="layoutTemplate">
-                                        <option value="auto">Auto</option>
-                                        <option value="center">Product Center</option>
-                                        <option value="left">Product Left</option>
-                                        <option value="right">Product Right</option>
-                                        <option value="top">Product Top</option>
-                                        <option value="grid">Grid Layout</option>
-                                        <option value="hero">Hero Layout</option>
-                                    </select>
-                                </div>
-
-                                <!-- Aspect Ratio -->
-                                <div class="form-group">
-                                    <label class="form-label">Aspect Ratio</label>
-                                    <select class="form-select" id="aspectRatio">
-                                        <option value="auto">Auto</option>
-                                        <option value="1:1">1:1 Square</option>
-                                        <option value="2:3">2:3 Portrait</option>
-                                        <option value="4:5">4:5 Portrait</option>
-                                        <option value="16:9">16:9 Landscape</option>
-                                        <option value="9:16">9:16 Story</option>
-                                    </select>
-                                </div>
-
-                                <!-- Product Focus -->
-                                <div class="form-group">
-                                    <label class="form-label">Product Focus</label>
-                                    <select class="form-select" id="productFocus">
-                                        <option value="auto">Auto</option>
-                                        <option value="full">Full Product</option>
-                                        <option value="closeup">Close-up Detail</option>
-                                        <option value="angle">Dynamic Angle</option>
-                                        <option value="context">In Context</option>
-                                        <option value="floating">Floating</option>
-                                        <option value="multiple">Multiple Views</option>
-                                    </select>
-                                </div>
-
-                                <!-- Variations -->
-                                <div class="form-group">
-                                    <label class="form-label">Variations</label>
-                                    <select class="form-select" id="variations">
-                                        <option value="1">1 Image</option>
-                                        <option value="2">2 Images</option>
-                                        <option value="4">4 Images</option>
-                                    </select>
-                                </div>
-
-                                <!-- SECTION: Visual Style -->
-                                <div class="section-header">Visual Style</div>
-
-                                <!-- Visual Density -->
-                                <div class="form-group advanced-full-width">
-                                    <div class="slider-group">
-                                        <div class="slider-header">
-                                            <span class="slider-label">Visual Density</span>
-                                            <span class="slider-value" id="visualDensityValue">Balanced</span>
-                                        </div>
-                                        <input type="range" class="form-slider" id="visualDensity" min="1" max="5" value="3">
-                                        <div class="slider-labels">
-                                            <span>Minimal</span>
-                                            <span>Rich</span>
-                                        </div>
+                            <!-- Layout & Composition -->
+                            <div class="advanced-group">
+                                <div class="group-title">Layout & Composition</div>
+                                <div class="advanced-grid">
+                                    <div class="field-group">
+                                        <label class="field-label">Layout</label>
+                                        <select class="select-field select-sm" id="layoutTemplate">
+                                            <option value="auto">Auto</option>
+                                            <option value="center">Center</option>
+                                            <option value="left">Left</option>
+                                            <option value="right">Right</option>
+                                            <option value="top">Top</option>
+                                            <option value="grid">Grid</option>
+                                            <option value="hero">Hero</option>
+                                        </select>
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">Aspect Ratio</label>
+                                        <select class="select-field select-sm" id="aspectRatio">
+                                            <option value="auto">Auto</option>
+                                            <option value="1:1">1:1</option>
+                                            <option value="2:3">2:3</option>
+                                            <option value="4:5">4:5</option>
+                                            <option value="16:9">16:9</option>
+                                            <option value="9:16">9:16</option>
+                                        </select>
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">Product Focus</label>
+                                        <select class="select-field select-sm" id="productFocus">
+                                            <option value="auto">Auto</option>
+                                            <option value="full">Full</option>
+                                            <option value="closeup">Close-up</option>
+                                            <option value="angle">Dynamic</option>
+                                            <option value="context">In Context</option>
+                                            <option value="floating">Floating</option>
+                                            <option value="multiple">Multi-View</option>
+                                        </select>
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">Variations</label>
+                                        <select class="select-field select-sm" id="variations">
+                                            <option value="1">1 Image</option>
+                                            <option value="2">2 Images</option>
+                                            <option value="4">4 Images</option>
+                                        </select>
                                     </div>
                                 </div>
+                            </div>
 
-                                <!-- Font Style -->
-                                <div class="form-group">
-                                    <label class="form-label">Font Style</label>
-                                    <select class="form-select" id="fontStyle">
-                                        <option value="auto">Auto</option>
-                                        <option value="modern">Modern Sans-Serif</option>
-                                        <option value="classic">Classic Serif</option>
-                                        <option value="bold">Bold & Heavy</option>
-                                        <option value="playful">Playful & Rounded</option>
-                                        <option value="technical">Technical Mono</option>
-                                        <option value="elegant">Elegant & Thin</option>
-                                    </select>
+                            <!-- Visual Style -->
+                            <div class="advanced-group">
+                                <div class="group-title">Visual Style</div>
+                                <div class="slider-field">
+                                    <div class="slider-header">
+                                        <span class="slider-label">Visual Density</span>
+                                        <span class="slider-value" id="visualDensityValue">Balanced</span>
+                                    </div>
+                                    <input type="range" class="range-slider" id="visualDensity" min="1" max="5" value="3">
+                                    <div class="slider-marks">
+                                        <span>Minimal</span>
+                                        <span>Rich</span>
+                                    </div>
                                 </div>
-
-                                <!-- Icon Style -->
-                                <div class="form-group">
-                                    <label class="form-label">Icon Style</label>
-                                    <select class="form-select" id="iconStyle">
-                                        <option value="auto">Auto</option>
-                                        <option value="flat">Flat</option>
-                                        <option value="outlined">Outlined</option>
-                                        <option value="3d">3D</option>
-                                        <option value="minimal">Minimal</option>
-                                        <option value="none">None</option>
-                                    </select>
+                                <div class="advanced-grid">
+                                    <div class="field-group">
+                                        <label class="field-label">Font Style</label>
+                                        <select class="select-field select-sm" id="fontStyle">
+                                            <option value="auto">Auto</option>
+                                            <option value="modern">Modern</option>
+                                            <option value="classic">Classic</option>
+                                            <option value="bold">Bold</option>
+                                            <option value="playful">Playful</option>
+                                            <option value="technical">Technical</option>
+                                            <option value="elegant">Elegant</option>
+                                        </select>
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">Icon Style</label>
+                                        <select class="select-field select-sm" id="iconStyle">
+                                            <option value="auto">Auto</option>
+                                            <option value="realistic">Realistic / Photo-like</option>
+                                            <option value="illustrated">Illustrated / Hand-drawn</option>
+                                            <option value="3d">3D Rendered</option>
+                                            <option value="flat">Flat / Solid colors</option>
+                                            <option value="outlined">Outlined / Stroke</option>
+                                            <option value="gradient">Gradient / Glossy</option>
+                                            <option value="minimal">Minimal / Simple</option>
+                                            <option value="emoji">Emoji style</option>
+                                            <option value="none">None (text only)</option>
+                                        </select>
+                                    </div>
                                 </div>
-
-                                <!-- SECTION: Colors & Background -->
-                                <div class="section-header">Colors & Background</div>
-
-                                <!-- Color Harmony -->
-                                <div class="form-group">
-                                    <label class="form-label">Color Harmony</label>
-                                    <select class="form-select" id="colorHarmony">
-                                        <option value="match">Match Product</option>
-                                        <option value="complementary">Complementary</option>
-                                        <option value="analogous">Analogous</option>
-                                        <option value="triadic">Triadic</option>
-                                        <option value="monochrome">Monochrome</option>
-                                        <option value="contrast">High Contrast</option>
-                                    </select>
-                                </div>
-
-                                <!-- Background Complexity -->
-                                <div class="form-group">
-                                    <label class="form-label">Background Type</label>
-                                    <select class="form-select" id="backgroundComplexity">
-                                        <option value="auto">Auto</option>
-                                        <option value="solid">Solid Color</option>
-                                        <option value="subtle">Subtle Texture</option>
-                                        <option value="textured">Textured</option>
-                                        <option value="gradient">Gradient</option>
-                                        <option value="pattern">Pattern</option>
-                                        <option value="environmental">Environmental</option>
-                                    </select>
-                                </div>
-
-                                <!-- Brand Colors -->
-                                <div class="form-group advanced-full-width">
-                                    <label class="form-label">
-                                        Brand Colors
-                                        <span class="hint">(comma-separated hex codes)</span>
-                                    </label>
-                                    <input type="text" class="form-input" id="brandColors" placeholder="#FF5733, #2563eb, #10b981">
-                                </div>
-
-                                <!-- SECTION: Style Reference -->
-                                <div class="section-header">Style Reference</div>
-
-                                <!-- Style Reference Upload -->
-                                <div class="form-group advanced-full-width">
-                                    <label class="form-label">
-                                        Style Reference
-                                        <span class="hint">(optional image to match style)</span>
-                                    </label>
-                                    <div class="style-ref-container">
-                                        <div class="style-upload-area" id="styleUploadArea">
-                                            <svg class="style-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                                <polyline points="21 15 16 10 5 21"></polyline>
-                                            </svg>
-                                            <p class="style-upload-text">Click to upload style reference</p>
-                                            <input type="file" class="upload-input" id="styleReference" accept="image/png,image/jpeg,image/jpg,image/webp">
-                                        </div>
-                                        <div class="style-preview-container" id="stylePreviewContainer" style="display: none;">
-                                            <img src="" alt="Style Reference" class="style-preview-image" id="stylePreviewImg">
-                                            <button type="button" class="style-preview-remove" id="removeStyleRef">&times;</button>
-                                        </div>
-                                        <!-- Style Strength Slider -->
-                                        <div class="style-strength-slider" id="styleStrengthSlider">
-                                            <div class="slider-group" style="margin-top: 12px;">
-                                                <div class="slider-header">
-                                                    <span class="slider-label">Style Influence</span>
-                                                    <span class="slider-value" id="styleStrengthValue">70%</span>
-                                                </div>
-                                                <input type="range" class="form-slider" id="styleStrength" min="10" max="100" value="70">
-                                                <div class="slider-labels">
-                                                    <span>Subtle</span>
-                                                    <span>Strong</span>
-                                                </div>
+                                <!-- Callout Lines -->
+                                <div class="callout-lines-section">
+                                    <div class="toggle-row">
+                                        <label class="toggle-label">
+                                            <input type="checkbox" id="calloutLinesEnabled" class="toggle-checkbox">
+                                            <span class="toggle-switch"></span>
+                                            <span class="toggle-text">Callout Lines</span>
+                                        </label>
+                                        <span class="toggle-hint">Draw lines connecting features to product</span>
+                                    </div>
+                                    <div class="callout-lines-options" id="calloutLinesOptions">
+                                        <div class="slider-group">
+                                            <div class="slider-header">
+                                                <span class="slider-label">Line Thickness</span>
+                                                <span class="slider-value" id="lineThicknessValue">Medium</span>
+                                            </div>
+                                            <input type="range" class="range-slider" id="lineThickness" min="1" max="5" value="3">
+                                            <div class="slider-marks">
+                                                <span>Thin</span>
+                                                <span>Thick</span>
                                             </div>
                                         </div>
+                                        <div class="field-group" style="margin-top: 12px;">
+                                            <label class="field-label">Line Colors</label>
+                                            <select class="select-field select-sm" id="lineColorMode">
+                                                <option value="mono">Monochrome (single color)</option>
+                                                <option value="multi" selected>Multicolored (different per feature)</option>
+                                                <option value="gradient">Gradient lines</option>
+                                                <option value="match">Match product colors</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <!-- SECTION: Generation Settings -->
-                                <div class="section-header">Generation Settings</div>
+                            <!-- Colors -->
+                            <div class="advanced-group">
+                                <div class="group-title">Colors & Background</div>
+                                <div class="advanced-grid">
+                                    <div class="field-group">
+                                        <label class="field-label">Color Harmony</label>
+                                        <select class="select-field select-sm" id="colorHarmony">
+                                            <option value="match">Match Product</option>
+                                            <option value="complementary">Complementary</option>
+                                            <option value="analogous">Analogous</option>
+                                            <option value="triadic">Triadic</option>
+                                            <option value="monochrome">Monochrome</option>
+                                            <option value="contrast">High Contrast</option>
+                                        </select>
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="field-label">Background Type</label>
+                                        <select class="select-field select-sm" id="backgroundComplexity">
+                                            <option value="auto">Auto</option>
+                                            <option value="solid">Solid</option>
+                                            <option value="subtle">Subtle</option>
+                                            <option value="textured">Textured</option>
+                                            <option value="gradient">Gradient</option>
+                                            <option value="pattern">Pattern</option>
+                                            <option value="environmental">Environmental</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="field-group full-width">
+                                    <label class="field-label">Brand Colors</label>
+                                    <div class="color-picker-section">
+                                        <div class="color-presets" id="colorPresets">
+                                            <button type="button" class="color-preset" style="background: #FF5733;" data-color="#FF5733" title="#FF5733"></button>
+                                            <button type="button" class="color-preset" style="background: #E74C3C;" data-color="#E74C3C" title="#E74C3C"></button>
+                                            <button type="button" class="color-preset" style="background: #9B59B6;" data-color="#9B59B6" title="#9B59B6"></button>
+                                            <button type="button" class="color-preset" style="background: #3498DB;" data-color="#3498DB" title="#3498DB"></button>
+                                            <button type="button" class="color-preset" style="background: #2563EB;" data-color="#2563EB" title="#2563EB"></button>
+                                            <button type="button" class="color-preset" style="background: #1ABC9C;" data-color="#1ABC9C" title="#1ABC9C"></button>
+                                            <button type="button" class="color-preset" style="background: #10B981;" data-color="#10B981" title="#10B981"></button>
+                                            <button type="button" class="color-preset" style="background: #F1C40F;" data-color="#F1C40F" title="#F1C40F"></button>
+                                            <button type="button" class="color-preset" style="background: #E67E22;" data-color="#E67E22" title="#E67E22"></button>
+                                            <button type="button" class="color-preset" style="background: #1A1A1A;" data-color="#1A1A1A" title="#1A1A1A"></button>
+                                            <button type="button" class="color-preset" style="background: #FFFFFF; border-color: var(--border-default);" data-color="#FFFFFF" title="#FFFFFF"></button>
+                                        </div>
+                                        <div class="selected-colors" id="selectedColors"></div>
+                                        <div class="custom-color-row">
+                                            <div class="color-input-wrapper">
+                                                <input type="color" class="color-input-native" id="customColorPicker" value="#6366F1">
+                                            </div>
+                                            <input type="text" class="input-field input-sm input-mono" id="customColorHex" placeholder="#6366F1" maxlength="7">
+                                            <button type="button" class="btn-add-color" id="addCustomColor">Add</button>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="brandColors">
+                                </div>
+                            </div>
 
-                                <!-- Seed -->
-                                <div class="form-group advanced-full-width">
-                                    <label class="form-label">Seed</label>
-                                    <div class="seed-group">
-                                        <input type="number" class="form-input" id="seedInput" placeholder="Random" min="0" max="999999999">
-                                        <label class="seed-random">
+                            <!-- Style Reference -->
+                            <div class="advanced-group">
+                                <div class="group-title">Style Reference</div>
+                                <div class="style-ref-container">
+                                    <div class="style-upload-zone" id="styleUploadArea">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                                            <path d="M21 15l-5-5L5 21"/>
+                                        </svg>
+                                        <span>Upload style reference</span>
+                                        <input type="file" class="upload-input" id="styleReference" accept="image/png,image/jpeg,image/jpg,image/webp">
+                                    </div>
+                                    <div class="style-preview-wrap" id="stylePreviewContainer" style="display: none;">
+                                        <img src="" alt="Style Reference" id="stylePreviewImg">
+                                        <button type="button" class="preview-remove-sm" id="removeStyleRef">×</button>
+                                    </div>
+                                </div>
+                                <div class="slider-field" id="styleStrengthSlider">
+                                    <div class="slider-header">
+                                        <span class="slider-label">Style Influence</span>
+                                        <span class="slider-value" id="styleStrengthValue">70%</span>
+                                    </div>
+                                    <input type="range" class="range-slider" id="styleStrength" min="10" max="100" value="70">
+                                    <div class="slider-marks">
+                                        <span>Subtle</span>
+                                        <span>Strong</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Generation Settings -->
+                            <div class="advanced-group">
+                                <div class="group-title">Generation Settings</div>
+                                <div class="field-group full-width">
+                                    <label class="field-label">Seed</label>
+                                    <div class="seed-input-group">
+                                        <input type="number" class="input-field input-sm input-mono" id="seedInput" placeholder="Random" min="0" max="999999999">
+                                        <label class="checkbox-field checkbox-inline">
                                             <input type="checkbox" id="randomSeed" checked>
+                                            <span class="checkbox-mark"></span>
                                             Random
                                         </label>
                                     </div>
                                 </div>
-
-                                <!-- Negative Prompts -->
-                                <div class="form-group advanced-full-width">
-                                    <label class="form-label">
-                                        Negative Prompts
-                                        <span class="hint">(what to avoid)</span>
-                                    </label>
-                                    <textarea class="form-textarea" id="negativePrompt" rows="2" placeholder="e.g., clipart style, busy backgrounds, small text, watermarks"></textarea>
+                                <div class="field-group full-width">
+                                    <label class="field-label">Negative Prompts <span class="label-hint">(what to avoid)</span></label>
+                                    <textarea class="textarea-field" id="negativePrompt" rows="2" placeholder="e.g., clipart, busy backgrounds, small text, watermarks"></textarea>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- API & Model Settings (Collapsed) -->
+                    <div class="settings-section" id="settingsSection">
+                        <button type="button" class="settings-toggle" id="settingsToggle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                            </svg>
+                            <span>API & Model Settings</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="settings-content">
+                            <!-- API Key -->
+                            <div class="settings-field">
+                                <label class="field-label">API Key</label>
+                                <div class="api-input-group">
+                                    <input type="password" class="input-field input-mono input-sm" id="apiKey" placeholder="sk-or-v1-...">
+                                    <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </button>
+                                    <button type="button" class="btn-accent btn-sm" id="saveApiKey">Save</button>
+                                </div>
+                            </div>
+                            <!-- AI Model -->
+                            <div class="settings-field">
+                                <label class="field-label">AI Model</label>
+                                <select class="select-field select-sm" id="aiModel">
+                                    <optgroup label="Google Gemini (Image Gen)">
+                                        <option value="google/gemini-3-pro-image-preview" selected>Gemini 3 Pro Image (Best)</option>
+                                        <option value="google/gemini-2.5-flash-image">Gemini 2.5 Flash Image</option>
+                                        <option value="google/gemini-2.5-flash-image-preview">Gemini 2.5 Flash Preview</option>
+                                        <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
+                                    </optgroup>
+                                </select>
                             </div>
                         </div>
                     </div>
 
                     <!-- Generate Button -->
-                    <button type="submit" class="btn btn-primary" id="generateBtn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                        </svg>
-                        Generate Infographic
+                    <button type="submit" class="btn-generate" id="generateBtn">
+                        <span class="btn-content">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                            Generate Infographic
+                        </span>
+                        <span class="btn-glow"></span>
                     </button>
+                    <div class="shortcut-hint">
+                        <kbd>Ctrl</kbd> + <kbd>Enter</kbd>
+                    </div>
                 </form>
-            </div>
+            </section>
 
-            <!-- ============================================
-                 RESULT PANEL
-                 ============================================ -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Generated Infographic</h2>
+            <!-- Right Panel: Output -->
+            <section class="panel panel-output">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="title-number">02</span>
+                        Output
+                    </h2>
                 </div>
 
-                <div class="result-panel">
-                    <!-- Placeholder State -->
-                    <div class="result-placeholder" id="resultPlaceholder">
-                        <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                            <polyline points="21 15 16 10 5 21"></polyline>
+                <!-- Placeholder State -->
+                <div class="output-placeholder" id="resultPlaceholder">
+                    <div class="placeholder-visual">
+                        <svg viewBox="0 0 120 120" fill="none">
+                            <rect x="10" y="10" width="100" height="100" rx="8" stroke="currentColor" stroke-width="2" stroke-dasharray="6 4"/>
+                            <circle cx="35" cy="35" r="8" stroke="currentColor" stroke-width="2"/>
+                            <path d="M10 80L40 50L70 80L110 40" stroke="currentColor" stroke-width="2"/>
                         </svg>
-                        <p class="placeholder-text">Your infographic will appear here</p>
-                        <p class="placeholder-hint">Fill in the product details and click Generate</p>
                     </div>
+                    <p class="placeholder-title">Ready to Generate</p>
+                    <p class="placeholder-text">Configure your product details and click generate</p>
+                </div>
 
-                    <!-- Loading State -->
-                    <div class="loading-container" id="loadingContainer">
-                        <div class="spinner"></div>
-                        <p class="loading-text">Generating your infographic...</p>
-                        <p class="loading-status" id="loadingStatus">Preparing prompt...</p>
+                <!-- Loading State -->
+                <div class="output-loading" id="loadingContainer">
+                    <div class="loader">
+                        <div class="loader-ring"></div>
+                        <div class="loader-ring"></div>
+                        <div class="loader-ring"></div>
                     </div>
+                    <p class="loading-text">Generating...</p>
+                    <p class="loading-status" id="loadingStatus">Preparing prompt...</p>
+                </div>
 
-                    <!-- Result Image -->
-                    <div class="result-image-container" id="resultContainer">
-                        <!-- Single image display -->
+                <!-- Result Display -->
+                <div class="output-result" id="resultContainer">
+                    <!-- Single Image -->
+                    <div class="result-image-wrap">
                         <img src="" alt="Generated Infographic" class="result-image" id="resultImage">
+                    </div>
 
-                        <!-- Grid for multiple variations (hidden by default) -->
-                        <div class="result-grid" id="resultGrid" style="display: none;"></div>
+                    <!-- Grid for variations -->
+                    <div class="result-grid" id="resultGrid" style="display: none;"></div>
 
-                        <!-- Seed display -->
-                        <div class="seed-display" id="seedDisplay" style="display: none;">
-                            <span>Seed:</span>
-                            <code id="seedValue"></code>
-                            <button class="seed-copy-btn" id="copySeedBtn">Copy</button>
+                    <!-- Seed Display -->
+                    <div class="seed-display" id="seedDisplay" style="display: none;">
+                        <span class="seed-label">Seed:</span>
+                        <code class="seed-value" id="seedValue"></code>
+                        <button class="btn-copy" id="copySeedBtn">Copy</button>
+                    </div>
+
+                    <!-- Alt Text Section -->
+                    <div class="alt-text-section" id="altTextSection" style="display: none;">
+                        <div class="alt-text-header">
+                            <span class="alt-text-label">SEO Alt Text</span>
+                            <button class="btn-copy" id="copyAltText">Copy</button>
                         </div>
+                        <div class="alt-text-content" id="altTextContent">
+                            <span class="alt-text-loading">Generating...</span>
+                        </div>
+                    </div>
 
-                        <!-- SEO Alt Text -->
-                        <div class="alt-text-section" id="altTextSection" style="display: none;">
-                            <div class="alt-text-header">
-                                <span class="alt-text-label">SEO Alt Text</span>
-                                <button class="alt-text-copy" id="copyAltText">Copy</button>
+                    <!-- Product Copy Section -->
+                    <div class="product-copy-section" id="productCopySection" style="display: none;">
+                        <button type="button" class="copy-section-toggle" id="copyToggle">
+                            <span>Marketing Copy</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="copy-section-content" id="copySectionContent">
+                            <!-- Short Description -->
+                            <div class="copy-block">
+                                <div class="copy-block-header">
+                                    <span class="copy-block-label">Short Description</span>
+                                    <button class="btn-copy-sm" data-target="shortDesc">Copy</button>
+                                </div>
+                                <div class="copy-block-content" id="shortDescContent">
+                                    <span class="copy-loading">Generating...</span>
+                                </div>
                             </div>
-                            <div class="alt-text-content" id="altTextContent">
-                                <span class="alt-text-loading">Generating alt text...</span>
+
+                            <!-- Long Description -->
+                            <div class="copy-block">
+                                <div class="copy-block-header">
+                                    <span class="copy-block-label">Long Description</span>
+                                    <button class="btn-copy-sm" data-target="longDesc">Copy</button>
+                                </div>
+                                <div class="copy-block-content" id="longDescContent">
+                                    <span class="copy-loading">Generating...</span>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="result-actions">
-                            <button class="btn btn-success" id="downloadBtn">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                    <polyline points="7 10 12 15 17 10"></polyline>
-                                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                                </svg>
-                                Download
-                            </button>
-                            <button class="btn btn-secondary" id="regenerateBtn">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="23 4 23 10 17 10"></polyline>
-                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                                </svg>
-                                Regenerate
-                            </button>
-                        </div>
-
-                        <!-- Feedback Section -->
-                        <div class="feedback-section">
-                            <label class="feedback-label">Adjust this infographic</label>
-                            <textarea class="feedback-textarea" id="feedbackTextarea" placeholder="Describe what to change, e.g., 'Make the background darker', 'Move the title to the top', 'Use larger font for features'"></textarea>
-                            <div class="feedback-actions">
-                                <button class="btn btn-adjust" id="adjustBtn">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                    </svg>
-                                    Adjust
-                                </button>
+                            <!-- Taglines -->
+                            <div class="copy-block">
+                                <div class="copy-block-header">
+                                    <span class="copy-block-label">Taglines</span>
+                                    <button class="btn-copy-sm" data-target="taglines">Copy All</button>
+                                </div>
+                                <div class="copy-block-content taglines-list" id="taglinesContent">
+                                    <span class="copy-loading">Generating...</span>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Watermark Section -->
-                        <div class="watermark-section" id="watermarkSection">
-                            <button type="button" class="watermark-toggle" id="watermarkToggle">
-                                <span>Add Watermark</span>
-                                <svg class="advanced-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                </svg>
-                            </button>
-                            <div class="watermark-content">
-                                <!-- Tabs -->
-                                <div class="watermark-tabs">
-                                    <button type="button" class="watermark-tab active" data-tab="text">Text</button>
-                                    <button type="button" class="watermark-tab" data-tab="logo">Logo</button>
+                            <!-- Social Media -->
+                            <div class="copy-block">
+                                <div class="copy-block-header">
+                                    <span class="copy-block-label">Social Media</span>
+                                    <button class="btn-copy-sm" data-target="social">Copy</button>
                                 </div>
-
-                                <!-- Text Watermark -->
-                                <div class="watermark-tab-content active" id="watermarkTextTab">
-                                    <input type="text" class="form-input" id="watermarkText" placeholder="Enter watermark text">
+                                <div class="copy-tabs" id="socialTabs">
+                                    <button type="button" class="copy-tab active" data-platform="instagram">Instagram</button>
+                                    <button type="button" class="copy-tab" data-platform="facebook">Facebook</button>
+                                    <button type="button" class="copy-tab" data-platform="twitter">Twitter/X</button>
                                 </div>
-
-                                <!-- Logo Watermark -->
-                                <div class="watermark-tab-content" id="watermarkLogoTab">
-                                    <input type="file" id="watermarkLogo" accept="image/png,image/jpeg,image/webp" style="display: none;">
-                                    <button type="button" class="btn btn-secondary" id="uploadLogoBtn" style="width: 100%;">
-                                        Upload Logo
-                                    </button>
-                                    <img src="" alt="Logo preview" class="watermark-logo-preview" id="watermarkLogoPreview" style="display: none;">
+                                <div class="copy-block-content social-content" id="socialContent">
+                                    <span class="copy-loading">Generating...</span>
                                 </div>
+                            </div>
 
-                                <!-- Position -->
-                                <label class="form-label" style="margin-top: 12px; margin-bottom: 6px;">Position</label>
-                                <div class="watermark-position-grid">
-                                    <button type="button" class="watermark-position-btn" data-pos="tl">TL</button>
-                                    <button type="button" class="watermark-position-btn" data-pos="tc">TC</button>
-                                    <button type="button" class="watermark-position-btn" data-pos="tr">TR</button>
-                                    <button type="button" class="watermark-position-btn" data-pos="ml">ML</button>
-                                    <button type="button" class="watermark-position-btn" data-pos="mc">MC</button>
-                                    <button type="button" class="watermark-position-btn" data-pos="mr">MR</button>
-                                    <button type="button" class="watermark-position-btn" data-pos="bl">BL</button>
-                                    <button type="button" class="watermark-position-btn active" data-pos="bc">BC</button>
-                                    <button type="button" class="watermark-position-btn" data-pos="br">BR</button>
+                            <!-- SEO Meta -->
+                            <div class="copy-block">
+                                <div class="copy-block-header">
+                                    <span class="copy-block-label">SEO Meta</span>
+                                    <button class="btn-copy-sm" data-target="seo">Copy All</button>
                                 </div>
-
-                                <!-- Opacity -->
-                                <div class="watermark-slider-group">
-                                    <div class="watermark-slider-label">
-                                        <span>Opacity</span>
-                                        <span id="opacityValue">50%</span>
+                                <div class="seo-fields">
+                                    <div class="seo-field">
+                                        <span class="seo-field-label">Title</span>
+                                        <div class="seo-field-content" id="seoTitleContent">-</div>
                                     </div>
-                                    <input type="range" class="watermark-slider" id="watermarkOpacity" min="10" max="100" value="50">
-                                </div>
-
-                                <!-- Size (for logo) -->
-                                <div class="watermark-slider-group" id="watermarkSizeGroup" style="display: none;">
-                                    <div class="watermark-slider-label">
-                                        <span>Size</span>
-                                        <span id="sizeValue">20%</span>
+                                    <div class="seo-field">
+                                        <span class="seo-field-label">Description</span>
+                                        <div class="seo-field-content" id="seoDescContent">-</div>
                                     </div>
-                                    <input type="range" class="watermark-slider" id="watermarkSize" min="5" max="50" value="20">
                                 </div>
-
-                                <button type="button" class="btn btn-primary watermark-apply-btn" id="applyWatermark">
-                                    Apply Watermark
-                                </button>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="result-actions">
+                        <button class="btn-action btn-download" id="downloadBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Download
+                        </button>
+                        <button class="btn-action btn-secondary" id="regenerateBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23,4 23,10 17,10"/>
+                                <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+                            </svg>
+                            Regenerate
+                        </button>
+                    </div>
+
+                    <!-- Smart Regeneration -->
+                    <div class="smart-regen-section" id="smartRegenSection">
+                        <button type="button" class="smart-regen-toggle" id="smartRegenToggle">
+                            <span>Smart Regeneration</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="smart-regen-content">
+                            <div class="lock-controls">
+                                <span class="lock-label">Lock elements:</span>
+                                <div class="lock-options">
+                                    <label class="lock-option">
+                                        <input type="checkbox" id="lockLayout">
+                                        <span class="lock-checkbox"></span>
+                                        <span>Layout</span>
+                                    </label>
+                                    <label class="lock-option">
+                                        <input type="checkbox" id="lockColors">
+                                        <span class="lock-checkbox"></span>
+                                        <span>Colors</span>
+                                    </label>
+                                    <label class="lock-option">
+                                        <input type="checkbox" id="lockBackground">
+                                        <span class="lock-checkbox"></span>
+                                        <span>Background</span>
+                                    </label>
+                                    <label class="lock-option">
+                                        <input type="checkbox" id="lockTextStyle">
+                                        <span class="lock-checkbox"></span>
+                                        <span>Text Style</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="variation-strength">
+                                <div class="slider-header">
+                                    <span class="slider-label">Variation Strength</span>
+                                    <span class="slider-value" id="variationStrengthValue">Medium</span>
+                                </div>
+                                <input type="range" class="range-slider" id="variationStrength" min="1" max="5" value="3">
+                                <div class="slider-marks">
+                                    <span>Similar</span>
+                                    <span>Different</span>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-smart-regen" id="smartRegenBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                                </svg>
+                                Regenerate with Locks
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Section -->
+                    <div class="feedback-section">
+                        <label class="feedback-label">Adjust this infographic</label>
+                        <textarea class="textarea-field" id="feedbackTextarea" placeholder="Describe changes: 'Make background darker', 'Use larger font'..."></textarea>
+                        <button class="btn-adjust" id="adjustBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                            Apply Adjustments
+                        </button>
+                    </div>
+
+                    <!-- Watermark Section -->
+                    <div class="watermark-section" id="watermarkSection">
+                        <button type="button" class="watermark-toggle" id="watermarkToggle">
+                            <span>Add Watermark</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="watermark-content">
+                            <div class="watermark-tabs">
+                                <button type="button" class="watermark-tab active" data-tab="text">Text</button>
+                                <button type="button" class="watermark-tab" data-tab="logo">Logo</button>
+                            </div>
+                            <div class="watermark-tab-content active" id="watermarkTextTab">
+                                <input type="text" class="input-field input-sm" id="watermarkText" placeholder="Watermark text">
+                            </div>
+                            <div class="watermark-tab-content" id="watermarkLogoTab">
+                                <input type="file" id="watermarkLogo" accept="image/png,image/jpeg,image/webp" style="display: none;">
+                                <button type="button" class="btn-secondary-sm" id="uploadLogoBtn">Upload Logo</button>
+                                <img src="" alt="Logo" class="watermark-logo-preview" id="watermarkLogoPreview" style="display: none;">
+                            </div>
+                            <div class="watermark-position">
+                                <label class="field-label">Position</label>
+                                <div class="position-grid">
+                                    <button type="button" class="pos-btn" data-pos="tl">↖</button>
+                                    <button type="button" class="pos-btn" data-pos="tc">↑</button>
+                                    <button type="button" class="pos-btn" data-pos="tr">↗</button>
+                                    <button type="button" class="pos-btn" data-pos="ml">←</button>
+                                    <button type="button" class="pos-btn" data-pos="mc">●</button>
+                                    <button type="button" class="pos-btn" data-pos="mr">→</button>
+                                    <button type="button" class="pos-btn" data-pos="bl">↙</button>
+                                    <button type="button" class="pos-btn active" data-pos="bc">↓</button>
+                                    <button type="button" class="pos-btn" data-pos="br">↘</button>
+                                </div>
+                            </div>
+                            <div class="slider-field slider-sm">
+                                <div class="slider-header">
+                                    <span class="slider-label">Opacity</span>
+                                    <span class="slider-value" id="opacityValue">50%</span>
+                                </div>
+                                <input type="range" class="range-slider" id="watermarkOpacity" min="10" max="100" value="50">
+                            </div>
+                            <div class="slider-field slider-sm" id="watermarkSizeGroup" style="display: none;">
+                                <div class="slider-header">
+                                    <span class="slider-label">Size</span>
+                                    <span class="slider-value" id="sizeValue">20%</span>
+                                </div>
+                                <input type="range" class="range-slider" id="watermarkSize" min="5" max="50" value="20">
+                            </div>
+                            <button type="button" class="btn-accent" id="applyWatermark">Apply Watermark</button>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
-    </div>
+    </main>
 
     <!-- History Section -->
-    <div class="container">
-        <div class="card history-section" id="historySection">
+    <section class="history-section" id="historySection">
+        <div class="history-container">
             <div class="history-header">
-                <div>
-                    <span class="history-title">Generation History</span>
+                <div class="history-title-group">
+                    <h3 class="history-title">History</h3>
                     <span class="history-count" id="historyCount"></span>
                 </div>
-                <button class="clear-history-btn" id="clearHistoryBtn">Clear All</button>
+                <button class="btn-text-danger" id="clearHistoryBtn">Clear All</button>
             </div>
-            <div class="history-grid" id="historyGrid">
-                <!-- History items will be inserted here -->
-            </div>
+            <div class="history-grid" id="historyGrid"></div>
             <div class="history-empty" id="historyEmpty">
-                No generations yet. Create your first infographic!
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12,6 12,12 16,14"/>
+                </svg>
+                <p>No generations yet</p>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Lightbox / Zoom View -->
+    <!-- Lightbox -->
     <div class="lightbox" id="lightbox">
+        <div class="lightbox-backdrop"></div>
         <div class="lightbox-content">
-            <button class="lightbox-close" id="lightboxClose">&times;</button>
-            <img src="" alt="Zoomed Image" class="lightbox-image" id="lightboxImage">
-            <div class="lightbox-controls">
-                <button class="lightbox-btn" id="lightboxDownload">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
+            <button class="lightbox-close" id="lightboxClose">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+            <img src="" alt="Zoomed" class="lightbox-image" id="lightboxImage">
+            <div class="lightbox-actions">
+                <button class="btn-lightbox" id="lightboxDownload">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
                     Download
                 </button>
@@ -665,28 +1027,34 @@
     </div>
 
     <!-- History Modal -->
-    <div class="history-modal" id="historyModal">
-        <div class="history-modal-content">
-            <div class="history-modal-header">
-                <span class="history-modal-title" id="modalTitle">Infographic</span>
-                <button class="history-modal-close" id="closeModal">&times;</button>
+    <div class="modal" id="historyModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Infographic</h3>
+                <button class="modal-close" id="closeModal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
             </div>
-            <div class="history-modal-body">
+            <div class="modal-body">
                 <img src="" alt="Infographic" id="modalImage">
             </div>
-            <div class="history-modal-footer">
-                <button class="btn btn-success" id="modalDownload">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
+            <div class="modal-footer">
+                <button class="btn-action btn-download" id="modalDownload">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
                     Download
                 </button>
-                <button class="btn btn-secondary" id="modalUseAsBase">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="23 4 23 10 17 10"></polyline>
-                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                <button class="btn-action btn-secondary" id="modalUseAsBase">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23,4 23,10 17,10"/>
+                        <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
                     </svg>
                     Load to Editor
                 </button>
@@ -694,8 +1062,15 @@
         </div>
     </div>
 
-    <footer>
-        <p>Powered by OpenRouter AI &bull; Supports English and Romanian (a, a, i, s, t) &bull; Ctrl+Enter to generate</p>
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <span>NGRAPHICS</span>
+            <span class="footer-divider">•</span>
+            <span>Powered by OpenRouter AI</span>
+            <span class="footer-divider">•</span>
+            <span class="footer-shortcut"><kbd>Ctrl</kbd>+<kbd>D</kbd> Download</span>
+        </div>
     </footer>
 
     <script src="script.js"></script>

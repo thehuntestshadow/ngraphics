@@ -8,6 +8,7 @@
 // ============================================
 const state = {
     language: 'ro', // 'en' or 'ro'
+    theme: 'dark', // 'dark' or 'light'
     apiKey: '',
     uploadedImage: null,
     uploadedImageBase64: null,
@@ -25,7 +26,89 @@ const state = {
     // Alt text
     generatedAltText: null,
     // Characteristic emphasis (starred items)
-    starredCharacteristics: new Set()
+    starredCharacteristics: new Set(),
+    // Brand colors
+    selectedBrandColors: [],
+    // Product copy
+    generatedCopy: {
+        shortDesc: null,
+        longDesc: null,
+        taglines: [],
+        social: { instagram: null, facebook: null, twitter: null },
+        seo: { title: null, description: null }
+    },
+    activeSocialPlatform: 'instagram',
+    // Templates
+    savedTemplates: [],
+    activePreset: null,
+    // Smart regeneration
+    lockSettings: {
+        layout: false,
+        colors: false,
+        background: false,
+        textStyle: false
+    },
+    variationStrength: 3
+};
+
+// ============================================
+// PLATFORM PRESETS
+// ============================================
+const platformPresets = {
+    amazon: {
+        name: 'Amazon',
+        aspectRatio: '1:1',
+        style: 'light',
+        backgroundType: 'solid',
+        layout: 'product-center',
+        visualDensity: 3,
+        description: 'Clean white background, product-focused'
+    },
+    shopify: {
+        name: 'Shopify',
+        aspectRatio: '1:1',
+        style: 'auto',
+        backgroundType: 'gradient',
+        layout: 'auto',
+        visualDensity: 4,
+        description: 'Versatile e-commerce style'
+    },
+    instagram: {
+        name: 'Instagram',
+        aspectRatio: '1:1',
+        style: 'rich',
+        backgroundType: 'gradient',
+        layout: 'product-center',
+        visualDensity: 5,
+        description: 'Eye-catching, high visual density'
+    },
+    'instagram-story': {
+        name: 'Instagram Story',
+        aspectRatio: '9:16',
+        style: 'rich',
+        backgroundType: 'gradient',
+        layout: 'product-top',
+        visualDensity: 4,
+        description: 'Vertical format for Stories'
+    },
+    facebook: {
+        name: 'Facebook',
+        aspectRatio: '16:9',
+        style: 'auto',
+        backgroundType: 'subtle',
+        layout: 'product-left',
+        visualDensity: 3,
+        description: 'Horizontal format for feeds'
+    },
+    etsy: {
+        name: 'Etsy',
+        aspectRatio: '4:5',
+        style: 'light',
+        backgroundType: 'texture',
+        layout: 'product-center',
+        visualDensity: 3,
+        description: 'Artisan, handcraft aesthetic'
+    }
 };
 
 // ============================================
@@ -105,8 +188,11 @@ let elements = {};
 
 function initElements() {
     elements = {
+        // Theme
+        themeToggle: document.getElementById('themeToggle'),
+
         // Language
-        langOptions: document.querySelectorAll('.lang-option'),
+        langOptions: document.querySelectorAll('.lang-btn'),
         titleHint: document.getElementById('titleHint'),
         charHint: document.getElementById('charHint'),
 
@@ -114,6 +200,7 @@ function initElements() {
         apiKeyInput: document.getElementById('apiKey'),
         toggleApiKeyBtn: document.getElementById('toggleApiKey'),
         saveApiKeyBtn: document.getElementById('saveApiKey'),
+        apiStatus: document.getElementById('apiStatus'),
 
         // Messages
         errorMessage: document.getElementById('errorMessage'),
@@ -132,6 +219,7 @@ function initElements() {
         characteristicsList: document.getElementById('characteristicsList'),
         addCharBtn: document.getElementById('addCharBtn'),
         infographicStyle: document.getElementById('infographicStyle'),
+        styleRadios: document.querySelectorAll('input[name="style"]'),
         generateBtn: document.getElementById('generateBtn'),
 
         // Advanced Options
@@ -161,6 +249,20 @@ function initElements() {
         colorHarmony: document.getElementById('colorHarmony'),
         productFocus: document.getElementById('productFocus'),
         backgroundComplexity: document.getElementById('backgroundComplexity'),
+
+        // Brand Color Picker
+        colorPresets: document.getElementById('colorPresets'),
+        selectedColorsContainer: document.getElementById('selectedColors'),
+        customColorPicker: document.getElementById('customColorPicker'),
+        customColorHex: document.getElementById('customColorHex'),
+        addCustomColorBtn: document.getElementById('addCustomColor'),
+
+        // Callout Lines
+        calloutLinesEnabled: document.getElementById('calloutLinesEnabled'),
+        calloutLinesOptions: document.getElementById('calloutLinesOptions'),
+        lineThickness: document.getElementById('lineThickness'),
+        lineThicknessValue: document.getElementById('lineThicknessValue'),
+        lineColorMode: document.getElementById('lineColorMode'),
 
         // Results
         resultPlaceholder: document.getElementById('resultPlaceholder'),
@@ -200,7 +302,7 @@ function initElements() {
         watermarkLogo: document.getElementById('watermarkLogo'),
         uploadLogoBtn: document.getElementById('uploadLogoBtn'),
         watermarkLogoPreview: document.getElementById('watermarkLogoPreview'),
-        watermarkPositionBtns: document.querySelectorAll('.watermark-position-btn'),
+        watermarkPositionBtns: document.querySelectorAll('.pos-btn'),
         watermarkOpacity: document.getElementById('watermarkOpacity'),
         opacityValue: document.getElementById('opacityValue'),
         watermarkSize: document.getElementById('watermarkSize'),
@@ -219,7 +321,43 @@ function initElements() {
         modalImage: document.getElementById('modalImage'),
         closeModal: document.getElementById('closeModal'),
         modalDownload: document.getElementById('modalDownload'),
-        modalUseAsBase: document.getElementById('modalUseAsBase')
+        modalUseAsBase: document.getElementById('modalUseAsBase'),
+
+        // Product Copy
+        productCopySection: document.getElementById('productCopySection'),
+        copyToggle: document.getElementById('copyToggle'),
+        copySectionContent: document.getElementById('copySectionContent'),
+        shortDescContent: document.getElementById('shortDescContent'),
+        longDescContent: document.getElementById('longDescContent'),
+        taglinesContent: document.getElementById('taglinesContent'),
+        socialTabs: document.getElementById('socialTabs'),
+        socialContent: document.getElementById('socialContent'),
+        seoTitleContent: document.getElementById('seoTitleContent'),
+        seoDescContent: document.getElementById('seoDescContent'),
+
+        // Templates & Presets
+        platformPresets: document.getElementById('platformPresets'),
+        templateSelect: document.getElementById('templateSelect'),
+        saveTemplateBtn: document.getElementById('saveTemplateBtn'),
+        deleteTemplateBtn: document.getElementById('deleteTemplateBtn'),
+
+        // AI Analyze
+        analyzeImageBtn: document.getElementById('analyzeImageBtn'),
+
+        // Settings Section
+        settingsSection: document.getElementById('settingsSection'),
+        settingsToggle: document.getElementById('settingsToggle'),
+
+        // Smart Regeneration
+        smartRegenSection: document.getElementById('smartRegenSection'),
+        smartRegenToggle: document.getElementById('smartRegenToggle'),
+        lockLayout: document.getElementById('lockLayout'),
+        lockColors: document.getElementById('lockColors'),
+        lockBackground: document.getElementById('lockBackground'),
+        lockTextStyle: document.getElementById('lockTextStyle'),
+        variationStrength: document.getElementById('variationStrength'),
+        variationStrengthValue: document.getElementById('variationStrengthValue'),
+        smartRegenBtn: document.getElementById('smartRegenBtn')
     };
 }
 
@@ -229,7 +367,7 @@ function initElements() {
 const translations = {
     en: {
         titleHint: '(in English)',
-        charHint: '(key features in English)',
+        charHint: 'Star = primary',
         titlePlaceholder: 'e.g., Premium Wireless Headphones',
         charPlaceholders: [
             'e.g., Active Noise Cancellation',
@@ -238,8 +376,8 @@ const translations = {
         ]
     },
     ro: {
-        titleHint: '(în limba română)',
-        charHint: '(caracteristici în română)',
+        titleHint: '(în română)',
+        charHint: 'Stea = important',
         titlePlaceholder: 'ex., Căști Wireless Premium',
         charPlaceholders: [
             'ex., Anulare Activă a Zgomotului',
@@ -261,11 +399,37 @@ function updateLanguage(lang) {
     elements.charHint.textContent = t.charHint;
     elements.productTitle.placeholder = t.titlePlaceholder;
 
-    const charInputs = elements.characteristicsList.querySelectorAll('.char-item .form-input');
+    const charInputs = elements.characteristicsList.querySelectorAll('.char-item .input-field');
     charInputs.forEach((input, index) => {
         const placeholder = t.charPlaceholders[index] || t.charPlaceholders[0];
         input.placeholder = placeholder;
     });
+}
+
+// ============================================
+// THEME HANDLING
+// ============================================
+function loadTheme() {
+    const savedTheme = localStorage.getItem('ngraphics_theme');
+    if (savedTheme) {
+        state.theme = savedTheme;
+    }
+    applyTheme(state.theme);
+}
+
+function applyTheme(theme) {
+    state.theme = theme;
+    if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+    }
+    localStorage.setItem('ngraphics_theme', theme);
+}
+
+function toggleTheme() {
+    const newTheme = state.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
 }
 
 // ============================================
@@ -279,11 +443,22 @@ function loadApiKey() {
     }
 }
 
+function updateApiStatus(connected) {
+    if (elements.apiStatus) {
+        if (connected) {
+            elements.apiStatus.classList.add('connected');
+            elements.apiStatus.querySelector('.status-text').textContent = 'Connected';
+        } else {
+            elements.apiStatus.classList.remove('connected');
+            elements.apiStatus.querySelector('.status-text').textContent = 'Not Connected';
+        }
+    }
+}
+
 function setupApiKeyHandlers() {
     elements.toggleApiKeyBtn.addEventListener('click', () => {
         const isPassword = elements.apiKeyInput.type === 'password';
         elements.apiKeyInput.type = isPassword ? 'text' : 'password';
-        elements.toggleApiKeyBtn.querySelector('span').textContent = isPassword ? 'Hide' : 'Show';
     });
 
     elements.saveApiKeyBtn.addEventListener('click', () => {
@@ -291,11 +466,17 @@ function setupApiKeyHandlers() {
         if (key) {
             state.apiKey = key;
             localStorage.setItem('openrouter_api_key', key);
+            updateApiStatus(true);
             showSuccess('API key saved successfully!');
         } else {
             showError('Please enter a valid API key');
         }
     });
+
+    // Update status on load if key exists
+    if (state.apiKey) {
+        updateApiStatus(true);
+    }
 }
 
 // ============================================
@@ -336,6 +517,10 @@ function setupImageUploadHandlers() {
         elements.productPhoto.value = '';
         elements.imagePreview.classList.remove('visible');
         elements.uploadArea.style.display = 'block';
+        // Hide AI analyze button
+        if (elements.analyzeImageBtn) {
+            elements.analyzeImageBtn.style.display = 'none';
+        }
     });
 }
 
@@ -364,12 +549,20 @@ function handleImageUpload(file) {
                 elements.previewImg.src = enhanced;
                 elements.imagePreview.classList.add('visible');
                 elements.uploadArea.style.display = 'none';
+                // Show AI analyze button
+                if (elements.analyzeImageBtn) {
+                    elements.analyzeImageBtn.style.display = 'flex';
+                }
             });
         } else {
             state.uploadedImageBase64 = imageData;
             elements.previewImg.src = imageData;
             elements.imagePreview.classList.add('visible');
             elements.uploadArea.style.display = 'none';
+            // Show AI analyze button
+            if (elements.analyzeImageBtn) {
+                elements.analyzeImageBtn.style.display = 'flex';
+            }
         }
     };
     reader.readAsDataURL(file);
@@ -495,6 +688,22 @@ function setupAdvancedOptionsHandlers() {
             elements.visualDensityValue.textContent = labels[value - 1] || 'Balanced';
         });
     }
+
+    // Callout lines toggle
+    if (elements.calloutLinesEnabled) {
+        elements.calloutLinesEnabled.addEventListener('change', () => {
+            elements.calloutLinesOptions.classList.toggle('visible', elements.calloutLinesEnabled.checked);
+        });
+    }
+
+    // Line thickness slider
+    if (elements.lineThickness) {
+        elements.lineThickness.addEventListener('input', () => {
+            const value = parseInt(elements.lineThickness.value);
+            const labels = ['Very Thin', 'Thin', 'Medium', 'Thick', 'Very Thick'];
+            elements.lineThicknessValue.textContent = labels[value - 1] || 'Medium';
+        });
+    }
 }
 
 function handleStyleReferenceUpload(file) {
@@ -523,6 +732,139 @@ function handleStyleReferenceUpload(file) {
 }
 
 // ============================================
+// BRAND COLOR PICKER
+// ============================================
+function setupColorPickerHandlers() {
+    // Preset color buttons
+    if (elements.colorPresets) {
+        elements.colorPresets.querySelectorAll('.color-preset').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const color = btn.dataset.color;
+                toggleBrandColor(color);
+                btn.classList.toggle('selected', state.selectedBrandColors.includes(color));
+            });
+        });
+    }
+
+    // Custom color picker sync with hex input
+    if (elements.customColorPicker) {
+        elements.customColorPicker.addEventListener('input', () => {
+            elements.customColorHex.value = elements.customColorPicker.value.toUpperCase();
+        });
+    }
+
+    // Hex input sync with color picker
+    if (elements.customColorHex) {
+        elements.customColorHex.addEventListener('input', () => {
+            let value = elements.customColorHex.value;
+            if (!value.startsWith('#')) {
+                value = '#' + value;
+            }
+            if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                elements.customColorPicker.value = value;
+            }
+        });
+    }
+
+    // Add custom color button
+    if (elements.addCustomColorBtn) {
+        elements.addCustomColorBtn.addEventListener('click', () => {
+            let color = elements.customColorHex.value.trim().toUpperCase();
+            if (!color.startsWith('#')) {
+                color = '#' + color;
+            }
+            if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+                if (!state.selectedBrandColors.includes(color)) {
+                    addBrandColor(color);
+                } else {
+                    showError('Color already added');
+                }
+            } else {
+                showError('Please enter a valid hex color (e.g., #FF5733)');
+            }
+        });
+    }
+}
+
+function toggleBrandColor(color) {
+    const index = state.selectedBrandColors.indexOf(color);
+    if (index > -1) {
+        state.selectedBrandColors.splice(index, 1);
+    } else {
+        if (state.selectedBrandColors.length >= 5) {
+            showError('Maximum 5 brand colors allowed');
+            return;
+        }
+        state.selectedBrandColors.push(color);
+    }
+    renderSelectedColors();
+    updateBrandColorsInput();
+}
+
+function addBrandColor(color) {
+    if (state.selectedBrandColors.length >= 5) {
+        showError('Maximum 5 brand colors allowed');
+        return;
+    }
+    state.selectedBrandColors.push(color);
+    renderSelectedColors();
+    updateBrandColorsInput();
+
+    // Update preset button state if it matches
+    if (elements.colorPresets) {
+        const presetBtn = elements.colorPresets.querySelector(`[data-color="${color}"]`);
+        if (presetBtn) {
+            presetBtn.classList.add('selected');
+        }
+    }
+}
+
+function removeBrandColor(color) {
+    const index = state.selectedBrandColors.indexOf(color);
+    if (index > -1) {
+        state.selectedBrandColors.splice(index, 1);
+        renderSelectedColors();
+        updateBrandColorsInput();
+
+        // Update preset button state
+        if (elements.colorPresets) {
+            const presetBtn = elements.colorPresets.querySelector(`[data-color="${color}"]`);
+            if (presetBtn) {
+                presetBtn.classList.remove('selected');
+            }
+        }
+    }
+}
+
+function renderSelectedColors() {
+    if (!elements.selectedColorsContainer) return;
+
+    elements.selectedColorsContainer.innerHTML = state.selectedBrandColors.map(color => `
+        <div class="selected-color-tag" data-color="${color}">
+            <span class="selected-color-swatch" style="background: ${color};"></span>
+            <span>${color}</span>
+            <button type="button" class="selected-color-remove" title="Remove">&times;</button>
+        </div>
+    `).join('');
+
+    // Attach remove handlers
+    elements.selectedColorsContainer.querySelectorAll('.selected-color-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const tag = e.target.closest('.selected-color-tag');
+            if (tag) {
+                removeBrandColor(tag.dataset.color);
+            }
+        });
+    });
+}
+
+function updateBrandColorsInput() {
+    if (elements.brandColors) {
+        elements.brandColors.value = state.selectedBrandColors.join(', ');
+    }
+}
+
+// ============================================
 // CHARACTERISTICS HANDLING
 // ============================================
 function setupCharacteristicsHandlers() {
@@ -533,7 +875,7 @@ function setupCharacteristicsHandlers() {
     // Attach handlers to initial remove buttons
     document.querySelectorAll('.char-remove').forEach(attachRemoveHandler);
     document.querySelectorAll('.char-star').forEach(attachStarHandler);
-    document.querySelectorAll('.char-item .form-input').forEach(attachIconSuggestionHandler);
+    document.querySelectorAll('.char-item .input-field').forEach(attachIconSuggestionHandler);
 }
 
 function addCharacteristicItem() {
@@ -541,14 +883,14 @@ function addCharacteristicItem() {
     const div = document.createElement('div');
     div.className = 'char-item';
     div.innerHTML = `
-        <button type="button" class="char-star" title="Mark as primary feature">
+        <button type="button" class="char-star" title="Mark as primary">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
             </svg>
         </button>
-        <input type="text" class="form-input" placeholder="${t.charPlaceholders[0]}">
-        <select class="form-select char-icon-select" title="Suggested icon">
-            <option value="auto">Auto icon</option>
+        <input type="text" class="input-field" placeholder="${t.charPlaceholders[0]}">
+        <select class="select-mini char-icon-select">
+            <option value="auto">Auto</option>
             <option value="battery">Battery</option>
             <option value="bolt">Lightning</option>
             <option value="wifi">WiFi</option>
@@ -559,19 +901,19 @@ function addCharacteristicItem() {
             <option value="water">Water</option>
             <option value="star">Star</option>
             <option value="check">Check</option>
-            <option value="none">No icon</option>
+            <option value="none">None</option>
         </select>
         <button type="button" class="char-remove" title="Remove">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
         </button>
     `;
     elements.characteristicsList.appendChild(div);
     attachRemoveHandler(div.querySelector('.char-remove'));
     attachStarHandler(div.querySelector('.char-star'));
-    attachIconSuggestionHandler(div.querySelector('.form-input'));
+    attachIconSuggestionHandler(div.querySelector('.input-field'));
 }
 
 function attachRemoveHandler(btn) {
@@ -633,7 +975,10 @@ function showError(message) {
 }
 
 function showSuccess(message) {
-    elements.successMessage.textContent = message;
+    const content = elements.successMessage.querySelector('.message-content');
+    if (content) {
+        content.textContent = message;
+    }
     elements.successMessage.classList.add('visible');
     elements.errorMessage.classList.remove('visible');
 
@@ -901,11 +1246,11 @@ function generatePrompt() {
     const primaryFeatures = [];
 
     charItems.forEach((item, index) => {
-        const input = item.querySelector('.form-input');
+        const input = item.querySelector('.input-field');
         const starBtn = item.querySelector('.char-star');
         const iconSelect = item.querySelector('.char-icon-select');
 
-        const text = input.value.trim();
+        const text = input ? input.value.trim() : '';
         if (text) {
             const isPrimary = starBtn && starBtn.classList.contains('starred');
             const icon = iconSelect ? iconSelect.value : 'auto';
@@ -936,11 +1281,15 @@ function generatePrompt() {
     const backgroundComplexity = elements.backgroundComplexity ? elements.backgroundComplexity.value : 'auto';
     const styleStrength = elements.styleStrength ? parseInt(elements.styleStrength.value) : 70;
 
+    // Callout lines options
+    const calloutLinesEnabled = elements.calloutLinesEnabled ? elements.calloutLinesEnabled.checked : false;
+    const lineThickness = elements.lineThickness ? parseInt(elements.lineThickness.value) : 3;
+
     // Style descriptions
     const styleDescriptions = {
         auto: 'Analyze the product colors and create a complementary color scheme. Match the background to harmonize with the product.',
         rich: 'Use MEDIUM bold lines/arrows pointing from product parts to feature labels. Add matching decorative elements like icons, badges, shapes, and highlights that use the product color palette. Make it visually rich but cohesive.',
-        callout: 'Use thin lines/arrows pointing FROM specific parts of the product TO the corresponding feature text. Each feature should have a line connecting to the relevant area of the product.',
+        callout: 'Create a TECHNICAL DIAGRAM style with thin lines pointing FROM specific parts of the product TO small ICON + SHORT TEXT labels. Each feature gets an ICON (matching the feature type) with minimal text beside it. Lines should connect to the exact relevant area of the product. Keep text VERY SHORT - use the exact feature text provided, do not expand or elaborate.',
         light: 'Use a clean white or very light background with subtle accents that complement the product colors.',
         dark: 'Use a dark/black background that makes the product stand out. Use light text and accents.',
         gradient: 'Use a subtle gradient background derived from the product colors. Keep it simple and professional.',
@@ -1013,10 +1362,14 @@ function generatePrompt() {
     // Icon style descriptions
     const iconStyleDescriptions = {
         auto: '',
-        flat: 'Use flat, solid-colored icons with no gradients or shadows.',
-        outlined: 'Use outlined/stroke icons with consistent line weight.',
-        '3d': 'Use 3D-style icons with depth and shadows.',
-        minimal: 'Use very simple, minimalist icons.',
+        realistic: 'Use REALISTIC, PHOTO-LIKE icons - small detailed images that look like real objects or photographs. High detail, realistic textures and lighting.',
+        illustrated: 'Use ILLUSTRATED, HAND-DRAWN style icons - artistic, sketch-like with visible brush strokes or pen lines. Warm and friendly aesthetic.',
+        '3d': 'Use 3D RENDERED icons with depth, shadows, lighting, and perspective. Polished and modern look.',
+        flat: 'Use FLAT, SOLID-COLORED icons with no gradients or shadows. Clean and modern.',
+        outlined: 'Use OUTLINED/STROKE icons with consistent line weight, no fill. Clean technical look.',
+        gradient: 'Use GRADIENT/GLOSSY icons with color transitions and shine effects. Sleek and polished.',
+        minimal: 'Use very SIMPLE, MINIMALIST icons - basic shapes, single color, no details.',
+        emoji: 'Use EMOJI-STYLE icons - colorful, friendly, recognizable emoji aesthetic.',
         none: 'Do not use any icons - text only for features.'
     };
 
@@ -1049,21 +1402,23 @@ BACKGROUND STYLE: ${styleDesc}
     }
 
     // Add features with emphasis info
-    prompt += `PRODUCT FEATURES:\n`;
+    prompt += `PRODUCT FEATURES (use EXACTLY this text - do not expand, rephrase, or add words):\n`;
 
     if (primaryFeatures.length > 0) {
-        prompt += `PRIMARY FEATURES (make these larger/more prominent):\n`;
+        prompt += `PRIMARY FEATURES (larger, more prominent, with icon):\n`;
         primaryFeatures.forEach(f => {
-            const iconHint = f.icon !== 'auto' && f.icon !== 'none' ? ` [use ${f.icon} icon]` : '';
-            prompt += `★ ${f.text}${iconHint}\n`;
+            const iconHint = f.icon !== 'auto' && f.icon !== 'none' ? ` → use ${f.icon} icon` : ' → add appropriate icon';
+            prompt += `★ "${f.text}"${iconHint}\n`;
         });
-        prompt += `\nSECONDARY FEATURES:\n`;
+        prompt += `\nSECONDARY FEATURES (with icon):\n`;
     }
 
     characteristics.filter(c => !c.isPrimary).forEach(c => {
-        const iconHint = c.icon !== 'auto' && c.icon !== 'none' ? ` [use ${c.icon} icon]` : '';
-        prompt += `• ${c.text}${iconHint}\n`;
+        const iconHint = c.icon !== 'auto' && c.icon !== 'none' ? ` → use ${c.icon} icon` : ' → add appropriate icon';
+        prompt += `• "${c.text}"${iconHint}\n`;
     });
+
+    prompt += `\nIMPORTANT: Display each feature with an ICON next to it. Use the EXACT text in quotes above - do not modify, expand, or elaborate on it.\n`;
 
     prompt += `\nLANGUAGE: ${language}${state.language === 'ro' ? ' (use proper Romanian characters: ă, â, î, ș, ț)' : ''}\n`;
 
@@ -1108,6 +1463,44 @@ BACKGROUND STYLE: ${styleDesc}
     // Add icon style
     if (iconStyle !== 'auto' && iconStyleDescriptions[iconStyle]) {
         prompt += `\n\nICON STYLE: ${iconStyleDescriptions[iconStyle]}`;
+    }
+
+    // Add callout lines
+    if (calloutLinesEnabled) {
+        const lineColorMode = elements.lineColorMode ? elements.lineColorMode.value : 'multi';
+
+        const thicknessDescriptions = {
+            1: '1px HAIRLINE/VERY THIN',
+            2: '2px THIN',
+            3: '3px MEDIUM',
+            4: '4-5px THICK/BOLD',
+            5: '6-8px VERY THICK/HEAVY'
+        };
+        const thicknessDesc = thicknessDescriptions[lineThickness] || '3px MEDIUM';
+
+        const colorModeDescriptions = {
+            mono: 'ALL LINES SAME COLOR - use a single consistent color (white, black, or accent color) for all callout lines',
+            multi: 'MULTICOLORED LINES - each feature callout line should be a DIFFERENT COLOR, creating a colorful, vibrant look',
+            gradient: 'GRADIENT LINES - each line should have a gradient effect, transitioning between colors',
+            match: 'MATCH PRODUCT COLORS - derive line colors from the product itself, using its color palette'
+        };
+        const colorModeDesc = colorModeDescriptions[lineColorMode] || colorModeDescriptions.multi;
+
+        prompt += `\n\nCALLOUT LINES - IMPORTANT SPECIFICATIONS:
+
+LINE THICKNESS: ${thicknessDesc} - this is CRITICAL, make lines exactly this weight
+LINE COLORS: ${colorModeDesc}
+
+STRUCTURE FOR EACH CALLOUT:
+- Draw a line from the product part → to a label with ICON + short text
+- Each label: [ICON] + "${'{feature text}'}" (use EXACT text provided)
+- Add decorative endpoints: dots, circles, or small shapes where lines meet product
+
+STYLE RULES:
+- Lines can be straight, angled, or gently curved
+- Add small circles or dots at connection points
+- Keep text SHORT - exact feature text only, no expansion
+- Technical diagram aesthetic, NOT text-heavy marketing`;
     }
 
     // Add style reference with strength
@@ -1185,37 +1578,62 @@ function extractImageFromResponse(data) {
     return imageUrl;
 }
 
-async function makeGenerationRequest(requestBody) {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${state.apiKey}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': window.location.origin,
-            'X-Title': 'AI Product Infographics Generator'
-        },
-        body: JSON.stringify(requestBody)
-    });
+async function makeGenerationRequest(requestBody, retries = 3) {
+    let lastError;
 
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error?.message || errorData.message || `API error: ${response.status}`);
-    }
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${state.apiKey}`,
+                    'Content-Type': 'application/json',
+                    'HTTP-Referer': window.location.origin,
+                    'X-Title': 'AI Product Infographics Generator'
+                },
+                body: JSON.stringify(requestBody)
+            });
 
-    const data = await response.json();
-    const imageUrl = extractImageFromResponse(data);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error?.message || errorData.message || `API error: ${response.status}`);
+            }
 
-    if (!imageUrl) {
-        if (data.error) {
-            throw new Error(data.error.message || 'Provider returned an error');
+            const data = await response.json();
+            const imageUrl = extractImageFromResponse(data);
+
+            if (!imageUrl) {
+                if (data.error) {
+                    throw new Error(data.error.message || 'Provider returned an error');
+                }
+                throw new Error('No image generated');
+            }
+
+            return imageUrl;
+        } catch (error) {
+            lastError = error;
+            const isNetworkError = error.name === 'TypeError' && error.message === 'Failed to fetch';
+
+            if (isNetworkError && attempt < retries) {
+                console.log(`Network error, retrying (${attempt}/${retries})...`);
+                updateLoadingStatus(`Network error, retrying (${attempt}/${retries})...`);
+                await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                continue;
+            }
+
+            throw isNetworkError
+                ? new Error('Network error. Please check your internet connection and try again.')
+                : error;
         }
-        throw new Error('No image generated');
     }
 
-    return imageUrl;
+    throw lastError;
 }
 
 async function generateInfographic() {
+    console.log('generateInfographic called');
+    console.log('API Key exists:', !!state.apiKey);
+
     if (!state.apiKey) {
         showError('Please enter your OpenRouter API key first');
         return;
@@ -1298,6 +1716,9 @@ async function generateInfographic() {
             requestBody.seed = state.lastSeed;
         }
 
+        // Start product copy generation in parallel (don't await)
+        const copyPromise = generateProductCopy();
+
         if (variationsCount === 1) {
             if (state.uploadedImageBase64) {
                 updateLoadingStatus('Generating infographic with your product image...');
@@ -1308,6 +1729,9 @@ async function generateInfographic() {
             const imageUrl = await makeGenerationRequest(requestBody);
             showResult(imageUrl);
             showSuccess('Infographic generated successfully!');
+
+            // Wait for copy to finish (it's already running in parallel)
+            await copyPromise.catch(err => console.error('Copy generation error:', err));
         } else {
             updateLoadingStatus(`Generating ${variationsCount} variations...`);
 
@@ -1335,6 +1759,9 @@ async function generateInfographic() {
             }
 
             showSuccess(`Generated ${successfulImages.length} of ${variationsCount} variations!`);
+
+            // Wait for copy to finish (it's already running in parallel)
+            await copyPromise.catch(err => console.error('Copy generation error:', err));
         }
 
     } catch (error) {
@@ -1498,7 +1925,7 @@ async function generateAltText(imageUrl) {
         elements.altTextContent.innerHTML = '<span class="alt-text-loading">Generating alt text...</span>';
 
         const productTitle = elements.productTitle.value.trim() || 'Product';
-        const charInputs = elements.characteristicsList.querySelectorAll('.form-input');
+        const charInputs = elements.characteristicsList.querySelectorAll('.input-field');
         const features = Array.from(charInputs)
             .map(input => input.value.trim())
             .filter(val => val.length > 0)
@@ -1542,6 +1969,735 @@ async function generateAltText(imageUrl) {
     } catch (error) {
         console.error('Alt text generation error:', error);
         elements.altTextContent.innerHTML = '<span class="alt-text-loading">Alt text unavailable</span>';
+    }
+}
+
+// ============================================
+// PRODUCT COPY GENERATION
+// ============================================
+async function generateProductCopy() {
+    try {
+        // Show section and loading states
+        elements.productCopySection.style.display = 'block';
+        elements.shortDescContent.innerHTML = '<span class="copy-loading">Generating...</span>';
+        elements.longDescContent.innerHTML = '<span class="copy-loading">Generating...</span>';
+        elements.taglinesContent.innerHTML = '<span class="copy-loading">Generating...</span>';
+        elements.socialContent.innerHTML = '<span class="copy-loading">Generating...</span>';
+        elements.seoTitleContent.textContent = 'Generating...';
+        elements.seoDescContent.textContent = 'Generating...';
+
+        const productTitle = elements.productTitle.value.trim() || 'Product';
+        const language = state.language === 'ro' ? 'Romanian' : 'English';
+
+        // Get features
+        const charInputs = elements.characteristicsList.querySelectorAll('.char-item');
+        const features = [];
+        const primaryFeatures = [];
+
+        charInputs.forEach(item => {
+            const input = item.querySelector('.input-field');
+            const starBtn = item.querySelector('.char-star');
+            const text = input ? input.value.trim() : '';
+            if (text) {
+                const isPrimary = starBtn && starBtn.classList.contains('starred');
+                if (isPrimary) {
+                    primaryFeatures.push(text);
+                }
+                features.push(text);
+            }
+        });
+
+        const featuresText = features.join(', ');
+        const primaryText = primaryFeatures.length > 0 ? `Primary features: ${primaryFeatures.join(', ')}` : '';
+
+        const prompt = `Generate marketing content for this product in JSON format.
+
+Product: ${productTitle}
+Features: ${featuresText}
+${primaryText}
+Language: ${language}${state.language === 'ro' ? ' (use proper Romanian characters: ă, â, î, ș, ț)' : ''}
+
+Return ONLY valid JSON (no markdown, no code blocks):
+{
+  "shortDesc": "Compelling 1-2 sentence product pitch highlighting key value proposition",
+  "longDesc": "Engaging paragraph (50-100 words) describing the product, its benefits, and why customers should buy it",
+  "taglines": ["catchy tagline 1", "catchy tagline 2", "catchy tagline 3"],
+  "social": {
+    "instagram": "Engaging caption with emojis and 5-8 relevant hashtags",
+    "facebook": "Conversational post with call-to-action, 2-3 sentences",
+    "twitter": "Punchy tweet under 280 characters with 2-3 hashtags"
+  },
+  "seo": {
+    "title": "SEO-optimized title under 60 characters including product name",
+    "description": "Meta description under 160 characters with keywords and call-to-action"
+  }
+}`;
+
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${state.apiKey}`,
+                'Content-Type': 'application/json',
+                'HTTP-Referer': window.location.origin,
+                'X-Title': 'AI Product Infographics Generator'
+            },
+            body: JSON.stringify({
+                model: 'google/gemini-2.0-flash-001',
+                messages: [
+                    {
+                        role: 'user',
+                        content: prompt
+                    }
+                ],
+                max_tokens: 1000
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            let content = data.choices?.[0]?.message?.content?.trim() || '';
+
+            // Clean up response - remove markdown code blocks if present
+            content = content.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+
+            try {
+                const copyData = JSON.parse(content);
+                state.generatedCopy = {
+                    shortDesc: copyData.shortDesc || null,
+                    longDesc: copyData.longDesc || null,
+                    taglines: copyData.taglines || [],
+                    social: {
+                        instagram: copyData.social?.instagram || null,
+                        facebook: copyData.social?.facebook || null,
+                        twitter: copyData.social?.twitter || null
+                    },
+                    seo: {
+                        title: copyData.seo?.title || null,
+                        description: copyData.seo?.description || null
+                    }
+                };
+
+                updateProductCopyUI();
+            } catch (parseError) {
+                console.error('Failed to parse copy response:', parseError);
+                showCopyError('Failed to parse generated content');
+            }
+        } else {
+            showCopyError('Failed to generate marketing copy');
+        }
+    } catch (error) {
+        console.error('Product copy generation error:', error);
+        showCopyError('Error generating marketing copy');
+    }
+}
+
+function updateProductCopyUI() {
+    const copy = state.generatedCopy;
+
+    // Short description
+    if (copy.shortDesc) {
+        elements.shortDescContent.textContent = copy.shortDesc;
+    } else {
+        elements.shortDescContent.innerHTML = '<span class="copy-loading">Not available</span>';
+    }
+
+    // Long description
+    if (copy.longDesc) {
+        elements.longDescContent.textContent = copy.longDesc;
+    } else {
+        elements.longDescContent.innerHTML = '<span class="copy-loading">Not available</span>';
+    }
+
+    // Taglines
+    if (copy.taglines && copy.taglines.length > 0) {
+        elements.taglinesContent.innerHTML = copy.taglines.map((tagline, index) => `
+            <div class="tagline-item">
+                <span class="tagline-number">${index + 1}</span>
+                <span class="tagline-text">${tagline}</span>
+            </div>
+        `).join('');
+    } else {
+        elements.taglinesContent.innerHTML = '<span class="copy-loading">Not available</span>';
+    }
+
+    // Social media - show active platform
+    updateSocialContent();
+
+    // SEO
+    if (copy.seo.title) {
+        elements.seoTitleContent.innerHTML = `${copy.seo.title} <span class="seo-char-count">(${copy.seo.title.length}/60)</span>`;
+    } else {
+        elements.seoTitleContent.textContent = '-';
+    }
+
+    if (copy.seo.description) {
+        elements.seoDescContent.innerHTML = `${copy.seo.description} <span class="seo-char-count">(${copy.seo.description.length}/160)</span>`;
+    } else {
+        elements.seoDescContent.textContent = '-';
+    }
+}
+
+function updateSocialContent() {
+    const platform = state.activeSocialPlatform;
+    const content = state.generatedCopy.social[platform];
+
+    if (content) {
+        elements.socialContent.textContent = content;
+    } else {
+        elements.socialContent.innerHTML = '<span class="copy-loading">Not available</span>';
+    }
+}
+
+function showCopyError(message) {
+    elements.shortDescContent.innerHTML = `<span class="copy-loading">${message}</span>`;
+    elements.longDescContent.innerHTML = '<span class="copy-loading">-</span>';
+    elements.taglinesContent.innerHTML = '<span class="copy-loading">-</span>';
+    elements.socialContent.innerHTML = '<span class="copy-loading">-</span>';
+    elements.seoTitleContent.textContent = '-';
+    elements.seoDescContent.textContent = '-';
+}
+
+function copyProductCopyToClipboard(target) {
+    const copy = state.generatedCopy;
+    let textToCopy = '';
+
+    switch (target) {
+        case 'shortDesc':
+            textToCopy = copy.shortDesc || '';
+            break;
+        case 'longDesc':
+            textToCopy = copy.longDesc || '';
+            break;
+        case 'taglines':
+            textToCopy = (copy.taglines || []).join('\n');
+            break;
+        case 'social':
+            textToCopy = copy.social[state.activeSocialPlatform] || '';
+            break;
+        case 'seo':
+            textToCopy = `Title: ${copy.seo.title || ''}\nDescription: ${copy.seo.description || ''}`;
+            break;
+    }
+
+    if (textToCopy) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            const btn = document.querySelector(`[data-target="${target}"]`);
+            if (btn) {
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            }
+        });
+    }
+}
+
+// ============================================
+// TEMPLATES & PRESETS SYSTEM
+// ============================================
+function loadTemplatesFromStorage() {
+    try {
+        const saved = localStorage.getItem('ngraphics_templates');
+        if (saved) {
+            state.savedTemplates = JSON.parse(saved);
+            updateTemplateSelect();
+        }
+    } catch (error) {
+        console.error('Failed to load templates:', error);
+    }
+}
+
+function saveTemplatesToStorage() {
+    try {
+        localStorage.setItem('ngraphics_templates', JSON.stringify(state.savedTemplates));
+    } catch (error) {
+        console.error('Failed to save templates:', error);
+    }
+}
+
+function getCurrentSettings() {
+    return {
+        model: elements.aiModel.value,
+        style: document.querySelector('input[name="style"]:checked')?.value || 'auto',
+        layout: elements.layoutTemplate?.value || 'auto',
+        aspectRatio: elements.aspectRatio?.value || 'auto',
+        productFocus: elements.productFocus?.value || 'auto',
+        visualDensity: elements.visualDensity?.value || 3,
+        fontStyle: elements.fontStyle?.value || 'auto',
+        iconStyle: elements.iconStyle?.value || 'auto',
+        colorHarmony: elements.colorHarmony?.value || 'match',
+        backgroundType: elements.backgroundType?.value || 'auto',
+        brandColors: [...state.selectedBrandColors],
+        calloutLines: elements.calloutLinesToggle?.checked || false,
+        calloutThickness: elements.calloutThickness?.value || 3
+    };
+}
+
+function applySettings(settings) {
+    if (!settings) return;
+
+    // Model
+    if (settings.model && elements.aiModel) {
+        elements.aiModel.value = settings.model;
+    }
+
+    // Style
+    if (settings.style) {
+        const styleRadio = document.querySelector(`input[name="style"][value="${settings.style}"]`);
+        if (styleRadio) styleRadio.checked = true;
+    }
+
+    // Layout
+    if (settings.layout && elements.layoutTemplate) {
+        elements.layoutTemplate.value = settings.layout;
+    }
+
+    // Aspect ratio
+    if (settings.aspectRatio && elements.aspectRatio) {
+        elements.aspectRatio.value = settings.aspectRatio;
+    }
+
+    // Product focus
+    if (settings.productFocus && elements.productFocus) {
+        elements.productFocus.value = settings.productFocus;
+    }
+
+    // Visual density
+    if (settings.visualDensity && elements.visualDensity) {
+        elements.visualDensity.value = settings.visualDensity;
+        if (elements.densityValue) {
+            const labels = ['Minimal', 'Clean', 'Balanced', 'Detailed', 'Rich'];
+            elements.densityValue.textContent = labels[settings.visualDensity - 1] || 'Balanced';
+        }
+    }
+
+    // Font style
+    if (settings.fontStyle && elements.fontStyle) {
+        elements.fontStyle.value = settings.fontStyle;
+    }
+
+    // Icon style
+    if (settings.iconStyle && elements.iconStyle) {
+        elements.iconStyle.value = settings.iconStyle;
+    }
+
+    // Color harmony
+    if (settings.colorHarmony && elements.colorHarmony) {
+        elements.colorHarmony.value = settings.colorHarmony;
+    }
+
+    // Background type
+    if (settings.backgroundType && elements.backgroundType) {
+        elements.backgroundType.value = settings.backgroundType;
+    }
+
+    // Brand colors
+    if (settings.brandColors && Array.isArray(settings.brandColors)) {
+        state.selectedBrandColors = [...settings.brandColors];
+        renderSelectedColors();
+    }
+
+    showSuccess('Settings applied!');
+}
+
+function applyPlatformPreset(presetKey) {
+    const preset = platformPresets[presetKey];
+    if (!preset) return;
+
+    // Clear active state from all buttons
+    document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+
+    // Set active on clicked button
+    const activeBtn = document.querySelector(`.preset-btn[data-preset="${presetKey}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    state.activePreset = presetKey;
+
+    // Apply preset settings
+    applySettings({
+        style: preset.style,
+        layout: preset.layout,
+        aspectRatio: preset.aspectRatio,
+        backgroundType: preset.backgroundType,
+        visualDensity: preset.visualDensity
+    });
+
+    showSuccess(`${preset.name} preset applied!`);
+}
+
+function saveTemplate() {
+    const name = prompt('Enter template name:');
+    if (!name || !name.trim()) return;
+
+    const template = {
+        id: Date.now(),
+        name: name.trim(),
+        settings: getCurrentSettings(),
+        createdAt: new Date().toISOString()
+    };
+
+    state.savedTemplates.push(template);
+    saveTemplatesToStorage();
+    updateTemplateSelect();
+    showSuccess(`Template "${name}" saved!`);
+}
+
+function loadTemplate(templateId) {
+    const template = state.savedTemplates.find(t => t.id === parseInt(templateId));
+    if (template) {
+        applySettings(template.settings);
+        showSuccess(`Template "${template.name}" loaded!`);
+    }
+}
+
+function deleteTemplate() {
+    const selectedId = elements.templateSelect.value;
+    if (!selectedId) {
+        showError('Select a template to delete');
+        return;
+    }
+
+    const template = state.savedTemplates.find(t => t.id === parseInt(selectedId));
+    if (template && confirm(`Delete template "${template.name}"?`)) {
+        state.savedTemplates = state.savedTemplates.filter(t => t.id !== parseInt(selectedId));
+        saveTemplatesToStorage();
+        updateTemplateSelect();
+        showSuccess('Template deleted!');
+    }
+}
+
+function updateTemplateSelect() {
+    if (!elements.templateSelect) return;
+
+    elements.templateSelect.innerHTML = '<option value="">Load template...</option>';
+    state.savedTemplates.forEach(template => {
+        const option = document.createElement('option');
+        option.value = template.id;
+        option.textContent = template.name;
+        elements.templateSelect.appendChild(option);
+    });
+}
+
+// ============================================
+// AI FEATURE EXTRACTION
+// ============================================
+async function analyzeProductImage() {
+    if (!state.uploadedImageBase64) {
+        showError('Please upload a product image first');
+        return;
+    }
+
+    if (!state.apiKey) {
+        showError('Please enter your API key');
+        return;
+    }
+
+    const btn = elements.analyzeImageBtn;
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg><span>Analyzing...</span>';
+
+    try {
+        const language = state.language === 'ro' ? 'Romanian' : 'English';
+
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${state.apiKey}`,
+                'Content-Type': 'application/json',
+                'HTTP-Referer': window.location.origin,
+                'X-Title': 'AI Product Infographics Generator'
+            },
+            body: JSON.stringify({
+                model: 'google/gemini-2.0-flash-001',
+                messages: [
+                    {
+                        role: 'user',
+                        content: [
+                            {
+                                type: 'image_url',
+                                image_url: {
+                                    url: state.uploadedImageBase64
+                                }
+                            },
+                            {
+                                type: 'text',
+                                text: `Analyze this product image and extract information in JSON format.
+Language: ${language}${state.language === 'ro' ? ' (use proper Romanian characters: ă, â, î, ș, ț)' : ''}
+
+Return ONLY valid JSON (no markdown, no code blocks):
+{
+  "productTitle": "Concise product name (2-5 words)",
+  "category": "Product category",
+  "features": [
+    "Key feature 1 (brief, 3-6 words)",
+    "Key feature 2 (brief, 3-6 words)",
+    "Key feature 3 (brief, 3-6 words)",
+    "Key feature 4 (brief, 3-6 words)",
+    "Key feature 5 (brief, 3-6 words)"
+  ],
+  "primaryFeature": 0,
+  "suggestedStyle": "auto|rich|callout|light|dark|gradient",
+  "dominantColors": ["#hex1", "#hex2"]
+}`
+                            }
+                        ]
+                    }
+                ],
+                max_tokens: 500
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error('Analysis API error:', response.status, errorData);
+            showError(errorData.error?.message || `Analysis failed (${response.status})`);
+            return;
+        }
+
+        const data = await response.json();
+        let content = data.choices?.[0]?.message?.content?.trim() || '';
+
+        // Clean up response
+        content = content.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+
+        try {
+            const analysis = JSON.parse(content);
+
+            // Fill in product title
+            if (analysis.productTitle && elements.productTitle) {
+                elements.productTitle.value = analysis.productTitle;
+            }
+
+            // Fill in features
+            if (analysis.features && Array.isArray(analysis.features)) {
+                // Clear existing characteristics
+                elements.characteristicsList.innerHTML = '';
+
+                analysis.features.forEach((feature, index) => {
+                    addCharacteristic(feature, index === analysis.primaryFeature);
+                });
+            }
+
+            // Apply suggested style
+            if (analysis.suggestedStyle) {
+                const styleRadio = document.querySelector(`input[name="style"][value="${analysis.suggestedStyle}"]`);
+                if (styleRadio) styleRadio.checked = true;
+            }
+
+            // Add dominant colors
+            if (analysis.dominantColors && Array.isArray(analysis.dominantColors)) {
+                analysis.dominantColors.forEach(color => {
+                    if (!state.selectedBrandColors.includes(color)) {
+                        state.selectedBrandColors.push(color);
+                    }
+                });
+                renderSelectedColors();
+            }
+
+            showSuccess('Product analyzed! Title and features extracted.');
+        } catch (parseError) {
+            console.error('Failed to parse analysis:', parseError, content);
+            showError('Failed to parse AI response');
+        }
+    } catch (error) {
+        console.error('Analysis error:', error);
+        showError('Error analyzing image');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+    }
+}
+
+function addCharacteristic(text = '', isPrimary = false) {
+    const charItem = document.createElement('div');
+    charItem.className = 'char-item';
+
+    const charIndex = elements.characteristicsList.querySelectorAll('.char-item').length;
+
+    charItem.innerHTML = `
+        <button type="button" class="char-star${isPrimary ? ' starred' : ''}" title="Mark as primary feature">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+            </svg>
+        </button>
+        <input type="text" class="input-field" placeholder="Product feature..." value="${text}">
+        <select class="select-field select-mini char-icon">
+            <option value="auto">Auto</option>
+            <option value="battery">🔋</option>
+            <option value="wifi">📶</option>
+            <option value="camera">📷</option>
+            <option value="shield">🛡️</option>
+            <option value="star">⭐</option>
+            <option value="clock">⏱️</option>
+            <option value="bolt">⚡</option>
+            <option value="water">💧</option>
+            <option value="leaf">🌿</option>
+            <option value="diamond">💎</option>
+        </select>
+        <button type="button" class="char-remove" title="Remove">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+    `;
+
+    // Star button
+    const starBtn = charItem.querySelector('.char-star');
+    starBtn.addEventListener('click', () => {
+        starBtn.classList.toggle('starred');
+        if (starBtn.classList.contains('starred')) {
+            state.starredCharacteristics.add(charIndex);
+        } else {
+            state.starredCharacteristics.delete(charIndex);
+        }
+    });
+
+    // Remove button
+    const removeBtn = charItem.querySelector('.char-remove');
+    removeBtn.addEventListener('click', () => {
+        charItem.remove();
+    });
+
+    // Icon auto-suggest
+    const input = charItem.querySelector('.input-field');
+    const iconSelect = charItem.querySelector('.char-icon');
+    input.addEventListener('input', () => {
+        const suggestedIcon = suggestIconForText(input.value);
+        if (suggestedIcon && iconSelect.value === 'auto') {
+            // Visual hint that an icon was suggested
+            iconSelect.style.borderColor = 'var(--accent)';
+            setTimeout(() => {
+                iconSelect.style.borderColor = '';
+            }, 500);
+        }
+    });
+
+    elements.characteristicsList.appendChild(charItem);
+
+    if (isPrimary) {
+        state.starredCharacteristics.add(charIndex);
+    }
+}
+
+// ============================================
+// SMART REGENERATION
+// ============================================
+function getVariationStrengthLabel(value) {
+    const labels = ['Very Similar', 'Similar', 'Medium', 'Different', 'Very Different'];
+    return labels[value - 1] || 'Medium';
+}
+
+function buildSmartRegenerationPrompt() {
+    if (!state.lastPrompt) {
+        return generatePrompt();
+    }
+
+    const locks = state.lockSettings;
+    const strength = state.variationStrength;
+
+    let lockInstructions = [];
+    if (locks.layout) lockInstructions.push('KEEP THE SAME LAYOUT and composition');
+    if (locks.colors) lockInstructions.push('KEEP THE SAME COLOR SCHEME');
+    if (locks.background) lockInstructions.push('KEEP THE SAME BACKGROUND style and type');
+    if (locks.textStyle) lockInstructions.push('KEEP THE SAME TEXT STYLE and typography');
+
+    let variationInstruction = '';
+    switch (strength) {
+        case 1:
+            variationInstruction = 'Make MINIMAL changes - only tiny variations in details';
+            break;
+        case 2:
+            variationInstruction = 'Make SUBTLE changes - keep overall look similar but refresh small elements';
+            break;
+        case 3:
+            variationInstruction = 'Make MODERATE changes - balance familiarity with fresh elements';
+            break;
+        case 4:
+            variationInstruction = 'Make SIGNIFICANT changes - explore different approaches while keeping core elements';
+            break;
+        case 5:
+            variationInstruction = 'Make MAJOR changes - create a distinctly different variation';
+            break;
+    }
+
+    const basePrompt = state.lastPrompt;
+
+    const smartPrompt = `${basePrompt}
+
+REGENERATION INSTRUCTIONS:
+${lockInstructions.length > 0 ? lockInstructions.join('\n') : 'No locked elements - feel free to change anything'}
+
+${variationInstruction}
+
+Create a variation of the previous design following these constraints.`;
+
+    return smartPrompt;
+}
+
+async function smartRegenerate() {
+    if (!state.generatedImageUrl && !state.lastPrompt) {
+        showError('Generate an infographic first before using smart regeneration');
+        return;
+    }
+
+    // Build the smart prompt
+    const smartPrompt = buildSmartRegenerationPrompt();
+
+    // Use similar seed if locks are active
+    const hasLocks = Object.values(state.lockSettings).some(v => v);
+    let seedToUse = null;
+
+    if (hasLocks && state.lastSeed) {
+        // Vary the seed slightly based on variation strength
+        const seedVariation = Math.floor((state.variationStrength - 1) * 10000);
+        seedToUse = state.lastSeed + Math.floor(Math.random() * seedVariation);
+    }
+
+    // Show loading
+    showLoading();
+    updateLoadingStatus('Smart regenerating with constraints...');
+
+    try {
+        const model = elements.aiModel.value;
+
+        const requestBody = {
+            model: model,
+            messages: [
+                {
+                    role: 'user',
+                    content: state.uploadedImageBase64
+                        ? [
+                            {
+                                type: 'image_url',
+                                image_url: { url: `data:image/jpeg;base64,${state.uploadedImageBase64}` }
+                            },
+                            { type: 'text', text: smartPrompt }
+                        ]
+                        : smartPrompt
+                }
+            ],
+            modalities: ['image', 'text'],
+            max_tokens: 4096
+        };
+
+        if (seedToUse) {
+            requestBody.seed = seedToUse;
+        }
+
+        const imageUrl = await makeGenerationRequest(requestBody);
+        showResult(imageUrl);
+        showSuccess('Smart regeneration complete!');
+
+        // Generate new copy in parallel
+        generateProductCopy().catch(err => console.error('Copy generation error:', err));
+
+    } catch (error) {
+        console.error('Smart regeneration error:', error);
+        hideLoading();
+        showError('Smart regeneration failed: ' + error.message);
     }
 }
 
@@ -1726,12 +2882,27 @@ async function downloadImageFromUrl(url) {
 function setupEventListeners() {
     // Language toggle
     elements.langOptions.forEach(opt => {
-        opt.addEventListener('click', () => updateLanguage(opt.dataset.lang));
+        opt.addEventListener('click', () => {
+            elements.langOptions.forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+            updateLanguage(opt.dataset.lang);
+        });
+    });
+
+    // Theme toggle
+    elements.themeToggle.addEventListener('click', toggleTheme);
+
+    // Style radio buttons - sync with hidden select
+    elements.styleRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            elements.infographicStyle.value = radio.value;
+        });
     });
 
     // Form submission
     elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
+        console.log('Form submitted, calling generateInfographic...');
         generateInfographic();
     });
 
@@ -1881,21 +3052,139 @@ function setupEventListeners() {
             closeHistoryModal();
         }
     });
+
+    // Product Copy Section
+    if (elements.copyToggle) {
+        elements.copyToggle.addEventListener('click', () => {
+            elements.productCopySection.classList.toggle('open');
+        });
+    }
+
+    // Social media tabs
+    if (elements.socialTabs) {
+        elements.socialTabs.querySelectorAll('.copy-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                elements.socialTabs.querySelectorAll('.copy-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                state.activeSocialPlatform = tab.dataset.platform;
+                updateSocialContent();
+            });
+        });
+    }
+
+    // Copy buttons for product copy
+    document.querySelectorAll('.btn-copy-sm[data-target]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            copyProductCopyToClipboard(btn.dataset.target);
+        });
+    });
+
+    // Platform Presets
+    if (elements.platformPresets) {
+        elements.platformPresets.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                applyPlatformPreset(btn.dataset.preset);
+            });
+        });
+    }
+
+    // Template controls
+    if (elements.saveTemplateBtn) {
+        elements.saveTemplateBtn.addEventListener('click', saveTemplate);
+    }
+
+    if (elements.deleteTemplateBtn) {
+        elements.deleteTemplateBtn.addEventListener('click', deleteTemplate);
+    }
+
+    if (elements.templateSelect) {
+        elements.templateSelect.addEventListener('change', (e) => {
+            if (e.target.value) {
+                loadTemplate(e.target.value);
+            }
+        });
+    }
+
+    // AI Analyze button
+    if (elements.analyzeImageBtn) {
+        elements.analyzeImageBtn.addEventListener('click', analyzeProductImage);
+    }
+
+    // Settings Section toggle
+    if (elements.settingsToggle) {
+        elements.settingsToggle.addEventListener('click', () => {
+            elements.settingsSection.classList.toggle('open');
+        });
+    }
+
+    // Smart Regeneration
+    if (elements.smartRegenToggle) {
+        elements.smartRegenToggle.addEventListener('click', () => {
+            elements.smartRegenSection.classList.toggle('open');
+        });
+    }
+
+    // Lock checkboxes
+    if (elements.lockLayout) {
+        elements.lockLayout.addEventListener('change', (e) => {
+            state.lockSettings.layout = e.target.checked;
+        });
+    }
+    if (elements.lockColors) {
+        elements.lockColors.addEventListener('change', (e) => {
+            state.lockSettings.colors = e.target.checked;
+        });
+    }
+    if (elements.lockBackground) {
+        elements.lockBackground.addEventListener('change', (e) => {
+            state.lockSettings.background = e.target.checked;
+        });
+    }
+    if (elements.lockTextStyle) {
+        elements.lockTextStyle.addEventListener('change', (e) => {
+            state.lockSettings.textStyle = e.target.checked;
+        });
+    }
+
+    // Variation strength slider
+    if (elements.variationStrength) {
+        elements.variationStrength.addEventListener('input', (e) => {
+            state.variationStrength = parseInt(e.target.value);
+            if (elements.variationStrengthValue) {
+                elements.variationStrengthValue.textContent = getVariationStrengthLabel(state.variationStrength);
+            }
+        });
+    }
+
+    // Smart regen button
+    if (elements.smartRegenBtn) {
+        elements.smartRegenBtn.addEventListener('click', smartRegenerate);
+    }
 }
 
 // ============================================
 // INITIALIZATION
 // ============================================
 function init() {
+    console.log('NGRAPHICS: Initializing...');
     initElements();
+    loadTheme();
     loadApiKey();
     setupApiKeyHandlers();
     setupImageUploadHandlers();
     setupAdvancedOptionsHandlers();
+    setupColorPickerHandlers();
     setupCharacteristicsHandlers();
     setupEventListeners();
     updateLanguage('ro');
     loadHistory();
+    loadTemplatesFromStorage();
+
+    // Update API status on load
+    if (state.apiKey) {
+        updateApiStatus(true);
+    }
+    console.log('NGRAPHICS: Ready!');
 }
 
 // Initialize on DOM ready
