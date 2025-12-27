@@ -33,6 +33,16 @@
                 </div>
             </div>
             <div class="header-controls">
+                <a href="docs.html" class="docs-link" title="Documentation">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                    <span>Docs</span>
+                </a>
                 <div class="language-toggle">
                     <button class="lang-btn" data-lang="en">EN</button>
                     <button class="lang-btn active" data-lang="ro">RO</button>
@@ -339,42 +349,42 @@
                             Background Style
                         </div>
                         <div class="style-grid">
-                            <label class="style-option">
+                            <label class="style-option" data-tooltip="AI analyzes product colors and creates a complementary design automatically">
                                 <input type="radio" name="style" value="auto" checked>
                                 <span class="style-card">
                                     <span class="style-preview style-auto"></span>
                                     <span class="style-name">Auto</span>
                                 </span>
                             </label>
-                            <label class="style-option">
+                            <label class="style-option" data-tooltip="Bold callout lines, colorful icons, badges, and decorative elements. High visual impact.">
                                 <input type="radio" name="style" value="rich">
                                 <span class="style-card">
                                     <span class="style-preview style-rich"></span>
                                     <span class="style-name">Rich</span>
                                 </span>
                             </label>
-                            <label class="style-option">
+                            <label class="style-option" data-tooltip="Technical diagram style with thin lines connecting features to product parts. Minimal text, icon-focused.">
                                 <input type="radio" name="style" value="callout">
                                 <span class="style-card">
                                     <span class="style-preview style-callout"></span>
                                     <span class="style-name">Technical</span>
                                 </span>
                             </label>
-                            <label class="style-option">
+                            <label class="style-option" data-tooltip="Clean white or light background. Perfect for Amazon listings and e-commerce sites.">
                                 <input type="radio" name="style" value="light">
                                 <span class="style-card">
                                     <span class="style-preview style-light"></span>
                                     <span class="style-name">Light</span>
                                 </span>
                             </label>
-                            <label class="style-option">
+                            <label class="style-option" data-tooltip="Dark or black background that makes the product pop. Premium, dramatic look.">
                                 <input type="radio" name="style" value="dark">
                                 <span class="style-card">
                                     <span class="style-preview style-dark"></span>
                                     <span class="style-name">Dark</span>
                                 </span>
                             </label>
-                            <label class="style-option">
+                            <label class="style-option" data-tooltip="Smooth gradient background derived from product colors. Modern and eye-catching.">
                                 <input type="radio" name="style" value="gradient">
                                 <span class="style-card">
                                     <span class="style-preview style-gradient"></span>
@@ -908,6 +918,141 @@
                                 </svg>
                                 Regenerate with Locks
                             </button>
+                        </div>
+                    </div>
+
+                    <!-- Complementary Images Section -->
+                    <div class="complementary-section" id="complementarySection" style="display: none;">
+                        <button type="button" class="complementary-toggle" id="complementaryToggle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"/>
+                                <rect x="14" y="3" width="7" height="7"/>
+                                <rect x="3" y="14" width="7" height="7"/>
+                                <rect x="14" y="14" width="7" height="7"/>
+                            </svg>
+                            <span>Complementary Images</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="complementary-content">
+                            <!-- Image Type Selection -->
+                            <div class="comp-type-selector">
+                                <label class="field-label">Image Type</label>
+                                <div class="comp-type-buttons">
+                                    <button type="button" class="comp-type-btn active" data-type="closeup">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="11" cy="11" r="8"/>
+                                            <path d="M21 21l-4.35-4.35"/>
+                                            <circle cx="11" cy="11" r="3"/>
+                                        </svg>
+                                        <span>Close-up Detail</span>
+                                    </button>
+                                    <button type="button" class="comp-type-btn" data-type="angle">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                                        </svg>
+                                        <span>Angle Views</span>
+                                    </button>
+                                    <button type="button" class="comp-type-btn" data-type="feature">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                        </svg>
+                                        <span>Feature Highlight</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Close-up Options -->
+                            <div class="comp-options" id="closeupOptions">
+                                <label class="field-label">Focus On</label>
+                                <select class="select-field select-sm" id="closeupFocus">
+                                    <option value="detail">Fine Details & Texture</option>
+                                    <option value="material">Material & Craftsmanship</option>
+                                    <option value="component">Key Component</option>
+                                    <option value="branding">Logo & Branding</option>
+                                    <option value="controls">Controls & Buttons</option>
+                                </select>
+                            </div>
+
+                            <!-- Angle Options -->
+                            <div class="comp-options" id="angleOptions" style="display: none;">
+                                <label class="field-label">Select Angles</label>
+                                <div class="angle-checkboxes">
+                                    <label class="angle-checkbox">
+                                        <input type="checkbox" value="front" checked>
+                                        <span>Front</span>
+                                    </label>
+                                    <label class="angle-checkbox">
+                                        <input type="checkbox" value="back">
+                                        <span>Back</span>
+                                    </label>
+                                    <label class="angle-checkbox">
+                                        <input type="checkbox" value="side">
+                                        <span>Side</span>
+                                    </label>
+                                    <label class="angle-checkbox">
+                                        <input type="checkbox" value="top">
+                                        <span>Top</span>
+                                    </label>
+                                    <label class="angle-checkbox">
+                                        <input type="checkbox" value="threequarter">
+                                        <span>3/4 View</span>
+                                    </label>
+                                    <label class="angle-checkbox">
+                                        <input type="checkbox" value="bottom">
+                                        <span>Bottom</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Feature Options -->
+                            <div class="comp-options" id="featureOptions" style="display: none;">
+                                <label class="field-label">Highlight Feature</label>
+                                <select class="select-field select-sm" id="featureSelect">
+                                    <option value="">Select a feature...</option>
+                                </select>
+                            </div>
+
+                            <!-- Common Options -->
+                            <div class="comp-common-options">
+                                <div class="comp-option-row">
+                                    <label class="field-label">Style</label>
+                                    <div class="style-toggle">
+                                        <button type="button" class="style-btn active" data-style="match">Match Main</button>
+                                        <button type="button" class="style-btn" data-style="variation">Variation</button>
+                                        <button type="button" class="style-btn" data-style="clean">Clean/Isolated</button>
+                                    </div>
+                                </div>
+                                <div class="comp-option-row">
+                                    <label class="field-label">Quantity</label>
+                                    <div class="quantity-selector">
+                                        <button type="button" class="qty-btn active" data-qty="1">1</button>
+                                        <button type="button" class="qty-btn" data-qty="2">2</button>
+                                        <button type="button" class="qty-btn" data-qty="3">3</button>
+                                        <button type="button" class="qty-btn" data-qty="4">4</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Generate Button -->
+                            <button type="button" class="btn-complementary" id="generateComplementaryBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7"/>
+                                    <rect x="14" y="3" width="7" height="7"/>
+                                    <rect x="3" y="14" width="7" height="7"/>
+                                    <path d="M14 14h7v7h-7z" stroke-dasharray="2 2"/>
+                                </svg>
+                                Generate Complementary Images
+                            </button>
+
+                            <!-- Results Grid -->
+                            <div class="comp-results" id="compResults" style="display: none;">
+                                <label class="field-label">Generated Images</label>
+                                <div class="comp-results-grid" id="compResultsGrid"></div>
+                            </div>
                         </div>
                     </div>
 

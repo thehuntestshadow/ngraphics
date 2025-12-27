@@ -48,7 +48,12 @@ const state = {
         background: false,
         textStyle: false
     },
-    variationStrength: 3
+    variationStrength: 3,
+    // Complementary images
+    complementaryType: 'closeup',
+    complementaryStyle: 'match',
+    complementaryQuantity: 1,
+    complementaryImages: []
 };
 
 // ============================================
@@ -357,7 +362,23 @@ function initElements() {
         lockTextStyle: document.getElementById('lockTextStyle'),
         variationStrength: document.getElementById('variationStrength'),
         variationStrengthValue: document.getElementById('variationStrengthValue'),
-        smartRegenBtn: document.getElementById('smartRegenBtn')
+        smartRegenBtn: document.getElementById('smartRegenBtn'),
+
+        // Complementary Images
+        complementarySection: document.getElementById('complementarySection'),
+        complementaryToggle: document.getElementById('complementaryToggle'),
+        compTypeBtns: document.querySelectorAll('.comp-type-btn'),
+        closeupOptions: document.getElementById('closeupOptions'),
+        angleOptions: document.getElementById('angleOptions'),
+        featureOptions: document.getElementById('featureOptions'),
+        closeupFocus: document.getElementById('closeupFocus'),
+        angleCheckboxes: document.querySelectorAll('#angleOptions .angle-checkbox input'),
+        featureSelect: document.getElementById('featureSelect'),
+        compStyleBtns: document.querySelectorAll('.style-btn'),
+        compQtyBtns: document.querySelectorAll('.qty-btn'),
+        generateCompBtn: document.getElementById('generateComplementaryBtn'),
+        compResultsGrid: document.getElementById('compResultsGrid'),
+        compResultsContainer: document.getElementById('compResults')
     };
 }
 
@@ -1027,6 +1048,9 @@ function showResult(imageUrl) {
     addToHistory(imageUrl, title);
 
     generateAltText(imageUrl);
+
+    // Show complementary images section
+    showComplementarySection();
 }
 
 function showMultipleResults(imageUrls) {
@@ -1073,6 +1097,9 @@ function showMultipleResults(imageUrls) {
     });
 
     generateAltText(imageUrls[0]);
+
+    // Show complementary images section
+    showComplementarySection();
 }
 
 function resetToPlaceholder() {
@@ -2194,6 +2221,267 @@ function copyProductCopyToClipboard(target) {
 }
 
 // ============================================
+// COMPLEMENTARY IMAGES
+// ============================================
+function populateFeatureSelect() {
+    if (!elements.featureSelect) return;
+
+    elements.featureSelect.innerHTML = '<option value="">Select a feature...</option>';
+
+    const charInputs = elements.characteristicsList.querySelectorAll('.char-item');
+    charInputs.forEach((item, index) => {
+        const input = item.querySelector('.input-field');
+        const text = input ? input.value.trim() : '';
+        if (text) {
+            const option = document.createElement('option');
+            option.value = text;
+            option.textContent = text;
+            elements.featureSelect.appendChild(option);
+        }
+    });
+}
+
+function showComplementarySection() {
+    if (elements.complementarySection) {
+        elements.complementarySection.style.display = 'block';
+        populateFeatureSelect();
+    }
+}
+
+function buildComplementaryPrompt() {
+    const productTitle = elements.productTitle.value.trim() || 'Product';
+    const type = state.complementaryType;
+    const style = state.complementaryStyle;
+
+    // Get the main infographic style for matching
+    const mainStyle = document.querySelector('input[name="style"]:checked')?.value || 'auto';
+
+    let typePrompt = '';
+    let focusDetail = '';
+
+    switch (type) {
+        case 'closeup':
+            focusDetail = elements.closeupFocus?.value || 'detail';
+            const closeupFocusMap = {
+                'detail': 'focusing on intricate details, textures, and craftsmanship',
+                'texture': 'highlighting material textures, surface quality, and finish',
+                'material': 'showcasing the materials, build quality, and construction',
+                'logo': 'featuring the brand logo, markings, or emblems prominently'
+            };
+            typePrompt = `Create a professional close-up product photograph of ${productTitle}, ${closeupFocusMap[focusDetail] || closeupFocusMap.detail}.
+Use dramatic macro-style photography with shallow depth of field. The image should feel premium and highlight the quality of the product.`;
+            break;
+
+        case 'angle':
+            // Get selected angles from checkboxes
+            const selectedAngles = [];
+            if (elements.angleCheckboxes) {
+                elements.angleCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        selectedAngles.push(checkbox.value);
+                    }
+                });
+            }
+            if (selectedAngles.length === 0) {
+                selectedAngles.push('front');
+            }
+            const angleViewMap = {
+                'front': 'straight-on front view showing the product face',
+                'side': 'side profile view showing the silhouette',
+                'threequarter': '3/4 angle view showing depth and dimension',
+                'back': 'back/rear view showing ports, labels, or back features',
+                'top': 'top-down bird\'s eye view',
+                'bottom': 'underneath view showing the base'
+            };
+            const angleDescriptions = selectedAngles.map(angle => angleViewMap[angle] || angle).join(', ');
+            typePrompt = `Create a professional product photograph of ${productTitle} from ${angleDescriptions}.
+Use clean studio lighting with soft shadows. The image should be on a clean, simple background that complements the product.`;
+            break;
+
+        case 'feature':
+            focusDetail = elements.featureSelect?.value || '';
+            if (focusDetail) {
+                typePrompt = `Create a product infographic highlighting the specific feature: "${focusDetail}" of ${productTitle}.
+Show this feature prominently with visual callouts, icons, or diagrams that explain its benefit. Use clear typography and visual hierarchy to emphasize this feature.`;
+            } else {
+                typePrompt = `Create a product infographic showing key features of ${productTitle} with visual callouts and icons.
+Highlight the most important features with clear labels and visual explanations.`;
+            }
+            break;
+    }
+
+    // Style instructions
+    let stylePrompt = '';
+    if (style === 'match') {
+        stylePrompt = `IMPORTANT: Match the visual style of the main product infographic. Use similar colors, typography, and design elements for consistency.`;
+
+        // Add details from the main style if available
+        if (mainStyle === 'light') {
+            stylePrompt += ' Use a light, clean background with professional lighting.';
+        } else if (mainStyle === 'dark') {
+            stylePrompt += ' Use a dark, moody background with dramatic lighting.';
+        } else if (mainStyle === 'gradient') {
+            stylePrompt += ' Use gradient backgrounds and vibrant colors.';
+        } else if (mainStyle === 'rich') {
+            stylePrompt += ' Use rich callouts, colorful accents, and detailed visual elements.';
+        }
+    } else if (style === 'variation') {
+        stylePrompt = `Create a creative variation with a different perspective or artistic interpretation. Maintain product accuracy but experiment with lighting, angles, or artistic effects.`;
+    } else if (style === 'clean') {
+        stylePrompt = `Create a clean, isolated product shot on a pure white or neutral background. Professional e-commerce style with minimal distractions. Focus on crisp, clear product presentation.`;
+    } else {
+        stylePrompt = `Create a clean, professional image that could work as a standalone product shot. Use neutral styling that would fit various marketing contexts.`;
+    }
+
+    // Language
+    const language = state.language === 'ro' ? 'Romanian' : 'English';
+    const langInstruction = state.language === 'ro'
+        ? 'Any text should be in Romanian with proper characters (ă, â, î, ș, ț).'
+        : 'Any text should be in English.';
+
+    return `${typePrompt}
+
+${stylePrompt}
+
+${langInstruction}
+
+Create a high-quality, marketing-ready image suitable for e-commerce and promotional use.`;
+}
+
+async function generateComplementaryImages() {
+    if (!state.apiKey) {
+        showError('Please enter your OpenRouter API key first');
+        return;
+    }
+
+    if (!state.generatedImageUrl) {
+        showError('Please generate a main infographic first');
+        return;
+    }
+
+    const quantity = state.complementaryQuantity;
+    const generateBtn = elements.generateCompBtn;
+
+    // Show loading state
+    if (generateBtn) {
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = `<div class="btn-loader">
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+        </div> Generating...`;
+    }
+
+    // Show results container with loading placeholders
+    if (elements.compResultsContainer) {
+        elements.compResultsContainer.style.display = 'block';
+    }
+
+    if (elements.compResultsGrid) {
+        elements.compResultsGrid.innerHTML = Array(quantity).fill(`
+            <div class="comp-result-item loading">
+                <div class="comp-result-placeholder">
+                    <div class="loader loader-sm">
+                        <div class="loader-ring"></div>
+                        <div class="loader-ring"></div>
+                        <div class="loader-ring"></div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    const prompt = buildComplementaryPrompt();
+    const model = elements.aiModel.value;
+
+    try {
+        const requests = [];
+        const baseSeed = Math.floor(Math.random() * 999999999);
+
+        for (let i = 0; i < quantity; i++) {
+            let messageContent;
+
+            if (state.uploadedImageBase64) {
+                messageContent = [
+                    { type: 'text', text: prompt },
+                    { type: 'image_url', image_url: { url: state.uploadedImageBase64 } }
+                ];
+            } else {
+                messageContent = prompt;
+            }
+
+            const requestBody = {
+                model: model,
+                messages: [{ role: 'user', content: messageContent }],
+                modalities: ['image', 'text'],
+                max_tokens: 4096,
+                seed: baseSeed + i
+            };
+
+            requests.push(
+                makeGenerationRequest(requestBody).catch(err => {
+                    console.error(`Complementary image ${i + 1} failed:`, err);
+                    return null;
+                })
+            );
+        }
+
+        const results = await Promise.all(requests);
+        state.complementaryImages = results.filter(url => url !== null);
+
+        // Update the grid with results
+        if (elements.compResultsGrid) {
+            if (state.complementaryImages.length === 0) {
+                elements.compResultsGrid.innerHTML = `
+                    <div class="comp-error">
+                        Failed to generate images. Please try again.
+                    </div>
+                `;
+            } else {
+                elements.compResultsGrid.innerHTML = state.complementaryImages.map((url, index) => `
+                    <div class="comp-result-item">
+                        <img src="${url}" alt="Complementary image ${index + 1}" class="comp-result-img" onclick="openLightbox('${url}')">
+                        <div class="comp-result-actions">
+                            <button type="button" class="comp-download-btn" onclick="downloadImageFromUrl('${url}', 'complementary-${index + 1}.png')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        if (state.complementaryImages.length > 0) {
+            showSuccess(`Generated ${state.complementaryImages.length} complementary image${state.complementaryImages.length > 1 ? 's' : ''}!`);
+        }
+
+    } catch (error) {
+        console.error('Complementary generation error:', error);
+        showError('Failed to generate complementary images');
+
+        if (elements.compResultsGrid) {
+            elements.compResultsGrid.innerHTML = `
+                <div class="comp-error">
+                    Error: ${error.message}
+                </div>
+            `;
+        }
+    } finally {
+        // Reset button
+        if (generateBtn) {
+            generateBtn.disabled = false;
+            generateBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg> Generate`;
+        }
+    }
+}
+
+// ============================================
 // TEMPLATES & PRESETS SYSTEM
 // ============================================
 function loadTemplatesFromStorage() {
@@ -2906,6 +3194,20 @@ function setupEventListeners() {
         generateInfographic();
     });
 
+    // Generate button mouse tracking for gradient effect
+    elements.generateBtn.addEventListener('mousemove', (e) => {
+        const rect = elements.generateBtn.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        elements.generateBtn.style.setProperty('--mouse-x', `${x}%`);
+        elements.generateBtn.style.setProperty('--mouse-y', `${y}%`);
+    });
+
+    elements.generateBtn.addEventListener('mouseleave', () => {
+        elements.generateBtn.style.setProperty('--mouse-x', '50%');
+        elements.generateBtn.style.setProperty('--mouse-y', '50%');
+    });
+
     // Download button
     elements.downloadBtn.addEventListener('click', downloadImage);
 
@@ -3159,6 +3461,66 @@ function setupEventListeners() {
     // Smart regen button
     if (elements.smartRegenBtn) {
         elements.smartRegenBtn.addEventListener('click', smartRegenerate);
+    }
+
+    // Complementary Images Section
+    if (elements.complementaryToggle) {
+        elements.complementaryToggle.addEventListener('click', () => {
+            elements.complementarySection.classList.toggle('open');
+        });
+    }
+
+    // Complementary type buttons
+    if (elements.compTypeBtns) {
+        elements.compTypeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                elements.compTypeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.complementaryType = btn.dataset.type;
+
+                // Show/hide appropriate options panel
+                if (elements.closeupOptions) {
+                    elements.closeupOptions.style.display = state.complementaryType === 'closeup' ? 'block' : 'none';
+                }
+                if (elements.angleOptions) {
+                    elements.angleOptions.style.display = state.complementaryType === 'angle' ? 'block' : 'none';
+                }
+                if (elements.featureOptions) {
+                    elements.featureOptions.style.display = state.complementaryType === 'feature' ? 'block' : 'none';
+                    // Populate feature select when switching to feature type
+                    if (state.complementaryType === 'feature') {
+                        populateFeatureSelect();
+                    }
+                }
+            });
+        });
+    }
+
+    // Complementary style buttons
+    if (elements.compStyleBtns) {
+        elements.compStyleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                elements.compStyleBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.complementaryStyle = btn.dataset.style;
+            });
+        });
+    }
+
+    // Complementary quantity buttons
+    if (elements.compQtyBtns) {
+        elements.compQtyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                elements.compQtyBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.complementaryQuantity = parseInt(btn.dataset.qty) || 1;
+            });
+        });
+    }
+
+    // Generate complementary images button
+    if (elements.generateCompBtn) {
+        elements.generateCompBtn.addEventListener('click', generateComplementaryImages);
     }
 }
 

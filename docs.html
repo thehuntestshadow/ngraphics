@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - NGRAPHICS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+    <!-- Noise overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Gradient orbs for atmosphere -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <a href="index.html" class="logo-link">
+                    <div class="logo-mark">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">NGRAPHICS</span>
+                        <span class="logo-subtitle">Documentation</span>
+                    </div>
+                </a>
+            </div>
+            <div class="header-controls">
+                <a href="index.html" class="btn-back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Back to App
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Documentation Content -->
+    <main class="docs-main">
+        <div class="docs-container">
+            <!-- Sidebar Navigation -->
+            <aside class="docs-sidebar">
+                <nav class="docs-nav">
+                    <div class="nav-section">
+                        <h3 class="nav-title">Getting Started</h3>
+                        <ul class="nav-list">
+                            <li><a href="#introduction">Introduction</a></li>
+                            <li><a href="#quick-start">Quick Start Guide</a></li>
+                            <li><a href="#api-setup">API Setup</a></li>
+                        </ul>
+                    </div>
+                    <div class="nav-section">
+                        <h3 class="nav-title">Core Features</h3>
+                        <ul class="nav-list">
+                            <li><a href="#product-info">Product Information</a></li>
+                            <li><a href="#characteristics">Characteristics & Features</a></li>
+                            <li><a href="#styles">Style Presets</a></li>
+                            <li><a href="#image-upload">Product Image Upload</a></li>
+                        </ul>
+                    </div>
+                    <div class="nav-section">
+                        <h3 class="nav-title">Advanced Options</h3>
+                        <ul class="nav-list">
+                            <li><a href="#layout">Layout & Composition</a></li>
+                            <li><a href="#visual-style">Visual Style Controls</a></li>
+                            <li><a href="#colors">Colors & Branding</a></li>
+                            <li><a href="#callout-lines">Callout Lines</a></li>
+                            <li><a href="#style-reference">Style Reference</a></li>
+                            <li><a href="#seed-control">Seed Control</a></li>
+                        </ul>
+                    </div>
+                    <div class="nav-section">
+                        <h3 class="nav-title">Output Features</h3>
+                        <ul class="nav-list">
+                            <li><a href="#variations">Image Variations</a></li>
+                            <li><a href="#complementary">Complementary Images</a></li>
+                            <li><a href="#marketing-copy">Marketing Copy</a></li>
+                            <li><a href="#watermark">Watermark</a></li>
+                            <li><a href="#alt-text">SEO Alt Text</a></li>
+                        </ul>
+                    </div>
+                    <div class="nav-section">
+                        <h3 class="nav-title">Tools & Utilities</h3>
+                        <ul class="nav-list">
+                            <li><a href="#templates">Templates & Presets</a></li>
+                            <li><a href="#ai-analyze">AI Image Analysis</a></li>
+                            <li><a href="#smart-regen">Smart Regeneration</a></li>
+                            <li><a href="#history">Generation History</a></li>
+                            <li><a href="#keyboard">Keyboard Shortcuts</a></li>
+                        </ul>
+                    </div>
+                    <div class="nav-section">
+                        <h3 class="nav-title">Tips & Best Practices</h3>
+                        <ul class="nav-list">
+                            <li><a href="#tips-general">General Tips</a></li>
+                            <li><a href="#tips-prompts">Writing Effective Prompts</a></li>
+                            <li><a href="#tips-images">Image Quality</a></li>
+                            <li><a href="#tips-platforms">Platform-Specific Tips</a></li>
+                            <li><a href="#troubleshooting">Troubleshooting</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </aside>
+
+            <!-- Main Documentation Content -->
+            <div class="docs-content">
+                <!-- Introduction -->
+                <section id="introduction" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">01</span>
+                        <h1>Introduction</h1>
+                    </div>
+                    <div class="section-body">
+                        <p class="lead">NGRAPHICS is an AI-powered product infographic generator that creates professional marketing visuals for e-commerce and social media platforms.</p>
+
+                        <p>Using advanced AI image generation models through OpenRouter, NGRAPHICS transforms your product information into stunning infographics complete with callouts, icons, and professional styling.</p>
+
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                                        <path d="M21 15l-5-5L5 21"/>
+                                    </svg>
+                                </div>
+                                <h3>AI Image Generation</h3>
+                                <p>Generate professional product infographics using state-of-the-art AI models like Gemini, GPT-4o, and Flux.</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 20h9"/>
+                                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                                    </svg>
+                                </div>
+                                <h3>Marketing Copy</h3>
+                                <p>Automatically generate product descriptions, taglines, social media captions, and SEO meta text.</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="7" height="7"/>
+                                        <rect x="14" y="3" width="7" height="7"/>
+                                        <rect x="3" y="14" width="7" height="7"/>
+                                        <rect x="14" y="14" width="7" height="7"/>
+                                    </svg>
+                                </div>
+                                <h3>Multiple Styles</h3>
+                                <p>Choose from various style presets or customize every aspect of your infographic's appearance.</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                                    </svg>
+                                </div>
+                                <h3>Platform Presets</h3>
+                                <p>One-click presets optimized for Amazon, Shopify, Instagram, Facebook, and more.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Start -->
+                <section id="quick-start" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">02</span>
+                        <h1>Quick Start Guide</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Get your first infographic generated in under 2 minutes:</p>
+
+                        <div class="steps-list">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h3>Enter Your API Key</h3>
+                                    <p>Scroll to the bottom of the configuration panel and expand "API & Model Settings". Paste your OpenRouter API key and click "Save".</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h3>Add Product Title</h3>
+                                    <p>Enter your product name in the "Product Title" field. Be specific and descriptive.</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h3>Add Product Features</h3>
+                                    <p>Add 3-6 key features or characteristics. Use the star button to mark your most important features.</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h3>Upload Product Image (Optional)</h3>
+                                    <p>Drag and drop or click to upload a product photo. The AI will use this as a reference.</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">5</div>
+                                <div class="step-content">
+                                    <h3>Choose a Style</h3>
+                                    <p>Select a visual style from the style options, or leave on "Auto" for AI-recommended styling.</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">6</div>
+                                <div class="step-content">
+                                    <h3>Generate!</h3>
+                                    <p>Click "Generate Infographic" or press <kbd>Ctrl</kbd>+<kbd>Enter</kbd>. Your infographic will appear in the output panel.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- API Setup -->
+                <section id="api-setup" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">03</span>
+                        <h1>API Setup</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>NGRAPHICS uses OpenRouter to access various AI image generation models. Here's how to set it up:</p>
+
+                        <h2>Getting an OpenRouter API Key</h2>
+                        <ol class="numbered-list">
+                            <li>Visit <a href="https://openrouter.ai" target="_blank">openrouter.ai</a> and create an account</li>
+                            <li>Navigate to the API Keys section in your dashboard</li>
+                            <li>Create a new API key with appropriate permissions</li>
+                            <li>Copy the key (it starts with <code>sk-or-</code>)</li>
+                        </ol>
+
+                        <div class="callout callout-info">
+                            <div class="callout-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 16v-4M12 8h.01"/>
+                                </svg>
+                            </div>
+                            <div class="callout-content">
+                                <h4>API Key Security</h4>
+                                <p>Your API key is stored locally in your browser and never sent to any server other than OpenRouter. It persists across sessions for convenience.</p>
+                            </div>
+                        </div>
+
+                        <h2>Available AI Models</h2>
+                        <p>NGRAPHICS supports multiple AI models, each with different strengths:</p>
+
+                        <table class="docs-table">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Best For</th>
+                                    <th>Speed</th>
+                                    <th>Quality</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Gemini 2.0 Flash</strong></td>
+                                    <td>Fast iterations, general use</td>
+                                    <td>Fast</td>
+                                    <td>Good</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>GPT-4o</strong></td>
+                                    <td>Complex layouts, text accuracy</td>
+                                    <td>Medium</td>
+                                    <td>Excellent</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Flux</strong></td>
+                                    <td>Photorealistic images</td>
+                                    <td>Medium</td>
+                                    <td>Excellent</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Riverflow</strong></td>
+                                    <td>Artistic styles</td>
+                                    <td>Medium</td>
+                                    <td>Good</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Product Information -->
+                <section id="product-info" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">04</span>
+                        <h1>Product Information</h1>
+                    </div>
+                    <div class="section-body">
+                        <h2>Product Title</h2>
+                        <p>The product title is the main heading that appears on your infographic. For best results:</p>
+                        <ul class="bullet-list">
+                            <li>Be specific: "Premium Wireless Noise-Cancelling Headphones" is better than "Headphones"</li>
+                            <li>Include the brand name if relevant</li>
+                            <li>Keep it concise but descriptive (3-8 words)</li>
+                            <li>Match the language setting (English or Romanian)</li>
+                        </ul>
+
+                        <h2>Language Selection</h2>
+                        <p>Toggle between English (EN) and Romanian (RO) in the header. This affects:</p>
+                        <ul class="bullet-list">
+                            <li>Generated text on the infographic</li>
+                            <li>Marketing copy output</li>
+                            <li>Placeholder text and hints</li>
+                            <li>Romanian mode uses proper diacritics (ă, â, î, ș, ț)</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Characteristics -->
+                <section id="characteristics" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">05</span>
+                        <h1>Characteristics & Features</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Product characteristics are the key features displayed on your infographic with callouts and icons.</p>
+
+                        <h2>Adding Features</h2>
+                        <ul class="bullet-list">
+                            <li>Click "Add Characteristic" to add new feature fields</li>
+                            <li>Enter specific, benefit-focused features</li>
+                            <li>Aim for 3-6 features for optimal layout</li>
+                        </ul>
+
+                        <h2>Star (Primary) Features</h2>
+                        <p>Click the star icon next to any feature to mark it as primary:</p>
+                        <ul class="bullet-list">
+                            <li>Starred features appear larger or more prominent</li>
+                            <li>They're emphasized in the marketing copy</li>
+                            <li>Use for your 1-2 most important selling points</li>
+                        </ul>
+
+                        <h2>Auto-Icon Suggestions</h2>
+                        <p>As you type, NGRAPHICS automatically suggests relevant icons based on keywords:</p>
+                        <div class="icon-examples">
+                            <div class="icon-example">
+                                <span class="keyword">"battery"</span>
+                                <span class="arrow">→</span>
+                                <span class="icon-name">Battery icon</span>
+                            </div>
+                            <div class="icon-example">
+                                <span class="keyword">"waterproof"</span>
+                                <span class="arrow">→</span>
+                                <span class="icon-name">Water drop icon</span>
+                            </div>
+                            <div class="icon-example">
+                                <span class="keyword">"bluetooth"</span>
+                                <span class="arrow">→</span>
+                                <span class="icon-name">Bluetooth icon</span>
+                            </div>
+                            <div class="icon-example">
+                                <span class="keyword">"camera"</span>
+                                <span class="arrow">→</span>
+                                <span class="icon-name">Camera icon</span>
+                            </div>
+                        </div>
+                        <p>You can also manually select icons using the icon dropdown.</p>
+
+                        <div class="callout callout-tip">
+                            <div class="callout-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </div>
+                            <div class="callout-content">
+                                <h4>Pro Tip</h4>
+                                <p>Write features as benefits, not just specs. Instead of "5000mAh battery", try "5000mAh battery for 30 hours of playback".</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Styles -->
+                <section id="styles" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">06</span>
+                        <h1>Style Presets</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Choose from several visual styles to match your brand and platform:</p>
+
+                        <div class="style-cards">
+                            <div class="style-card">
+                                <h3>Auto</h3>
+                                <p>AI automatically selects the best style based on your product and features. Recommended for most cases.</p>
+                            </div>
+                            <div class="style-card">
+                                <h3>Rich Callouts</h3>
+                                <p>Colorful, detailed callouts with thick connecting lines. High visual density with vibrant accents. Great for feature-heavy products.</p>
+                            </div>
+                            <div class="style-card">
+                                <h3>Callout Lines</h3>
+                                <p>Clean technical style with thin lines connecting features to the product. Professional, minimalist aesthetic. Perfect for tech products.</p>
+                            </div>
+                            <div class="style-card">
+                                <h3>Light Background</h3>
+                                <p>Clean white or light background with soft shadows. Ideal for Amazon listings and e-commerce sites requiring white backgrounds.</p>
+                            </div>
+                            <div class="style-card">
+                                <h3>Dark Background</h3>
+                                <p>Dramatic dark background with product highlighting. Premium, luxurious feel. Great for high-end electronics and accessories.</p>
+                            </div>
+                            <div class="style-card">
+                                <h3>Gradient Background</h3>
+                                <p>Modern gradient backgrounds with vibrant colors. Eye-catching and dynamic. Perfect for social media and modern brands.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Image Upload -->
+                <section id="image-upload" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">07</span>
+                        <h1>Product Image Upload</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Uploading a product image helps the AI create more accurate and realistic infographics.</p>
+
+                        <h2>Image Requirements</h2>
+                        <ul class="bullet-list">
+                            <li>Supported formats: JPG, PNG, WebP</li>
+                            <li>Recommended resolution: 1000x1000 pixels or higher</li>
+                            <li>Clean background preferred (white or transparent)</li>
+                            <li>Product should be clearly visible and well-lit</li>
+                        </ul>
+
+                        <h2>Auto-Enhance</h2>
+                        <p>Enable "Auto-enhance" to automatically improve your product photo:</p>
+                        <ul class="bullet-list">
+                            <li>Adjusts brightness and contrast</li>
+                            <li>Applies auto-levels for better color balance</li>
+                            <li>Sharpens details slightly</li>
+                        </ul>
+
+                        <h2>AI Image Analysis</h2>
+                        <p>Click "Analyze with AI" to automatically extract:</p>
+                        <ul class="bullet-list">
+                            <li>Product title from the image</li>
+                            <li>Visible features and characteristics</li>
+                            <li>Color palette suggestions</li>
+                        </ul>
+
+                        <div class="callout callout-warning">
+                            <div class="callout-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                                    <line x1="12" y1="9" x2="12" y2="13"/>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                </svg>
+                            </div>
+                            <div class="callout-content">
+                                <h4>Image Size</h4>
+                                <p>Large images are automatically resized to reduce API costs and improve speed. For best results, crop your image to focus on the product before uploading.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Layout & Composition -->
+                <section id="layout" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">08</span>
+                        <h1>Layout & Composition</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Control how your product is positioned and framed in the infographic.</p>
+
+                        <h2>Layout Template</h2>
+                        <table class="docs-table">
+                            <thead>
+                                <tr>
+                                    <th>Option</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Auto</strong></td><td>AI chooses optimal layout based on content</td></tr>
+                                <tr><td><strong>Product Center</strong></td><td>Product prominently centered with features around it</td></tr>
+                                <tr><td><strong>Product Left</strong></td><td>Product on left, features listed on right</td></tr>
+                                <tr><td><strong>Product Right</strong></td><td>Product on right, features listed on left</td></tr>
+                                <tr><td><strong>Product Top</strong></td><td>Product at top, features below (vertical format)</td></tr>
+                                <tr><td><strong>Grid</strong></td><td>Features arranged in a grid layout around product</td></tr>
+                                <tr><td><strong>Hero</strong></td><td>Large product image with overlay text</td></tr>
+                            </tbody>
+                        </table>
+
+                        <h2>Aspect Ratio</h2>
+                        <table class="docs-table">
+                            <thead>
+                                <tr>
+                                    <th>Ratio</th>
+                                    <th>Best For</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>1:1 (Square)</strong></td><td>Instagram posts, Amazon listings, Shopify</td></tr>
+                                <tr><td><strong>4:5 (Portrait)</strong></td><td>Instagram feed, Etsy</td></tr>
+                                <tr><td><strong>2:3 (Portrait)</strong></td><td>Pinterest, product detail pages</td></tr>
+                                <tr><td><strong>16:9 (Landscape)</strong></td><td>Facebook posts, website banners</td></tr>
+                                <tr><td><strong>9:16 (Story)</strong></td><td>Instagram/Facebook Stories, TikTok</td></tr>
+                            </tbody>
+                        </table>
+
+                        <h2>Product Focus</h2>
+                        <p>Control how the product is presented:</p>
+                        <ul class="bullet-list">
+                            <li><strong>Full Product:</strong> Entire product visible</li>
+                            <li><strong>Close-up:</strong> Detailed view of product</li>
+                            <li><strong>Dynamic Angle:</strong> Creative, angled perspective</li>
+                            <li><strong>In Context:</strong> Product shown in use</li>
+                            <li><strong>Floating:</strong> Product floating with shadow</li>
+                            <li><strong>Multiple Views:</strong> Several angles shown</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Visual Style Controls -->
+                <section id="visual-style" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">09</span>
+                        <h1>Visual Style Controls</h1>
+                    </div>
+                    <div class="section-body">
+                        <h2>Visual Density</h2>
+                        <p>Control how much visual information appears on your infographic:</p>
+                        <ul class="bullet-list">
+                            <li><strong>1 (Minimal):</strong> Clean, spacious, few elements</li>
+                            <li><strong>2-3 (Balanced):</strong> Good balance of content and space</li>
+                            <li><strong>4-5 (Rich):</strong> More decorative elements, busier design</li>
+                        </ul>
+
+                        <h2>Font Style</h2>
+                        <p>Choose typography that matches your brand:</p>
+                        <ul class="bullet-list">
+                            <li><strong>Modern Sans-Serif:</strong> Clean, contemporary look</li>
+                            <li><strong>Classic Serif:</strong> Traditional, trustworthy feel</li>
+                            <li><strong>Bold:</strong> Strong, impactful headlines</li>
+                            <li><strong>Playful:</strong> Fun, friendly aesthetic</li>
+                            <li><strong>Technical:</strong> Precise, engineering-focused</li>
+                            <li><strong>Elegant:</strong> Refined, luxury appearance</li>
+                        </ul>
+
+                        <h2>Icon Style</h2>
+                        <p>Select how icons appear next to features:</p>
+                        <ul class="bullet-list">
+                            <li><strong>Flat:</strong> Simple, solid-color icons</li>
+                            <li><strong>Outlined:</strong> Line-drawn icons</li>
+                            <li><strong>3D:</strong> Icons with depth and shading</li>
+                            <li><strong>Minimal:</strong> Very simple, abstract icons</li>
+                            <li><strong>Pictorial:</strong> Detailed, image-like icons</li>
+                            <li><strong>None:</strong> No icons, text only</li>
+                        </ul>
+
+                        <h2>Background Type</h2>
+                        <ul class="bullet-list">
+                            <li><strong>Solid:</strong> Single color background</li>
+                            <li><strong>Subtle Texture:</strong> Light texture overlay</li>
+                            <li><strong>Textured:</strong> More pronounced texture</li>
+                            <li><strong>Gradient:</strong> Color gradient background</li>
+                            <li><strong>Pattern:</strong> Repeating pattern background</li>
+                            <li><strong>Environmental:</strong> Contextual background scene</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Colors & Branding -->
+                <section id="colors" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">10</span>
+                        <h1>Colors & Branding</h1>
+                    </div>
+                    <div class="section-body">
+                        <h2>Color Harmony</h2>
+                        <p>Choose how colors are selected for your infographic:</p>
+                        <ul class="bullet-list">
+                            <li><strong>Match Product:</strong> Colors derived from the product itself</li>
+                            <li><strong>Complementary:</strong> Opposite colors on the color wheel</li>
+                            <li><strong>Analogous:</strong> Adjacent colors for harmony</li>
+                            <li><strong>Triadic:</strong> Three evenly-spaced colors</li>
+                            <li><strong>Monochrome:</strong> Single color in various shades</li>
+                            <li><strong>High Contrast:</strong> Bold, contrasting colors</li>
+                        </ul>
+
+                        <h2>Brand Colors</h2>
+                        <p>Add your brand colors to be incorporated into the infographic:</p>
+                        <ul class="bullet-list">
+                            <li>Click preset color swatches or use the custom color picker</li>
+                            <li>Add up to 5 brand colors</li>
+                            <li>These colors influence backgrounds, accents, and text</li>
+                            <li>Click a selected color to remove it</li>
+                        </ul>
+
+                        <div class="callout callout-tip">
+                            <div class="callout-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </div>
+                            <div class="callout-content">
+                                <h4>Pro Tip</h4>
+                                <p>For consistent branding, save your settings as a template after configuring your brand colors.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Callout Lines -->
+                <section id="callout-lines" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">11</span>
+                        <h1>Callout Lines</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Enable callout lines to connect features to specific parts of the product with visual lines.</p>
+
+                        <h2>Line Thickness</h2>
+                        <p>Adjust from thin (1) to thick (5):</p>
+                        <ul class="bullet-list">
+                            <li><strong>1-2:</strong> Subtle, technical look</li>
+                            <li><strong>3:</strong> Balanced visibility</li>
+                            <li><strong>4-5:</strong> Bold, prominent lines</li>
+                        </ul>
+
+                        <h2>Line Color Mode</h2>
+                        <ul class="bullet-list">
+                            <li><strong>Match Theme:</strong> Lines match the overall color scheme</li>
+                            <li><strong>Multicolor:</strong> Each callout line has a different color</li>
+                            <li><strong>Monochrome:</strong> All lines in a single neutral color</li>
+                            <li><strong>Gradient:</strong> Lines with gradient coloring</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Style Reference -->
+                <section id="style-reference" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">12</span>
+                        <h1>Style Reference</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Upload a reference image to guide the AI's visual style.</p>
+
+                        <h2>How It Works</h2>
+                        <p>The AI analyzes your reference image and attempts to match:</p>
+                        <ul class="bullet-list">
+                            <li>Color palette and tones</li>
+                            <li>Visual style and mood</li>
+                            <li>Layout patterns</li>
+                            <li>Typography style</li>
+                        </ul>
+
+                        <h2>Style Strength</h2>
+                        <p>Control how strongly the reference influences the output:</p>
+                        <ul class="bullet-list">
+                            <li><strong>10-30%:</strong> Subtle influence, mostly original style</li>
+                            <li><strong>40-60%:</strong> Balanced blend of reference and content</li>
+                            <li><strong>70-100%:</strong> Strong adherence to reference style</li>
+                        </ul>
+
+                        <div class="callout callout-info">
+                            <div class="callout-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 16v-4M12 8h.01"/>
+                                </svg>
+                            </div>
+                            <div class="callout-content">
+                                <h4>Best References</h4>
+                                <p>Use existing infographics, design mockups, or brand materials as references. Avoid photos of random objects.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Seed Control -->
+                <section id="seed-control" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">13</span>
+                        <h1>Seed Control</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Seeds allow you to reproduce or vary specific generations.</p>
+
+                        <h2>Random Seed</h2>
+                        <p>When enabled (default), each generation uses a random seed, producing unique results every time.</p>
+
+                        <h2>Fixed Seed</h2>
+                        <p>Disable random seed and enter a specific number to:</p>
+                        <ul class="bullet-list">
+                            <li>Reproduce a previous result</li>
+                            <li>Create variations with minor setting changes</li>
+                            <li>Share reproducible results with others</li>
+                        </ul>
+
+                        <h2>Copying Seeds</h2>
+                        <p>After generation, the seed is displayed below the image. Click "Copy" to save it for later use.</p>
+                    </div>
+                </section>
+
+                <!-- Image Variations -->
+                <section id="variations" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">14</span>
+                        <h1>Image Variations</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Generate multiple versions of your infographic simultaneously.</p>
+
+                        <h2>How It Works</h2>
+                        <ul class="bullet-list">
+                            <li>Select 1, 2, or 4 variations in Advanced Options</li>
+                            <li>Each variation uses a sequential seed (base seed + 0, 1, 2, 3)</li>
+                            <li>All variations are generated in parallel for speed</li>
+                            <li>Click any variation to select it as the primary image</li>
+                            <li>Double-click to open in lightbox</li>
+                        </ul>
+
+                        <div class="callout callout-tip">
+                            <div class="callout-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </div>
+                            <div class="callout-content">
+                                <h4>Pro Tip</h4>
+                                <p>Generate 4 variations on your first attempt, then refine the best one using feedback or smart regeneration.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Complementary Images -->
+                <section id="complementary" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">15</span>
+                        <h1>Complementary Images</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>After generating your main infographic, create additional supporting images.</p>
+
+                        <h2>Image Types</h2>
+                        <table class="docs-table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Options</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Close-up Detail</strong></td>
+                                    <td>Macro-style shots highlighting product quality</td>
+                                    <td>Fine details, Material, Component, Branding, Controls</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Angle Views</strong></td>
+                                    <td>Product photographed from different perspectives</td>
+                                    <td>Front, Back, Side, Top, 3/4 View, Bottom</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Feature Highlight</strong></td>
+                                    <td>Focused infographic on a single feature</td>
+                                    <td>Select from your added characteristics</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h2>Style Options</h2>
+                        <ul class="bullet-list">
+                            <li><strong>Match Main:</strong> Matches your primary infographic's style</li>
+                            <li><strong>Variation:</strong> Creative artistic interpretation</li>
+                            <li><strong>Clean/Isolated:</strong> Pure white background, e-commerce style</li>
+                        </ul>
+
+                        <h2>Quantity</h2>
+                        <p>Generate 1-4 complementary images at once. All are generated in parallel.</p>
+                    </div>
+                </section>
+
+                <!-- Marketing Copy -->
+                <section id="marketing-copy" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">16</span>
+                        <h1>Marketing Copy</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>NGRAPHICS automatically generates marketing copy alongside your infographic.</p>
+
+                        <h2>Generated Content</h2>
+                        <table class="docs-table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Use Case</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Short Description</strong></td>
+                                    <td>1-2 sentence product pitch</td>
+                                    <td>Product cards, quick previews</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Long Description</strong></td>
+                                    <td>50-100 word detailed description</td>
+                                    <td>Product pages, listings</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Taglines</strong></td>
+                                    <td>3 catchy marketing phrases</td>
+                                    <td>Ads, banners, headlines</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Social Captions</strong></td>
+                                    <td>Platform-specific posts</td>
+                                    <td>Instagram, Facebook, Twitter/X</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>SEO Meta</strong></td>
+                                    <td>Title (60 chars) + Description (160 chars)</td>
+                                    <td>Search engine optimization</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h2>Copying Content</h2>
+                        <p>Click the "Copy" button next to any section to copy its content to your clipboard.</p>
+                    </div>
+                </section>
+
+                <!-- Watermark -->
+                <section id="watermark" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">17</span>
+                        <h1>Watermark</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Add text or logo watermarks to protect your images or add branding.</p>
+
+                        <h2>Text Watermark</h2>
+                        <ul class="bullet-list">
+                            <li>Enter any text (company name, copyright, etc.)</li>
+                            <li>Adjust opacity (10-100%)</li>
+                            <li>Select position (9 grid positions available)</li>
+                        </ul>
+
+                        <h2>Logo Watermark</h2>
+                        <ul class="bullet-list">
+                            <li>Upload PNG with transparency recommended</li>
+                            <li>Adjust size (10-50% of image width)</li>
+                            <li>Adjust opacity for subtle branding</li>
+                            <li>Select position on the image</li>
+                        </ul>
+
+                        <h2>Applying Watermarks</h2>
+                        <p>Click "Apply Watermark" to add the watermark to your generated image. The original is preserved in history.</p>
+                    </div>
+                </section>
+
+                <!-- Alt Text -->
+                <section id="alt-text" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">18</span>
+                        <h1>SEO Alt Text</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>NGRAPHICS automatically generates descriptive alt text for accessibility and SEO.</p>
+
+                        <h2>What It Includes</h2>
+                        <ul class="bullet-list">
+                            <li>Product name and type</li>
+                            <li>Key visual elements</li>
+                            <li>Layout description</li>
+                            <li>Color and style notes</li>
+                        </ul>
+
+                        <h2>Using Alt Text</h2>
+                        <p>Click "Copy" to copy the alt text, then paste it into:</p>
+                        <ul class="bullet-list">
+                            <li>Image alt attributes in HTML</li>
+                            <li>E-commerce platform image fields</li>
+                            <li>Social media alt text fields</li>
+                            <li>Content management systems</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Templates & Presets -->
+                <section id="templates" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">19</span>
+                        <h1>Templates & Presets</h1>
+                    </div>
+                    <div class="section-body">
+                        <h2>Platform Presets</h2>
+                        <p>One-click configurations optimized for specific platforms:</p>
+                        <table class="docs-table">
+                            <thead>
+                                <tr>
+                                    <th>Platform</th>
+                                    <th>Aspect Ratio</th>
+                                    <th>Style</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Amazon</td><td>1:1</td><td>Light, clean background</td></tr>
+                                <tr><td>Shopify</td><td>1:1</td><td>Versatile e-commerce</td></tr>
+                                <tr><td>Instagram</td><td>1:1</td><td>Rich, high visual density</td></tr>
+                                <tr><td>Instagram Story</td><td>9:16</td><td>Vertical, vibrant</td></tr>
+                                <tr><td>Facebook</td><td>16:9</td><td>Horizontal, engaging</td></tr>
+                                <tr><td>Etsy</td><td>4:5</td><td>Artisan, handcraft</td></tr>
+                            </tbody>
+                        </table>
+
+                        <h2>Custom Templates</h2>
+                        <p>Save your current settings as a reusable template:</p>
+                        <ol class="numbered-list">
+                            <li>Configure all your desired settings</li>
+                            <li>Click "Save Template" and enter a name</li>
+                            <li>Load saved templates from the dropdown</li>
+                            <li>Delete templates you no longer need</li>
+                        </ol>
+
+                        <h2>What Templates Save</h2>
+                        <ul class="bullet-list">
+                            <li>AI model selection</li>
+                            <li>Style preset</li>
+                            <li>Layout and aspect ratio</li>
+                            <li>Visual density and font style</li>
+                            <li>Icon style and color harmony</li>
+                            <li>Background type and brand colors</li>
+                            <li>Callout line settings</li>
+                            <li>Negative prompt</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- AI Analysis -->
+                <section id="ai-analyze" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">20</span>
+                        <h1>AI Image Analysis</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Let AI extract product information from your uploaded image.</p>
+
+                        <h2>How to Use</h2>
+                        <ol class="numbered-list">
+                            <li>Upload a product image</li>
+                            <li>Click "Analyze with AI" button</li>
+                            <li>AI will populate:
+                                <ul>
+                                    <li>Product title</li>
+                                    <li>Visible features and characteristics</li>
+                                    <li>Suggested brand colors</li>
+                                </ul>
+                            </li>
+                            <li>Review and edit the extracted information</li>
+                        </ol>
+
+                        <div class="callout callout-tip">
+                            <div class="callout-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </div>
+                            <div class="callout-content">
+                                <h4>Pro Tip</h4>
+                                <p>Use high-quality product photos with visible features for best analysis results. Images with packaging or labels work especially well.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Smart Regeneration -->
+                <section id="smart-regen" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">21</span>
+                        <h1>Smart Regeneration</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Refine your infographic while preserving elements you like.</p>
+
+                        <h2>Lock Controls</h2>
+                        <p>Lock specific aspects to keep them unchanged during regeneration:</p>
+                        <ul class="bullet-list">
+                            <li><strong>Lock Layout:</strong> Preserve the overall composition and product position</li>
+                            <li><strong>Lock Colors:</strong> Keep the color scheme intact</li>
+                            <li><strong>Lock Background:</strong> Maintain the background style</li>
+                            <li><strong>Lock Text Style:</strong> Preserve typography choices</li>
+                        </ul>
+
+                        <h2>Variation Strength</h2>
+                        <p>Control how different the new generation will be:</p>
+                        <ul class="bullet-list">
+                            <li><strong>Subtle:</strong> Minor refinements, very similar result</li>
+                            <li><strong>Moderate:</strong> Noticeable changes while keeping essence</li>
+                            <li><strong>Significant:</strong> More dramatic differences</li>
+                            <li><strong>Major:</strong> Substantial reinterpretation</li>
+                            <li><strong>Complete:</strong> Almost entirely new interpretation</li>
+                        </ul>
+
+                        <h2>Feedback-Based Adjustment</h2>
+                        <p>Use the feedback text field to describe specific changes:</p>
+                        <ul class="bullet-list">
+                            <li>"Make the background darker"</li>
+                            <li>"Increase the size of the product"</li>
+                            <li>"Add more contrast to the callouts"</li>
+                            <li>"Change the font to something more modern"</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- History -->
+                <section id="history" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">22</span>
+                        <h1>Generation History</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>NGRAPHICS automatically saves your generated images locally.</p>
+
+                        <h2>Features</h2>
+                        <ul class="bullet-list">
+                            <li>Last 20 generations are stored</li>
+                            <li>Click any thumbnail to view details</li>
+                            <li>Download previous generations</li>
+                            <li>"Use as Base" to load settings from a previous generation</li>
+                        </ul>
+
+                        <h2>Storage</h2>
+                        <p>History is stored in your browser's local storage:</p>
+                        <ul class="bullet-list">
+                            <li>Data persists across sessions</li>
+                            <li>Clearing browser data will remove history</li>
+                            <li>Private/incognito mode won't save history</li>
+                        </ul>
+
+                        <h2>Managing History</h2>
+                        <ul class="bullet-list">
+                            <li>Click "Clear" to remove all history</li>
+                            <li>Old entries are automatically removed when limit is reached</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Keyboard Shortcuts -->
+                <section id="keyboard" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">23</span>
+                        <h1>Keyboard Shortcuts</h1>
+                    </div>
+                    <div class="section-body">
+                        <table class="docs-table shortcuts-table">
+                            <thead>
+                                <tr>
+                                    <th>Shortcut</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><kbd>Ctrl</kbd> + <kbd>Enter</kbd></td>
+                                    <td>Generate infographic</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl</kbd> + <kbd>D</kbd></td>
+                                    <td>Download current image</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Escape</kbd></td>
+                                    <td>Close modal/lightbox</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="note">On Mac, use <kbd>Cmd</kbd> instead of <kbd>Ctrl</kbd></p>
+                    </div>
+                </section>
+
+                <!-- General Tips -->
+                <section id="tips-general" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">24</span>
+                        <h1>General Tips</h1>
+                    </div>
+                    <div class="section-body">
+                        <div class="tips-grid">
+                            <div class="tip-card">
+                                <h3>Start Simple</h3>
+                                <p>Begin with basic settings and the "Auto" style. Add complexity only after you understand what works for your products.</p>
+                            </div>
+                            <div class="tip-card">
+                                <h3>Use High-Quality Images</h3>
+                                <p>Better input images lead to better results. Use well-lit photos with clean backgrounds when possible.</p>
+                            </div>
+                            <div class="tip-card">
+                                <h3>Iterate Quickly</h3>
+                                <p>Generate 4 variations initially, then refine the best one. Don't spend too long perfecting settings upfront.</p>
+                            </div>
+                            <div class="tip-card">
+                                <h3>Save Templates</h3>
+                                <p>Once you find settings that work, save them as a template. This ensures consistency across your product line.</p>
+                            </div>
+                            <div class="tip-card">
+                                <h3>Use Feedback</h3>
+                                <p>The feedback field is powerful. Describe exactly what you want changed in natural language.</p>
+                            </div>
+                            <div class="tip-card">
+                                <h3>Match Your Brand</h3>
+                                <p>Add your brand colors and use consistent style settings across all products for cohesive marketing materials.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Writing Effective Prompts -->
+                <section id="tips-prompts" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">25</span>
+                        <h1>Writing Effective Features</h1>
+                    </div>
+                    <div class="section-body">
+                        <h2>Do's</h2>
+                        <ul class="bullet-list success-list">
+                            <li>Be specific: "40-hour battery life" not "long battery"</li>
+                            <li>Include benefits: "IPX7 waterproof for worry-free workouts"</li>
+                            <li>Use numbers: "30W fast charging" is more impactful than "fast charging"</li>
+                            <li>Highlight unique features first</li>
+                            <li>Match your target audience's language</li>
+                        </ul>
+
+                        <h2>Don'ts</h2>
+                        <ul class="bullet-list error-list">
+                            <li>Avoid vague terms: "good quality", "nice design"</li>
+                            <li>Don't repeat similar features</li>
+                            <li>Skip obvious features (e.g., "comes in a box")</li>
+                            <li>Avoid technical jargon unless targeting technical audiences</li>
+                            <li>Don't add too many features (6 is usually the sweet spot)</li>
+                        </ul>
+
+                        <h2>Examples</h2>
+                        <div class="example-comparison">
+                            <div class="example bad">
+                                <h4>Weak</h4>
+                                <ul>
+                                    <li>Good battery</li>
+                                    <li>Nice sound</li>
+                                    <li>Comfortable</li>
+                                </ul>
+                            </div>
+                            <div class="example good">
+                                <h4>Strong</h4>
+                                <ul>
+                                    <li>40-hour battery with quick charge</li>
+                                    <li>Hi-Res Audio certified with 40mm drivers</li>
+                                    <li>Memory foam cushions for all-day comfort</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Image Quality Tips -->
+                <section id="tips-images" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">26</span>
+                        <h1>Image Quality Tips</h1>
+                    </div>
+                    <div class="section-body">
+                        <h2>Product Photos</h2>
+                        <ul class="bullet-list">
+                            <li>Use images at least 1000x1000 pixels</li>
+                            <li>White or transparent backgrounds work best</li>
+                            <li>Ensure product is well-lit and in focus</li>
+                            <li>Avoid watermarks or text on product images</li>
+                            <li>Show the product at a clear angle</li>
+                        </ul>
+
+                        <h2>Maximizing Output Quality</h2>
+                        <ul class="bullet-list">
+                            <li>Use GPT-4o or Flux for highest quality</li>
+                            <li>Lower visual density for cleaner results</li>
+                            <li>Specify negative prompts to avoid unwanted elements</li>
+                            <li>Use style references for consistent branding</li>
+                        </ul>
+
+                        <h2>Negative Prompts</h2>
+                        <p>Use the negative prompt field to specify what to avoid:</p>
+                        <ul class="bullet-list">
+                            <li>"blurry, low quality, distorted text"</li>
+                            <li>"cluttered, busy, overwhelming"</li>
+                            <li>"cartoonish, unrealistic"</li>
+                            <li>"watermark, signature, logo"</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Platform-Specific Tips -->
+                <section id="tips-platforms" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">27</span>
+                        <h1>Platform-Specific Tips</h1>
+                    </div>
+                    <div class="section-body">
+                        <h2>Amazon</h2>
+                        <ul class="bullet-list">
+                            <li>Use pure white background (required for main images)</li>
+                            <li>1:1 aspect ratio, minimum 1000x1000px</li>
+                            <li>Product should fill 85% of the frame</li>
+                            <li>Use "Light Background" style preset</li>
+                        </ul>
+
+                        <h2>Instagram</h2>
+                        <ul class="bullet-list">
+                            <li>1:1 for feed posts, 9:16 for Stories</li>
+                            <li>High visual density works well</li>
+                            <li>Bold colors and gradients perform better</li>
+                            <li>Keep text minimal for cleaner look</li>
+                        </ul>
+
+                        <h2>Shopify/E-commerce</h2>
+                        <ul class="bullet-list">
+                            <li>Create consistent style across product line</li>
+                            <li>Generate complementary images for galleries</li>
+                            <li>Use marketing copy for descriptions</li>
+                            <li>Save brand templates for consistency</li>
+                        </ul>
+
+                        <h2>Facebook</h2>
+                        <ul class="bullet-list">
+                            <li>16:9 aspect ratio for posts</li>
+                            <li>Less visual density, focus on key features</li>
+                            <li>Bold headlines that are readable on mobile</li>
+                            <li>Use the Facebook social caption from Marketing Copy</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Troubleshooting -->
+                <section id="troubleshooting" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">28</span>
+                        <h1>Troubleshooting</h1>
+                    </div>
+                    <div class="section-body">
+                        <div class="troubleshoot-item">
+                            <h3>API Key Error (401)</h3>
+                            <p><strong>Cause:</strong> Invalid or expired API key</p>
+                            <p><strong>Solution:</strong> Check your OpenRouter API key is correct and has available credits</p>
+                        </div>
+
+                        <div class="troubleshoot-item">
+                            <h3>Rate Limit Error (429)</h3>
+                            <p><strong>Cause:</strong> Too many requests in a short time</p>
+                            <p><strong>Solution:</strong> Wait a few minutes and try again, or upgrade your OpenRouter plan</p>
+                        </div>
+
+                        <div class="troubleshoot-item">
+                            <h3>Model Error (500/502/503)</h3>
+                            <p><strong>Cause:</strong> AI model temporarily unavailable</p>
+                            <p><strong>Solution:</strong> Try a different AI model, or wait and retry</p>
+                        </div>
+
+                        <div class="troubleshoot-item">
+                            <h3>Image Not Generating</h3>
+                            <p><strong>Cause:</strong> Model doesn't support image generation</p>
+                            <p><strong>Solution:</strong> Select a model that supports image output (Gemini, GPT-4o, Flux)</p>
+                        </div>
+
+                        <div class="troubleshoot-item">
+                            <h3>Distorted Text in Output</h3>
+                            <p><strong>Cause:</strong> AI models can struggle with text rendering</p>
+                            <p><strong>Solution:</strong> Use GPT-4o for better text, or reduce the number of features</p>
+                        </div>
+
+                        <div class="troubleshoot-item">
+                            <h3>Product Looks Different</h3>
+                            <p><strong>Cause:</strong> AI interpretation varies</p>
+                            <p><strong>Solution:</strong> Upload a clearer product image, increase style reference strength, or use Smart Regeneration with locks</p>
+                        </div>
+
+                        <div class="troubleshoot-item">
+                            <h3>History Not Saving</h3>
+                            <p><strong>Cause:</strong> Local storage full or disabled</p>
+                            <p><strong>Solution:</strong> Clear browser data or check privacy settings</p>
+                        </div>
+
+                        <div class="troubleshoot-item">
+                            <h3>Slow Generation</h3>
+                            <p><strong>Cause:</strong> Large images, multiple variations, or server load</p>
+                            <p><strong>Solution:</strong> Use Gemini Flash for faster results, reduce variations, try during off-peak hours</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Footer -->
+                <footer class="docs-footer">
+                    <p>NGRAPHICS Documentation</p>
+                    <p>Built with AI-powered image generation technology</p>
+                    <a href="index.html" class="btn-back-bottom">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        Back to Application
+                    </a>
+                </footer>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('.docs-nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').slice(1);
+                const target = document.getElementById(targetId);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Update active state
+                    document.querySelectorAll('.docs-nav a').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Highlight current section in nav on scroll
+        const sections = document.querySelectorAll('.docs-section');
+        const navLinks = document.querySelectorAll('.docs-nav a');
+
+        const observerOptions = {
+            rootMargin: '-100px 0px -70% 0px',
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navLinks.forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => observer.observe(section));
+    </script>
+</body>
+</html>
