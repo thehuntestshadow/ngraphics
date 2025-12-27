@@ -702,9 +702,10 @@ body {
 
 .upload-input {
     position: absolute;
-    inset: 0;
+    width: 1px;
+    height: 1px;
     opacity: 0;
-    cursor: pointer;
+    pointer-events: none;
 }
 
 /* Image Preview */
@@ -906,6 +907,30 @@ body {
 .style-option[data-tooltip]:hover::after {
     opacity: 1;
     visibility: visible;
+}
+
+/* Adjust tooltip position for left column (1st, 4th items) */
+.style-option:nth-child(3n+1)[data-tooltip]::before {
+    left: 0;
+    transform: translateX(0);
+}
+
+.style-option:nth-child(3n+1)[data-tooltip]::after {
+    left: 24px;
+    transform: translateX(0);
+}
+
+/* Adjust tooltip position for right column (3rd, 6th items) */
+.style-option:nth-child(3n)[data-tooltip]::before {
+    left: auto;
+    right: 0;
+    transform: translateX(0);
+}
+
+.style-option:nth-child(3n)[data-tooltip]::after {
+    left: auto;
+    right: 24px;
+    transform: translateX(0);
 }
 
 .style-card {

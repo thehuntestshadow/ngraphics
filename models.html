@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Studio - NGRAPHICS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="models.css">
+</head>
+<body>
+    <!-- Noise overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Gradient orbs for atmosphere -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <a href="index.html" class="logo-link">
+                    <div class="logo-mark">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">NGRAPHICS</span>
+                        <span class="logo-subtitle">Model Studio</span>
+                    </div>
+                </a>
+            </div>
+            <div class="header-controls">
+                <a href="index.html" class="btn-back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Infographics
+                </a>
+                <a href="docs.html" class="docs-link" title="Documentation">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                    <span>Docs</span>
+                </a>
+                <div class="api-status" id="apiStatus">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Not Connected</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Application -->
+    <main class="app-main">
+        <div class="app-grid">
+
+            <!-- Left Panel: Configuration -->
+            <section class="panel panel-config">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="title-number">01</span>
+                        Model Studio
+                    </h2>
+                    <p class="panel-description">Generate in-context product photos with AI models</p>
+                </div>
+
+                <!-- Error/Success Messages -->
+                <div class="message message-error" id="errorMessage">
+                    <div class="message-icon">!</div>
+                    <div class="message-content">
+                        <span class="error-text"></span>
+                    </div>
+                </div>
+                <div class="message message-success" id="successMessage">
+                    <div class="message-icon">✓</div>
+                    <div class="message-content">Generated successfully</div>
+                </div>
+
+                <form id="modelForm" class="config-form">
+                    <!-- Product Upload -->
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </span>
+                            Product Image
+                        </div>
+                        <div class="upload-area" id="uploadArea">
+                            <input type="file" id="productPhoto" accept="image/*" hidden>
+                            <div class="upload-content">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                <span>Drop product image or click to upload</span>
+                            </div>
+                        </div>
+                        <div class="image-preview" id="imagePreview" style="display: none;">
+                            <img id="previewImg" alt="Preview">
+                            <button type="button" class="remove-image" id="removeImage">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Product Type -->
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+                                    <line x1="7" y1="7" x2="7.01" y2="7"/>
+                                </svg>
+                            </span>
+                            Product Type
+                        </div>
+                        <div class="product-type-grid">
+                            <button type="button" class="product-type-btn active" data-type="clothing">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/>
+                                </svg>
+                                <span>Clothing</span>
+                            </button>
+                            <button type="button" class="product-type-btn" data-type="accessory">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <line x1="12" y1="2" x2="12" y2="4"/>
+                                    <line x1="12" y1="20" x2="12" y2="22"/>
+                                    <line x1="2" y1="12" x2="4" y2="12"/>
+                                    <line x1="20" y1="12" x2="22" y2="12"/>
+                                </svg>
+                                <span>Accessory</span>
+                            </button>
+                            <button type="button" class="product-type-btn" data-type="handheld">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 11V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v0"/>
+                                    <path d="M14 10V5a2 2 0 00-2-2h0a2 2 0 00-2 2v5"/>
+                                    <path d="M10 10V6a2 2 0 00-2-2h0a2 2 0 00-2 2v8"/>
+                                    <path d="M18 8a2 2 0 114 0v6a8 8 0 01-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 012.83-2.82L7 15"/>
+                                </svg>
+                                <span>Handheld</span>
+                            </button>
+                            <button type="button" class="product-type-btn" data-type="footwear">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 18h20v2H2zM4 16l1-6h2l1 3h8l1-3h2l1 6"/>
+                                </svg>
+                                <span>Footwear</span>
+                            </button>
+                            <button type="button" class="product-type-btn" data-type="jewelry">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                                <span>Jewelry</span>
+                            </button>
+                            <button type="button" class="product-type-btn" data-type="bag">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                                    <line x1="3" y1="6" x2="21" y2="6"/>
+                                    <path d="M16 10a4 4 0 01-8 0"/>
+                                </svg>
+                                <span>Bag</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Product Description -->
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="17" y1="10" x2="3" y2="10"/>
+                                    <line x1="21" y1="6" x2="3" y2="6"/>
+                                    <line x1="21" y1="14" x2="3" y2="14"/>
+                                    <line x1="17" y1="18" x2="3" y2="18"/>
+                                </svg>
+                            </span>
+                            Product Description
+                        </div>
+                        <textarea class="input-field textarea-field" id="productDescription" placeholder="e.g., Black leather crossbody bag with gold chain strap" rows="2"></textarea>
+                    </div>
+
+                    <!-- Model Selection -->
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            </span>
+                            Model Appearance
+                        </div>
+
+                        <div class="model-options-grid">
+                            <!-- Gender -->
+                            <div class="model-option">
+                                <label class="option-label">Gender</label>
+                                <div class="option-buttons">
+                                    <button type="button" class="option-btn active" data-option="gender" data-value="female">Female</button>
+                                    <button type="button" class="option-btn" data-option="gender" data-value="male">Male</button>
+                                    <button type="button" class="option-btn" data-option="gender" data-value="any">Any</button>
+                                </div>
+                            </div>
+
+                            <!-- Age Range -->
+                            <div class="model-option">
+                                <label class="option-label">Age Range</label>
+                                <div class="option-buttons">
+                                    <button type="button" class="option-btn" data-option="age" data-value="young">18-25</button>
+                                    <button type="button" class="option-btn active" data-option="age" data-value="adult">25-35</button>
+                                    <button type="button" class="option-btn" data-option="age" data-value="mature">35-50</button>
+                                    <button type="button" class="option-btn" data-option="age" data-value="senior">50+</button>
+                                </div>
+                            </div>
+
+                            <!-- Ethnicity -->
+                            <div class="model-option">
+                                <label class="option-label">Ethnicity</label>
+                                <select class="select-field" id="modelEthnicity">
+                                    <option value="any">Any / Diverse</option>
+                                    <option value="caucasian">Caucasian</option>
+                                    <option value="african">African / Black</option>
+                                    <option value="asian">Asian</option>
+                                    <option value="hispanic">Hispanic / Latino</option>
+                                    <option value="middle-eastern">Middle Eastern</option>
+                                    <option value="south-asian">South Asian</option>
+                                    <option value="mixed">Mixed</option>
+                                </select>
+                            </div>
+
+                            <!-- Body Type (for clothing) -->
+                            <div class="model-option" id="bodyTypeOption">
+                                <label class="option-label">Body Type</label>
+                                <select class="select-field" id="modelBodyType">
+                                    <option value="slim">Slim / Athletic</option>
+                                    <option value="average" selected>Average</option>
+                                    <option value="curvy">Curvy / Plus Size</option>
+                                    <option value="muscular">Muscular / Fit</option>
+                                </select>
+                            </div>
+
+                            <!-- Hair -->
+                            <div class="model-option">
+                                <label class="option-label">Hair</label>
+                                <select class="select-field" id="modelHair">
+                                    <option value="any">Any</option>
+                                    <option value="long-dark">Long Dark</option>
+                                    <option value="long-blonde">Long Blonde</option>
+                                    <option value="long-brown">Long Brown</option>
+                                    <option value="long-red">Long Red</option>
+                                    <option value="short-dark">Short Dark</option>
+                                    <option value="short-blonde">Short Blonde</option>
+                                    <option value="short-brown">Short Brown</option>
+                                    <option value="curly">Curly</option>
+                                    <option value="bald">Bald / Shaved</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shot Type -->
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                                    <circle cx="12" cy="13" r="4"/>
+                                </svg>
+                            </span>
+                            Shot Type
+                        </div>
+                        <div class="shot-type-grid">
+                            <button type="button" class="shot-type-btn active" data-shot="full-body">
+                                <div class="shot-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="5" r="3"/>
+                                        <line x1="12" y1="8" x2="12" y2="16"/>
+                                        <line x1="12" y1="12" x2="8" y2="10"/>
+                                        <line x1="12" y1="12" x2="16" y2="10"/>
+                                        <line x1="12" y1="16" x2="9" y2="22"/>
+                                        <line x1="12" y1="16" x2="15" y2="22"/>
+                                    </svg>
+                                </div>
+                                <span>Full Body</span>
+                            </button>
+                            <button type="button" class="shot-type-btn" data-shot="half-body">
+                                <div class="shot-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="5" r="3"/>
+                                        <path d="M12 8v8M8 10l4 2 4-2"/>
+                                        <line x1="4" y1="18" x2="20" y2="18" stroke-dasharray="2 2"/>
+                                    </svg>
+                                </div>
+                                <span>Half Body</span>
+                            </button>
+                            <button type="button" class="shot-type-btn" data-shot="portrait">
+                                <div class="shot-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="8" r="5"/>
+                                        <path d="M6 18c0-3 2.5-5 6-5s6 2 6 5"/>
+                                    </svg>
+                                </div>
+                                <span>Portrait</span>
+                            </button>
+                            <button type="button" class="shot-type-btn" data-shot="closeup">
+                                <div class="shot-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="8"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </div>
+                                <span>Close-up</span>
+                            </button>
+                            <button type="button" class="shot-type-btn" data-shot="hands">
+                                <div class="shot-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M18 11V6a2 2 0 00-2-2h0a2 2 0 00-2 2v0"/>
+                                        <path d="M14 10V4a2 2 0 00-2-2h0a2 2 0 00-2 2v6"/>
+                                        <path d="M10 10V5a2 2 0 00-2-2h0a2 2 0 00-2 2v9"/>
+                                        <path d="M18 8a2 2 0 114 0v6a8 8 0 01-8 8h-2a8 8 0 01-6-2.7"/>
+                                    </svg>
+                                </div>
+                                <span>Hands Only</span>
+                            </button>
+                            <button type="button" class="shot-type-btn" data-shot="detail">
+                                <div class="shot-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"/>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                        <circle cx="11" cy="11" r="3"/>
+                                    </svg>
+                                </div>
+                                <span>Product Detail</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Scene / Setting -->
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </span>
+                            Scene / Setting
+                        </div>
+                        <div class="scene-grid">
+                            <button type="button" class="scene-btn active" data-scene="studio">
+                                <span class="scene-icon">📷</span>
+                                <span>Studio</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="urban">
+                                <span class="scene-icon">🏙️</span>
+                                <span>Urban</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="nature">
+                                <span class="scene-icon">🌿</span>
+                                <span>Nature</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="cafe">
+                                <span class="scene-icon">☕</span>
+                                <span>Café</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="office">
+                                <span class="scene-icon">💼</span>
+                                <span>Office</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="beach">
+                                <span class="scene-icon">🏖️</span>
+                                <span>Beach</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="home">
+                                <span class="scene-icon">🏠</span>
+                                <span>Home</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="gym">
+                                <span class="scene-icon">🏋️</span>
+                                <span>Gym</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="street">
+                                <span class="scene-icon">🛣️</span>
+                                <span>Street</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="luxury">
+                                <span class="scene-icon">✨</span>
+                                <span>Luxury</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Photography Style -->
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/>
+                                    <circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/>
+                                    <circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/>
+                                    <circle cx="6.5" cy="12.5" r="0.5" fill="currentColor"/>
+                                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 011.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"/>
+                                </svg>
+                            </span>
+                            Photography Style
+                        </div>
+                        <div class="style-select-grid">
+                            <label class="style-select-option">
+                                <input type="radio" name="photoStyle" value="editorial" checked>
+                                <span class="style-select-card">
+                                    <span class="style-select-name">Editorial</span>
+                                    <span class="style-select-desc">Magazine-quality fashion photography</span>
+                                </span>
+                            </label>
+                            <label class="style-select-option">
+                                <input type="radio" name="photoStyle" value="commercial">
+                                <span class="style-select-card">
+                                    <span class="style-select-name">Commercial</span>
+                                    <span class="style-select-desc">Clean e-commerce product shots</span>
+                                </span>
+                            </label>
+                            <label class="style-select-option">
+                                <input type="radio" name="photoStyle" value="lifestyle">
+                                <span class="style-select-card">
+                                    <span class="style-select-name">Lifestyle</span>
+                                    <span class="style-select-desc">Natural, candid moments</span>
+                                </span>
+                            </label>
+                            <label class="style-select-option">
+                                <input type="radio" name="photoStyle" value="artistic">
+                                <span class="style-select-card">
+                                    <span class="style-select-name">Artistic</span>
+                                    <span class="style-select-desc">Creative, high-fashion look</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Options -->
+                    <div class="advanced-section" id="advancedSection">
+                        <button type="button" class="advanced-toggle" id="advancedToggle">
+                            <span>Advanced Options</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="advanced-content">
+                            <!-- Pose -->
+                            <div class="option-group">
+                                <label class="option-label">Pose</label>
+                                <select class="select-field" id="modelPose">
+                                    <option value="natural">Natural / Relaxed</option>
+                                    <option value="confident">Confident / Power</option>
+                                    <option value="casual">Casual / Candid</option>
+                                    <option value="dynamic">Dynamic / Movement</option>
+                                    <option value="elegant">Elegant / Graceful</option>
+                                    <option value="seated">Seated</option>
+                                    <option value="walking">Walking</option>
+                                    <option value="leaning">Leaning</option>
+                                </select>
+                            </div>
+
+                            <!-- Lighting -->
+                            <div class="option-group">
+                                <label class="option-label">Lighting</label>
+                                <select class="select-field" id="lighting">
+                                    <option value="natural">Natural Light</option>
+                                    <option value="studio" selected>Studio Lighting</option>
+                                    <option value="golden">Golden Hour</option>
+                                    <option value="dramatic">Dramatic / Moody</option>
+                                    <option value="soft">Soft / Diffused</option>
+                                    <option value="backlit">Backlit / Silhouette</option>
+                                    <option value="neon">Neon / Colorful</option>
+                                </select>
+                            </div>
+
+                            <!-- Camera Angle -->
+                            <div class="option-group">
+                                <label class="option-label">Camera Angle</label>
+                                <select class="select-field" id="cameraAngle">
+                                    <option value="eye-level" selected>Eye Level</option>
+                                    <option value="low">Low Angle (Heroic)</option>
+                                    <option value="high">High Angle</option>
+                                    <option value="dutch">Dutch Angle (Tilted)</option>
+                                    <option value="over-shoulder">Over Shoulder</option>
+                                </select>
+                            </div>
+
+                            <!-- Expression -->
+                            <div class="option-group">
+                                <label class="option-label">Expression</label>
+                                <select class="select-field" id="expression">
+                                    <option value="neutral" selected>Neutral / Calm</option>
+                                    <option value="smile">Gentle Smile</option>
+                                    <option value="happy">Happy / Joyful</option>
+                                    <option value="serious">Serious / Intense</option>
+                                    <option value="confident">Confident</option>
+                                    <option value="mysterious">Mysterious</option>
+                                    <option value="candid">Candid / Natural</option>
+                                </select>
+                            </div>
+
+                            <!-- Aspect Ratio -->
+                            <div class="option-group">
+                                <label class="option-label">Aspect Ratio</label>
+                                <select class="select-field" id="aspectRatio">
+                                    <option value="1:1">1:1 (Square)</option>
+                                    <option value="4:5" selected>4:5 (Instagram)</option>
+                                    <option value="3:4">3:4 (Portrait)</option>
+                                    <option value="2:3">2:3 (Classic Portrait)</option>
+                                    <option value="9:16">9:16 (Story)</option>
+                                    <option value="16:9">16:9 (Landscape)</option>
+                                </select>
+                            </div>
+
+                            <!-- Variations -->
+                            <div class="option-group">
+                                <label class="option-label">Variations</label>
+                                <div class="option-buttons">
+                                    <button type="button" class="option-btn active" data-option="variations" data-value="1">1</button>
+                                    <button type="button" class="option-btn" data-option="variations" data-value="2">2</button>
+                                    <button type="button" class="option-btn" data-option="variations" data-value="4">4</button>
+                                </div>
+                            </div>
+
+                            <!-- AI Model -->
+                            <div class="option-group">
+                                <label class="option-label">AI Model</label>
+                                <select class="select-field" id="aiModel">
+                                    <option value="google/gemini-3-pro-image-preview" selected>Gemini 3 Pro Image (Best)</option>
+                                    <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
+                                    <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash</option>
+                                    <option value="openai/gpt-4o">GPT-4o</option>
+                                    <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button type="submit" class="btn-generate" id="generateBtn">
+                        <span class="btn-content">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                                <path d="M16 3.13a4 4 0 010 7.75"/>
+                            </svg>
+                            Generate Model Photos
+                        </span>
+                        <span class="btn-glow"></span>
+                    </button>
+                    <div class="shortcut-hint">
+                        <kbd>Ctrl</kbd><span>+</span><kbd>Enter</kbd>
+                    </div>
+
+                    <!-- API Settings (collapsed) -->
+                    <div class="settings-section" id="settingsSection">
+                        <button type="button" class="settings-toggle" id="settingsToggle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                            </svg>
+                            <span>API Settings</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="settings-content">
+                            <div class="api-key-group">
+                                <label class="option-label">OpenRouter API Key</label>
+                                <div class="api-key-input">
+                                    <input type="password" class="input-field" id="apiKey" placeholder="sk-or-...">
+                                    <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </button>
+                                    <button type="button" class="btn-secondary btn-sm" id="saveApiKey">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Right Panel: Output -->
+            <section class="panel panel-output">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="title-number">02</span>
+                        Output
+                    </h2>
+                </div>
+
+                <div class="output-container">
+                    <!-- Placeholder -->
+                    <div class="output-placeholder" id="resultPlaceholder">
+                        <div class="placeholder-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </div>
+                        <h3>Model Studio</h3>
+                        <p>Generate professional photos of models wearing, holding, or showcasing your products</p>
+                        <ul class="placeholder-features">
+                            <li>Fashion photography with AI models</li>
+                            <li>Multiple poses and settings</li>
+                            <li>Editorial to commercial styles</li>
+                        </ul>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div class="output-loading" id="loadingContainer">
+                        <div class="loader">
+                            <div class="loader-ring"></div>
+                            <div class="loader-ring"></div>
+                            <div class="loader-ring"></div>
+                        </div>
+                        <p class="loading-text">Generating...</p>
+                        <p class="loading-status" id="loadingStatus">Creating your model photo...</p>
+                    </div>
+
+                    <!-- Result Display -->
+                    <div class="output-result" id="resultContainer">
+                        <!-- Single Image -->
+                        <img id="resultImage" class="result-image" alt="Generated model photo">
+
+                        <!-- Multiple Results Grid -->
+                        <div class="result-grid" id="resultGrid"></div>
+
+                        <!-- Actions -->
+                        <div class="result-actions">
+                            <button type="button" class="btn-secondary" id="downloadBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Download
+                            </button>
+                            <button type="button" class="btn-secondary" id="regenerateBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M23 4v6h-6"/>
+                                    <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+                                </svg>
+                                Regenerate
+                            </button>
+                        </div>
+
+                        <!-- Feedback -->
+                        <div class="feedback-section">
+                            <label class="option-label">Adjustments</label>
+                            <textarea class="input-field textarea-field" id="feedbackTextarea" placeholder="e.g., Make the model smile more, adjust lighting to be warmer..." rows="2"></textarea>
+                            <button type="button" class="btn-secondary" id="adjustBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                                Adjust
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History -->
+                <div class="history-section" id="historySection">
+                    <div class="history-header">
+                        <h3>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            Recent
+                            <span class="history-count" id="historyCount">0</span>
+                        </h3>
+                        <button type="button" class="btn-text" id="clearHistoryBtn">Clear</button>
+                    </div>
+                    <div class="history-grid" id="historyGrid">
+                        <p class="history-empty" id="historyEmpty">No images generated yet</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+        <img id="lightboxImage" alt="Full size image">
+        <button class="lightbox-download" id="lightboxDownload">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download
+        </button>
+    </div>
+
+    <script src="models.js"></script>
+</body>
+</html>

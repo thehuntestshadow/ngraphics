@@ -3527,7 +3527,12 @@ function setupEventListeners() {
 // ============================================
 // INITIALIZATION
 // ============================================
+let initialized = false;
+
 function init() {
+    if (initialized) return;
+    initialized = true;
+
     console.log('NGRAPHICS: Initializing...');
     initElements();
     loadTheme();
