@@ -30,6 +30,8 @@ const state = {
     expression: 'neutral',
     aspectRatio: '4:5',
     variations: 1,
+    collageMode: 'off',
+    collageShowFace: false,
     negativePrompt: '',
     // Quality enhancements
     depthOfField: 'auto',
@@ -37,7 +39,21 @@ const state = {
     skinRetouch: 'natural',
     composition: 'auto',
     qualityLevel: 'high',
-    realismLevel: 'auto'
+    realismLevel: 'auto',
+    // Camera & Technical
+    focalLength: 'auto',
+    filmGrain: 'none',
+    sharpness: 'auto',
+    contrast: 'auto',
+    // Color & Tone
+    colorTemp: 'auto',
+    shadowStyle: 'auto',
+    // Environment
+    timeOfDay: 'auto',
+    weather: 'auto',
+    // Product
+    productEnhancement: 'auto',
+    contextDescription: ''
 };
 
 // ============================================
@@ -70,6 +86,8 @@ function initElements() {
         cameraAngle: document.getElementById('cameraAngle'),
         expression: document.getElementById('expression'),
         aspectRatio: document.getElementById('aspectRatio'),
+        collageMode: document.getElementById('collageMode'),
+        collageFaceOption: document.getElementById('collageFaceOption'),
         aiModel: document.getElementById('aiModel'),
         negativePrompt: document.getElementById('negativePrompt'),
         // Quality enhancements
@@ -79,6 +97,21 @@ function initElements() {
         composition: document.getElementById('composition'),
         qualityLevel: document.getElementById('qualityLevel'),
         realismLevel: document.getElementById('realismLevel'),
+        // Camera & Technical
+        focalLength: document.getElementById('focalLength'),
+        filmGrain: document.getElementById('filmGrain'),
+        sharpness: document.getElementById('sharpness'),
+        contrast: document.getElementById('contrast'),
+        // Color & Tone
+        colorTemp: document.getElementById('colorTemp'),
+        shadowStyle: document.getElementById('shadowStyle'),
+        // Environment
+        timeOfDay: document.getElementById('timeOfDay'),
+        weather: document.getElementById('weather'),
+        // Product
+        productEnhancement: document.getElementById('productEnhancement'),
+        contextDescriptionGroup: document.getElementById('contextDescriptionGroup'),
+        contextDescription: document.getElementById('contextDescription'),
 
         // Settings
         settingsSection: document.getElementById('settingsSection'),
@@ -547,6 +580,31 @@ function generatePrompt() {
         '16:9': 'landscape format (16:9)'
     };
 
+    // Multi-angle collage descriptions
+    const collageModeDesc = {
+        'off': null,
+        '2-angles': {
+            count: 2,
+            layout: 'side-by-side 2-panel collage',
+            angles: 'front view and side profile view'
+        },
+        '3-angles': {
+            count: 3,
+            layout: '3-panel collage grid',
+            angles: 'front view, side profile, and three-quarter angle'
+        },
+        '4-angles': {
+            count: 4,
+            layout: '2x2 grid collage',
+            angles: 'front view, left profile, right profile, and back view'
+        },
+        '6-angles': {
+            count: 6,
+            layout: '2x3 or 3x2 grid collage',
+            angles: 'front, left side, right side, back, three-quarter left, and three-quarter right views'
+        }
+    };
+
     // Depth of field descriptions
     const dofDesc = {
         auto: '',
@@ -616,6 +674,89 @@ function generatePrompt() {
         raw: 'RAW unprocessed photo look, natural imperfections, authentic camera capture feel, no artificial enhancement'
     };
 
+    // Lens focal length descriptions
+    const focalLengthDesc = {
+        auto: '',
+        '24mm': 'shot with 24mm wide-angle lens, environmental context, slight perspective distortion',
+        '35mm': 'shot with 35mm lens, natural street photography perspective, good context',
+        '50mm': 'shot with 50mm lens, natural human eye perspective, classic look',
+        '85mm': 'shot with 85mm portrait lens, flattering facial compression, beautiful background separation',
+        '135mm': 'shot with 135mm telephoto lens, strong compression, extremely creamy background blur',
+        'macro': 'shot with macro lens, extreme close-up detail, sharp product focus'
+    };
+
+    // Film grain descriptions
+    const filmGrainDesc = {
+        none: '',
+        subtle: 'subtle fine film grain for organic texture',
+        medium: 'medium film grain, classic analog film look',
+        heavy: 'heavy pronounced film grain, vintage artistic aesthetic'
+    };
+
+    // Sharpness descriptions
+    const sharpnessDesc = {
+        auto: '',
+        soft: 'soft dreamy focus with gentle glow',
+        natural: 'natural sharpness, balanced detail',
+        sharp: 'sharp crisp details throughout',
+        ultra: 'ultra sharp, razor-crisp details, maximum clarity'
+    };
+
+    // Contrast descriptions
+    const contrastDesc = {
+        auto: '',
+        low: 'low contrast flat look, cinematic color grade with lifted blacks',
+        medium: 'medium natural contrast',
+        high: 'high contrast punchy look with deep blacks and bright highlights'
+    };
+
+    // Color temperature descriptions
+    const colorTempDesc = {
+        auto: '',
+        cool: 'cool color temperature with blue tint, crisp modern feel',
+        neutral: 'neutral balanced color temperature',
+        warm: 'warm golden color temperature, inviting cozy feel',
+        'very-warm': 'very warm sunset-like color temperature, golden amber tones'
+    };
+
+    // Shadow style descriptions
+    const shadowStyleDesc = {
+        auto: '',
+        lifted: 'lifted shadows, bright airy look with no true blacks, Instagram-style',
+        natural: 'natural shadow rendering with full tonal range',
+        crushed: 'crushed blacks, deep moody shadows, cinematic noir feel'
+    };
+
+    // Time of day descriptions
+    const timeOfDayDesc = {
+        auto: '',
+        morning: 'soft morning light, gentle warm tones, fresh atmosphere',
+        midday: 'bright midday light, strong shadows, high contrast',
+        golden: 'golden hour magic light, warm orange glow, long soft shadows',
+        blue: 'blue hour twilight, cool ambient light, moody atmosphere',
+        night: 'nighttime setting, artificial lighting, dramatic mood'
+    };
+
+    // Weather descriptions
+    const weatherDesc = {
+        auto: '',
+        clear: 'clear sunny weather, bright and cheerful',
+        cloudy: 'overcast cloudy sky, soft diffused light, no harsh shadows',
+        foggy: 'foggy misty atmosphere, ethereal dreamy mood, reduced visibility',
+        rainy: 'rainy weather, wet surfaces, reflections, moody atmosphere',
+        snowy: 'snowy winter setting, white snow, cold crisp atmosphere'
+    };
+
+    // Product enhancement descriptions
+    const productEnhancementDesc = {
+        auto: '',
+        texture: 'emphasize product texture and material details, show fabric weave or surface quality',
+        shine: 'enhance product shine and reflections, glossy luxurious appearance',
+        color: 'prioritize accurate product color reproduction, true-to-life colors',
+        detail: 'maximum product detail, sharp focus on every element of the product',
+        'in-context': '' // Handled separately with user's custom context description
+    };
+
     // Get current quality settings from elements
     const currentDof = elements.depthOfField?.value || 'auto';
     const currentColorGrading = elements.colorGrading?.value || 'auto';
@@ -623,6 +764,19 @@ function generatePrompt() {
     const currentComposition = elements.composition?.value || 'auto';
     const currentQualityLevel = elements.qualityLevel?.value || 'high';
     const currentRealism = elements.realismLevel?.value || 'auto';
+    // Camera & Technical
+    const currentFocalLength = elements.focalLength?.value || 'auto';
+    const currentFilmGrain = elements.filmGrain?.value || 'none';
+    const currentSharpness = elements.sharpness?.value || 'auto';
+    const currentContrast = elements.contrast?.value || 'auto';
+    // Color & Tone
+    const currentColorTemp = elements.colorTemp?.value || 'auto';
+    const currentShadowStyle = elements.shadowStyle?.value || 'auto';
+    // Environment
+    const currentTimeOfDay = elements.timeOfDay?.value || 'auto';
+    const currentWeather = elements.weather?.value || 'auto';
+    // Product
+    const currentProductEnhancement = elements.productEnhancement?.value || 'auto';
 
     // Build quality enhancements section
     let qualitySection = '';
@@ -632,12 +786,38 @@ function generatePrompt() {
         qualitySection += `\nREALISM: ${realismDesc[currentRealism]}`;
     }
 
+    // Camera & Technical
+    if (currentFocalLength !== 'auto' && focalLengthDesc[currentFocalLength]) {
+        qualitySection += `\nLENS: ${focalLengthDesc[currentFocalLength]}`;
+    }
+
     if (currentDof !== 'auto' && dofDesc[currentDof]) {
         qualitySection += `\nDEPTH OF FIELD: ${dofDesc[currentDof]}`;
     }
 
+    if (currentFilmGrain !== 'none' && filmGrainDesc[currentFilmGrain]) {
+        qualitySection += `\nFILM GRAIN: ${filmGrainDesc[currentFilmGrain]}`;
+    }
+
+    if (currentSharpness !== 'auto' && sharpnessDesc[currentSharpness]) {
+        qualitySection += `\nSHARPNESS: ${sharpnessDesc[currentSharpness]}`;
+    }
+
+    if (currentContrast !== 'auto' && contrastDesc[currentContrast]) {
+        qualitySection += `\nCONTRAST: ${contrastDesc[currentContrast]}`;
+    }
+
+    // Color & Tone
     if (currentColorGrading !== 'auto' && colorGradingDesc[currentColorGrading]) {
         qualitySection += `\nCOLOR GRADING: ${colorGradingDesc[currentColorGrading]}`;
+    }
+
+    if (currentColorTemp !== 'auto' && colorTempDesc[currentColorTemp]) {
+        qualitySection += `\nCOLOR TEMPERATURE: ${colorTempDesc[currentColorTemp]}`;
+    }
+
+    if (currentShadowStyle !== 'auto' && shadowStyleDesc[currentShadowStyle]) {
+        qualitySection += `\nSHADOWS: ${shadowStyleDesc[currentShadowStyle]}`;
     }
 
     if (currentSkinRetouch && skinRetouchDesc[currentSkinRetouch]) {
@@ -648,8 +828,110 @@ function generatePrompt() {
         qualitySection += `\nCOMPOSITION: ${compositionDesc[currentComposition]}`;
     }
 
+    // Environment
+    if (currentTimeOfDay !== 'auto' && timeOfDayDesc[currentTimeOfDay]) {
+        qualitySection += `\nTIME OF DAY: ${timeOfDayDesc[currentTimeOfDay]}`;
+    }
+
+    if (currentWeather !== 'auto' && weatherDesc[currentWeather]) {
+        qualitySection += `\nWEATHER: ${weatherDesc[currentWeather]}`;
+    }
+
+    // Product
+    if (currentProductEnhancement === 'in-context') {
+        const contextDesc = elements.contextDescription?.value?.trim();
+        if (contextDesc) {
+            qualitySection += `\nPRODUCT CONTEXT: Show the product ${contextDesc}. Make it look natural and realistic in this context.`;
+        }
+    } else if (currentProductEnhancement !== 'auto' && productEnhancementDesc[currentProductEnhancement]) {
+        qualitySection += `\nPRODUCT FOCUS: ${productEnhancementDesc[currentProductEnhancement]}`;
+    }
+
+    // Check for collage mode
+    const currentCollageMode = elements.collageMode?.value || 'off';
+    const collageConfig = collageModeDesc[currentCollageMode];
+    const showFaceInCollage = state.collageShowFace === true || state.collageShowFace === 'true';
+
     // Build the prompt
-    let prompt = `Create a ${qualityBoosterDesc[currentQualityLevel] || 'professional photography'}.
+    let prompt;
+
+    if (collageConfig) {
+        if (showFaceInCollage) {
+            // Multi-angle collage WITH face
+            prompt = `Create a ${qualityBoosterDesc[currentQualityLevel] || 'professional photography'} - a ${collageConfig.layout} showing the SAME model from ${collageConfig.count} different angles.
+
+COLLAGE LAYOUT: ${collageConfig.layout} with ${collageConfig.count} photos arranged neatly with minimal gaps.
+
+ANGLES TO SHOW: ${collageConfig.angles}
+
+SUBJECT: The EXACT SAME ${modelDesc}, ${productTypeDesc[state.productType] || 'with the product'}. The model's face, body, hair, and clothing must be IDENTICAL across all panels.
+
+SHOT TYPE: Half-body and close-up shots showing both the model and product clearly.
+
+GAZE DIRECTION: The model should NOT look directly at the camera. Vary the gaze:
+- Looking slightly away, off to the side
+- Looking down at the product
+- Looking into the distance
+- Candid, editorial feel - NOT passport-style poses
+
+MODEL POSITIONS: Vary the model's body position across panels:
+- Standing up
+- Sitting down
+- Lying down
+- Turned around (back view)
+- Leaning
+
+SETTING: ${sceneDesc[state.scene] || sceneDesc.studio} - consistent background across all panels.
+
+STYLE: ${styleDesc[state.photoStyle] || styleDesc.editorial}. ${lightingDesc[state.lighting] || ''}.
+
+EXPRESSION: ${expressionDesc[state.expression] || expressionDesc.neutral} - consistent across all angles.${qualitySection}
+
+CRITICAL REQUIREMENTS:
+- ALL panels must show the EXACT SAME person (same face, hair, skin tone, body)
+- Product must be clearly visible in each panel
+- Consistent lighting and color grading across all panels
+- Clean, professional collage layout
+- Realistic, photographic result (not illustrated)`;
+        } else {
+            // Multi-angle collage WITHOUT face - product-focused
+            prompt = `Create a ${qualityBoosterDesc[currentQualityLevel] || 'professional photography'} - a ${collageConfig.layout} showcasing a product from ${collageConfig.count} different angles.
+
+COLLAGE LAYOUT: ${collageConfig.layout} with ${collageConfig.count} photos arranged neatly with minimal gaps.
+
+PRODUCT ANGLES: Show the product from ${collageConfig.angles}
+
+FRAMING: EXTREME CLOSE-UPS of the PRODUCT ONLY.
+- DO NOT show the model's face in ANY panel
+- Crop tightly on the product area (hands, torso, feet, etc.)
+- Show hands holding/wearing the product, body parts wearing the item
+- If clothing: show fabric texture, details, how it drapes on the body - but NO face
+- If accessory/jewelry: tight shots on wrist, neck, ears, hands - but NO face
+- If handheld: hands holding the product from different angles
+
+MODEL POSITIONS: Vary the model's body position across panels for visual interest:
+- Standing up
+- Sitting down
+- Lying down
+- Turned around (back view)
+- Leaning
+Mix different positions to showcase how the product looks in various poses.
+
+SETTING: ${sceneDesc[state.scene] || sceneDesc.studio} - consistent background across all panels.
+
+STYLE: ${styleDesc[state.photoStyle] || styleDesc.editorial}. ${lightingDesc[state.lighting] || ''}.${qualitySection}
+
+CRITICAL REQUIREMENTS:
+- ABSOLUTELY NO FACES: Crop above the neck or frame to exclude the face entirely
+- PRODUCT IS THE ONLY FOCUS: Every panel should be a tight close-up of the product
+- Show the product being worn/held/used from different angles
+- Consistent skin tone, lighting and color grading across all panels
+- Clean, professional collage layout
+- Realistic, photographic result (not illustrated)`;
+        }
+    } else {
+        // Standard single shot mode
+        prompt = `Create a ${qualityBoosterDesc[currentQualityLevel] || 'professional photography'}.
 
 SUBJECT: A ${modelDesc}, ${productTypeDesc[state.productType] || 'with the product'}.
 
@@ -669,6 +951,7 @@ IMPORTANT INSTRUCTIONS:
 - Realistic, photographic result (not illustrated or cartoon)
 - The model must be seamlessly integrated into the scene with consistent lighting, natural shadows, and proper depth of field
 - No harsh edges or unnatural cutouts - the subject should look naturally present in the environment`;
+    }
 
     if (state.uploadedImageBase64) {
         prompt += `\n\nI am providing a reference image of the product. Please incorporate this exact product into the photo, keeping its design, colors, and details accurate.`;
@@ -1248,6 +1531,13 @@ function setupEventListeners() {
     elements.cameraAngle?.addEventListener('change', (e) => state.cameraAngle = e.target.value);
     elements.expression?.addEventListener('change', (e) => state.expression = e.target.value);
     elements.aspectRatio?.addEventListener('change', (e) => state.aspectRatio = e.target.value);
+    elements.collageMode?.addEventListener('change', (e) => {
+        state.collageMode = e.target.value;
+        // Show/hide face toggle based on collage mode
+        if (elements.collageFaceOption) {
+            elements.collageFaceOption.style.display = e.target.value !== 'off' ? 'flex' : 'none';
+        }
+    });
 
     // Quality enhancement select fields
     elements.depthOfField?.addEventListener('change', (e) => state.depthOfField = e.target.value);
@@ -1256,6 +1546,39 @@ function setupEventListeners() {
     elements.composition?.addEventListener('change', (e) => state.composition = e.target.value);
     elements.qualityLevel?.addEventListener('change', (e) => state.qualityLevel = e.target.value);
     elements.realismLevel?.addEventListener('change', (e) => state.realismLevel = e.target.value);
+
+    // Camera & Technical
+    elements.focalLength?.addEventListener('change', (e) => state.focalLength = e.target.value);
+    elements.filmGrain?.addEventListener('change', (e) => state.filmGrain = e.target.value);
+    elements.sharpness?.addEventListener('change', (e) => state.sharpness = e.target.value);
+    elements.contrast?.addEventListener('change', (e) => state.contrast = e.target.value);
+
+    // Color & Tone
+    elements.colorTemp?.addEventListener('change', (e) => state.colorTemp = e.target.value);
+    elements.shadowStyle?.addEventListener('change', (e) => state.shadowStyle = e.target.value);
+
+    // Environment
+    elements.timeOfDay?.addEventListener('change', (e) => state.timeOfDay = e.target.value);
+    elements.weather?.addEventListener('change', (e) => state.weather = e.target.value);
+
+    // Product
+    const productEnhancementSelect = document.getElementById('productEnhancement');
+    const contextGroup = document.getElementById('contextDescriptionGroup');
+
+    if (productEnhancementSelect) {
+        productEnhancementSelect.addEventListener('change', (e) => {
+            state.productEnhancement = e.target.value;
+            // Show/hide context description field
+            if (contextGroup) {
+                contextGroup.style.display = e.target.value === 'in-context' ? 'flex' : 'none';
+            }
+        });
+    }
+
+    const contextInput = document.getElementById('contextDescription');
+    if (contextInput) {
+        contextInput.addEventListener('input', (e) => state.contextDescription = e.target.value);
+    }
 
     // Advanced toggle
     elements.advancedToggle?.addEventListener('click', () => {

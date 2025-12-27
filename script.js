@@ -253,6 +253,8 @@ function initElements() {
         fontStyle: document.getElementById('fontStyle'),
         colorHarmony: document.getElementById('colorHarmony'),
         productFocus: document.getElementById('productFocus'),
+        contextDescriptionGroup: document.getElementById('contextDescriptionGroup'),
+        contextDescription: document.getElementById('contextDescription'),
         backgroundComplexity: document.getElementById('backgroundComplexity'),
 
         // Brand Color Picker
@@ -723,6 +725,16 @@ function setupAdvancedOptionsHandlers() {
             const value = parseInt(elements.lineThickness.value);
             const labels = ['Very Thin', 'Thin', 'Medium', 'Thick', 'Very Thick'];
             elements.lineThicknessValue.textContent = labels[value - 1] || 'Medium';
+        });
+    }
+
+    // Product focus - show context description input when "In Context" is selected
+    if (elements.productFocus) {
+        elements.productFocus.addEventListener('change', () => {
+            const showContext = elements.productFocus.value === 'context';
+            if (elements.contextDescriptionGroup) {
+                elements.contextDescriptionGroup.style.display = showContext ? 'block' : 'none';
+            }
         });
     }
 }
@@ -1469,7 +1481,12 @@ BACKGROUND STYLE: ${styleDesc}
 
     // Add product focus
     if (productFocus !== 'auto' && focusDescriptions[productFocus]) {
-        prompt += `\nPRODUCT PRESENTATION: ${focusDescriptions[productFocus]}`;
+        if (productFocus === 'context' && elements.contextDescription && elements.contextDescription.value.trim()) {
+            // Use custom context description when "In Context" is selected and user provided description
+            prompt += `\nPRODUCT PRESENTATION: Show the product IN CONTEXT - ${elements.contextDescription.value.trim()}.`;
+        } else {
+            prompt += `\nPRODUCT PRESENTATION: ${focusDescriptions[productFocus]}`;
+        }
     }
 
     // Add background complexity
@@ -1556,23 +1573,35 @@ function extractImageFromResponse(data) {
     if (message) {
         if (Array.isArray(message.content)) {
             for (const part of message.content) {
+                // OpenAI format
                 if (part.type === 'image_url' && part.image_url?.url) {
                     imageUrl = part.image_url.url;
                     break;
                 }
+                // Anthropic format
                 if (part.type === 'image' && part.source?.data) {
-                    const mimeType = part.source.media_type || 'image/png';
-                    imageUrl = `data:${mimeType};base64,${part.source.data}`;
+                    imageUrl = `data:${part.source.media_type || 'image/png'};base64,${part.source.data}`;
                     break;
                 }
+                // Gemini format (inline_data)
                 if (part.inline_data?.data) {
-                    const mimeType = part.inline_data.mime_type || 'image/png';
-                    imageUrl = `data:${mimeType};base64,${part.inline_data.data}`;
+                    imageUrl = `data:${part.inline_data.mime_type || 'image/png'};base64,${part.inline_data.data}`;
+                    break;
+                }
+                // Alternative Gemini format (image with data property)
+                if (part.image?.data) {
+                    imageUrl = `data:${part.image.mimeType || part.image.mime_type || 'image/png'};base64,${part.image.data}`;
+                    break;
+                }
+                // Direct base64 in part
+                if (part.data && typeof part.data === 'string') {
+                    imageUrl = `data:${part.mimeType || part.mime_type || 'image/png'};base64,${part.data}`;
                     break;
                 }
             }
         }
 
+        // Check message.images array
         if (!imageUrl && message.images && message.images.length > 0) {
             const img = message.images[0];
             if (typeof img === 'string') {
@@ -1586,6 +1615,7 @@ function extractImageFromResponse(data) {
             }
         }
 
+        // Check for base64 string in content
         if (!imageUrl && message.content && typeof message.content === 'string') {
             const base64Match = message.content.match(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/);
             if (base64Match) {
@@ -1594,12 +1624,47 @@ function extractImageFromResponse(data) {
         }
     }
 
+    // DALL-E / images endpoint format
     if (!imageUrl && data.data && data.data[0]) {
         if (data.data[0].url) {
             imageUrl = data.data[0].url;
         } else if (data.data[0].b64_json) {
             imageUrl = `data:image/png;base64,${data.data[0].b64_json}`;
         }
+    }
+
+    // Deep search fallback: look for any base64 data in the response
+    if (!imageUrl) {
+        const findBase64 = (obj, depth = 0) => {
+            if (depth > 10) return null;
+            if (!obj || typeof obj !== 'object') return null;
+
+            if (obj.data && typeof obj.data === 'string' && obj.data.length > 1000) {
+                const mimeType = obj.mimeType || obj.mime_type || obj.media_type || 'image/png';
+                return `data:${mimeType};base64,${obj.data}`;
+            }
+            if (obj.b64_json && typeof obj.b64_json === 'string') {
+                return `data:image/png;base64,${obj.b64_json}`;
+            }
+            if (obj.url && typeof obj.url === 'string' && (obj.url.startsWith('data:image') || obj.url.startsWith('http'))) {
+                return obj.url;
+            }
+
+            if (Array.isArray(obj)) {
+                for (const item of obj) {
+                    const found = findBase64(item, depth + 1);
+                    if (found) return found;
+                }
+            } else {
+                for (const key of Object.keys(obj)) {
+                    const found = findBase64(obj[key], depth + 1);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+
+        imageUrl = findBase64(data);
     }
 
     return imageUrl;
@@ -2772,16 +2837,6 @@ Return ONLY valid JSON (no markdown, no code blocks):
             if (analysis.suggestedStyle) {
                 const styleRadio = document.querySelector(`input[name="style"][value="${analysis.suggestedStyle}"]`);
                 if (styleRadio) styleRadio.checked = true;
-            }
-
-            // Add dominant colors
-            if (analysis.dominantColors && Array.isArray(analysis.dominantColors)) {
-                analysis.dominantColors.forEach(color => {
-                    if (!state.selectedBrandColors.includes(color)) {
-                        state.selectedBrandColors.push(color);
-                    }
-                });
-                renderSelectedColors();
             }
 
             showSuccess('Product analyzed! Title and features extracted.');

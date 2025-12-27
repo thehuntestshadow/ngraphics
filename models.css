@@ -237,8 +237,8 @@
 }
 
 .shot-type-btn span {
-    font-size: 0.65rem;
-    font-weight: 500;
+    font-size: 0.75rem;
+    font-weight: 600;
 }
 
 .shot-type-btn:hover {
@@ -279,8 +279,8 @@
 }
 
 .scene-btn span:last-child {
-    font-size: 0.6rem;
-    font-weight: 500;
+    font-size: 0.7rem;
+    font-weight: 600;
 }
 
 .scene-btn:hover {
@@ -354,37 +354,74 @@
 .advanced-toggle {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 10px;
     width: 100%;
-    padding: 8px 0;
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    font-weight: 500;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-elevated) 100%);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: color var(--duration-fast);
+    transition: all var(--duration-fast);
 }
 
 .advanced-toggle:hover {
-    color: var(--text-primary);
+    color: var(--accent);
+    border-color: var(--accent);
+    background: linear-gradient(135deg, var(--accent-subtle) 0%, var(--bg-surface) 100%);
+}
+
+.advanced-section.open .advanced-toggle {
+    color: var(--accent);
+    border-color: var(--accent);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-color: transparent;
+}
+
+.advanced-toggle .toggle-icon {
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
+}
+
+.advanced-toggle:hover .toggle-icon,
+.advanced-section.open .advanced-toggle .toggle-icon {
+    opacity: 1;
+}
+
+.advanced-toggle span {
+    flex: 1;
+    text-align: left;
 }
 
 .advanced-toggle .toggle-chevron {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     transition: transform var(--duration-fast);
+    opacity: 0.6;
+}
+
+.advanced-toggle:hover .toggle-chevron {
+    opacity: 1;
 }
 
 .advanced-section.open .advanced-toggle .toggle-chevron {
     transform: rotate(180deg);
+    opacity: 1;
 }
 
 .advanced-content {
     display: none;
     flex-direction: column;
     gap: 12px;
-    padding-top: 12px;
+    padding: 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--accent);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
 }
 
 .advanced-section.open .advanced-content {
@@ -428,6 +465,14 @@
     color: var(--accent);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+}
+
+/* Larger variation buttons */
+.option-buttons [data-option="variations"] {
+    min-width: 48px;
+    padding: 10px 16px;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
 /* Settings Section */
