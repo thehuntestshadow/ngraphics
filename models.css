@@ -397,6 +397,39 @@
     gap: 6px;
 }
 
+.option-group-full {
+    grid-column: 1 / -1;
+}
+
+.option-hint {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.quality-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0 4px;
+}
+
+.quality-divider::before,
+.quality-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-subtle);
+}
+
+.quality-divider span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
 /* Settings Section */
 .settings-section {
     margin-top: 16px;

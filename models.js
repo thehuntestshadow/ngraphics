@@ -29,7 +29,14 @@ const state = {
     cameraAngle: 'eye-level',
     expression: 'neutral',
     aspectRatio: '4:5',
-    variations: 1
+    variations: 1,
+    negativePrompt: '',
+    // Quality enhancements
+    depthOfField: 'auto',
+    colorGrading: 'auto',
+    skinRetouch: 'natural',
+    composition: 'auto',
+    qualityLevel: 'high'
 };
 
 // ============================================
@@ -63,6 +70,13 @@ function initElements() {
         expression: document.getElementById('expression'),
         aspectRatio: document.getElementById('aspectRatio'),
         aiModel: document.getElementById('aiModel'),
+        negativePrompt: document.getElementById('negativePrompt'),
+        // Quality enhancements
+        depthOfField: document.getElementById('depthOfField'),
+        colorGrading: document.getElementById('colorGrading'),
+        skinRetouch: document.getElementById('skinRetouch'),
+        composition: document.getElementById('composition'),
+        qualityLevel: document.getElementById('qualityLevel'),
 
         // Settings
         settingsSection: document.getElementById('settingsSection'),
@@ -442,14 +456,20 @@ function generatePrompt() {
     const sceneDesc = {
         studio: 'professional photography studio with clean backdrop',
         urban: 'urban city street with modern architecture',
-        nature: 'natural outdoor setting with greenery',
-        cafe: 'cozy café or coffee shop interior',
+        street: 'street style urban environment with sidewalks and storefronts',
+        nature: 'natural outdoor setting with greenery and trees',
+        beach: 'beach or coastal setting with sand and ocean',
+        cafe: 'cozy café or coffee shop interior with warm ambiance',
         office: 'modern professional office environment',
-        beach: 'beach or coastal setting',
-        home: 'stylish home interior',
-        gym: 'modern gym or fitness studio',
-        street: 'street style urban environment',
-        luxury: 'luxurious upscale setting'
+        gym: 'modern gym or fitness studio with equipment',
+        'living-room': 'stylish modern living room with comfortable furniture',
+        bedroom: 'elegant bedroom interior with soft lighting',
+        kitchen: 'bright modern kitchen with clean countertops',
+        bathroom: 'luxurious bathroom with elegant fixtures',
+        balcony: 'scenic balcony with outdoor view',
+        rooftop: 'urban rooftop terrace with city skyline views',
+        luxury: 'luxurious upscale high-end setting',
+        pool: 'poolside setting with water and lounge area'
     };
 
     // Photo style descriptions
@@ -474,13 +494,25 @@ function generatePrompt() {
 
     // Lighting descriptions
     const lightingDesc = {
-        natural: 'natural daylight',
-        studio: 'professional studio lighting',
-        golden: 'warm golden hour lighting',
-        dramatic: 'dramatic moody lighting with strong shadows',
-        soft: 'soft diffused lighting',
-        backlit: 'backlit with rim lighting effect',
-        neon: 'colorful neon lighting'
+        // Natural
+        natural: 'natural daylight, bright and even',
+        golden: 'warm golden hour lighting with soft orange tones',
+        overcast: 'soft overcast daylight, diffused and even',
+        shade: 'open shade lighting, soft and flattering',
+        // Studio
+        studio: 'professional three-point studio lighting setup',
+        rembrandt: 'Rembrandt lighting with dramatic triangle shadow on cheek',
+        butterfly: 'butterfly/paramount beauty lighting from above, glamorous',
+        split: 'split lighting with half face in shadow, edgy and dramatic',
+        loop: 'classic loop lighting, small shadow from nose, flattering',
+        rim: 'rim lighting with strong hair/edge light, subject separation',
+        highkey: 'high key lighting, bright and airy with minimal shadows',
+        lowkey: 'low key lighting, dark and moody with dramatic shadows',
+        // Creative
+        backlit: 'backlit silhouette with rim light effect',
+        dramatic: 'dramatic cinematic lighting with strong contrast',
+        neon: 'colorful neon lighting with vibrant colors',
+        window: 'natural window light, soft directional lighting'
     };
 
     // Camera angle descriptions
@@ -513,8 +545,93 @@ function generatePrompt() {
         '16:9': 'landscape format (16:9)'
     };
 
+    // Depth of field descriptions
+    const dofDesc = {
+        auto: '',
+        shallow: 'shallow depth of field with creamy bokeh background, shot at f/1.8, subject sharply in focus with beautifully blurred background',
+        medium: 'medium depth of field at f/4, balanced focus with slight background blur',
+        deep: 'deep depth of field at f/8-f/11, sharp throughout from foreground to background',
+        'extreme-bokeh': 'extremely shallow depth of field at f/1.2, dreamy bokeh with very soft background blur, only eyes in sharp focus'
+    };
+
+    // Color grading descriptions
+    const colorGradingDesc = {
+        auto: '',
+        // Film stocks
+        portra: 'Kodak Portra 400 film look with warm skin tones, soft contrast, and slightly muted colors',
+        fuji: 'Fuji 400H film look with soft pastels, slightly lifted shadows, and cool green tint',
+        ektar: 'Kodak Ektar film look with vivid saturated colors and punchy contrast',
+        cinestill: 'Cinestill 800T cinematic film look with halation glow around highlights and teal-orange tones',
+        // Modern looks
+        warm: 'warm golden color grading with amber highlights and cozy tones',
+        cool: 'cool moody color grading with blue shadows and desaturated highlights',
+        airy: 'bright and airy look with lifted shadows, soft whites, and clean tones',
+        muted: 'muted desaturated color palette with faded look',
+        vibrant: 'vibrant punchy colors with enhanced saturation and contrast',
+        bw: 'classic black and white with rich tonal range and contrast',
+        // Editorial
+        vogue: 'Vogue magazine editorial color grading, sophisticated and polished',
+        highfashion: 'high fashion color grading with dramatic contrast and refined tones',
+        clean: 'clean commercial color grading, neutral and true-to-life colors'
+    };
+
+    // Skin retouch descriptions
+    const skinRetouchDesc = {
+        natural: 'natural skin with minimal retouching, authentic texture and pores visible',
+        light: 'light skin retouching, subtle smoothing while maintaining natural texture',
+        moderate: 'moderate skin retouching, smooth skin with even tone',
+        beauty: 'beauty editorial retouching, flawless smooth skin with subtle texture',
+        flawless: 'high-end flawless retouching, perfect porcelain-like skin, magazine-ready'
+    };
+
+    // Composition descriptions
+    const compositionDesc = {
+        auto: '',
+        center: 'centered composition with subject in the middle of the frame',
+        'rule-of-thirds': 'rule of thirds composition with subject placed at intersection points',
+        golden: 'golden ratio spiral composition for dynamic visual flow',
+        'left-space': 'subject positioned on the left with negative space on the right',
+        'right-space': 'subject positioned on the right with negative space on the left',
+        'negative-space': 'generous negative space around the subject for clean minimal look',
+        tight: 'tight crop filling the frame with minimal background'
+    };
+
+    // Quality level boosters
+    const qualityBoosterDesc = {
+        standard: 'professional photography',
+        high: 'professional high-quality photography, sharp details, 4K resolution',
+        ultra: '8K ultra high resolution, magazine-quality professional photography, shot with Canon EOS R5 and 85mm f/1.4 lens, professionally retouched',
+        masterpiece: 'award-winning masterpiece photography, Vogue/Harper\'s Bazaar editorial quality, shot by world-renowned fashion photographer, 8K ultra-detailed, perfect lighting, professionally color graded and retouched, gallery-worthy'
+    };
+
+    // Get current quality settings from elements
+    const currentDof = elements.depthOfField?.value || 'auto';
+    const currentColorGrading = elements.colorGrading?.value || 'auto';
+    const currentSkinRetouch = elements.skinRetouch?.value || 'natural';
+    const currentComposition = elements.composition?.value || 'auto';
+    const currentQualityLevel = elements.qualityLevel?.value || 'high';
+
+    // Build quality enhancements section
+    let qualitySection = '';
+
+    if (currentDof !== 'auto' && dofDesc[currentDof]) {
+        qualitySection += `\nDEPTH OF FIELD: ${dofDesc[currentDof]}`;
+    }
+
+    if (currentColorGrading !== 'auto' && colorGradingDesc[currentColorGrading]) {
+        qualitySection += `\nCOLOR GRADING: ${colorGradingDesc[currentColorGrading]}`;
+    }
+
+    if (currentSkinRetouch && skinRetouchDesc[currentSkinRetouch]) {
+        qualitySection += `\nSKIN/RETOUCH: ${skinRetouchDesc[currentSkinRetouch]}`;
+    }
+
+    if (currentComposition !== 'auto' && compositionDesc[currentComposition]) {
+        qualitySection += `\nCOMPOSITION: ${compositionDesc[currentComposition]}`;
+    }
+
     // Build the prompt
-    let prompt = `Create a professional fashion/product photograph.
+    let prompt = `Create a ${qualityBoosterDesc[currentQualityLevel] || 'professional photography'}.
 
 SUBJECT: A ${modelDesc}, ${productTypeDesc[state.productType] || 'with the product'}.
 
@@ -526,17 +643,24 @@ STYLE: ${styleDesc[state.photoStyle] || styleDesc.editorial}. ${lightingDesc[sta
 
 POSE & EXPRESSION: ${poseDesc[state.pose] || poseDesc.natural}, with ${expressionDesc[state.expression] || expressionDesc.neutral}.
 
-FORMAT: ${aspectRatioMap[state.aspectRatio] || 'portrait format'}.
+FORMAT: ${aspectRatioMap[state.aspectRatio] || 'portrait format'}.${qualitySection}
 
 IMPORTANT INSTRUCTIONS:
 - The product should be clearly visible and be the hero of the shot
 - Model should look natural and professional
-- High-end fashion photography quality
 - Realistic, photographic result (not illustrated or cartoon)
-- Professional color grading and composition`;
+- The model must be seamlessly integrated into the scene with consistent lighting, natural shadows, and proper depth of field
+- No harsh edges or unnatural cutouts - the subject should look naturally present in the environment`;
 
     if (state.uploadedImageBase64) {
         prompt += `\n\nI am providing a reference image of the product. Please incorporate this exact product into the photo, keeping its design, colors, and details accurate.`;
+    }
+
+    // Add negative prompt if provided
+    const negativePromptText = elements.negativePrompt?.value?.trim();
+    if (negativePromptText) {
+        prompt += `\n\nTHINGS TO AVOID (do NOT include these in the image):
+${negativePromptText}`;
     }
 
     return prompt;
@@ -552,23 +676,35 @@ function extractImageFromResponse(data) {
     if (message) {
         if (Array.isArray(message.content)) {
             for (const part of message.content) {
+                // OpenAI format
                 if (part.type === 'image_url' && part.image_url?.url) {
                     imageUrl = part.image_url.url;
                     break;
                 }
+                // Anthropic format
                 if (part.type === 'image' && part.source?.data) {
-                    const mimeType = part.source.media_type || 'image/png';
-                    imageUrl = `data:${mimeType};base64,${part.source.data}`;
+                    imageUrl = `data:${part.source.media_type || 'image/png'};base64,${part.source.data}`;
                     break;
                 }
+                // Gemini format (inline_data)
                 if (part.inline_data?.data) {
-                    const mimeType = part.inline_data.mime_type || 'image/png';
-                    imageUrl = `data:${mimeType};base64,${part.inline_data.data}`;
+                    imageUrl = `data:${part.inline_data.mime_type || 'image/png'};base64,${part.inline_data.data}`;
+                    break;
+                }
+                // Alternative Gemini format (image with data property)
+                if (part.image?.data) {
+                    imageUrl = `data:${part.image.mimeType || part.image.mime_type || 'image/png'};base64,${part.image.data}`;
+                    break;
+                }
+                // Direct base64 in part
+                if (part.data && typeof part.data === 'string') {
+                    imageUrl = `data:${part.mimeType || part.mime_type || 'image/png'};base64,${part.data}`;
                     break;
                 }
             }
         }
 
+        // Check message.images array
         if (!imageUrl && message.images && message.images.length > 0) {
             const img = message.images[0];
             if (typeof img === 'string') {
@@ -582,6 +718,7 @@ function extractImageFromResponse(data) {
             }
         }
 
+        // Check for base64 string in content
         if (!imageUrl && message.content && typeof message.content === 'string') {
             const base64Match = message.content.match(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/);
             if (base64Match) {
@@ -590,11 +727,49 @@ function extractImageFromResponse(data) {
         }
     }
 
+    // DALL-E / images endpoint format
     if (!imageUrl && data.data && data.data[0]) {
         if (data.data[0].url) {
             imageUrl = data.data[0].url;
         } else if (data.data[0].b64_json) {
             imageUrl = `data:image/png;base64,${data.data[0].b64_json}`;
+        }
+    }
+
+    // Deep search fallback: look for any base64 data in the response
+    if (!imageUrl) {
+        const findBase64 = (obj, depth = 0) => {
+            if (depth > 10) return null;
+            if (!obj || typeof obj !== 'object') return null;
+
+            if (obj.data && typeof obj.data === 'string' && obj.data.length > 1000) {
+                const mimeType = obj.mimeType || obj.mime_type || obj.media_type || 'image/png';
+                return `data:${mimeType};base64,${obj.data}`;
+            }
+            if (obj.b64_json && typeof obj.b64_json === 'string') {
+                return `data:image/png;base64,${obj.b64_json}`;
+            }
+            if (obj.url && typeof obj.url === 'string' && (obj.url.startsWith('data:image') || obj.url.startsWith('http'))) {
+                return obj.url;
+            }
+
+            if (Array.isArray(obj)) {
+                for (const item of obj) {
+                    const found = findBase64(item, depth + 1);
+                    if (found) return found;
+                }
+            } else {
+                for (const key of Object.keys(obj)) {
+                    const found = findBase64(obj[key], depth + 1);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+
+        imageUrl = findBase64(data);
+        if (imageUrl) {
+            console.log('Found image via deep search fallback');
         }
     }
 
@@ -1055,6 +1230,13 @@ function setupEventListeners() {
     elements.cameraAngle?.addEventListener('change', (e) => state.cameraAngle = e.target.value);
     elements.expression?.addEventListener('change', (e) => state.expression = e.target.value);
     elements.aspectRatio?.addEventListener('change', (e) => state.aspectRatio = e.target.value);
+
+    // Quality enhancement select fields
+    elements.depthOfField?.addEventListener('change', (e) => state.depthOfField = e.target.value);
+    elements.colorGrading?.addEventListener('change', (e) => state.colorGrading = e.target.value);
+    elements.skinRetouch?.addEventListener('change', (e) => state.skinRetouch = e.target.value);
+    elements.composition?.addEventListener('change', (e) => state.composition = e.target.value);
+    elements.qualityLevel?.addEventListener('change', (e) => state.qualityLevel = e.target.value);
 
     // Advanced toggle
     elements.advancedToggle?.addEventListener('click', () => {
