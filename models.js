@@ -36,7 +36,8 @@ const state = {
     colorGrading: 'auto',
     skinRetouch: 'natural',
     composition: 'auto',
-    qualityLevel: 'high'
+    qualityLevel: 'high',
+    realismLevel: 'auto'
 };
 
 // ============================================
@@ -77,6 +78,7 @@ function initElements() {
         skinRetouch: document.getElementById('skinRetouch'),
         composition: document.getElementById('composition'),
         qualityLevel: document.getElementById('qualityLevel'),
+        realismLevel: document.getElementById('realismLevel'),
 
         // Settings
         settingsSection: document.getElementById('settingsSection'),
@@ -604,15 +606,31 @@ function generatePrompt() {
         masterpiece: 'award-winning masterpiece photography, Vogue/Harper\'s Bazaar editorial quality, shot by world-renowned fashion photographer, 8K ultra-detailed, perfect lighting, professionally color graded and retouched, gallery-worthy'
     };
 
+    // Realism level descriptions
+    const realismDesc = {
+        auto: '', // No realism instructions, let AI decide naturally
+        photo: 'photorealistic, indistinguishable from a real photograph',
+        hyper: 'hyper-realistic with extreme attention to detail, lifelike textures, realistic skin pores and fine hair details',
+        'ultra-hyper': 'ultra hyper-realistic, microscopic level of detail, perfect anatomical accuracy, subsurface skin scattering, individual hair strands visible, photographic perfection',
+        cinematic: 'cinematic realism with film-like quality, subtle film grain, cinematic color science, movie-quality production value',
+        raw: 'RAW unprocessed photo look, natural imperfections, authentic camera capture feel, no artificial enhancement'
+    };
+
     // Get current quality settings from elements
     const currentDof = elements.depthOfField?.value || 'auto';
     const currentColorGrading = elements.colorGrading?.value || 'auto';
     const currentSkinRetouch = elements.skinRetouch?.value || 'natural';
     const currentComposition = elements.composition?.value || 'auto';
     const currentQualityLevel = elements.qualityLevel?.value || 'high';
+    const currentRealism = elements.realismLevel?.value || 'auto';
 
     // Build quality enhancements section
     let qualitySection = '';
+
+    // Only include realism if not auto
+    if (currentRealism !== 'auto' && realismDesc[currentRealism]) {
+        qualitySection += `\nREALISM: ${realismDesc[currentRealism]}`;
+    }
 
     if (currentDof !== 'auto' && dofDesc[currentDof]) {
         qualitySection += `\nDEPTH OF FIELD: ${dofDesc[currentDof]}`;
@@ -1237,6 +1255,7 @@ function setupEventListeners() {
     elements.skinRetouch?.addEventListener('change', (e) => state.skinRetouch = e.target.value);
     elements.composition?.addEventListener('change', (e) => state.composition = e.target.value);
     elements.qualityLevel?.addEventListener('change', (e) => state.qualityLevel = e.target.value);
+    elements.realismLevel?.addEventListener('change', (e) => state.realismLevel = e.target.value);
 
     // Advanced toggle
     elements.advancedToggle?.addEventListener('click', () => {
