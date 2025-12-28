@@ -90,8 +90,7 @@ Main page for creating product marketing infographics.
 ### Characteristic Features
 - Drag-to-reorder: Reposition features by dragging the grip handle
 - Star button to mark primary features (shown larger/more prominent)
-- Auto-icon suggestions based on keyword detection (battery, wifi, camera, etc.)
-- Manual icon selection per characteristic
+- Auto icons: AI automatically selects appropriate icons based on feature text
 
 ---
 

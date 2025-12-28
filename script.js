@@ -936,7 +936,6 @@ function setupCharacteristicsHandlers() {
     // Attach handlers to initial remove buttons
     document.querySelectorAll('.char-remove').forEach(attachRemoveHandler);
     document.querySelectorAll('.char-star').forEach(attachStarHandler);
-    document.querySelectorAll('.char-item .input-field').forEach(attachIconSuggestionHandler);
 
     // Initialize drag-to-reorder
     initDragAndDrop();
@@ -961,20 +960,6 @@ function addCharacteristicItem() {
             </svg>
         </button>
         <input type="text" class="input-field" placeholder="${t.charPlaceholders[0]}">
-        <select class="select-mini char-icon-select">
-            <option value="auto">Auto</option>
-            <option value="battery">Battery</option>
-            <option value="bolt">Lightning</option>
-            <option value="wifi">WiFi</option>
-            <option value="bluetooth">Bluetooth</option>
-            <option value="headphones">Audio</option>
-            <option value="camera">Camera</option>
-            <option value="shield">Shield</option>
-            <option value="water">Water</option>
-            <option value="star">Star</option>
-            <option value="check">Check</option>
-            <option value="none">None</option>
-        </select>
         <button type="button" class="char-remove" title="Remove">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="18" y1="6" x2="6" y2="18"/>
@@ -985,7 +970,6 @@ function addCharacteristicItem() {
     elements.characteristicsList.appendChild(div);
     attachRemoveHandler(div.querySelector('.char-remove'));
     attachStarHandler(div.querySelector('.char-star'));
-    attachIconSuggestionHandler(div.querySelector('.input-field'));
     attachDragHandlers(div);
 }
 
@@ -1003,34 +987,6 @@ function attachRemoveHandler(btn) {
 function attachStarHandler(btn) {
     btn.addEventListener('click', () => {
         btn.classList.toggle('starred');
-    });
-}
-
-function attachIconSuggestionHandler(input) {
-    input.addEventListener('input', () => {
-        const text = input.value.toLowerCase();
-        const selectElement = input.parentElement.querySelector('.char-icon-select');
-        if (!selectElement) return;
-
-        // Find best matching icon
-        let bestMatch = 'auto';
-        for (const [icon, keywords] of Object.entries(iconSuggestions)) {
-            for (const keyword of keywords) {
-                if (text.includes(keyword)) {
-                    bestMatch = icon;
-                    break;
-                }
-            }
-            if (bestMatch !== 'auto') break;
-        }
-
-        // Update select if we found a match
-        if (bestMatch !== 'auto') {
-            const option = selectElement.querySelector(`option[value="${bestMatch}"]`);
-            if (option) {
-                selectElement.value = bestMatch;
-            }
-        }
     });
 }
 
@@ -3143,19 +3099,6 @@ function addCharacteristic(text = '', isPrimary = false) {
             </svg>
         </button>
         <input type="text" class="input-field" placeholder="Product feature..." value="${text}">
-        <select class="select-field select-mini char-icon">
-            <option value="auto">Auto</option>
-            <option value="battery">🔋</option>
-            <option value="wifi">📶</option>
-            <option value="camera">📷</option>
-            <option value="shield">🛡️</option>
-            <option value="star">⭐</option>
-            <option value="clock">⏱️</option>
-            <option value="bolt">⚡</option>
-            <option value="water">💧</option>
-            <option value="leaf">🌿</option>
-            <option value="diamond">💎</option>
-        </select>
         <button type="button" class="char-remove" title="Remove">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="18" y1="6" x2="6" y2="18"/>
@@ -3179,20 +3122,6 @@ function addCharacteristic(text = '', isPrimary = false) {
     const removeBtn = charItem.querySelector('.char-remove');
     removeBtn.addEventListener('click', () => {
         charItem.remove();
-    });
-
-    // Icon auto-suggest
-    const input = charItem.querySelector('.input-field');
-    const iconSelect = charItem.querySelector('.char-icon');
-    input.addEventListener('input', () => {
-        const suggestedIcon = suggestIconForText(input.value);
-        if (suggestedIcon && iconSelect.value === 'auto') {
-            // Visual hint that an icon was suggested
-            iconSelect.style.borderColor = 'var(--accent)';
-            setTimeout(() => {
-                iconSelect.style.borderColor = '';
-            }, 500);
-        }
     });
 
     elements.characteristicsList.appendChild(charItem);
