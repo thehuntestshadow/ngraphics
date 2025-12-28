@@ -188,7 +188,8 @@ Generation history stored in localStorage with configurable limits, supporting v
 
 ### Favorites System
 Both pages support saving generations as favorites for style reuse:
-- Save generated image with all settings, seed, and reference images
+- Save generated image(s) with all settings, seed, and reference images
+- Supports multiple variants: when generating 2-4 variations, all are saved together
 - Load favorite to restore settings, then upload new product to regenerate in same style
 - Storage: Thumbnails in localStorage, full images in IndexedDB (hybrid approach)
 - Storage keys: `ngraphics_favorites` (Infographics), `model_studio_favorites` (Model Studio)
