@@ -158,6 +158,7 @@ function initElements() {
         favoritesModal: document.getElementById('favoritesModal'),
         closeFavoritesModal: document.getElementById('closeFavoritesModal'),
         favoritePreviewImg: document.getElementById('favoritePreviewImg'),
+        favoriteVariants: document.getElementById('favoriteVariants'),
         favoriteNameInput: document.getElementById('favoriteNameInput'),
         favoriteDate: document.getElementById('favoriteDate'),
         favoriteSeedValue: document.getElementById('favoriteSeedValue'),
@@ -1132,6 +1133,7 @@ async function saveFavorite() {
         const favorite = await favorites.add({
             name,
             imageUrl: state.generatedImageUrl,
+            imageUrls: state.generatedImages, // All variants
             seed: state.lastSeed,
             prompt: state.lastPrompt,
             productImageBase64: state.uploadedImageBase64,
@@ -1140,7 +1142,10 @@ async function saveFavorite() {
 
         if (favorite) {
             elements.favoriteBtn.classList.add('active');
-            showSuccess('Saved to favorites!');
+            const variantText = state.generatedImages.length > 1
+                ? ` (${state.generatedImages.length} variants)`
+                : '';
+            showSuccess(`Saved to favorites!${variantText}`);
             renderFavorites();
         }
     } catch (error) {
@@ -1170,6 +1175,7 @@ function renderFavorites() {
     grid.innerHTML = items.map(item => `
         <div class="favorite-item" data-id="${item.id}">
             <img src="${item.thumbnail || item.imageUrl}" alt="${item.name}" loading="lazy">
+            ${item.variantCount > 1 ? `<div class="favorite-item-variants">${item.variantCount}</div>` : ''}
             <div class="favorite-item-star">
                 <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -1212,12 +1218,40 @@ async function openFavoritesModal(id) {
 
     // Load full image from IndexedDB (fall back to thumbnail/imageUrl for legacy items)
     elements.favoritePreviewImg.src = item.thumbnail || '';
+    elements.favoriteVariants.style.display = 'none';
+    elements.favoriteVariants.innerHTML = '';
     elements.favoritesModal.classList.add('visible');
 
     try {
         const images = await favorites.getImages(id);
-        if (images && images.imageUrl) {
-            elements.favoritePreviewImg.src = images.imageUrl;
+        if (images) {
+            // Handle multiple variants
+            const imageUrls = images.imageUrls || (images.imageUrl ? [images.imageUrl] : []);
+
+            if (imageUrls.length > 0) {
+                elements.favoritePreviewImg.src = imageUrls[0];
+            }
+
+            // Show variant thumbnails if more than 1
+            if (imageUrls.length > 1) {
+                elements.favoriteVariants.style.display = 'flex';
+                elements.favoriteVariants.innerHTML = imageUrls.map((url, idx) => `
+                    <div class="variant-thumb${idx === 0 ? ' active' : ''}" data-index="${idx}">
+                        <img src="${url}" alt="Variant ${idx + 1}">
+                    </div>
+                `).join('');
+
+                // Click handlers for variant thumbnails
+                elements.favoriteVariants.querySelectorAll('.variant-thumb').forEach(thumb => {
+                    thumb.addEventListener('click', () => {
+                        const idx = parseInt(thumb.dataset.index, 10);
+                        elements.favoritePreviewImg.src = imageUrls[idx];
+                        elements.favoriteVariants.querySelectorAll('.variant-thumb').forEach(t => t.classList.remove('active'));
+                        thumb.classList.add('active');
+                    });
+                });
+            }
+
             // Store images for use in loadFavorite/download
             state.selectedFavoriteImages = images;
         } else if (item.imageUrl) {

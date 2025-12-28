@@ -395,9 +395,13 @@ class SharedFavorites {
     async add(favorite) {
         const id = Date.now();
 
+        // Support multiple images (variants)
+        const imageUrls = favorite.imageUrls || (favorite.imageUrl ? [favorite.imageUrl] : []);
+
         // Store images in IndexedDB
         const images = {
-            imageUrl: favorite.imageUrl,
+            imageUrl: imageUrls[0] || favorite.imageUrl, // Primary image for backward compat
+            imageUrls: imageUrls, // All variant images
             productImageBase64: favorite.productImageBase64 || null,
             styleReferenceBase64: favorite.styleReferenceBase64 || null
         };
@@ -417,8 +421,9 @@ class SharedFavorites {
             seed: favorite.seed,
             prompt: favorite.prompt || '',
             settings: favorite.settings || {},
+            variantCount: imageUrls.length, // Track how many variants
             // Store small thumbnail for grid display
-            thumbnail: await this._createThumbnail(favorite.imageUrl)
+            thumbnail: await this._createThumbnail(imageUrls[0] || favorite.imageUrl)
         };
 
         this.items.unshift(item);
