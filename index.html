@@ -363,20 +363,6 @@
                                     <span class="style-name">Auto</span>
                                 </span>
                             </label>
-                            <label class="style-option" data-tooltip="Bold callout lines, colorful icons, badges, and decorative elements. High visual impact.">
-                                <input type="radio" name="style" value="rich">
-                                <span class="style-card">
-                                    <span class="style-preview style-rich"></span>
-                                    <span class="style-name">Rich</span>
-                                </span>
-                            </label>
-                            <label class="style-option" data-tooltip="Technical diagram style with thin lines connecting features to product parts. Minimal text, icon-focused.">
-                                <input type="radio" name="style" value="callout">
-                                <span class="style-card">
-                                    <span class="style-preview style-callout"></span>
-                                    <span class="style-name">Technical</span>
-                                </span>
-                            </label>
                             <label class="style-option" data-tooltip="Clean white or light background. Perfect for Amazon listings and e-commerce sites.">
                                 <input type="radio" name="style" value="light">
                                 <span class="style-card">
@@ -402,12 +388,9 @@
                         <!-- Hidden select for JS compatibility -->
                         <select class="hidden" id="infographicStyle">
                             <option value="auto">Auto</option>
-                            <option value="rich">Rich</option>
-                            <option value="callout">Callout</option>
                             <option value="light">Light</option>
                             <option value="dark">Dark</option>
                             <option value="gradient">Gradient</option>
-                            <option value="transparent">Transparent</option>
                         </select>
                     </div>
 
@@ -425,7 +408,7 @@
                                 <div class="group-title">Layout & Composition</div>
                                 <div class="advanced-grid">
                                     <div class="field-group">
-                                        <label class="field-label">Layout</label>
+                                        <label class="field-label" data-tooltip="Controls where the product is positioned in the image. Center places it in the middle, Left/Right on sides, Hero makes it large and prominent.">Layout</label>
                                         <select class="select-field select-sm" id="layoutTemplate">
                                             <option value="auto">Auto</option>
                                             <option value="center">Center</option>
@@ -437,18 +420,23 @@
                                         </select>
                                     </div>
                                     <div class="field-group">
-                                        <label class="field-label">Aspect Ratio</label>
-                                        <select class="select-field select-sm" id="aspectRatio">
-                                            <option value="auto">Auto</option>
-                                            <option value="1:1">1:1</option>
-                                            <option value="2:3">2:3</option>
-                                            <option value="4:5">4:5</option>
-                                            <option value="16:9">16:9</option>
-                                            <option value="9:16">9:16</option>
-                                        </select>
+                                        <label class="field-label" data-tooltip="The width-to-height ratio of the generated image. Use 1:1 for square, 9:16 for vertical stories, 16:9 for horizontal banners.">Aspect Ratio</label>
+                                        <div class="aspect-ratio-preview">
+                                            <select class="select-field select-sm" id="aspectRatio">
+                                                <option value="auto">Auto</option>
+                                                <option value="1:1">1:1</option>
+                                                <option value="2:3">2:3</option>
+                                                <option value="4:5">4:5</option>
+                                                <option value="16:9">16:9</option>
+                                                <option value="9:16">9:16</option>
+                                            </select>
+                                            <div class="aspect-preview-box" id="aspectPreviewBox">
+                                                <div class="aspect-preview-inner" id="aspectPreviewInner"></div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="field-group">
-                                        <label class="field-label">Product Focus</label>
+                                        <label class="field-label" data-tooltip="How much of the product to show. Full shows the entire product, Close-up focuses on details, In Context places it in a real-world setting.">Product Focus</label>
                                         <select class="select-field select-sm" id="productFocus">
                                             <option value="auto">Auto</option>
                                             <option value="full">Full</option>
@@ -460,7 +448,7 @@
                                         </select>
                                     </div>
                                     <div class="field-group">
-                                        <label class="field-label">Variations</label>
+                                        <label class="field-label" data-tooltip="Generate multiple image variations at once. More variations give you more options to choose from.">Variations</label>
                                         <select class="select-field select-sm" id="variations">
                                             <option value="1">1 Image</option>
                                             <option value="2">2 Images</option>
@@ -476,10 +464,10 @@
 
                             <!-- Visual Style -->
                             <div class="advanced-group">
-                                <div class="group-title">Visual Style</div>
+                                <div class="group-title" data-tooltip="Control the overall visual appearance including typography, icons, and how much detail is shown.">Visual Style</div>
                                 <div class="slider-field">
                                     <div class="slider-header">
-                                        <span class="slider-label">Visual Density</span>
+                                        <span class="slider-label" data-tooltip="How much visual information to include. Minimal is clean and simple, Rich includes more details, icons, and decorative elements.">Visual Density</span>
                                         <span class="slider-value" id="visualDensityValue">Balanced</span>
                                     </div>
                                     <input type="range" class="range-slider" id="visualDensity" min="1" max="5" value="3">
@@ -490,7 +478,7 @@
                                 </div>
                                 <div class="advanced-grid">
                                     <div class="field-group">
-                                        <label class="field-label">Font Style</label>
+                                        <label class="field-label" data-tooltip="Typography style for text labels and feature callouts. Modern is clean sans-serif, Classic uses serifs, Bold is impactful.">Font Style</label>
                                         <select class="select-field select-sm" id="fontStyle">
                                             <option value="auto">Auto</option>
                                             <option value="modern">Modern</option>
@@ -502,17 +490,15 @@
                                         </select>
                                     </div>
                                     <div class="field-group">
-                                        <label class="field-label">Icon Style</label>
+                                        <label class="field-label" data-tooltip="Visual style for feature icons. Realistic uses photo-like icons, Flat is minimal, 3D adds depth. Choose None for text-only labels.">Icon Style</label>
                                         <select class="select-field select-sm" id="iconStyle">
                                             <option value="auto">Auto</option>
                                             <option value="realistic">Realistic / Photo-like</option>
                                             <option value="illustrated">Illustrated / Hand-drawn</option>
                                             <option value="3d">3D Rendered</option>
-                                            <option value="flat">Flat / Solid colors</option>
+                                            <option value="flat">Flat / Minimal</option>
                                             <option value="outlined">Outlined / Stroke</option>
                                             <option value="gradient">Gradient / Glossy</option>
-                                            <option value="minimal">Minimal / Simple</option>
-                                            <option value="emoji">Emoji style</option>
                                             <option value="none">None (text only)</option>
                                         </select>
                                     </div>
@@ -542,8 +528,9 @@
                                         <div class="field-group" style="margin-top: 12px;">
                                             <label class="field-label">Line Colors</label>
                                             <select class="select-field select-sm" id="lineColorMode">
+                                                <option value="auto" selected>Auto</option>
                                                 <option value="mono">Monochrome (single color)</option>
-                                                <option value="multi" selected>Multicolored (different per feature)</option>
+                                                <option value="multi">Multicolored (different per feature)</option>
                                                 <option value="gradient">Gradient lines</option>
                                                 <option value="match">Match product colors</option>
                                             </select>
@@ -552,111 +539,116 @@
                                 </div>
                             </div>
 
-                            <!-- Colors -->
-                            <div class="advanced-group">
-                                <div class="group-title">Colors & Background</div>
-                                <div class="advanced-grid">
-                                    <div class="field-group">
-                                        <label class="field-label">Color Harmony</label>
-                                        <select class="select-field select-sm" id="colorHarmony">
-                                            <option value="match">Match Product</option>
-                                            <option value="complementary">Complementary</option>
-                                            <option value="analogous">Analogous</option>
-                                            <option value="triadic">Triadic</option>
-                                            <option value="monochrome">Monochrome</option>
-                                            <option value="contrast">High Contrast</option>
-                                        </select>
-                                    </div>
-                                    <div class="field-group">
-                                        <label class="field-label">Background Type</label>
-                                        <select class="select-field select-sm" id="backgroundComplexity">
-                                            <option value="auto">Auto</option>
-                                            <option value="solid">Solid</option>
-                                            <option value="subtle">Subtle</option>
-                                            <option value="textured">Textured</option>
-                                            <option value="gradient">Gradient</option>
-                                            <option value="pattern">Pattern</option>
-                                            <option value="environmental">Environmental</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="field-group full-width">
-                                    <label class="field-label">Brand Colors</label>
-                                    <div class="color-picker-section">
-                                        <div class="color-presets" id="colorPresets">
-                                            <button type="button" class="color-preset" style="background: #FF5733;" data-color="#FF5733" title="#FF5733"></button>
-                                            <button type="button" class="color-preset" style="background: #E74C3C;" data-color="#E74C3C" title="#E74C3C"></button>
-                                            <button type="button" class="color-preset" style="background: #9B59B6;" data-color="#9B59B6" title="#9B59B6"></button>
-                                            <button type="button" class="color-preset" style="background: #3498DB;" data-color="#3498DB" title="#3498DB"></button>
-                                            <button type="button" class="color-preset" style="background: #2563EB;" data-color="#2563EB" title="#2563EB"></button>
-                                            <button type="button" class="color-preset" style="background: #1ABC9C;" data-color="#1ABC9C" title="#1ABC9C"></button>
-                                            <button type="button" class="color-preset" style="background: #10B981;" data-color="#10B981" title="#10B981"></button>
-                                            <button type="button" class="color-preset" style="background: #F1C40F;" data-color="#F1C40F" title="#F1C40F"></button>
-                                            <button type="button" class="color-preset" style="background: #E67E22;" data-color="#E67E22" title="#E67E22"></button>
-                                            <button type="button" class="color-preset" style="background: #1A1A1A;" data-color="#1A1A1A" title="#1A1A1A"></button>
-                                            <button type="button" class="color-preset" style="background: #FFFFFF; border-color: var(--border-default);" data-color="#FFFFFF" title="#FFFFFF"></button>
-                                        </div>
-                                        <div class="selected-colors" id="selectedColors"></div>
-                                        <div class="custom-color-row">
-                                            <div class="color-input-wrapper">
-                                                <input type="color" class="color-input-native" id="customColorPicker" value="#6366F1">
+                            <!-- Style & Generation Settings (Nested Collapsible) -->
+                            <div class="advanced-section nested" id="styleGenSection">
+                                <button type="button" class="advanced-toggle" id="styleGenToggle">
+                                    <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="3"/>
+                                        <path d="M12 1v6m0 6v10"/>
+                                        <path d="M21 12h-6m-6 0H1"/>
+                                        <path d="m18.364 5.636-4.243 4.243m-4.242 4.242-4.243 4.243"/>
+                                        <path d="m5.636 5.636 4.243 4.243m4.242 4.242 4.243 4.243"/>
+                                    </svg>
+                                    <span>Style & Generation</span>
+                                    <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"/>
+                                    </svg>
+                                </button>
+                                <div class="advanced-content">
+                                    <!-- Colors -->
+                                    <div class="advanced-group">
+                                        <div class="group-title" data-tooltip="Control the color palette used in the generated infographic.">Colors</div>
+                                        <div class="advanced-grid">
+                                            <div class="field-group">
+                                                <label class="field-label" data-tooltip="How colors relate to each other. Match Product extracts colors from your product, Complementary uses opposite colors for contrast.">Color Harmony</label>
+                                                <select class="select-field select-sm" id="colorHarmony">
+                                                    <option value="match">Match Product</option>
+                                                    <option value="complementary">Complementary</option>
+                                                    <option value="analogous">Analogous</option>
+                                                    <option value="triadic">Triadic</option>
+                                                    <option value="monochrome">Monochrome</option>
+                                                    <option value="contrast">High Contrast</option>
+                                                </select>
                                             </div>
-                                            <input type="text" class="input-field input-sm input-mono" id="customColorHex" placeholder="#6366F1" maxlength="7">
-                                            <button type="button" class="btn-add-color" id="addCustomColor">Add</button>
+                                        </div>
+                                        <div class="field-group full-width">
+                                            <label class="field-label" data-tooltip="Specific colors to include in the design. Click presets or add custom hex codes to match your brand identity.">Brand Colors</label>
+                                            <div class="color-picker-section">
+                                                <div class="color-presets" id="colorPresets">
+                                                    <button type="button" class="color-preset" style="background: #EF4444;" data-color="#EF4444" title="#EF4444"></button>
+                                                    <button type="button" class="color-preset" style="background: #9B59B6;" data-color="#9B59B6" title="#9B59B6"></button>
+                                                    <button type="button" class="color-preset" style="background: #3498DB;" data-color="#3498DB" title="#3498DB"></button>
+                                                    <button type="button" class="color-preset" style="background: #2563EB;" data-color="#2563EB" title="#2563EB"></button>
+                                                    <button type="button" class="color-preset" style="background: #1ABC9C;" data-color="#1ABC9C" title="#1ABC9C"></button>
+                                                    <button type="button" class="color-preset" style="background: #10B981;" data-color="#10B981" title="#10B981"></button>
+                                                    <button type="button" class="color-preset" style="background: #F1C40F;" data-color="#F1C40F" title="#F1C40F"></button>
+                                                    <button type="button" class="color-preset" style="background: #E67E22;" data-color="#E67E22" title="#E67E22"></button>
+                                                    <button type="button" class="color-preset" style="background: #1A1A1A;" data-color="#1A1A1A" title="#1A1A1A"></button>
+                                                    <button type="button" class="color-preset" style="background: #FFFFFF; border-color: var(--border-default);" data-color="#FFFFFF" title="#FFFFFF"></button>
+                                                </div>
+                                                <div class="selected-colors" id="selectedColors"></div>
+                                                <div class="custom-color-row">
+                                                    <div class="color-input-wrapper">
+                                                        <input type="color" class="color-input-native" id="customColorPicker" value="#6366F1">
+                                                    </div>
+                                                    <input type="text" class="input-field input-sm input-mono" id="customColorHex" placeholder="#6366F1" maxlength="7">
+                                                    <button type="button" class="btn-add-color" id="addCustomColor">Add</button>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" id="brandColors">
                                         </div>
                                     </div>
-                                    <input type="hidden" id="brandColors">
-                                </div>
-                            </div>
 
-                            <!-- Style Reference -->
-                            <div class="advanced-group">
-                                <div class="group-title">Style Reference</div>
-                                <div class="style-ref-container">
-                                    <div class="style-upload-zone" id="styleUploadArea">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                            <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                            <circle cx="8.5" cy="8.5" r="1.5"/>
-                                            <path d="M21 15l-5-5L5 21"/>
-                                        </svg>
-                                        <span>Upload style reference</span>
-                                        <input type="file" class="upload-input" id="styleReference" accept="image/png,image/jpeg,image/jpg,image/webp">
+                                    <!-- Style Reference -->
+                                    <div class="advanced-group">
+                                        <div class="group-title" data-tooltip="Upload an image to use as visual inspiration. The AI will try to match its style, colors, and composition.">Style Reference</div>
+                                        <div class="style-ref-container">
+                                            <div class="style-upload-zone" id="styleUploadArea">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                                    <path d="M21 15l-5-5L5 21"/>
+                                                </svg>
+                                                <span>Upload style reference</span>
+                                                <input type="file" class="upload-input" id="styleReference" accept="image/png,image/jpeg,image/jpg,image/webp">
+                                            </div>
+                                            <div class="style-preview-wrap" id="stylePreviewContainer" style="display: none;">
+                                                <img src="" alt="Style Reference" id="stylePreviewImg">
+                                                <button type="button" class="preview-remove-sm" id="removeStyleRef">×</button>
+                                            </div>
+                                        </div>
+                                        <div class="slider-field" id="styleStrengthSlider">
+                                            <div class="slider-header">
+                                                <span class="slider-label" data-tooltip="How closely to follow the reference image style. Higher values create a stronger match but may reduce creativity.">Style Influence</span>
+                                                <span class="slider-value" id="styleStrengthValue">70%</span>
+                                            </div>
+                                            <input type="range" class="range-slider" id="styleStrength" min="10" max="100" value="70">
+                                            <div class="slider-marks">
+                                                <span>Subtle</span>
+                                                <span>Strong</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="style-preview-wrap" id="stylePreviewContainer" style="display: none;">
-                                        <img src="" alt="Style Reference" id="stylePreviewImg">
-                                        <button type="button" class="preview-remove-sm" id="removeStyleRef">×</button>
-                                    </div>
-                                </div>
-                                <div class="slider-field" id="styleStrengthSlider">
-                                    <div class="slider-header">
-                                        <span class="slider-label">Style Influence</span>
-                                        <span class="slider-value" id="styleStrengthValue">70%</span>
-                                    </div>
-                                    <input type="range" class="range-slider" id="styleStrength" min="10" max="100" value="70">
-                                    <div class="slider-marks">
-                                        <span>Subtle</span>
-                                        <span>Strong</span>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <!-- Generation Settings -->
-                            <div class="advanced-group">
-                                <div class="group-title">Generation Settings</div>
-                                <div class="field-group full-width">
-                                    <label class="field-label">Seed</label>
-                                    <div class="seed-input-group">
-                                        <input type="number" class="input-field input-sm input-mono" id="seedInput" placeholder="Random" min="0" max="999999999">
-                                        <label class="checkbox-field checkbox-inline">
-                                            <input type="checkbox" id="randomSeed" checked>
-                                            <span class="checkbox-mark"></span>
-                                            Random
-                                        </label>
+                                    <!-- Generation Settings -->
+                                    <div class="advanced-group">
+                                        <div class="group-title" data-tooltip="Technical settings that control how the AI generates images.">Generation Settings</div>
+                                        <div class="field-group full-width">
+                                            <label class="field-label" data-tooltip="A number that determines the random starting point. Using the same seed with identical settings produces similar results.">Seed</label>
+                                            <div class="seed-input-group">
+                                                <input type="number" class="input-field input-sm input-mono" id="seedInput" placeholder="Random" min="0" max="999999999">
+                                                <label class="checkbox-field checkbox-inline">
+                                                    <input type="checkbox" id="randomSeed" checked>
+                                                    <span class="checkbox-mark"></span>
+                                                    Random
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="field-group full-width">
+                                            <label class="field-label" data-tooltip="Elements you want to exclude from the image. Use this to avoid unwanted styles or elements.">Negative Prompts <span class="label-hint">(what to avoid)</span></label>
+                                            <textarea class="textarea-field" id="negativePrompt" rows="2" placeholder="e.g., clipart, busy backgrounds, small text, watermarks"></textarea>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="field-group full-width">
-                                    <label class="field-label">Negative Prompts <span class="label-hint">(what to avoid)</span></label>
-                                    <textarea class="textarea-field" id="negativePrompt" rows="2" placeholder="e.g., clipart, busy backgrounds, small text, watermarks"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -714,8 +706,16 @@
                         </span>
                         <span class="btn-glow"></span>
                     </button>
-                    <div class="shortcut-hint">
-                        <kbd>Ctrl</kbd> + <kbd>Enter</kbd>
+                    <div class="keyboard-hints">
+                        <div class="keyboard-hint">
+                            <kbd>Ctrl</kbd>+<kbd>Enter</kbd> Generate
+                        </div>
+                        <div class="keyboard-hint">
+                            <kbd>Ctrl</kbd>+<kbd>D</kbd> Download
+                        </div>
+                        <div class="keyboard-hint">
+                            <kbd>Esc</kbd> Close
+                        </div>
                     </div>
                 </form>
             </section>
@@ -758,6 +758,11 @@
                     <!-- Single Image -->
                     <div class="result-image-wrap">
                         <img src="" alt="Generated Infographic" class="result-image" id="resultImage">
+                        <button class="btn-favorite" id="favoriteBtn" title="Save to favorites">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
                     </div>
 
                     <!-- Grid for variations -->
@@ -875,6 +880,25 @@
                                 <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
                             </svg>
                             Regenerate
+                        </button>
+                    </div>
+
+                    <!-- Meta Actions -->
+                    <div class="result-meta-actions">
+                        <button class="btn-meta" id="copyPromptBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                            </svg>
+                            Copy Prompt
+                        </button>
+                        <button class="btn-meta" id="downloadAllBtn" style="display: none;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Download All
                         </button>
                     </div>
 
@@ -1148,12 +1172,41 @@
                 <button class="btn-text-danger" id="clearHistoryBtn">Clear All</button>
             </div>
             <div class="history-grid" id="historyGrid"></div>
-            <div class="history-empty" id="historyEmpty">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <circle cx="12" cy="12" r="10"/>
-                    <polyline points="12,6 12,12 16,14"/>
-                </svg>
-                <p>No generations yet</p>
+            <div class="history-empty empty-state" id="historyEmpty">
+                <div class="empty-state-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12,6 12,12 16,14"/>
+                    </svg>
+                </div>
+                <div class="empty-state-title">No History Yet</div>
+                <p class="empty-state-text">Generated images will appear here. Start by uploading a product image.</p>
+            </div>
+
+            <!-- Favorites Section -->
+            <div class="favorites-section" id="favoritesSection">
+                <div class="favorites-header">
+                    <div class="favorites-title-group">
+                        <h3 class="favorites-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                            Favorites
+                        </h3>
+                        <span class="favorites-count" id="favoritesCount">0</span>
+                    </div>
+                    <button class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
+                </div>
+                <div class="favorites-grid" id="favoritesGrid"></div>
+                <div class="favorites-empty empty-state" id="favoritesEmpty">
+                    <div class="empty-state-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                    </div>
+                    <div class="empty-state-title">No Favorites</div>
+                    <p class="empty-state-text">Star your best generations to save them here for easy style reuse.</p>
+                </div>
             </div>
         </div>
     </section>
@@ -1218,6 +1271,73 @@
         </div>
     </div>
 
+    <!-- Favorites Modal -->
+    <div class="modal favorites-modal" id="favoritesModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Favorite</h3>
+                <button class="modal-close" id="closeFavoritesModal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="favorite-preview-container">
+                    <img src="" alt="Favorite preview" id="favoritePreviewImg">
+                </div>
+                <div class="favorite-details">
+                    <div class="favorite-name-row">
+                        <input type="text" class="favorite-name-input" id="favoriteNameInput" placeholder="Favorite name...">
+                    </div>
+                    <div class="favorite-meta">
+                        <div class="favorite-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12,6 12,12 16,14"/>
+                            </svg>
+                            <span id="favoriteDate"></span>
+                        </div>
+                        <div class="favorite-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                            </svg>
+                            <span>Seed:</span>
+                            <code class="favorite-seed-value" id="favoriteSeedValue"></code>
+                            <button class="btn-copy-seed" id="copyFavoriteSeed">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-load" id="loadFavoriteBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                        <polyline points="17,8 12,3 7,8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Load Settings
+                </button>
+                <button class="btn btn-secondary" id="downloadFavoriteBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Download
+                </button>
+                <button class="btn btn-danger" id="deleteFavoriteBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"/>
+                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="site-footer">
         <div class="footer-content">
@@ -1229,6 +1349,7 @@
         </div>
     </footer>
 
+    <script src="shared.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -24,8 +24,9 @@ The application consists of multiple pages, each with its own JS file, sharing c
 | Model Studio | `models.html`, `models.js`, `models.css` | Generate AI model photos wearing/holding products |
 | Documentation | `docs.html`, `docs.css` | User documentation |
 
-### Shared Styles
+### Shared Resources
 - `styles.css` - Base styles, CSS variables, theming (Anthropic-inspired color palette), common components
+- `shared.js` - Shared utilities: API handling, history, favorites, UI helpers, upload handling, lightbox, keyboard shortcuts
 
 ## API Integration
 
@@ -51,8 +52,9 @@ Main page for creating product marketing infographics.
 
 ### Features
 - Multimodal input: Product photo uploaded and sent to AI as reference
-- Multiple style presets: auto, rich callouts, callout lines, light/dark/gradient backgrounds
+- Background styles: Auto, Light, Dark, Gradient
 - Generation history: Stored in localStorage, viewable in modal, exportable
+- Favorites: Save generations with settings/seed for style reuse across products
 - Bilingual: English and Romanian with proper character support (ă, â, î, ș, ț)
 - Feedback-based adjustment: Regenerate with text feedback to refine results
 - SEO alt text: Auto-generated descriptive text with copy button
@@ -70,11 +72,11 @@ Main page for creating product marketing infographics.
 **Visual Style:**
 - Visual Density Slider: Minimal to Rich (5 levels)
 - Font Style: Auto, Modern Sans-Serif, Classic Serif, Bold, Playful, Technical, Elegant
-- Icon Style: Auto, Flat, Outlined, 3D, Minimal, None
+- Icon Style: Auto, Realistic, Illustrated, 3D, Flat/Minimal, Outlined, Gradient, None
+- Callout Lines: Toggle with thickness (1-5) and color mode (mono/multi/gradient/match)
 
-**Colors & Background:**
+**Colors:**
 - Color Harmony: Match Product, Complementary, Analogous, Triadic, Monochrome, High Contrast
-- Background Type: Auto, Solid, Subtle Texture, Textured, Gradient, Pattern, Environmental
 - Brand Colors: Custom hex codes to incorporate
 
 **Style Reference:**
@@ -113,59 +115,57 @@ Generate AI model photos with products (person wearing/holding product).
 - Product Description: Auto-analyzed or manual input
 
 **Model Appearance:**
-- Gender: Female, Male, Non-binary
-- Age: Young Adult, Adult, Middle-aged, Senior
-- Ethnicity: Any, or specific options
-- Body Type: Slim, Average, Athletic, Plus-size (contextual based on product)
-- Hair: Any, or specific styles
+- Gender: Female (default), Male
+- Age: 18-25 (default), 25-35, 35-50, 50+
+- Ethnicity: Caucasian (default), Any/Diverse, African/Black, Asian, Hispanic/Latino, Middle Eastern, South Asian, Mixed
+- Body Type: Slim, Average, Curvy, Muscular (for clothing/footwear only)
+- Hair: Any, Long, Short, Curly, Blonde, Bald
 
 **Shot Types:**
-- Headshot, Half-body, Full-body, Close-up, Over-shoulder, Back view, etc.
+- Full Body, Half Body, Portrait, Close-up, Hands Only, Product Detail
 
-**Scenes:**
-- Studio, Outdoor, Urban, Nature, Lifestyle, Abstract, etc.
+**Scenes (10 options):**
+- Studio, Urban, Nature, Beach, Café, Office, Gym, Home, Luxury, Outdoor
+- Scene Details: Auto (default description) or Custom (user-provided specific details)
 
 **Photography Styles:**
-- Editorial, Commercial, Lifestyle, Fashion, Candid, Artistic
+- Editorial, Commercial, Lifestyle, Artistic
 
-### Quality Enhancements
+### Advanced Options
+
+**Pose & Expression:**
+- Pose: Natural, Confident, Casual, Dynamic, Elegant, Seated, Walking, Leaning
+- Expression: Neutral, Smiling, Serious, Candid
+
+**Camera Settings:**
+- Lighting: Studio, Natural, Golden Hour, Soft, Dramatic, Bright, Dark, Backlit
+- Camera Angle: Eye Level, Low, High
+- Aspect Ratio: 1:1, 4:5, 3:4, 2:3, 9:16, 16:9
+
+**Quality Enhancements:**
+- Depth of Field: Auto, Shallow, Medium, Deep, Extreme Bokeh
+- Color Grading: Auto, Warm, Cool, Airy, Vibrant, Muted, Cinematic, B&W
+- Skin Retouch: Natural, Light, Moderate, Beauty, Flawless
+- Composition: Auto, Centered, Off-Center, Negative Space
+- Quality Level: Standard, High, Ultra, Masterpiece
+- Realism: Auto, Photorealistic, Cinematic
 
 **Camera & Technical:**
-- Focal Length: 24mm, 35mm, 50mm, 85mm, 135mm, Macro
-- Film Grain: None, Subtle, Medium, Heavy
-- Sharpness: Soft, Natural, Sharp, Ultra Sharp
-- Contrast: Low, Medium, High
-
-**Color & Tone:**
-- Color Temperature: Cool, Neutral, Warm, Very Warm
-- Shadow Style: Lifted, Natural, Crushed
-
-**Environment:**
-- Time of Day: Morning, Midday, Golden Hour, Blue Hour, Night
-- Weather: Clear, Cloudy, Foggy, Rainy, Snowy
+- Lens: Auto, 35mm, 50mm, 85mm, 135mm
+- Film Grain: None, Subtle, Heavy
+- Contrast: Auto, Low, High
 
 **Product Enhancement:**
-- Focus on: Texture, Shine, Color Accuracy, Fine Detail
-
-**Realism Control:**
-- Auto (default), Photorealistic, Slightly Stylized, Stylized, Illustrated
+- Focus: Auto, Texture, Shine, Color Accuracy, Detail, In Context
 
 ### Collage Mode
-- Generate multi-angle product collages
-- Model positions: Standing, Sitting, Lying down, Turned around
+- Generate multi-angle product collages (2, 3, 4, or 6 angles)
 - Face toggle: Show model face or product-only focus
 - Variations: 1, 2, or 4 images
 
-### Advanced Options
-- Pose: Natural, Dynamic, Relaxed, Professional, etc.
-- Lighting: Studio, Natural, Dramatic, Soft, Rim, etc.
-- Camera Angle: Eye-level, High, Low, Dutch, Bird's eye
-- Expression: Neutral, Smiling, Serious, Candid, etc.
-- Depth of Field: Auto, Shallow, Medium, Deep
-- Color Grading: Auto, Natural, Warm, Cool, Cinematic, etc.
-- Skin Retouch: None, Natural, Polished, Editorial
-- Composition: Auto, Rule of Thirds, Center, Golden Ratio
-- Quality Level: Standard, High, Ultra
+### Favorites
+- Save generations with all settings and seed for style reuse
+- Load favorite settings, upload new product, regenerate in same style
 
 ---
 
@@ -185,3 +185,48 @@ Generation history stored in localStorage with configurable limits, supporting v
 
 ### Error Handling
 `showError()` function displays user-friendly error messages. API errors are caught and displayed appropriately.
+
+### Favorites System
+Both pages support saving generations as favorites for style reuse:
+- Save generated image with all settings, seed, and reference images
+- Load favorite to restore settings, then upload new product to regenerate in same style
+- Storage: Thumbnails in localStorage, full images in IndexedDB (hybrid approach)
+- Storage keys: `ngraphics_favorites` (Infographics), `model_studio_favorites` (Model Studio)
+
+---
+
+## Shared Utilities (`shared.js`)
+
+Common functionality used across all pages.
+
+### Classes
+
+**SharedAPI** - API key management (localStorage)
+
+**SharedRequest** - API request handling:
+- `extractImageFromResponse(data)`: Handles multiple response formats (OpenAI, Gemini, Anthropic, DALL-E)
+- `makeRequest(body, key, title, retries)`: Request with retry logic
+- `formatError(error)`: User-friendly error messages
+
+**SharedHistory** - Generation history (localStorage):
+- Constructor: `new SharedHistory(storageKey, maxItems)`
+- Methods: `load()`, `save()`, `add(imageUrl, metadata)`, `clear()`, `findById(id)`, `getAll()`
+
+**ImageStore** - IndexedDB storage for large images:
+- Constructor: `new ImageStore(dbName)`
+- Methods: `init()`, `save(id, images)`, `get(id)`, `delete(id)`, `clear()`
+
+**SharedFavorites** - Favorites with hybrid storage:
+- Constructor: `new SharedFavorites(storageKey, maxItems)`
+- Stores metadata + thumbnails in localStorage, full images in IndexedDB
+- Methods (async): `add(favorite)`, `remove(id)`, `clear()`, `getImages(id)`
+- Methods (sync): `load()`, `save()`, `update(id, updates)`, `findById(id)`, `getAll()`
+
+### Utility Objects
+
+- **SharedUI**: `showError()`, `showSuccess()`, `updateApiStatus()`, `showLoading()`, `hideLoading()`
+- **SharedUpload**: `setup(uploadArea, fileInput, callbacks)`, `handleFile(file, callbacks)`
+- **SharedLightbox**: `setup()`, `open()`, `close()`
+- **SharedDownload**: `downloadImage(imageUrl, prefix)`
+- **SharedKeyboard**: `setup(handlers)` - Ctrl+Enter, Ctrl+D, Escape
+- **SharedCollapsible**: `setup(toggleBtn, sectionEl)`

@@ -53,8 +53,14 @@ const state = {
     complementaryType: 'closeup',
     complementaryStyle: 'match',
     complementaryQuantity: 1,
-    complementaryImages: []
+    complementaryImages: [],
+    // Favorites
+    selectedFavorite: null,
+    selectedFavoriteImages: null
 };
+
+// Favorites instance
+const favorites = new SharedFavorites('ngraphics_favorites', 30);
 
 // ============================================
 // PLATFORM PRESETS
@@ -64,8 +70,7 @@ const platformPresets = {
         name: 'Amazon',
         aspectRatio: '1:1',
         style: 'light',
-        backgroundType: 'solid',
-        layout: 'product-center',
+        layout: 'center',
         visualDensity: 3,
         description: 'Clean white background, product-focused'
     },
@@ -73,7 +78,6 @@ const platformPresets = {
         name: 'Shopify',
         aspectRatio: '1:1',
         style: 'auto',
-        backgroundType: 'gradient',
         layout: 'auto',
         visualDensity: 4,
         description: 'Versatile e-commerce style'
@@ -81,18 +85,16 @@ const platformPresets = {
     instagram: {
         name: 'Instagram',
         aspectRatio: '1:1',
-        style: 'rich',
-        backgroundType: 'gradient',
-        layout: 'product-center',
+        style: 'gradient',
+        layout: 'center',
         visualDensity: 5,
         description: 'Eye-catching, high visual density'
     },
     'instagram-story': {
         name: 'Instagram Story',
         aspectRatio: '9:16',
-        style: 'rich',
-        backgroundType: 'gradient',
-        layout: 'product-top',
+        style: 'gradient',
+        layout: 'top',
         visualDensity: 4,
         description: 'Vertical format for Stories'
     },
@@ -100,8 +102,7 @@ const platformPresets = {
         name: 'Facebook',
         aspectRatio: '16:9',
         style: 'auto',
-        backgroundType: 'subtle',
-        layout: 'product-left',
+        layout: 'left',
         visualDensity: 3,
         description: 'Horizontal format for feeds'
     },
@@ -109,8 +110,7 @@ const platformPresets = {
         name: 'Etsy',
         aspectRatio: '4:5',
         style: 'light',
-        backgroundType: 'texture',
-        layout: 'product-center',
+        layout: 'center',
         visualDensity: 3,
         description: 'Artisan, handcraft aesthetic'
     }
@@ -230,6 +230,8 @@ function initElements() {
         // Advanced Options
         advancedSection: document.getElementById('advancedSection'),
         advancedToggle: document.getElementById('advancedToggle'),
+        styleGenSection: document.getElementById('styleGenSection'),
+        styleGenToggle: document.getElementById('styleGenToggle'),
         aspectRatio: document.getElementById('aspectRatio'),
         variations: document.getElementById('variations'),
         iconStyle: document.getElementById('iconStyle'),
@@ -255,7 +257,6 @@ function initElements() {
         productFocus: document.getElementById('productFocus'),
         contextDescriptionGroup: document.getElementById('contextDescriptionGroup'),
         contextDescription: document.getElementById('contextDescription'),
-        backgroundComplexity: document.getElementById('backgroundComplexity'),
 
         // Brand Color Picker
         colorPresets: document.getElementById('colorPresets'),
@@ -283,6 +284,12 @@ function initElements() {
         copySeedBtn: document.getElementById('copySeedBtn'),
         downloadBtn: document.getElementById('downloadBtn'),
         regenerateBtn: document.getElementById('regenerateBtn'),
+        copyPromptBtn: document.getElementById('copyPromptBtn'),
+        downloadAllBtn: document.getElementById('downloadAllBtn'),
+
+        // Aspect Ratio Preview
+        aspectPreviewBox: document.getElementById('aspectPreviewBox'),
+        aspectPreviewInner: document.getElementById('aspectPreviewInner'),
 
         // Feedback
         feedbackTextarea: document.getElementById('feedbackTextarea'),
@@ -329,6 +336,24 @@ function initElements() {
         closeModal: document.getElementById('closeModal'),
         modalDownload: document.getElementById('modalDownload'),
         modalUseAsBase: document.getElementById('modalUseAsBase'),
+
+        // Favorites
+        favoriteBtn: document.getElementById('favoriteBtn'),
+        favoritesSection: document.getElementById('favoritesSection'),
+        favoritesGrid: document.getElementById('favoritesGrid'),
+        favoritesCount: document.getElementById('favoritesCount'),
+        favoritesEmpty: document.getElementById('favoritesEmpty'),
+        clearFavoritesBtn: document.getElementById('clearFavoritesBtn'),
+        favoritesModal: document.getElementById('favoritesModal'),
+        closeFavoritesModal: document.getElementById('closeFavoritesModal'),
+        favoritePreviewImg: document.getElementById('favoritePreviewImg'),
+        favoriteNameInput: document.getElementById('favoriteNameInput'),
+        favoriteDate: document.getElementById('favoriteDate'),
+        favoriteSeedValue: document.getElementById('favoriteSeedValue'),
+        copyFavoriteSeed: document.getElementById('copyFavoriteSeed'),
+        loadFavoriteBtn: document.getElementById('loadFavoriteBtn'),
+        downloadFavoriteBtn: document.getElementById('downloadFavoriteBtn'),
+        deleteFavoriteBtn: document.getElementById('deleteFavoriteBtn'),
 
         // Product Copy
         productCopySection: document.getElementById('productCopySection'),
@@ -456,10 +481,10 @@ function toggleTheme() {
 }
 
 // ============================================
-// API KEY HANDLING
+// API KEY HANDLING (uses SharedAPI)
 // ============================================
 function loadApiKey() {
-    const savedKey = localStorage.getItem('openrouter_api_key');
+    const savedKey = SharedAPI.getKey();
     if (savedKey) {
         state.apiKey = savedKey;
         elements.apiKeyInput.value = savedKey;
@@ -467,15 +492,7 @@ function loadApiKey() {
 }
 
 function updateApiStatus(connected) {
-    if (elements.apiStatus) {
-        if (connected) {
-            elements.apiStatus.classList.add('connected');
-            elements.apiStatus.querySelector('.status-text').textContent = 'Connected';
-        } else {
-            elements.apiStatus.classList.remove('connected');
-            elements.apiStatus.querySelector('.status-text').textContent = 'Not Connected';
-        }
-    }
+    SharedUI.updateApiStatus(elements.apiStatus, connected);
 }
 
 function setupApiKeyHandlers() {
@@ -486,9 +503,8 @@ function setupApiKeyHandlers() {
 
     elements.saveApiKeyBtn.addEventListener('click', () => {
         const key = elements.apiKeyInput.value.trim();
-        if (key) {
+        if (SharedAPI.saveKey(key)) {
             state.apiKey = key;
-            localStorage.setItem('openrouter_api_key', key);
             updateApiStatus(true);
             showSuccess('API key saved successfully!');
         } else {
@@ -661,6 +677,18 @@ function setupAdvancedOptionsHandlers() {
 
     if (localStorage.getItem('advancedOptionsOpen') === 'true') {
         elements.advancedSection.classList.add('open');
+    }
+
+    // Style & Generation nested section toggle
+    if (elements.styleGenToggle && elements.styleGenSection) {
+        elements.styleGenToggle.addEventListener('click', () => {
+            elements.styleGenSection.classList.toggle('open');
+            localStorage.setItem('styleGenOpen', elements.styleGenSection.classList.contains('open'));
+        });
+
+        if (localStorage.getItem('styleGenOpen') === 'true') {
+            elements.styleGenSection.classList.add('open');
+        }
     }
 
     elements.randomSeed.addEventListener('change', () => {
@@ -1049,6 +1077,11 @@ function showResult(imageUrl) {
     state.generatedImageUrl = imageUrl;
     state.generatedImages = [imageUrl];
 
+    // Hide download all button for single image
+    if (elements.downloadAllBtn) {
+        elements.downloadAllBtn.style.display = 'none';
+    }
+
     if (state.lastSeed !== null) {
         elements.seedValue.textContent = state.lastSeed;
         elements.seedDisplay.style.display = 'flex';
@@ -1095,6 +1128,11 @@ function showMultipleResults(imageUrls) {
     elements.resultContainer.classList.add('visible');
     state.generatedImageUrl = imageUrls[0];
     state.generatedImages = imageUrls;
+
+    // Show download all button for multiple images
+    if (elements.downloadAllBtn) {
+        elements.downloadAllBtn.style.display = imageUrls.length > 1 ? 'inline-flex' : 'none';
+    }
 
     if (state.lastSeed !== null) {
         elements.seedValue.textContent = state.lastSeed;
@@ -1176,11 +1214,17 @@ function deleteFromHistory(id) {
     renderHistory();
 }
 
-function clearHistory() {
-    if (confirm('Are you sure you want to clear all history?')) {
+async function clearHistory() {
+    const confirmed = await SharedUI.confirm('Are you sure you want to clear all history?', {
+        title: 'Clear History',
+        confirmText: 'Clear All',
+        icon: 'warning'
+    });
+    if (confirmed) {
         state.history = [];
         saveHistory();
         renderHistory();
+        SharedUI.toast('History cleared', 'success');
     }
 }
 
@@ -1272,6 +1316,329 @@ function loadHistoryToEditor() {
 }
 
 // ============================================
+// FAVORITES MANAGEMENT
+// ============================================
+function captureCurrentSettings() {
+    // Capture all current form settings
+    const charItems = elements.characteristicsList.querySelectorAll('.char-item');
+    const characteristics = [];
+
+    charItems.forEach((item, index) => {
+        const input = item.querySelector('.input-field');
+        const starBtn = item.querySelector('.char-star');
+        const iconSelect = item.querySelector('.char-icon-select');
+
+        const text = input ? input.value.trim() : '';
+        if (text) {
+            characteristics.push({
+                text,
+                starred: starBtn && starBtn.classList.contains('starred'),
+                icon: iconSelect ? iconSelect.value : 'auto'
+            });
+        }
+    });
+
+    return {
+        model: elements.aiModel?.value,
+        style: elements.infographicStyle?.value,
+        layout: elements.layoutTemplate?.value,
+        aspectRatio: elements.aspectRatio?.value,
+        productFocus: elements.productFocus?.value,
+        contextDescription: elements.contextDescription?.value || '',
+        visualDensity: elements.visualDensity?.value,
+        fontStyle: elements.fontStyle?.value,
+        iconStyle: elements.iconStyle?.value,
+        colorHarmony: elements.colorHarmony?.value,
+        brandColors: [...state.selectedBrandColors],
+        calloutLinesEnabled: elements.calloutLinesEnabled?.checked,
+        lineThickness: elements.lineThickness?.value,
+        lineColorMode: elements.lineColorMode?.value,
+        negativePrompt: elements.negativePrompt?.value || '',
+        variations: elements.variations?.value,
+        styleStrength: elements.styleStrength?.value,
+        characteristics
+    };
+}
+
+async function saveFavorite() {
+    if (!state.generatedImageUrl) {
+        showError('No image to save. Generate an image first.');
+        return;
+    }
+
+    const settings = captureCurrentSettings();
+    const name = elements.productTitle.value.trim() || 'Untitled';
+
+    try {
+        const favorite = await favorites.add({
+            name,
+            imageUrl: state.generatedImageUrl,
+            seed: state.lastSeed,
+            prompt: state.lastPrompt,
+            productImageBase64: state.uploadedImageBase64,
+            styleReferenceBase64: state.styleReferenceBase64,
+            settings
+        });
+
+        if (favorite) {
+            elements.favoriteBtn.classList.add('active');
+            showSuccess('Saved to favorites!');
+            renderFavorites();
+        }
+    } catch (error) {
+        console.error('Failed to save favorite:', error);
+        showError('Failed to save favorite');
+    }
+}
+
+function renderFavorites() {
+    const grid = elements.favoritesGrid;
+    const empty = elements.favoritesEmpty;
+    const count = elements.favoritesCount;
+    const items = favorites.getAll();
+
+    count.textContent = items.length;
+
+    if (items.length === 0) {
+        grid.style.display = 'none';
+        empty.style.display = 'flex';
+        return;
+    }
+
+    grid.style.display = 'grid';
+    empty.style.display = 'none';
+
+    // Use thumbnail for grid display (falls back to imageUrl for legacy items)
+    grid.innerHTML = items.map(item => `
+        <div class="favorite-item" data-id="${item.id}">
+            <img src="${item.thumbnail || item.imageUrl}" alt="${item.name}" loading="lazy">
+            <div class="favorite-item-star">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+            </div>
+            <div class="favorite-item-overlay">
+                <div class="favorite-item-name">${item.name}</div>
+                <div class="favorite-item-seed">Seed: ${item.seed || 'N/A'}</div>
+            </div>
+            <button class="favorite-item-delete" data-id="${item.id}" title="Delete">&times;</button>
+        </div>
+    `).join('');
+
+    grid.querySelectorAll('.favorite-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('favorite-item-delete')) {
+                openFavoritesModal(parseInt(item.dataset.id, 10));
+            }
+        });
+    });
+
+    grid.querySelectorAll('.favorite-item-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteFavorite(parseInt(btn.dataset.id, 10));
+        });
+    });
+}
+
+async function openFavoritesModal(id) {
+    const item = favorites.findById(id);
+    if (!item) return;
+
+    state.selectedFavorite = item;
+    elements.favoriteNameInput.value = item.name;
+    elements.favoriteSeedValue.textContent = item.seed || 'N/A';
+
+    const date = new Date(item.timestamp);
+    elements.favoriteDate.textContent = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+    // Load full image from IndexedDB (fall back to thumbnail/imageUrl for legacy items)
+    elements.favoritePreviewImg.src = item.thumbnail || '';
+    elements.favoritesModal.classList.add('visible');
+
+    try {
+        const images = await favorites.getImages(id);
+        if (images && images.imageUrl) {
+            elements.favoritePreviewImg.src = images.imageUrl;
+            // Store images for use in loadFavorite/download
+            state.selectedFavoriteImages = images;
+        } else if (item.imageUrl) {
+            // Legacy item with imageUrl in metadata
+            elements.favoritePreviewImg.src = item.imageUrl;
+            state.selectedFavoriteImages = { imageUrl: item.imageUrl };
+        }
+    } catch (error) {
+        console.error('Failed to load favorite images:', error);
+        // Fall back to thumbnail
+        if (item.imageUrl) {
+            elements.favoritePreviewImg.src = item.imageUrl;
+        }
+    }
+}
+
+function closeFavoritesModal() {
+    // Save name if changed
+    if (state.selectedFavorite && elements.favoriteNameInput.value !== state.selectedFavorite.name) {
+        favorites.update(state.selectedFavorite.id, { name: elements.favoriteNameInput.value });
+        renderFavorites();
+    }
+
+    elements.favoritesModal.classList.remove('visible');
+    state.selectedFavorite = null;
+    state.selectedFavoriteImages = null;
+}
+
+function loadFavorite() {
+    if (!state.selectedFavorite) return;
+
+    const fav = state.selectedFavorite;
+    const settings = fav.settings || {};
+
+    // Restore form settings
+    if (elements.aiModel && settings.model) elements.aiModel.value = settings.model;
+    if (elements.infographicStyle && settings.style) {
+        elements.infographicStyle.value = settings.style;
+        // Also update radio buttons to match
+        if (elements.styleRadios) {
+            elements.styleRadios.forEach(radio => {
+                radio.checked = radio.value === settings.style;
+            });
+        }
+    }
+    if (elements.layoutTemplate && settings.layout) elements.layoutTemplate.value = settings.layout;
+    if (elements.aspectRatio && settings.aspectRatio) elements.aspectRatio.value = settings.aspectRatio;
+    if (elements.productFocus && settings.productFocus) {
+        elements.productFocus.value = settings.productFocus;
+        // Trigger change event for context description visibility
+        elements.productFocus.dispatchEvent(new Event('change'));
+    }
+    if (elements.contextDescription && settings.contextDescription) {
+        elements.contextDescription.value = settings.contextDescription;
+    }
+    if (elements.visualDensity && settings.visualDensity) {
+        elements.visualDensity.value = settings.visualDensity;
+        if (elements.visualDensityValue) {
+            elements.visualDensityValue.textContent = settings.visualDensity;
+        }
+    }
+    if (elements.fontStyle && settings.fontStyle) elements.fontStyle.value = settings.fontStyle;
+    if (elements.iconStyle && settings.iconStyle) elements.iconStyle.value = settings.iconStyle;
+    if (elements.colorHarmony && settings.colorHarmony) elements.colorHarmony.value = settings.colorHarmony;
+    if (elements.calloutLinesEnabled && typeof settings.calloutLinesEnabled === 'boolean') {
+        elements.calloutLinesEnabled.checked = settings.calloutLinesEnabled;
+        elements.calloutLinesEnabled.dispatchEvent(new Event('change'));
+    }
+    if (elements.lineThickness && settings.lineThickness) {
+        elements.lineThickness.value = settings.lineThickness;
+        if (elements.lineThicknessValue) {
+            elements.lineThicknessValue.textContent = settings.lineThickness;
+        }
+    }
+    if (elements.lineColorMode && settings.lineColorMode) elements.lineColorMode.value = settings.lineColorMode;
+    if (elements.negativePrompt && settings.negativePrompt) elements.negativePrompt.value = settings.negativePrompt;
+    if (elements.variations && settings.variations) elements.variations.value = settings.variations;
+    if (elements.styleStrength && settings.styleStrength) {
+        elements.styleStrength.value = settings.styleStrength;
+        if (elements.styleStrengthValue) {
+            elements.styleStrengthValue.textContent = settings.styleStrength + '%';
+        }
+    }
+
+    // Restore brand colors
+    if (settings.brandColors && settings.brandColors.length > 0) {
+        state.selectedBrandColors = [...settings.brandColors];
+        renderSelectedColors();
+    }
+
+    // Restore seed (uncheck random seed)
+    if (fav.seed && elements.seedInput && elements.randomSeed) {
+        elements.seedInput.value = fav.seed;
+        elements.randomSeed.checked = false;
+        elements.seedInput.disabled = false;
+    }
+
+    // Use favorite's generated image as style reference
+    // Get image from IndexedDB cache (loaded in openFavoritesModal) or fallback
+    const favoriteImageUrl = state.selectedFavoriteImages?.imageUrl || fav.imageUrl || fav.thumbnail;
+    if (favoriteImageUrl && elements.stylePreviewImg && elements.stylePreviewContainer && elements.styleUploadArea) {
+        state.styleReferenceBase64 = favoriteImageUrl;
+        elements.stylePreviewImg.src = favoriteImageUrl;
+        elements.stylePreviewContainer.style.display = 'block';
+        elements.styleUploadArea.style.display = 'none';
+        if (elements.styleStrengthSlider) {
+            elements.styleStrengthSlider.style.display = 'flex';
+        }
+
+        // Open both advanced sections so user can see the loaded style reference
+        if (elements.advancedSection) {
+            elements.advancedSection.classList.add('open');
+        }
+        if (elements.styleGenSection) {
+            elements.styleGenSection.classList.add('open');
+        }
+    }
+
+    closeFavoritesModal();
+    showSuccess('Style loaded! Upload a product image to generate in this style.');
+
+    // Scroll to upload area
+    elements.uploadArea.scrollIntoView({ behavior: 'smooth' });
+}
+
+async function deleteFavorite(id) {
+    const confirmed = await SharedUI.confirm('Delete this favorite?', {
+        title: 'Delete Favorite',
+        confirmText: 'Delete',
+        icon: 'danger'
+    });
+    if (confirmed) {
+        await favorites.remove(id);
+        renderFavorites();
+        SharedUI.toast('Favorite deleted', 'success');
+
+        if (state.selectedFavorite && state.selectedFavorite.id === id) {
+            closeFavoritesModal();
+        }
+    }
+}
+
+async function clearFavorites() {
+    if (favorites.count === 0) return;
+
+    const confirmed = await SharedUI.confirm('Delete all favorites? This cannot be undone.', {
+        title: 'Clear All Favorites',
+        confirmText: 'Delete All',
+        icon: 'danger'
+    });
+    if (confirmed) {
+        await favorites.clear();
+        renderFavorites();
+        SharedUI.toast('All favorites cleared', 'success');
+    }
+}
+
+function downloadFavorite() {
+    if (!state.selectedFavorite) return;
+
+    const link = document.createElement('a');
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const name = state.selectedFavorite.name.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30);
+    link.download = `favorite_${name}_${timestamp}.png`;
+    // Use full image from IndexedDB if available
+    const imageUrl = state.selectedFavoriteImages?.imageUrl || state.selectedFavorite.imageUrl || state.selectedFavorite.thumbnail;
+    link.href = imageUrl;
+    link.click();
+}
+
+function copyFavoriteSeed() {
+    if (!state.selectedFavorite || !state.selectedFavorite.seed) return;
+
+    navigator.clipboard.writeText(state.selectedFavorite.seed.toString()).then(() => {
+        showSuccess('Seed copied!');
+    });
+}
+
+// ============================================
 // PROMPT GENERATION
 // ============================================
 function generatePrompt() {
@@ -1317,7 +1684,6 @@ function generatePrompt() {
     const fontStyle = elements.fontStyle ? elements.fontStyle.value : 'auto';
     const colorHarmony = elements.colorHarmony ? elements.colorHarmony.value : 'match';
     const productFocus = elements.productFocus ? elements.productFocus.value : 'auto';
-    const backgroundComplexity = elements.backgroundComplexity ? elements.backgroundComplexity.value : 'auto';
     const styleStrength = elements.styleStrength ? parseInt(elements.styleStrength.value) : 70;
 
     // Callout lines options
@@ -1327,12 +1693,9 @@ function generatePrompt() {
     // Style descriptions
     const styleDescriptions = {
         auto: 'Analyze the product colors and create a complementary color scheme. Match the background to harmonize with the product.',
-        rich: 'Use MEDIUM bold lines/arrows pointing from product parts to feature labels. Add matching decorative elements like icons, badges, shapes, and highlights that use the product color palette. Make it visually rich but cohesive.',
-        callout: 'Create a TECHNICAL DIAGRAM style with thin lines pointing FROM specific parts of the product TO small ICON + SHORT TEXT labels. Each feature gets an ICON (matching the feature type) with minimal text beside it. Lines should connect to the exact relevant area of the product. Keep text VERY SHORT - use the exact feature text provided, do not expand or elaborate.',
         light: 'Use a clean white or very light background with subtle accents that complement the product colors.',
         dark: 'Use a dark/black background that makes the product stand out. Use light text and accents.',
-        gradient: 'Use a subtle gradient background derived from the product colors. Keep it simple and professional.',
-        transparent: 'Keep the original background from the product image. Only add text and minimal graphic elements.'
+        gradient: 'Use a subtle gradient background derived from the product colors. Keep it simple and professional.'
     };
 
     // Layout template descriptions
@@ -1387,28 +1750,15 @@ function generatePrompt() {
         multiple: 'Show MULTIPLE VIEWS of the product - front, side, and/or detail shots.'
     };
 
-    // Background complexity descriptions
-    const bgComplexityDescriptions = {
-        auto: '',
-        solid: 'Use a SOLID, FLAT color background - clean and simple.',
-        subtle: 'Use a SUBTLE background - very light texture or minimal gradient.',
-        textured: 'Use a TEXTURED background - fabric, paper, concrete, or other subtle texture.',
-        gradient: 'Use a GRADIENT background - smooth color transition.',
-        pattern: 'Use a PATTERN background - geometric or abstract repeating elements.',
-        environmental: 'Use an ENVIRONMENTAL background - contextual setting related to the product.'
-    };
-
     // Icon style descriptions
     const iconStyleDescriptions = {
         auto: '',
         realistic: 'Use REALISTIC, PHOTO-LIKE icons - small detailed images that look like real objects or photographs. High detail, realistic textures and lighting.',
         illustrated: 'Use ILLUSTRATED, HAND-DRAWN style icons - artistic, sketch-like with visible brush strokes or pen lines. Warm and friendly aesthetic.',
         '3d': 'Use 3D RENDERED icons with depth, shadows, lighting, and perspective. Polished and modern look.',
-        flat: 'Use FLAT, SOLID-COLORED icons with no gradients or shadows. Clean and modern.',
+        flat: 'Use FLAT, MINIMAL icons with solid colors, no gradients or shadows. Simple shapes, clean and modern.',
         outlined: 'Use OUTLINED/STROKE icons with consistent line weight, no fill. Clean technical look.',
         gradient: 'Use GRADIENT/GLOSSY icons with color transitions and shine effects. Sleek and polished.',
-        minimal: 'Use very SIMPLE, MINIMALIST icons - basic shapes, single color, no details.',
-        emoji: 'Use EMOJI-STYLE icons - colorful, friendly, recognizable emoji aesthetic.',
         none: 'Do not use any icons - text only for features.'
     };
 
@@ -1489,11 +1839,6 @@ BACKGROUND STYLE: ${styleDesc}
         }
     }
 
-    // Add background complexity
-    if (backgroundComplexity !== 'auto' && bgComplexityDescriptions[backgroundComplexity]) {
-        prompt += `\nBACKGROUND STYLE: ${bgComplexityDescriptions[backgroundComplexity]}`;
-    }
-
     // Add aspect ratio
     if (aspectRatio !== 'auto') {
         prompt += `\n\nASPECT RATIO: Create the image in ${aspectRatio} aspect ratio.`;
@@ -1523,12 +1868,13 @@ BACKGROUND STYLE: ${styleDesc}
         const thicknessDesc = thicknessDescriptions[lineThickness] || '3px MEDIUM';
 
         const colorModeDescriptions = {
+            auto: 'Choose the best line color approach based on the product and background - can be monochrome, multicolored, or matched to product',
             mono: 'ALL LINES SAME COLOR - use a single consistent color (white, black, or accent color) for all callout lines',
             multi: 'MULTICOLORED LINES - each feature callout line should be a DIFFERENT COLOR, creating a colorful, vibrant look',
             gradient: 'GRADIENT LINES - each line should have a gradient effect, transitioning between colors',
             match: 'MATCH PRODUCT COLORS - derive line colors from the product itself, using its color palette'
         };
-        const colorModeDesc = colorModeDescriptions[lineColorMode] || colorModeDescriptions.multi;
+        const colorModeDesc = colorModeDescriptions[lineColorMode] || colorModeDescriptions.auto;
 
         prompt += `\n\nCALLOUT LINES - IMPORTANT SPECIFICATIONS:
 
@@ -1564,162 +1910,10 @@ STYLE RULES:
 }
 
 // ============================================
-// API INTEGRATION
+// API INTEGRATION (uses SharedRequest)
 // ============================================
-function extractImageFromResponse(data) {
-    let imageUrl = null;
-
-    const message = data.choices?.[0]?.message;
-    if (message) {
-        if (Array.isArray(message.content)) {
-            for (const part of message.content) {
-                // OpenAI format
-                if (part.type === 'image_url' && part.image_url?.url) {
-                    imageUrl = part.image_url.url;
-                    break;
-                }
-                // Anthropic format
-                if (part.type === 'image' && part.source?.data) {
-                    imageUrl = `data:${part.source.media_type || 'image/png'};base64,${part.source.data}`;
-                    break;
-                }
-                // Gemini format (inline_data)
-                if (part.inline_data?.data) {
-                    imageUrl = `data:${part.inline_data.mime_type || 'image/png'};base64,${part.inline_data.data}`;
-                    break;
-                }
-                // Alternative Gemini format (image with data property)
-                if (part.image?.data) {
-                    imageUrl = `data:${part.image.mimeType || part.image.mime_type || 'image/png'};base64,${part.image.data}`;
-                    break;
-                }
-                // Direct base64 in part
-                if (part.data && typeof part.data === 'string') {
-                    imageUrl = `data:${part.mimeType || part.mime_type || 'image/png'};base64,${part.data}`;
-                    break;
-                }
-            }
-        }
-
-        // Check message.images array
-        if (!imageUrl && message.images && message.images.length > 0) {
-            const img = message.images[0];
-            if (typeof img === 'string') {
-                imageUrl = img.startsWith('data:') || img.startsWith('http') ? img : `data:image/png;base64,${img}`;
-            } else if (img.url) {
-                imageUrl = img.url;
-            } else if (img.image_url?.url) {
-                imageUrl = img.image_url.url;
-            } else if (img.b64_json) {
-                imageUrl = `data:image/png;base64,${img.b64_json}`;
-            }
-        }
-
-        // Check for base64 string in content
-        if (!imageUrl && message.content && typeof message.content === 'string') {
-            const base64Match = message.content.match(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/);
-            if (base64Match) {
-                imageUrl = base64Match[0];
-            }
-        }
-    }
-
-    // DALL-E / images endpoint format
-    if (!imageUrl && data.data && data.data[0]) {
-        if (data.data[0].url) {
-            imageUrl = data.data[0].url;
-        } else if (data.data[0].b64_json) {
-            imageUrl = `data:image/png;base64,${data.data[0].b64_json}`;
-        }
-    }
-
-    // Deep search fallback: look for any base64 data in the response
-    if (!imageUrl) {
-        const findBase64 = (obj, depth = 0) => {
-            if (depth > 10) return null;
-            if (!obj || typeof obj !== 'object') return null;
-
-            if (obj.data && typeof obj.data === 'string' && obj.data.length > 1000) {
-                const mimeType = obj.mimeType || obj.mime_type || obj.media_type || 'image/png';
-                return `data:${mimeType};base64,${obj.data}`;
-            }
-            if (obj.b64_json && typeof obj.b64_json === 'string') {
-                return `data:image/png;base64,${obj.b64_json}`;
-            }
-            if (obj.url && typeof obj.url === 'string' && (obj.url.startsWith('data:image') || obj.url.startsWith('http'))) {
-                return obj.url;
-            }
-
-            if (Array.isArray(obj)) {
-                for (const item of obj) {
-                    const found = findBase64(item, depth + 1);
-                    if (found) return found;
-                }
-            } else {
-                for (const key of Object.keys(obj)) {
-                    const found = findBase64(obj[key], depth + 1);
-                    if (found) return found;
-                }
-            }
-            return null;
-        };
-
-        imageUrl = findBase64(data);
-    }
-
-    return imageUrl;
-}
-
 async function makeGenerationRequest(requestBody, retries = 3) {
-    let lastError;
-
-    for (let attempt = 1; attempt <= retries; attempt++) {
-        try {
-            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${state.apiKey}`,
-                    'Content-Type': 'application/json',
-                    'HTTP-Referer': window.location.origin,
-                    'X-Title': 'AI Product Infographics Generator'
-                },
-                body: JSON.stringify(requestBody)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error?.message || errorData.message || `API error: ${response.status}`);
-            }
-
-            const data = await response.json();
-            const imageUrl = extractImageFromResponse(data);
-
-            if (!imageUrl) {
-                if (data.error) {
-                    throw new Error(data.error.message || 'Provider returned an error');
-                }
-                throw new Error('No image generated');
-            }
-
-            return imageUrl;
-        } catch (error) {
-            lastError = error;
-            const isNetworkError = error.name === 'TypeError' && error.message === 'Failed to fetch';
-
-            if (isNetworkError && attempt < retries) {
-                console.log(`Network error, retrying (${attempt}/${retries})...`);
-                updateLoadingStatus(`Network error, retrying (${attempt}/${retries})...`);
-                await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-                continue;
-            }
-
-            throw isNetworkError
-                ? new Error('Network error. Please check your internet connection and try again.')
-                : error;
-        }
-    }
-
-    throw lastError;
+    return SharedRequest.makeRequest(requestBody, state.apiKey, 'AI Product Infographics Generator', retries);
 }
 
 async function generateInfographic() {
@@ -1975,7 +2169,7 @@ Generate an adjusted version of this infographic based on the feedback above.`;
 
         updateLoadingStatus('Processing adjusted image...');
 
-        const imageUrl = extractImageFromResponse(data);
+        const imageUrl = SharedRequest.extractImageFromResponse(data);
 
         if (!imageUrl && data.error) {
             throw new Error(data.error.message || 'Provider returned an error');
@@ -2580,10 +2774,9 @@ function getCurrentSettings() {
         fontStyle: elements.fontStyle?.value || 'auto',
         iconStyle: elements.iconStyle?.value || 'auto',
         colorHarmony: elements.colorHarmony?.value || 'match',
-        backgroundType: elements.backgroundType?.value || 'auto',
         brandColors: [...state.selectedBrandColors],
-        calloutLines: elements.calloutLinesToggle?.checked || false,
-        calloutThickness: elements.calloutThickness?.value || 3
+        calloutLines: elements.calloutLinesEnabled?.checked || false,
+        calloutThickness: elements.lineThickness?.value || 3
     };
 }
 
@@ -2640,11 +2833,6 @@ function applySettings(settings) {
         elements.colorHarmony.value = settings.colorHarmony;
     }
 
-    // Background type
-    if (settings.backgroundType && elements.backgroundType) {
-        elements.backgroundType.value = settings.backgroundType;
-    }
-
     // Brand colors
     if (settings.brandColors && Array.isArray(settings.brandColors)) {
         state.selectedBrandColors = [...settings.brandColors];
@@ -2672,7 +2860,6 @@ function applyPlatformPreset(presetKey) {
         style: preset.style,
         layout: preset.layout,
         aspectRatio: preset.aspectRatio,
-        backgroundType: preset.backgroundType,
         visualDensity: preset.visualDensity
     });
 
@@ -3189,17 +3376,14 @@ async function downloadImage() {
 }
 
 // ============================================
-// LIGHTBOX
+// LIGHTBOX (uses SharedLightbox)
 // ============================================
 function openLightbox(imageUrl) {
-    elements.lightboxImage.src = imageUrl;
-    elements.lightbox.classList.add('visible');
-    document.body.style.overflow = 'hidden';
+    SharedLightbox.open(elements.lightbox, elements.lightboxImage, imageUrl);
 }
 
 function closeLightbox() {
-    elements.lightbox.classList.remove('visible');
-    document.body.style.overflow = '';
+    SharedLightbox.close(elements.lightbox);
 }
 
 async function downloadImageFromUrl(url) {
@@ -3280,6 +3464,67 @@ function setupEventListeners() {
 
     // Regenerate button
     elements.regenerateBtn.addEventListener('click', generateInfographic);
+
+    // Copy prompt button
+    if (elements.copyPromptBtn) {
+        elements.copyPromptBtn.addEventListener('click', () => {
+            if (state.lastPrompt) {
+                navigator.clipboard.writeText(state.lastPrompt).then(() => {
+                    elements.copyPromptBtn.classList.add('copied');
+                    const originalHTML = elements.copyPromptBtn.innerHTML;
+                    elements.copyPromptBtn.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Copied!
+                    `;
+                    setTimeout(() => {
+                        elements.copyPromptBtn.classList.remove('copied');
+                        elements.copyPromptBtn.innerHTML = originalHTML;
+                    }, 2000);
+                });
+            }
+        });
+    }
+
+    // Download all button
+    if (elements.downloadAllBtn) {
+        elements.downloadAllBtn.addEventListener('click', () => {
+            if (state.generatedImages && state.generatedImages.length > 1) {
+                state.generatedImages.forEach((img, index) => {
+                    setTimeout(() => {
+                        const link = document.createElement('a');
+                        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                        link.download = `infographic_${timestamp}_${index + 1}.png`;
+                        link.href = img;
+                        link.click();
+                    }, index * 500); // Stagger downloads
+                });
+                SharedUI.toast(`Downloading ${state.generatedImages.length} images...`, 'info');
+            }
+        });
+    }
+
+    // Aspect ratio preview
+    if (elements.aspectRatio && elements.aspectPreviewInner) {
+        const updateAspectPreview = () => {
+            const ratio = elements.aspectRatio.value;
+            const box = elements.aspectPreviewInner;
+            const sizes = {
+                'auto': { w: 28, h: 28 },
+                '1:1': { w: 28, h: 28 },
+                '2:3': { w: 20, h: 30 },
+                '4:5': { w: 24, h: 30 },
+                '16:9': { w: 32, h: 18 },
+                '9:16': { w: 18, h: 32 }
+            };
+            const size = sizes[ratio] || sizes['auto'];
+            box.style.width = size.w + 'px';
+            box.style.height = size.h + 'px';
+        };
+        elements.aspectRatio.addEventListener('change', updateAspectPreview);
+        updateAspectPreview(); // Initial
+    }
 
     // Adjust button
     elements.adjustBtn.addEventListener('click', adjustInfographic);
@@ -3407,6 +3652,25 @@ function setupEventListeners() {
     elements.historyModal.addEventListener('click', (e) => {
         if (e.target === elements.historyModal) {
             closeHistoryModal();
+        }
+    });
+
+    // Favorites event listeners
+    elements.favoriteBtn.addEventListener('click', saveFavorite);
+    elements.clearFavoritesBtn.addEventListener('click', clearFavorites);
+    elements.closeFavoritesModal.addEventListener('click', closeFavoritesModal);
+    elements.loadFavoriteBtn.addEventListener('click', loadFavorite);
+    elements.downloadFavoriteBtn.addEventListener('click', downloadFavorite);
+    elements.deleteFavoriteBtn.addEventListener('click', () => {
+        if (state.selectedFavorite) {
+            deleteFavorite(state.selectedFavorite.id);
+        }
+    });
+    elements.copyFavoriteSeed.addEventListener('click', copyFavoriteSeed);
+
+    elements.favoritesModal.addEventListener('click', (e) => {
+        if (e.target === elements.favoritesModal) {
+            closeFavoritesModal();
         }
     });
 
@@ -3600,6 +3864,8 @@ function init() {
     setupEventListeners();
     updateLanguage('ro');
     loadHistory();
+    favorites.load();
+    renderFavorites();
     loadTemplatesFromStorage();
 
     // Update API status on load

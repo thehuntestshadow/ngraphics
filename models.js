@@ -17,8 +17,8 @@ const state = {
     // Settings
     productType: 'clothing',
     gender: 'female',
-    age: 'adult',
-    ethnicity: 'any',
+    age: 'young',
+    ethnicity: 'caucasian',
     bodyType: 'average',
     hair: 'any',
     shotType: 'full-body',
@@ -43,18 +43,21 @@ const state = {
     // Camera & Technical
     focalLength: 'auto',
     filmGrain: 'none',
-    sharpness: 'auto',
     contrast: 'auto',
-    // Color & Tone
-    colorTemp: 'auto',
-    shadowStyle: 'auto',
-    // Environment
-    timeOfDay: 'auto',
-    weather: 'auto',
     // Product
     productEnhancement: 'auto',
-    contextDescription: ''
+    contextDescription: '',
+    // Scene details
+    sceneDetailMode: 'auto',
+    sceneDetailText: '',
+    // Favorites
+    selectedFavorite: null,
+    selectedFavoriteImages: null,
+    lastSeed: null
 };
+
+// Favorites instance
+const favorites = new SharedFavorites('model_studio_favorites', 30);
 
 // ============================================
 // DOM ELEMENTS
@@ -100,18 +103,17 @@ function initElements() {
         // Camera & Technical
         focalLength: document.getElementById('focalLength'),
         filmGrain: document.getElementById('filmGrain'),
-        sharpness: document.getElementById('sharpness'),
         contrast: document.getElementById('contrast'),
-        // Color & Tone
-        colorTemp: document.getElementById('colorTemp'),
-        shadowStyle: document.getElementById('shadowStyle'),
-        // Environment
-        timeOfDay: document.getElementById('timeOfDay'),
-        weather: document.getElementById('weather'),
         // Product
         productEnhancement: document.getElementById('productEnhancement'),
         contextDescriptionGroup: document.getElementById('contextDescriptionGroup'),
         contextDescription: document.getElementById('contextDescription'),
+
+        // Scene details
+        sceneDetailSection: document.getElementById('sceneDetailSection'),
+        sceneDetailInput: document.getElementById('sceneDetailInput'),
+        sceneDetailText: document.getElementById('sceneDetailText'),
+        sceneNameLabel: document.getElementById('sceneNameLabel'),
 
         // Settings
         settingsSection: document.getElementById('settingsSection'),
@@ -146,6 +148,24 @@ function initElements() {
         historyEmpty: document.getElementById('historyEmpty'),
         clearHistoryBtn: document.getElementById('clearHistoryBtn'),
 
+        // Favorites
+        favoriteBtn: document.getElementById('favoriteBtn'),
+        favoritesSection: document.getElementById('favoritesSection'),
+        favoritesGrid: document.getElementById('favoritesGrid'),
+        favoritesCount: document.getElementById('favoritesCount'),
+        favoritesEmpty: document.getElementById('favoritesEmpty'),
+        clearFavoritesBtn: document.getElementById('clearFavoritesBtn'),
+        favoritesModal: document.getElementById('favoritesModal'),
+        closeFavoritesModal: document.getElementById('closeFavoritesModal'),
+        favoritePreviewImg: document.getElementById('favoritePreviewImg'),
+        favoriteNameInput: document.getElementById('favoriteNameInput'),
+        favoriteDate: document.getElementById('favoriteDate'),
+        favoriteSeedValue: document.getElementById('favoriteSeedValue'),
+        copyFavoriteSeed: document.getElementById('copyFavoriteSeed'),
+        loadFavoriteBtn: document.getElementById('loadFavoriteBtn'),
+        downloadFavoriteBtn: document.getElementById('downloadFavoriteBtn'),
+        deleteFavoriteBtn: document.getElementById('deleteFavoriteBtn'),
+
         // Lightbox
         lightbox: document.getElementById('lightbox'),
         lightboxImage: document.getElementById('lightboxImage'),
@@ -158,102 +178,62 @@ function initElements() {
 }
 
 // ============================================
-// UTILITY FUNCTIONS
+// UTILITY FUNCTIONS (wrappers for SharedUI)
 // ============================================
 function showError(message) {
-    const errorText = elements.errorMessage.querySelector('.error-text');
-    if (errorText) errorText.textContent = message;
-    elements.errorMessage.classList.add('visible');
-    setTimeout(() => {
-        elements.errorMessage.classList.remove('visible');
-    }, 5000);
+    SharedUI.showError(elements.errorMessage, message);
 }
 
 function showSuccess(message) {
-    const content = elements.successMessage.querySelector('.message-content');
-    if (content) content.textContent = message;
-    elements.successMessage.classList.add('visible');
-    setTimeout(() => {
-        elements.successMessage.classList.remove('visible');
-    }, 3000);
+    SharedUI.showSuccess(elements.successMessage, message);
 }
 
 function showLoading() {
-    elements.resultPlaceholder.style.display = 'none';
-    elements.resultContainer.classList.remove('visible');
-    elements.loadingContainer.classList.add('visible');
+    SharedUI.showLoading(elements.resultPlaceholder, elements.loadingContainer, elements.resultContainer);
 }
 
 function hideLoading() {
-    elements.loadingContainer.classList.remove('visible');
+    SharedUI.hideLoading(elements.loadingContainer);
 }
 
 function updateLoadingStatus(status) {
-    elements.loadingStatus.textContent = status;
-}
-
-function updateApiStatus(connected) {
-    const dot = elements.apiStatus.querySelector('.status-dot');
-    const text = elements.apiStatus.querySelector('.status-text');
-    if (connected) {
-        dot.style.background = 'var(--success)';
-        text.textContent = 'Connected';
-    } else {
-        dot.style.background = 'var(--error)';
-        text.textContent = 'Not Connected';
-    }
+    SharedUI.updateLoadingStatus(elements.loadingStatus, status);
 }
 
 // ============================================
-// API KEY HANDLING
+// API KEY HANDLING (uses SharedAPI)
 // ============================================
 function loadApiKey() {
-    const savedKey = localStorage.getItem('openrouter_api_key');
+    const savedKey = SharedAPI.getKey();
     if (savedKey) {
         state.apiKey = savedKey;
         elements.apiKeyInput.value = savedKey;
-        updateApiStatus(true);
+        SharedUI.updateApiStatus(elements.apiStatus, true);
     }
 }
 
 function saveApiKey() {
     const key = elements.apiKeyInput.value.trim();
-    if (key) {
+    if (SharedAPI.saveKey(key)) {
         state.apiKey = key;
-        localStorage.setItem('openrouter_api_key', key);
-        updateApiStatus(true);
-        showSuccess('API key saved!');
+        SharedUI.updateApiStatus(elements.apiStatus, true);
+        SharedUI.showSuccess(elements.successMessage, 'API key saved!');
     }
 }
 
 // ============================================
-// IMAGE UPLOAD HANDLING
+// IMAGE UPLOAD HANDLING (uses SharedUpload)
 // ============================================
 function setupImageUpload() {
-    elements.uploadArea.addEventListener('click', () => {
-        elements.productPhoto.click();
-    });
-
-    elements.uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        elements.uploadArea.classList.add('dragover');
-    });
-
-    elements.uploadArea.addEventListener('dragleave', () => {
-        elements.uploadArea.classList.remove('dragover');
-    });
-
-    elements.uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        elements.uploadArea.classList.remove('dragover');
-        if (e.dataTransfer.files.length > 0) {
-            handleImageUpload(e.dataTransfer.files[0]);
-        }
-    });
-
-    elements.productPhoto.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handleImageUpload(e.target.files[0]);
+    SharedUpload.setup(elements.uploadArea, elements.productPhoto, {
+        onError: showError,
+        onLoad: (base64, file) => {
+            state.uploadedImage = file;
+            state.uploadedImageBase64 = base64;
+            elements.previewImg.src = base64;
+            elements.imagePreview.style.display = 'block';
+            elements.uploadArea.style.display = 'none';
+            analyzeProductImage();
         }
     });
 
@@ -264,27 +244,6 @@ function setupImageUpload() {
         elements.uploadArea.style.display = 'flex';
         elements.productPhoto.value = '';
     });
-}
-
-function handleImageUpload(file) {
-    if (!file.type.startsWith('image/')) {
-        showError('Please upload an image file');
-        return;
-    }
-
-    state.uploadedImage = file;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        state.uploadedImageBase64 = e.target.result;
-        elements.previewImg.src = e.target.result;
-        elements.imagePreview.style.display = 'block';
-        elements.uploadArea.style.display = 'none';
-
-        // Auto-analyze the image
-        analyzeProductImage();
-    };
-    reader.readAsDataURL(file);
 }
 
 // ============================================
@@ -429,6 +388,8 @@ function generatePrompt() {
 
     // Age
     const ageDesc = {
+        child: 'around 8-12 years old, young child',
+        teen: 'around 13-17 years old, teenager',
         young: 'in their early 20s',
         adult: 'in their late 20s to early 30s',
         mature: 'in their 40s',
@@ -464,14 +425,10 @@ function generatePrompt() {
     // Hair
     if (state.hair !== 'any') {
         const hairMap = {
-            'long-dark': 'long dark hair',
-            'long-blonde': 'long blonde hair',
-            'long-brown': 'long brown hair',
-            'long-red': 'long red hair',
-            'short-dark': 'short dark hair',
-            'short-blonde': 'short blonde hair',
-            'short-brown': 'short brown hair',
+            long: 'long hair',
+            short: 'short hair',
             curly: 'curly hair',
+            blonde: 'blonde hair',
             bald: 'bald/shaved head'
         };
         modelDesc += `, ${hairMap[state.hair] || state.hair}`;
@@ -488,24 +445,28 @@ function generatePrompt() {
     };
 
     // Scene descriptions
-    const sceneDesc = {
+    const sceneDescBase = {
         studio: 'professional photography studio with clean backdrop',
         urban: 'urban city street with modern architecture',
-        street: 'street style urban environment with sidewalks and storefronts',
         nature: 'natural outdoor setting with greenery and trees',
         beach: 'beach or coastal setting with sand and ocean',
         cafe: 'cozy café or coffee shop interior with warm ambiance',
         office: 'modern professional office environment',
         gym: 'modern gym or fitness studio with equipment',
-        'living-room': 'stylish modern living room with comfortable furniture',
-        bedroom: 'elegant bedroom interior with soft lighting',
-        kitchen: 'bright modern kitchen with clean countertops',
-        bathroom: 'luxurious bathroom with elegant fixtures',
-        balcony: 'scenic balcony with outdoor view',
-        rooftop: 'urban rooftop terrace with city skyline views',
+        home: 'stylish modern home interior with comfortable furniture and warm lighting',
         luxury: 'luxurious upscale high-end setting',
-        pool: 'poolside setting with water and lounge area'
+        outdoor: 'scenic outdoor setting with natural light and open space'
     };
+
+    // Build scene description with optional custom details
+    let sceneDesc = {};
+    for (const [key, value] of Object.entries(sceneDescBase)) {
+        if (state.sceneDetailMode === 'custom' && state.sceneDetailText?.trim() && key === state.scene) {
+            sceneDesc[key] = `${value}, specifically: ${state.sceneDetailText.trim()}`;
+        } else {
+            sceneDesc[key] = value;
+        }
+    }
 
     // Photo style descriptions
     const styleDesc = {
@@ -529,44 +490,28 @@ function generatePrompt() {
 
     // Lighting descriptions
     const lightingDesc = {
-        // Natural
+        studio: 'professional studio lighting setup, clean and even',
         natural: 'natural daylight, bright and even',
         golden: 'warm golden hour lighting with soft orange tones',
-        overcast: 'soft overcast daylight, diffused and even',
-        shade: 'open shade lighting, soft and flattering',
-        // Studio
-        studio: 'professional three-point studio lighting setup',
-        rembrandt: 'Rembrandt lighting with dramatic triangle shadow on cheek',
-        butterfly: 'butterfly/paramount beauty lighting from above, glamorous',
-        split: 'split lighting with half face in shadow, edgy and dramatic',
-        loop: 'classic loop lighting, small shadow from nose, flattering',
-        rim: 'rim lighting with strong hair/edge light, subject separation',
+        soft: 'soft diffused lighting, flattering and even with minimal shadows',
+        dramatic: 'dramatic cinematic lighting with strong contrast and shadows',
         highkey: 'high key lighting, bright and airy with minimal shadows',
         lowkey: 'low key lighting, dark and moody with dramatic shadows',
-        // Creative
-        backlit: 'backlit silhouette with rim light effect',
-        dramatic: 'dramatic cinematic lighting with strong contrast',
-        neon: 'colorful neon lighting with vibrant colors',
-        window: 'natural window light, soft directional lighting'
+        backlit: 'backlit with rim light effect, glowing edges'
     };
 
     // Camera angle descriptions
     const angleDesc = {
         'eye-level': 'shot at eye level',
-        low: 'shot from low angle looking up (heroic)',
-        high: 'shot from high angle looking down',
-        dutch: 'Dutch angle (tilted) for dynamic effect',
-        'over-shoulder': 'over-the-shoulder perspective'
+        low: 'shot from low angle looking up',
+        high: 'shot from high angle looking down'
     };
 
     // Expression
     const expressionDesc = {
         neutral: 'neutral calm expression',
-        smile: 'gentle subtle smile',
-        happy: 'happy joyful expression',
-        serious: 'serious intense expression',
-        confident: 'confident self-assured expression',
-        mysterious: 'mysterious intriguing expression',
+        smile: 'gentle natural smile',
+        serious: 'serious confident expression',
         candid: 'candid natural expression'
     };
 
@@ -617,22 +562,13 @@ function generatePrompt() {
     // Color grading descriptions
     const colorGradingDesc = {
         auto: '',
-        // Film stocks
-        portra: 'Kodak Portra 400 film look with warm skin tones, soft contrast, and slightly muted colors',
-        fuji: 'Fuji 400H film look with soft pastels, slightly lifted shadows, and cool green tint',
-        ektar: 'Kodak Ektar film look with vivid saturated colors and punchy contrast',
-        cinestill: 'Cinestill 800T cinematic film look with halation glow around highlights and teal-orange tones',
-        // Modern looks
         warm: 'warm golden color grading with amber highlights and cozy tones',
         cool: 'cool moody color grading with blue shadows and desaturated highlights',
         airy: 'bright and airy look with lifted shadows, soft whites, and clean tones',
-        muted: 'muted desaturated color palette with faded look',
         vibrant: 'vibrant punchy colors with enhanced saturation and contrast',
-        bw: 'classic black and white with rich tonal range and contrast',
-        // Editorial
-        vogue: 'Vogue magazine editorial color grading, sophisticated and polished',
-        highfashion: 'high fashion color grading with dramatic contrast and refined tones',
-        clean: 'clean commercial color grading, neutral and true-to-life colors'
+        muted: 'muted desaturated color palette with faded look',
+        cinematic: 'cinematic film look with rich contrast and teal-orange tones',
+        bw: 'classic black and white with rich tonal range and contrast'
     };
 
     // Skin retouch descriptions
@@ -648,12 +584,8 @@ function generatePrompt() {
     const compositionDesc = {
         auto: '',
         center: 'centered composition with subject in the middle of the frame',
-        'rule-of-thirds': 'rule of thirds composition with subject placed at intersection points',
-        golden: 'golden ratio spiral composition for dynamic visual flow',
-        'left-space': 'subject positioned on the left with negative space on the right',
-        'right-space': 'subject positioned on the right with negative space on the left',
-        'negative-space': 'generous negative space around the subject for clean minimal look',
-        tight: 'tight crop filling the frame with minimal background'
+        'rule-of-thirds': 'off-center composition with subject placed using rule of thirds',
+        'negative-space': 'generous negative space around the subject for clean minimal look'
     };
 
     // Quality level boosters
@@ -666,85 +598,32 @@ function generatePrompt() {
 
     // Realism level descriptions
     const realismDesc = {
-        auto: '', // No realism instructions, let AI decide naturally
-        photo: 'photorealistic, indistinguishable from a real photograph',
-        hyper: 'hyper-realistic with extreme attention to detail, lifelike textures, realistic skin pores and fine hair details',
-        'ultra-hyper': 'ultra hyper-realistic, microscopic level of detail, perfect anatomical accuracy, subsurface skin scattering, individual hair strands visible, photographic perfection',
-        cinematic: 'cinematic realism with film-like quality, subtle film grain, cinematic color science, movie-quality production value',
-        raw: 'RAW unprocessed photo look, natural imperfections, authentic camera capture feel, no artificial enhancement'
+        auto: '',
+        photo: 'photorealistic, indistinguishable from a real photograph, lifelike textures and details',
+        cinematic: 'cinematic realism with film-like quality, subtle film grain, movie-quality production value'
     };
 
     // Lens focal length descriptions
     const focalLengthDesc = {
         auto: '',
-        '24mm': 'shot with 24mm wide-angle lens, environmental context, slight perspective distortion',
-        '35mm': 'shot with 35mm lens, natural street photography perspective, good context',
-        '50mm': 'shot with 50mm lens, natural human eye perspective, classic look',
-        '85mm': 'shot with 85mm portrait lens, flattering facial compression, beautiful background separation',
-        '135mm': 'shot with 135mm telephoto lens, strong compression, extremely creamy background blur',
-        'macro': 'shot with macro lens, extreme close-up detail, sharp product focus'
+        '35mm': 'shot with 35mm lens, natural street photography perspective',
+        '50mm': 'shot with 50mm lens, natural human eye perspective',
+        '85mm': 'shot with 85mm portrait lens, flattering compression, beautiful background separation',
+        '135mm': 'shot with 135mm telephoto lens, strong compression, creamy background blur'
     };
 
     // Film grain descriptions
     const filmGrainDesc = {
         none: '',
         subtle: 'subtle fine film grain for organic texture',
-        medium: 'medium film grain, classic analog film look',
         heavy: 'heavy pronounced film grain, vintage artistic aesthetic'
-    };
-
-    // Sharpness descriptions
-    const sharpnessDesc = {
-        auto: '',
-        soft: 'soft dreamy focus with gentle glow',
-        natural: 'natural sharpness, balanced detail',
-        sharp: 'sharp crisp details throughout',
-        ultra: 'ultra sharp, razor-crisp details, maximum clarity'
     };
 
     // Contrast descriptions
     const contrastDesc = {
         auto: '',
         low: 'low contrast flat look, cinematic color grade with lifted blacks',
-        medium: 'medium natural contrast',
         high: 'high contrast punchy look with deep blacks and bright highlights'
-    };
-
-    // Color temperature descriptions
-    const colorTempDesc = {
-        auto: '',
-        cool: 'cool color temperature with blue tint, crisp modern feel',
-        neutral: 'neutral balanced color temperature',
-        warm: 'warm golden color temperature, inviting cozy feel',
-        'very-warm': 'very warm sunset-like color temperature, golden amber tones'
-    };
-
-    // Shadow style descriptions
-    const shadowStyleDesc = {
-        auto: '',
-        lifted: 'lifted shadows, bright airy look with no true blacks, Instagram-style',
-        natural: 'natural shadow rendering with full tonal range',
-        crushed: 'crushed blacks, deep moody shadows, cinematic noir feel'
-    };
-
-    // Time of day descriptions
-    const timeOfDayDesc = {
-        auto: '',
-        morning: 'soft morning light, gentle warm tones, fresh atmosphere',
-        midday: 'bright midday light, strong shadows, high contrast',
-        golden: 'golden hour magic light, warm orange glow, long soft shadows',
-        blue: 'blue hour twilight, cool ambient light, moody atmosphere',
-        night: 'nighttime setting, artificial lighting, dramatic mood'
-    };
-
-    // Weather descriptions
-    const weatherDesc = {
-        auto: '',
-        clear: 'clear sunny weather, bright and cheerful',
-        cloudy: 'overcast cloudy sky, soft diffused light, no harsh shadows',
-        foggy: 'foggy misty atmosphere, ethereal dreamy mood, reduced visibility',
-        rainy: 'rainy weather, wet surfaces, reflections, moody atmosphere',
-        snowy: 'snowy winter setting, white snow, cold crisp atmosphere'
     };
 
     // Product enhancement descriptions
@@ -767,14 +646,7 @@ function generatePrompt() {
     // Camera & Technical
     const currentFocalLength = elements.focalLength?.value || 'auto';
     const currentFilmGrain = elements.filmGrain?.value || 'none';
-    const currentSharpness = elements.sharpness?.value || 'auto';
     const currentContrast = elements.contrast?.value || 'auto';
-    // Color & Tone
-    const currentColorTemp = elements.colorTemp?.value || 'auto';
-    const currentShadowStyle = elements.shadowStyle?.value || 'auto';
-    // Environment
-    const currentTimeOfDay = elements.timeOfDay?.value || 'auto';
-    const currentWeather = elements.weather?.value || 'auto';
     // Product
     const currentProductEnhancement = elements.productEnhancement?.value || 'auto';
 
@@ -799,25 +671,12 @@ function generatePrompt() {
         qualitySection += `\nFILM GRAIN: ${filmGrainDesc[currentFilmGrain]}`;
     }
 
-    if (currentSharpness !== 'auto' && sharpnessDesc[currentSharpness]) {
-        qualitySection += `\nSHARPNESS: ${sharpnessDesc[currentSharpness]}`;
-    }
-
     if (currentContrast !== 'auto' && contrastDesc[currentContrast]) {
         qualitySection += `\nCONTRAST: ${contrastDesc[currentContrast]}`;
     }
 
-    // Color & Tone
     if (currentColorGrading !== 'auto' && colorGradingDesc[currentColorGrading]) {
         qualitySection += `\nCOLOR GRADING: ${colorGradingDesc[currentColorGrading]}`;
-    }
-
-    if (currentColorTemp !== 'auto' && colorTempDesc[currentColorTemp]) {
-        qualitySection += `\nCOLOR TEMPERATURE: ${colorTempDesc[currentColorTemp]}`;
-    }
-
-    if (currentShadowStyle !== 'auto' && shadowStyleDesc[currentShadowStyle]) {
-        qualitySection += `\nSHADOWS: ${shadowStyleDesc[currentShadowStyle]}`;
     }
 
     if (currentSkinRetouch && skinRetouchDesc[currentSkinRetouch]) {
@@ -826,15 +685,6 @@ function generatePrompt() {
 
     if (currentComposition !== 'auto' && compositionDesc[currentComposition]) {
         qualitySection += `\nCOMPOSITION: ${compositionDesc[currentComposition]}`;
-    }
-
-    // Environment
-    if (currentTimeOfDay !== 'auto' && timeOfDayDesc[currentTimeOfDay]) {
-        qualitySection += `\nTIME OF DAY: ${timeOfDayDesc[currentTimeOfDay]}`;
-    }
-
-    if (currentWeather !== 'auto' && weatherDesc[currentWeather]) {
-        qualitySection += `\nWEATHER: ${weatherDesc[currentWeather]}`;
     }
 
     // Product
@@ -968,159 +818,10 @@ ${negativePromptText}`;
 }
 
 // ============================================
-// IMAGE GENERATION
+// IMAGE GENERATION (uses SharedRequest)
 // ============================================
-function extractImageFromResponse(data) {
-    let imageUrl = null;
-
-    const message = data.choices?.[0]?.message;
-    if (message) {
-        if (Array.isArray(message.content)) {
-            for (const part of message.content) {
-                // OpenAI format
-                if (part.type === 'image_url' && part.image_url?.url) {
-                    imageUrl = part.image_url.url;
-                    break;
-                }
-                // Anthropic format
-                if (part.type === 'image' && part.source?.data) {
-                    imageUrl = `data:${part.source.media_type || 'image/png'};base64,${part.source.data}`;
-                    break;
-                }
-                // Gemini format (inline_data)
-                if (part.inline_data?.data) {
-                    imageUrl = `data:${part.inline_data.mime_type || 'image/png'};base64,${part.inline_data.data}`;
-                    break;
-                }
-                // Alternative Gemini format (image with data property)
-                if (part.image?.data) {
-                    imageUrl = `data:${part.image.mimeType || part.image.mime_type || 'image/png'};base64,${part.image.data}`;
-                    break;
-                }
-                // Direct base64 in part
-                if (part.data && typeof part.data === 'string') {
-                    imageUrl = `data:${part.mimeType || part.mime_type || 'image/png'};base64,${part.data}`;
-                    break;
-                }
-            }
-        }
-
-        // Check message.images array
-        if (!imageUrl && message.images && message.images.length > 0) {
-            const img = message.images[0];
-            if (typeof img === 'string') {
-                imageUrl = img.startsWith('data:') || img.startsWith('http') ? img : `data:image/png;base64,${img}`;
-            } else if (img.url) {
-                imageUrl = img.url;
-            } else if (img.image_url?.url) {
-                imageUrl = img.image_url.url;
-            } else if (img.b64_json) {
-                imageUrl = `data:image/png;base64,${img.b64_json}`;
-            }
-        }
-
-        // Check for base64 string in content
-        if (!imageUrl && message.content && typeof message.content === 'string') {
-            const base64Match = message.content.match(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/);
-            if (base64Match) {
-                imageUrl = base64Match[0];
-            }
-        }
-    }
-
-    // DALL-E / images endpoint format
-    if (!imageUrl && data.data && data.data[0]) {
-        if (data.data[0].url) {
-            imageUrl = data.data[0].url;
-        } else if (data.data[0].b64_json) {
-            imageUrl = `data:image/png;base64,${data.data[0].b64_json}`;
-        }
-    }
-
-    // Deep search fallback: look for any base64 data in the response
-    if (!imageUrl) {
-        const findBase64 = (obj, depth = 0) => {
-            if (depth > 10) return null;
-            if (!obj || typeof obj !== 'object') return null;
-
-            if (obj.data && typeof obj.data === 'string' && obj.data.length > 1000) {
-                const mimeType = obj.mimeType || obj.mime_type || obj.media_type || 'image/png';
-                return `data:${mimeType};base64,${obj.data}`;
-            }
-            if (obj.b64_json && typeof obj.b64_json === 'string') {
-                return `data:image/png;base64,${obj.b64_json}`;
-            }
-            if (obj.url && typeof obj.url === 'string' && (obj.url.startsWith('data:image') || obj.url.startsWith('http'))) {
-                return obj.url;
-            }
-
-            if (Array.isArray(obj)) {
-                for (const item of obj) {
-                    const found = findBase64(item, depth + 1);
-                    if (found) return found;
-                }
-            } else {
-                for (const key of Object.keys(obj)) {
-                    const found = findBase64(obj[key], depth + 1);
-                    if (found) return found;
-                }
-            }
-            return null;
-        };
-
-        imageUrl = findBase64(data);
-        if (imageUrl) {
-            console.log('Found image via deep search fallback');
-        }
-    }
-
-    return imageUrl;
-}
-
 async function makeGenerationRequest(requestBody, retries = 3) {
-    let lastError;
-
-    for (let attempt = 1; attempt <= retries; attempt++) {
-        try {
-            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${state.apiKey}`,
-                    'Content-Type': 'application/json',
-                    'HTTP-Referer': window.location.origin,
-                    'X-Title': 'NGRAPHICS Model Studio'
-                },
-                body: JSON.stringify(requestBody)
-            });
-
-            if (!response.ok) {
-                const error = await response.json().catch(() => ({}));
-                throw new Error(error.error?.message || `API Error: ${response.status}`);
-            }
-
-            const data = await response.json();
-            const imageUrl = extractImageFromResponse(data);
-
-            if (!imageUrl) {
-                if (data.error) {
-                    throw new Error(data.error.message || 'Provider returned an error');
-                }
-                throw new Error('No image in response');
-            }
-
-            return imageUrl;
-
-        } catch (error) {
-            lastError = error;
-            console.warn(`Attempt ${attempt}/${retries} failed:`, error.message);
-
-            if (attempt < retries) {
-                await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-            }
-        }
-    }
-
-    throw lastError || new Error('Failed after multiple attempts');
+    return SharedRequest.makeRequest(requestBody, state.apiKey, 'NGRAPHICS Model Studio', retries);
 }
 
 async function generateModelPhoto() {
@@ -1163,8 +864,13 @@ async function generateModelPhoto() {
 
         const variationsCount = state.variations;
 
+        // Generate and store seed for this generation
+        const baseSeed = Math.floor(Math.random() * 999999999);
+        state.lastSeed = baseSeed;
+
         if (variationsCount === 1) {
             updateLoadingStatus('Generating model photo...');
+            requestBody.seed = baseSeed;
             const imageUrl = await makeGenerationRequest(requestBody);
             showResult(imageUrl);
             showSuccess('Photo generated successfully!');
@@ -1172,7 +878,6 @@ async function generateModelPhoto() {
             updateLoadingStatus(`Generating ${variationsCount} variations...`);
 
             const requests = [];
-            const baseSeed = Math.floor(Math.random() * 999999999);
 
             for (let i = 0; i < variationsCount; i++) {
                 const varRequestBody = { ...requestBody, seed: baseSeed + i };
@@ -1204,17 +909,7 @@ async function generateModelPhoto() {
         console.error('Generation error:', error);
         hideLoading();
         elements.resultPlaceholder.style.display = 'flex';
-
-        let errorMessage = error.message;
-        if (errorMessage.includes('401')) {
-            errorMessage = 'Invalid API key. Please check your OpenRouter API key.';
-        } else if (errorMessage.includes('429')) {
-            errorMessage = 'Rate limit exceeded. Please wait and try again.';
-        } else if (errorMessage.includes('modalities')) {
-            errorMessage = 'This model does not support image generation. Please try a different model.';
-        }
-
-        showError(errorMessage);
+        showError(SharedRequest.formatError(error));
     }
 }
 
@@ -1325,61 +1020,34 @@ Please regenerate the image with these specific changes applied.`;
 }
 
 // ============================================
-// HISTORY MANAGEMENT
+// HISTORY MANAGEMENT (uses SharedHistory)
 // ============================================
-const HISTORY_KEY = 'model_studio_history';
-const MAX_HISTORY = 20;
+const history = new SharedHistory('model_studio_history', 20);
 
 function loadHistory() {
-    try {
-        const saved = localStorage.getItem(HISTORY_KEY);
-        if (saved) {
-            state.history = JSON.parse(saved);
-            renderHistory();
-        }
-    } catch (error) {
-        console.error('Failed to load history:', error);
-    }
-}
-
-function saveHistory() {
-    try {
-        localStorage.setItem(HISTORY_KEY, JSON.stringify(state.history));
-    } catch (error) {
-        console.error('Failed to save history:', error);
-    }
+    state.history = history.load();
+    renderHistory();
 }
 
 function addToHistory(imageUrl) {
-    const item = {
-        id: Date.now(),
-        imageUrl: imageUrl,
-        timestamp: new Date().toISOString()
-    };
-
-    state.history.unshift(item);
-
-    if (state.history.length > MAX_HISTORY) {
-        state.history = state.history.slice(0, MAX_HISTORY);
-    }
-
-    saveHistory();
+    history.add(imageUrl);
+    state.history = history.getAll();
     renderHistory();
 }
 
 function renderHistory() {
-    elements.historyCount.textContent = state.history.length;
+    elements.historyCount.textContent = history.count;
 
-    if (state.history.length === 0) {
-        elements.historyEmpty.style.display = 'block';
-        elements.historyGrid.innerHTML = '';
-        elements.historyGrid.appendChild(elements.historyEmpty);
+    if (history.count === 0) {
+        elements.historyGrid.style.display = 'none';
+        elements.historyEmpty.style.display = 'flex';
         return;
     }
 
+    elements.historyGrid.style.display = 'grid';
     elements.historyEmpty.style.display = 'none';
 
-    elements.historyGrid.innerHTML = state.history.map(item => `
+    elements.historyGrid.innerHTML = history.getAll().map(item => `
         <div class="history-item" data-id="${item.id}">
             <img src="${item.imageUrl}" alt="History item">
         </div>
@@ -1388,7 +1056,7 @@ function renderHistory() {
     elements.historyGrid.querySelectorAll('.history-item').forEach(item => {
         item.addEventListener('click', () => {
             const id = parseInt(item.dataset.id, 10);
-            const historyItem = state.history.find(h => h.id === id);
+            const historyItem = history.findById(id);
             if (historyItem) {
                 openLightbox(historyItem.imageUrl);
             }
@@ -1396,52 +1064,391 @@ function renderHistory() {
     });
 }
 
-function clearHistory() {
-    if (confirm('Clear all history?')) {
+async function clearHistory() {
+    const confirmed = await SharedUI.confirm('Are you sure you want to clear all history?', {
+        title: 'Clear History',
+        confirmText: 'Clear All',
+        icon: 'warning'
+    });
+    if (confirmed) {
+        history.clear();
         state.history = [];
-        saveHistory();
         renderHistory();
-        showSuccess('History cleared');
+        SharedUI.toast('History cleared', 'success');
     }
 }
 
 // ============================================
-// LIGHTBOX
+// FAVORITES MANAGEMENT
+// ============================================
+function captureCurrentSettings() {
+    return {
+        model: elements.aiModel?.value,
+        productType: state.productType,
+        productDescription: elements.productDescription?.value || '',
+        gender: state.gender,
+        age: state.age,
+        ethnicity: state.ethnicity,
+        bodyType: state.bodyType,
+        hair: state.hair,
+        shotType: state.shotType,
+        scene: state.scene,
+        sceneDetailMode: state.sceneDetailMode,
+        sceneDetailText: state.sceneDetailText,
+        photoStyle: state.photoStyle,
+        pose: state.pose,
+        lighting: state.lighting,
+        cameraAngle: state.cameraAngle,
+        expression: state.expression,
+        aspectRatio: state.aspectRatio,
+        variations: state.variations,
+        collageMode: state.collageMode,
+        collageShowFace: state.collageShowFace,
+        depthOfField: state.depthOfField,
+        colorGrading: state.colorGrading,
+        skinRetouch: state.skinRetouch,
+        composition: state.composition,
+        qualityLevel: state.qualityLevel,
+        realismLevel: state.realismLevel,
+        focalLength: state.focalLength,
+        filmGrain: state.filmGrain,
+        contrast: state.contrast,
+        productEnhancement: state.productEnhancement,
+        contextDescription: state.contextDescription,
+        negativePrompt: elements.negativePrompt?.value || ''
+    };
+}
+
+async function saveFavorite() {
+    if (!state.generatedImageUrl) {
+        showError('No image to save. Generate an image first.');
+        return;
+    }
+
+    const settings = captureCurrentSettings();
+    const name = elements.productDescription?.value?.trim().slice(0, 30) || 'Model Photo';
+
+    try {
+        const favorite = await favorites.add({
+            name,
+            imageUrl: state.generatedImageUrl,
+            seed: state.lastSeed,
+            prompt: state.lastPrompt,
+            productImageBase64: state.uploadedImageBase64,
+            settings
+        });
+
+        if (favorite) {
+            elements.favoriteBtn.classList.add('active');
+            showSuccess('Saved to favorites!');
+            renderFavorites();
+        }
+    } catch (error) {
+        console.error('Failed to save favorite:', error);
+        showError('Failed to save favorite');
+    }
+}
+
+function renderFavorites() {
+    const grid = elements.favoritesGrid;
+    const empty = elements.favoritesEmpty;
+    const count = elements.favoritesCount;
+    const items = favorites.getAll();
+
+    count.textContent = items.length;
+
+    if (items.length === 0) {
+        grid.style.display = 'none';
+        empty.style.display = 'flex';
+        return;
+    }
+
+    grid.style.display = 'grid';
+    empty.style.display = 'none';
+
+    // Use thumbnail for grid display (falls back to imageUrl for legacy items)
+    grid.innerHTML = items.map(item => `
+        <div class="favorite-item" data-id="${item.id}">
+            <img src="${item.thumbnail || item.imageUrl}" alt="${item.name}" loading="lazy">
+            <div class="favorite-item-star">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+            </div>
+            <div class="favorite-item-overlay">
+                <div class="favorite-item-name">${item.name}</div>
+                <div class="favorite-item-seed">Seed: ${item.seed || 'N/A'}</div>
+            </div>
+            <button class="favorite-item-delete" data-id="${item.id}" title="Delete">&times;</button>
+        </div>
+    `).join('');
+
+    grid.querySelectorAll('.favorite-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('favorite-item-delete')) {
+                openFavoritesModal(parseInt(item.dataset.id, 10));
+            }
+        });
+    });
+
+    grid.querySelectorAll('.favorite-item-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteFavorite(parseInt(btn.dataset.id, 10));
+        });
+    });
+}
+
+async function openFavoritesModal(id) {
+    const item = favorites.findById(id);
+    if (!item) return;
+
+    state.selectedFavorite = item;
+    elements.favoriteNameInput.value = item.name;
+    elements.favoriteSeedValue.textContent = item.seed || 'N/A';
+
+    const date = new Date(item.timestamp);
+    elements.favoriteDate.textContent = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+    // Load full image from IndexedDB (fall back to thumbnail/imageUrl for legacy items)
+    elements.favoritePreviewImg.src = item.thumbnail || '';
+    elements.favoritesModal.classList.add('visible');
+
+    try {
+        const images = await favorites.getImages(id);
+        if (images && images.imageUrl) {
+            elements.favoritePreviewImg.src = images.imageUrl;
+            // Store images for use in loadFavorite/download
+            state.selectedFavoriteImages = images;
+        } else if (item.imageUrl) {
+            // Legacy item with imageUrl in metadata
+            elements.favoritePreviewImg.src = item.imageUrl;
+            state.selectedFavoriteImages = { imageUrl: item.imageUrl };
+        }
+    } catch (error) {
+        console.error('Failed to load favorite images:', error);
+        // Fall back to thumbnail
+        if (item.imageUrl) {
+            elements.favoritePreviewImg.src = item.imageUrl;
+        }
+    }
+}
+
+function closeFavoritesModal() {
+    if (state.selectedFavorite && elements.favoriteNameInput.value !== state.selectedFavorite.name) {
+        favorites.update(state.selectedFavorite.id, { name: elements.favoriteNameInput.value });
+        renderFavorites();
+    }
+
+    elements.favoritesModal.classList.remove('visible');
+    state.selectedFavorite = null;
+    state.selectedFavoriteImages = null;
+}
+
+function loadFavorite() {
+    if (!state.selectedFavorite) return;
+
+    const fav = state.selectedFavorite;
+    const settings = fav.settings || {};
+
+    // Restore state settings
+    if (settings.productType) state.productType = settings.productType;
+    if (settings.gender) state.gender = settings.gender;
+    if (settings.age) state.age = settings.age;
+    if (settings.ethnicity) state.ethnicity = settings.ethnicity;
+    if (settings.bodyType) state.bodyType = settings.bodyType;
+    if (settings.hair) state.hair = settings.hair;
+    if (settings.shotType) state.shotType = settings.shotType;
+    if (settings.scene) state.scene = settings.scene;
+    if (settings.sceneDetailMode) state.sceneDetailMode = settings.sceneDetailMode;
+    if (settings.sceneDetailText) state.sceneDetailText = settings.sceneDetailText;
+    if (settings.photoStyle) state.photoStyle = settings.photoStyle;
+    if (settings.pose) state.pose = settings.pose;
+    if (settings.lighting) state.lighting = settings.lighting;
+    if (settings.cameraAngle) state.cameraAngle = settings.cameraAngle;
+    if (settings.expression) state.expression = settings.expression;
+    if (settings.aspectRatio) state.aspectRatio = settings.aspectRatio;
+    if (settings.variations) state.variations = settings.variations;
+    if (settings.collageMode) state.collageMode = settings.collageMode;
+    if (typeof settings.collageShowFace === 'boolean') state.collageShowFace = settings.collageShowFace;
+    if (settings.depthOfField) state.depthOfField = settings.depthOfField;
+    if (settings.colorGrading) state.colorGrading = settings.colorGrading;
+    if (settings.skinRetouch) state.skinRetouch = settings.skinRetouch;
+    if (settings.composition) state.composition = settings.composition;
+    if (settings.qualityLevel) state.qualityLevel = settings.qualityLevel;
+    if (settings.realismLevel) state.realismLevel = settings.realismLevel;
+    if (settings.focalLength) state.focalLength = settings.focalLength;
+    if (settings.filmGrain) state.filmGrain = settings.filmGrain;
+    if (settings.contrast) state.contrast = settings.contrast;
+    if (settings.productEnhancement) state.productEnhancement = settings.productEnhancement;
+    if (settings.contextDescription) state.contextDescription = settings.contextDescription;
+
+    // Restore form values
+    if (elements.aiModel && settings.model) elements.aiModel.value = settings.model;
+    if (elements.productDescription && settings.productDescription) {
+        elements.productDescription.value = settings.productDescription;
+    }
+    if (elements.modelEthnicity && settings.ethnicity) elements.modelEthnicity.value = settings.ethnicity;
+    if (elements.modelBodyType && settings.bodyType) elements.modelBodyType.value = settings.bodyType;
+    if (elements.modelHair && settings.hair) elements.modelHair.value = settings.hair;
+    if (elements.modelPose && settings.pose) elements.modelPose.value = settings.pose;
+    if (elements.lighting && settings.lighting) elements.lighting.value = settings.lighting;
+    if (elements.cameraAngle && settings.cameraAngle) elements.cameraAngle.value = settings.cameraAngle;
+    if (elements.expression && settings.expression) elements.expression.value = settings.expression;
+    if (elements.aspectRatio && settings.aspectRatio) elements.aspectRatio.value = settings.aspectRatio;
+    if (elements.collageMode && settings.collageMode) elements.collageMode.value = settings.collageMode;
+    if (elements.depthOfField && settings.depthOfField) elements.depthOfField.value = settings.depthOfField;
+    if (elements.colorGrading && settings.colorGrading) elements.colorGrading.value = settings.colorGrading;
+    if (elements.skinRetouch && settings.skinRetouch) elements.skinRetouch.value = settings.skinRetouch;
+    if (elements.composition && settings.composition) elements.composition.value = settings.composition;
+    if (elements.qualityLevel && settings.qualityLevel) elements.qualityLevel.value = settings.qualityLevel;
+    if (elements.realismLevel && settings.realismLevel) elements.realismLevel.value = settings.realismLevel;
+    if (elements.focalLength && settings.focalLength) elements.focalLength.value = settings.focalLength;
+    if (elements.filmGrain && settings.filmGrain) elements.filmGrain.value = settings.filmGrain;
+    if (elements.contrast && settings.contrast) elements.contrast.value = settings.contrast;
+    if (elements.productEnhancement && settings.productEnhancement) {
+        elements.productEnhancement.value = settings.productEnhancement;
+        elements.productEnhancement.dispatchEvent(new Event('change'));
+    }
+    if (elements.contextDescription && settings.contextDescription) {
+        elements.contextDescription.value = settings.contextDescription;
+    }
+    if (elements.negativePrompt && settings.negativePrompt) {
+        elements.negativePrompt.value = settings.negativePrompt;
+    }
+
+    // Update UI elements that depend on state (radio buttons, etc.)
+    document.querySelectorAll('input[name="productType"]').forEach(radio => {
+        radio.checked = radio.value === state.productType;
+    });
+    document.querySelectorAll('input[name="gender"]').forEach(radio => {
+        radio.checked = radio.value === state.gender;
+    });
+    document.querySelectorAll('input[name="age"]').forEach(radio => {
+        radio.checked = radio.value === state.age;
+    });
+    document.querySelectorAll('input[name="shotType"]').forEach(radio => {
+        radio.checked = radio.value === state.shotType;
+    });
+    document.querySelectorAll('input[name="scene"]').forEach(radio => {
+        radio.checked = radio.value === state.scene;
+    });
+    document.querySelectorAll('input[name="photoStyle"]').forEach(radio => {
+        radio.checked = radio.value === state.photoStyle;
+    });
+    document.querySelectorAll('input[name="variations"]').forEach(radio => {
+        radio.checked = radio.value === String(state.variations);
+    });
+
+    // Restore scene buttons
+    document.querySelectorAll('.scene-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.scene === state.scene);
+    });
+
+    // Restore scene detail UI
+    document.querySelectorAll('.scene-detail-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.detail === state.sceneDetailMode);
+    });
+    if (elements.sceneDetailInput) {
+        elements.sceneDetailInput.style.display = state.sceneDetailMode === 'custom' ? 'flex' : 'none';
+    }
+    if (elements.sceneDetailText && settings.sceneDetailText) {
+        elements.sceneDetailText.value = settings.sceneDetailText;
+    }
+    if (elements.sceneNameLabel) {
+        const activeSceneBtn = document.querySelector('.scene-btn.active');
+        if (activeSceneBtn) {
+            elements.sceneNameLabel.textContent = activeSceneBtn.querySelector('span:last-child')?.textContent?.toLowerCase() || state.scene;
+        }
+    }
+
+    // Restore seed
+    if (fav.seed) {
+        state.lastSeed = fav.seed;
+    }
+
+    closeFavoritesModal();
+    showSuccess('Settings loaded! Upload a new product image to generate.');
+
+    // Scroll to upload area
+    elements.uploadArea.scrollIntoView({ behavior: 'smooth' });
+}
+
+async function deleteFavorite(id) {
+    const confirmed = await SharedUI.confirm('Delete this favorite?', {
+        title: 'Delete Favorite',
+        confirmText: 'Delete',
+        icon: 'danger'
+    });
+    if (confirmed) {
+        await favorites.remove(id);
+        renderFavorites();
+        SharedUI.toast('Favorite deleted', 'success');
+
+        if (state.selectedFavorite && state.selectedFavorite.id === id) {
+            closeFavoritesModal();
+        }
+    }
+}
+
+async function clearFavorites() {
+    if (favorites.count === 0) return;
+
+    const confirmed = await SharedUI.confirm('Delete all favorites? This cannot be undone.', {
+        title: 'Clear All Favorites',
+        confirmText: 'Delete All',
+        icon: 'danger'
+    });
+    if (confirmed) {
+        await favorites.clear();
+        renderFavorites();
+        SharedUI.toast('All favorites cleared', 'success');
+    }
+}
+
+function downloadFavorite() {
+    if (!state.selectedFavorite) return;
+
+    const link = document.createElement('a');
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const name = state.selectedFavorite.name.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30);
+    link.download = `favorite_${name}_${timestamp}.png`;
+    // Use full image from IndexedDB if available
+    const imageUrl = state.selectedFavoriteImages?.imageUrl || state.selectedFavorite.imageUrl || state.selectedFavorite.thumbnail;
+    link.href = imageUrl;
+    link.click();
+}
+
+function copyFavoriteSeed() {
+    if (!state.selectedFavorite || !state.selectedFavorite.seed) return;
+
+    navigator.clipboard.writeText(state.selectedFavorite.seed.toString()).then(() => {
+        showSuccess('Seed copied!');
+    });
+}
+
+// ============================================
+// LIGHTBOX (uses SharedLightbox)
 // ============================================
 function openLightbox(imageUrl) {
-    elements.lightboxImage.src = imageUrl;
-    elements.lightbox.classList.add('visible');
-    document.body.style.overflow = 'hidden';
+    SharedLightbox.open(elements.lightbox, elements.lightboxImage, imageUrl);
 }
 
 function closeLightbox() {
-    elements.lightbox.classList.remove('visible');
-    document.body.style.overflow = '';
+    SharedLightbox.close(elements.lightbox);
 }
 
 // ============================================
-// DOWNLOAD
+// DOWNLOAD (uses SharedDownload)
 // ============================================
 function downloadImage() {
     if (!state.generatedImageUrl) return;
-
-    const link = document.createElement('a');
-    link.href = state.generatedImageUrl;
-    link.download = `model-photo-${Date.now()}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    SharedDownload.downloadImage(state.generatedImageUrl, 'model-photo');
 }
 
 function downloadFromLightbox() {
     if (!elements.lightboxImage.src) return;
-
-    const link = document.createElement('a');
-    link.href = elements.lightboxImage.src;
-    link.download = `model-photo-${Date.now()}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    SharedDownload.downloadImage(elements.lightboxImage.src, 'model-photo');
 }
 
 // ============================================
@@ -1512,7 +1519,29 @@ function setupEventListeners() {
             document.querySelectorAll('.scene-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             state.scene = btn.dataset.scene;
+            // Update scene name label
+            if (elements.sceneNameLabel) {
+                elements.sceneNameLabel.textContent = btn.querySelector('span:last-child')?.textContent?.toLowerCase() || state.scene;
+            }
         });
+    });
+
+    // Scene detail toggle buttons
+    document.querySelectorAll('.scene-detail-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.scene-detail-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.sceneDetailMode = btn.dataset.detail;
+            // Show/hide custom input
+            if (elements.sceneDetailInput) {
+                elements.sceneDetailInput.style.display = btn.dataset.detail === 'custom' ? 'flex' : 'none';
+            }
+        });
+    });
+
+    // Scene detail text input
+    elements.sceneDetailText?.addEventListener('input', (e) => {
+        state.sceneDetailText = e.target.value;
     });
 
     // Photo style radios
@@ -1550,16 +1579,7 @@ function setupEventListeners() {
     // Camera & Technical
     elements.focalLength?.addEventListener('change', (e) => state.focalLength = e.target.value);
     elements.filmGrain?.addEventListener('change', (e) => state.filmGrain = e.target.value);
-    elements.sharpness?.addEventListener('change', (e) => state.sharpness = e.target.value);
     elements.contrast?.addEventListener('change', (e) => state.contrast = e.target.value);
-
-    // Color & Tone
-    elements.colorTemp?.addEventListener('change', (e) => state.colorTemp = e.target.value);
-    elements.shadowStyle?.addEventListener('change', (e) => state.shadowStyle = e.target.value);
-
-    // Environment
-    elements.timeOfDay?.addEventListener('change', (e) => state.timeOfDay = e.target.value);
-    elements.weather?.addEventListener('change', (e) => state.weather = e.target.value);
 
     // Product
     const productEnhancementSelect = document.getElementById('productEnhancement');
@@ -1609,6 +1629,25 @@ function setupEventListeners() {
 
     // History
     elements.clearHistoryBtn?.addEventListener('click', clearHistory);
+
+    // Favorites
+    elements.favoriteBtn?.addEventListener('click', saveFavorite);
+    elements.clearFavoritesBtn?.addEventListener('click', clearFavorites);
+    elements.closeFavoritesModal?.addEventListener('click', closeFavoritesModal);
+    elements.loadFavoriteBtn?.addEventListener('click', loadFavorite);
+    elements.downloadFavoriteBtn?.addEventListener('click', downloadFavorite);
+    elements.deleteFavoriteBtn?.addEventListener('click', () => {
+        if (state.selectedFavorite) {
+            deleteFavorite(state.selectedFavorite.id);
+        }
+    });
+    elements.copyFavoriteSeed?.addEventListener('click', copyFavoriteSeed);
+
+    elements.favoritesModal?.addEventListener('click', (e) => {
+        if (e.target === elements.favoritesModal) {
+            closeFavoritesModal();
+        }
+    });
 
     // Lightbox
     elements.resultImage?.addEventListener('click', () => {
@@ -1660,6 +1699,8 @@ function init() {
     setupImageUpload();
     setupEventListeners();
     loadHistory();
+    favorites.load();
+    renderFavorites();
     console.log('Model Studio: Ready!');
 }
 
