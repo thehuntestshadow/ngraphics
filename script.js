@@ -937,13 +937,24 @@ function setupCharacteristicsHandlers() {
     document.querySelectorAll('.char-remove').forEach(attachRemoveHandler);
     document.querySelectorAll('.char-star').forEach(attachStarHandler);
     document.querySelectorAll('.char-item .input-field').forEach(attachIconSuggestionHandler);
+
+    // Initialize drag-to-reorder
+    initDragAndDrop();
 }
 
 function addCharacteristicItem() {
     const t = translations[state.language];
     const div = document.createElement('div');
     div.className = 'char-item';
+    div.draggable = true;
     div.innerHTML = `
+        <div class="char-drag" title="Drag to reorder">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/>
+                <circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/>
+                <circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/>
+            </svg>
+        </div>
         <button type="button" class="char-star" title="Mark as primary">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
@@ -975,6 +986,7 @@ function addCharacteristicItem() {
     attachRemoveHandler(div.querySelector('.char-remove'));
     attachStarHandler(div.querySelector('.char-star'));
     attachIconSuggestionHandler(div.querySelector('.input-field'));
+    attachDragHandlers(div);
 }
 
 function attachRemoveHandler(btn) {
@@ -1020,6 +1032,76 @@ function attachIconSuggestionHandler(input) {
             }
         }
     });
+}
+
+// ============================================
+// DRAG AND DROP REORDERING
+// ============================================
+let draggedItem = null;
+
+function attachDragHandlers(item) {
+    item.addEventListener('dragstart', handleDragStart);
+    item.addEventListener('dragend', handleDragEnd);
+    item.addEventListener('dragover', handleDragOver);
+    item.addEventListener('dragenter', handleDragEnter);
+    item.addEventListener('dragleave', handleDragLeave);
+    item.addEventListener('drop', handleDrop);
+}
+
+function handleDragStart(e) {
+    draggedItem = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.innerHTML);
+}
+
+function handleDragEnd(e) {
+    this.classList.remove('dragging');
+    document.querySelectorAll('.char-item').forEach(item => {
+        item.classList.remove('drag-over');
+    });
+    draggedItem = null;
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDragEnter(e) {
+    if (this !== draggedItem) {
+        this.classList.add('drag-over');
+    }
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (draggedItem !== this) {
+        const list = elements.characteristicsList;
+        const items = Array.from(list.querySelectorAll('.char-item'));
+        const draggedIdx = items.indexOf(draggedItem);
+        const targetIdx = items.indexOf(this);
+
+        if (draggedIdx < targetIdx) {
+            list.insertBefore(draggedItem, this.nextSibling);
+        } else {
+            list.insertBefore(draggedItem, this);
+        }
+    }
+
+    this.classList.remove('drag-over');
+    return false;
+}
+
+function initDragAndDrop() {
+    document.querySelectorAll('.char-item').forEach(attachDragHandlers);
 }
 
 // ============================================
@@ -3043,10 +3125,18 @@ Return ONLY valid JSON (no markdown, no code blocks):
 function addCharacteristic(text = '', isPrimary = false) {
     const charItem = document.createElement('div');
     charItem.className = 'char-item';
+    charItem.draggable = true;
 
     const charIndex = elements.characteristicsList.querySelectorAll('.char-item').length;
 
     charItem.innerHTML = `
+        <div class="char-drag" title="Drag to reorder">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/>
+                <circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/>
+                <circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/>
+            </svg>
+        </div>
         <button type="button" class="char-star${isPrimary ? ' starred' : ''}" title="Mark as primary feature">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
@@ -3106,6 +3196,9 @@ function addCharacteristic(text = '', isPrimary = false) {
     });
 
     elements.characteristicsList.appendChild(charItem);
+
+    // Attach drag handlers
+    attachDragHandlers(charItem);
 
     if (isPrimary) {
         state.starredCharacteristics.add(charIndex);

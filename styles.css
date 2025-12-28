@@ -766,10 +766,63 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    position: relative;
+    transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+    padding: 4px;
+    margin: -4px;
+    border-radius: var(--radius-sm);
+}
+
+.char-item.dragging {
+    opacity: 0.4;
+    background: var(--bg-elevated);
+}
+
+.char-item.drag-over {
+    background: var(--accent-subtle);
+}
+
+.char-item.drag-over::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -2px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 1px;
 }
 
 .char-item .input-field {
     flex: 1;
+}
+
+/* Drag Handle */
+.char-drag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 36px;
+    color: var(--text-muted);
+    cursor: grab;
+    flex-shrink: 0;
+    opacity: 0.4;
+    transition: opacity var(--duration-fast), color var(--duration-fast);
+}
+
+.char-drag:hover {
+    opacity: 1;
+    color: var(--text-secondary);
+}
+
+.char-drag:active {
+    cursor: grabbing;
+}
+
+.char-drag svg {
+    width: 14px;
+    height: 14px;
 }
 
 .char-star,
