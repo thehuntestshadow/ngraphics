@@ -335,28 +335,28 @@
                             Background Style
                         </div>
                         <div class="style-grid">
-                            <label class="style-option" data-tooltip="AI analyzes product colors and creates a complementary design automatically">
+                            <label class="style-option" data-tooltip="Automatically selects the best background based on your product colors.">
                                 <input type="radio" name="style" value="auto" checked>
                                 <span class="style-card">
                                     <span class="style-preview style-auto"></span>
                                     <span class="style-name">Auto</span>
                                 </span>
                             </label>
-                            <label class="style-option" data-tooltip="Clean white or light background. Perfect for Amazon listings and e-commerce sites.">
+                            <label class="style-option" data-tooltip="Clean white or light background, ideal for e-commerce listings.">
                                 <input type="radio" name="style" value="light">
                                 <span class="style-card">
                                     <span class="style-preview style-light"></span>
                                     <span class="style-name">Light</span>
                                 </span>
                             </label>
-                            <label class="style-option" data-tooltip="Dark or black background that makes the product pop. Premium, dramatic look.">
+                            <label class="style-option" data-tooltip="Dark background for a premium, dramatic appearance.">
                                 <input type="radio" name="style" value="dark">
                                 <span class="style-card">
                                     <span class="style-preview style-dark"></span>
                                     <span class="style-name">Dark</span>
                                 </span>
                             </label>
-                            <label class="style-option" data-tooltip="Smooth gradient background derived from product colors. Modern and eye-catching.">
+                            <label class="style-option" data-tooltip="Smooth gradient derived from your product colors.">
                                 <input type="radio" name="style" value="gradient">
                                 <span class="style-card">
                                     <span class="style-preview style-gradient"></span>
@@ -387,7 +387,7 @@
                                 <div class="group-title">Layout & Composition</div>
                                 <div class="advanced-grid">
                                     <div class="field-group">
-                                        <label class="field-label" data-tooltip="Controls where the product is positioned in the image. Center places it in the middle, Left/Right on sides, Hero makes it large and prominent.">Layout</label>
+                                        <label class="field-label" data-tooltip="Product placement in the image. Hero makes it large and prominent.">Layout</label>
                                         <select class="select-field select-sm" id="layoutTemplate">
                                             <option value="auto">Auto</option>
                                             <option value="center">Center</option>
@@ -399,7 +399,7 @@
                                         </select>
                                     </div>
                                     <div class="field-group">
-                                        <label class="field-label" data-tooltip="The width-to-height ratio of the generated image. Use 1:1 for square, 9:16 for vertical stories, 16:9 for horizontal banners.">Aspect Ratio</label>
+                                        <label class="field-label" data-tooltip="Image dimensions. Use 1:1 for square, 9:16 for stories, 16:9 for banners.">Aspect Ratio</label>
                                         <div class="aspect-ratio-preview">
                                             <select class="select-field select-sm" id="aspectRatio">
                                                 <option value="auto">Auto</option>
@@ -415,7 +415,7 @@
                                         </div>
                                     </div>
                                     <div class="field-group">
-                                        <label class="field-label" data-tooltip="How much of the product to show. Full shows the entire product, Close-up focuses on details, In Context places it in a real-world setting.">Product Focus</label>
+                                        <label class="field-label" data-tooltip="How much of the product to show. Close-up focuses on details, In Context places it in a real-world setting.">Product Focus</label>
                                         <select class="select-field select-sm" id="productFocus">
                                             <option value="auto">Auto</option>
                                             <option value="full">Full</option>
@@ -427,7 +427,7 @@
                                         </select>
                                     </div>
                                     <div class="field-group">
-                                        <label class="field-label" data-tooltip="Generate multiple image variations at once. More variations give you more options to choose from.">Variations</label>
+                                        <label class="field-label" data-tooltip="Number of image variations to generate at once.">Variations</label>
                                         <select class="select-field select-sm" id="variations">
                                             <option value="1">1 Image</option>
                                             <option value="2">2 Images</option>
@@ -443,10 +443,10 @@
 
                             <!-- Visual Style -->
                             <div class="advanced-group">
-                                <div class="group-title" data-tooltip="Control the overall visual appearance including typography, icons, and how much detail is shown.">Visual Style</div>
+                                <div class="group-title" data-tooltip="Controls typography, icons, and visual complexity.">Visual Style</div>
                                 <div class="slider-field">
                                     <div class="slider-header">
-                                        <span class="slider-label" data-tooltip="How much visual information to include. Minimal is clean and simple, Rich includes more details, icons, and decorative elements.">Visual Density</span>
+                                        <span class="slider-label" data-tooltip="Amount of visual detail. Minimal is clean, Rich includes more decorative elements.">Visual Density</span>
                                         <span class="slider-value" id="visualDensityValue">Balanced</span>
                                     </div>
                                     <input type="range" class="range-slider" id="visualDensity" min="1" max="5" value="3">
@@ -457,7 +457,7 @@
                                 </div>
                                 <div class="advanced-grid">
                                     <div class="field-group">
-                                        <label class="field-label" data-tooltip="Typography style for text labels and feature callouts. Modern is clean sans-serif, Classic uses serifs, Bold is impactful.">Font Style</label>
+                                        <label class="field-label" data-tooltip="Typography for text labels and callouts.">Font Style</label>
                                         <select class="select-field select-sm" id="fontStyle">
                                             <option value="auto">Auto</option>
                                             <option value="modern">Modern</option>
@@ -469,7 +469,7 @@
                                         </select>
                                     </div>
                                     <div class="field-group">
-                                        <label class="field-label" data-tooltip="Visual style for feature icons. Realistic uses photo-like icons, Flat is minimal, 3D adds depth. Choose None for text-only labels.">Icon Style</label>
+                                        <label class="field-label" data-tooltip="Style for feature icons. Choose None for text-only labels.">Icon Style</label>
                                         <select class="select-field select-sm" id="iconStyle">
                                             <option value="auto">Auto</option>
                                             <option value="realistic">Realistic / Photo-like</option>
@@ -536,10 +536,10 @@
                                 <div class="advanced-content">
                                     <!-- Colors -->
                                     <div class="advanced-group">
-                                        <div class="group-title" data-tooltip="Control the color palette used in the generated infographic.">Colors</div>
+                                        <div class="group-title" data-tooltip="Color palette settings for the infographic.">Colors</div>
                                         <div class="advanced-grid">
                                             <div class="field-group">
-                                                <label class="field-label" data-tooltip="How colors relate to each other. Match Product extracts colors from your product, Complementary uses opposite colors for contrast.">Color Harmony</label>
+                                                <label class="field-label" data-tooltip="Color relationship strategy. Match Product extracts colors from your product.">Color Harmony</label>
                                                 <select class="select-field select-sm" id="colorHarmony">
                                                     <option value="match">Match Product</option>
                                                     <option value="complementary">Complementary</option>
@@ -551,7 +551,7 @@
                                             </div>
                                         </div>
                                         <div class="field-group full-width">
-                                            <label class="field-label" data-tooltip="Specific colors to include in the design. Click presets or add custom hex codes to match your brand identity.">Brand Colors</label>
+                                            <label class="field-label" data-tooltip="Specific colors to include. Click presets or add custom hex codes.">Brand Colors</label>
                                             <div class="color-picker-section">
                                                 <div class="color-presets" id="colorPresets">
                                                     <button type="button" class="color-preset" style="background: #EF4444;" data-color="#EF4444" title="#EF4444"></button>
@@ -580,7 +580,7 @@
 
                                     <!-- Style Reference -->
                                     <div class="advanced-group">
-                                        <div class="group-title" data-tooltip="Upload an image to use as visual inspiration. The AI will try to match its style, colors, and composition.">Style Reference</div>
+                                        <div class="group-title" data-tooltip="Upload an image as visual inspiration for style, colors, and composition.">Style Reference</div>
                                         <div class="style-ref-container">
                                             <div class="style-upload-zone" id="styleUploadArea">
                                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -598,7 +598,7 @@
                                         </div>
                                         <div class="slider-field" id="styleStrengthSlider">
                                             <div class="slider-header">
-                                                <span class="slider-label" data-tooltip="How closely to follow the reference image style. Higher values create a stronger match but may reduce creativity.">Style Influence</span>
+                                                <span class="slider-label" data-tooltip="How closely to follow the reference style. Higher values create a stronger match.">Style Influence</span>
                                                 <span class="slider-value" id="styleStrengthValue">70%</span>
                                             </div>
                                             <input type="range" class="range-slider" id="styleStrength" min="10" max="100" value="70">
@@ -611,9 +611,9 @@
 
                                     <!-- Generation Settings -->
                                     <div class="advanced-group">
-                                        <div class="group-title" data-tooltip="Technical settings that control how the AI generates images.">Generation Settings</div>
+                                        <div class="group-title" data-tooltip="Technical settings for image generation.">Generation Settings</div>
                                         <div class="field-group full-width">
-                                            <label class="field-label" data-tooltip="A number that determines the random starting point. Using the same seed with identical settings produces similar results.">Seed</label>
+                                            <label class="field-label" data-tooltip="Fixed number for reproducible results. Same seed with same settings creates similar images.">Seed</label>
                                             <div class="seed-input-group">
                                                 <input type="number" class="input-field input-sm input-mono" id="seedInput" placeholder="Random" min="0" max="999999999">
                                                 <label class="checkbox-field checkbox-inline">
@@ -624,7 +624,7 @@
                                             </div>
                                         </div>
                                         <div class="field-group full-width">
-                                            <label class="field-label" data-tooltip="Elements you want to exclude from the image. Use this to avoid unwanted styles or elements.">Negative Prompts <span class="label-hint">(what to avoid)</span></label>
+                                            <label class="field-label" data-tooltip="Elements to exclude from the generated image.">Negative Prompts <span class="label-hint">(what to avoid)</span></label>
                                             <textarea class="textarea-field" id="negativePrompt" rows="2" placeholder="e.g., clipart, busy backgrounds, small text, watermarks"></textarea>
                                         </div>
                                     </div>

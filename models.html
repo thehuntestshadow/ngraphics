@@ -215,7 +215,7 @@
                         <div class="model-options-grid">
                             <!-- Gender -->
                             <div class="model-option">
-                                <label class="option-label" data-tooltip="The gender presentation of the AI model in the photo.">Gender</label>
+                                <label class="option-label" data-tooltip="Gender presentation of the model.">Gender</label>
                                 <div class="option-buttons">
                                     <button type="button" class="option-btn active" data-option="gender" data-value="female">Female</button>
                                     <button type="button" class="option-btn" data-option="gender" data-value="male">Male</button>
@@ -224,7 +224,7 @@
 
                             <!-- Age Range -->
                             <div class="model-option">
-                                <label class="option-label" data-tooltip="Approximate age of the model. Affects body proportions and facial features.">Age Range</label>
+                                <label class="option-label" data-tooltip="Approximate age range of the model.">Age Range</label>
                                 <div class="option-buttons">
                                     <button type="button" class="option-btn" data-option="age" data-value="child">8-12</button>
                                     <button type="button" class="option-btn" data-option="age" data-value="teen">13-17</button>
@@ -237,7 +237,7 @@
 
                             <!-- Ethnicity -->
                             <div class="model-option">
-                                <label class="option-label" data-tooltip="Ethnic appearance of the model. Choose 'Any' for diverse or random representation.">Ethnicity</label>
+                                <label class="option-label" data-tooltip="Ethnic appearance. Choose Any for diverse representation.">Ethnicity</label>
                                 <select class="select-field" id="modelEthnicity">
                                     <option value="any">Any / Diverse</option>
                                     <option value="caucasian" selected>Caucasian</option>
@@ -252,7 +252,7 @@
 
                             <!-- Body Type (for clothing) -->
                             <div class="model-option" id="bodyTypeOption">
-                                <label class="option-label" data-tooltip="Body shape of the model. Most relevant for clothing items that show body shape.">Body Type</label>
+                                <label class="option-label" data-tooltip="Body shape of the model. Most relevant for clothing items.">Body Type</label>
                                 <select class="select-field" id="modelBodyType">
                                     <option value="slim">Slim / Athletic</option>
                                     <option value="average" selected>Average</option>
@@ -263,7 +263,7 @@
 
                             <!-- Hair -->
                             <div class="model-option">
-                                <label class="option-label" data-tooltip="Hair style and color. Can affect overall aesthetic and framing of the shot.">Hair</label>
+                                <label class="option-label" data-tooltip="Hair style and color of the model.">Hair</label>
                                 <select class="select-field" id="modelHair">
                                     <option value="any">Any</option>
                                     <option value="long">Long</option>
@@ -355,7 +355,7 @@
 
                     <!-- Scene / Setting -->
                     <div class="config-section">
-                        <div class="section-label" data-tooltip="The background environment where the model appears. Studio gives clean backgrounds, others provide contextual settings.">
+                        <div class="section-label" data-tooltip="Background environment. Studio gives clean backgrounds, others provide context.">
                             <span class="label-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -410,7 +410,7 @@
 
                         <!-- Scene Details -->
                         <div class="scene-detail-section" id="sceneDetailSection">
-                            <label class="option-label" data-tooltip="Add specific details about the scene, or use Auto to let the AI decide.">Scene Details</label>
+                            <label class="option-label" data-tooltip="Add specific details about the scene, or let the AI decide.">Scene Details</label>
                             <div class="scene-detail-toggle">
                                 <button type="button" class="scene-detail-btn active" data-detail="auto">Auto</button>
                                 <button type="button" class="scene-detail-btn" data-detail="custom">Custom</button>
@@ -424,7 +424,7 @@
 
                     <!-- Photography Style -->
                     <div class="config-section">
-                        <div class="section-label" data-tooltip="Overall aesthetic approach. Editorial is magazine-style, Commercial is product-focused, Lifestyle feels natural, Artistic is creative.">
+                        <div class="section-label" data-tooltip="Overall aesthetic. Editorial is magazine-style, Commercial is product-focused.">
                             <span class="label-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/>
@@ -470,7 +470,7 @@
 
                     <!-- Output Settings -->
                     <div class="config-section">
-                        <div class="section-label" data-tooltip="Control the output format and number of images generated.">
+                        <div class="section-label" data-tooltip="Output format and number of images.">
                             <span class="label-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -481,7 +481,7 @@
                         </div>
                         <div class="model-options-grid">
                             <div class="model-option">
-                                <label class="option-label" data-tooltip="Image dimensions. 4:5 is ideal for Instagram, 9:16 for stories, 1:1 for square posts.">Aspect Ratio</label>
+                                <label class="option-label" data-tooltip="Image dimensions. 4:5 for Instagram, 9:16 for stories, 1:1 for square.">Aspect Ratio</label>
                                 <select class="select-field" id="aspectRatio">
                                     <option value="1:1">1:1 (Square)</option>
                                     <option value="4:5" selected>4:5 (Instagram)</option>
@@ -492,7 +492,7 @@
                                 </select>
                             </div>
                             <div class="model-option">
-                                <label class="option-label" data-tooltip="Generate multiple different images at once to choose from.">Variations</label>
+                                <label class="option-label" data-tooltip="Number of different images to generate at once.">Variations</label>
                                 <div class="option-buttons">
                                     <button type="button" class="option-btn active" data-option="variations" data-value="1">1</button>
                                     <button type="button" class="option-btn" data-option="variations" data-value="2">2</button>
@@ -524,7 +524,7 @@
                         <div class="advanced-content">
                             <!-- Pose -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="Body position of the model. Natural looks relaxed, Dynamic shows movement, Elegant is graceful and refined.">Pose</label>
+                                <label class="option-label" data-tooltip="Body position. Natural is relaxed, Dynamic shows movement, Elegant is graceful.">Pose</label>
                                 <select class="select-field" id="modelPose">
                                     <option value="natural">Natural / Relaxed</option>
                                     <option value="confident">Confident / Power</option>
@@ -539,7 +539,7 @@
 
                             <!-- Lighting -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="Light source and mood. Studio is even and professional, Golden Hour is warm, Dramatic creates strong shadows.">Lighting</label>
+                                <label class="option-label" data-tooltip="Light source and mood. Studio is even, Golden Hour is warm, Dramatic creates shadows.">Lighting</label>
                                 <select class="select-field" id="lighting">
                                     <option value="studio" selected>Studio</option>
                                     <option value="natural">Natural Daylight</option>
@@ -554,7 +554,7 @@
 
                             <!-- Camera Angle -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="Perspective of the camera. Low angle makes subjects look powerful, High angle is more casual.">Camera Angle</label>
+                                <label class="option-label" data-tooltip="Camera perspective. Low angle adds power, High angle is more casual.">Camera Angle</label>
                                 <select class="select-field" id="cameraAngle">
                                     <option value="eye-level" selected>Eye Level</option>
                                     <option value="low">Low Angle</option>
@@ -564,7 +564,7 @@
 
                             <!-- Expression -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="Facial expression of the model. Affects the mood and appeal of the photo.">Expression</label>
+                                <label class="option-label" data-tooltip="Facial expression. Affects the mood and appeal of the photo.">Expression</label>
                                 <select class="select-field" id="expression">
                                     <option value="neutral" selected>Neutral</option>
                                     <option value="smile">Smiling</option>
@@ -575,7 +575,7 @@
 
                             <!-- Multi-Angle Collage -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="Create a collage showing the product from multiple angles in one image.">Multi-Angle Collage</label>
+                                <label class="option-label" data-tooltip="Create a collage showing multiple angles in one image.">Multi-Angle Collage</label>
                                 <select class="select-field" id="collageMode">
                                     <option value="off" selected>Off (Single Shot)</option>
                                     <option value="2-angles">2 Angles</option>
@@ -596,7 +596,7 @@
 
                             <!-- AI Model -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="The AI model used for generation. Different models have different strengths in quality and style.">AI Model</label>
+                                <label class="option-label" data-tooltip="AI model for generation. Different models have different strengths.">AI Model</label>
                                 <select class="select-field" id="aiModel">
                                     <option value="google/gemini-3-pro-image-preview" selected>Gemini 3 Pro Image (Best)</option>
                                     <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
@@ -615,7 +615,7 @@
 
                             <!-- Depth of Field -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="Controls background blur. Shallow creates dreamy bokeh effect, Deep keeps everything sharp.">Depth of Field</label>
+                                <label class="option-label" data-tooltip="Background blur. Shallow creates bokeh, Deep keeps everything sharp.">Depth of Field</label>
                                 <select class="select-field" id="depthOfField">
                                     <option value="auto" selected>Auto</option>
                                     <option value="shallow">Shallow (Creamy Bokeh)</option>
@@ -627,7 +627,7 @@
 
                             <!-- Color Grading -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="Color treatment applied to the image. Warm adds golden tones, Cool is blue-tinted, Cinematic has movie-like colors.">Color Grading</label>
+                                <label class="option-label" data-tooltip="Color treatment. Warm adds golden tones, Cool is blue-tinted, Cinematic is film-like.">Color Grading</label>
                                 <select class="select-field" id="colorGrading">
                                     <option value="auto" selected>Auto / Natural</option>
                                     <option value="warm">Warm & Golden</option>
@@ -642,7 +642,7 @@
 
                             <!-- Skin Retouch -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="Skin smoothing and retouching level. Natural keeps texture, Flawless is heavily retouched for high-end looks.">Skin / Retouch</label>
+                                <label class="option-label" data-tooltip="Skin smoothing level. Natural keeps texture, Flawless is heavily retouched.">Skin / Retouch</label>
                                 <select class="select-field" id="skinRetouch">
                                     <option value="natural" selected>Natural (Minimal)</option>
                                     <option value="light">Light Retouch</option>
@@ -654,7 +654,7 @@
 
                             <!-- Composition -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="How the subject is positioned in the frame. Negative Space leaves room for text overlays.">Composition</label>
+                                <label class="option-label" data-tooltip="Subject positioning. Negative Space leaves room for text overlays.">Composition</label>
                                 <select class="select-field" id="composition">
                                     <option value="auto" selected>Auto</option>
                                     <option value="center">Centered</option>
@@ -665,7 +665,7 @@
 
                             <!-- Quality Level -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="Overall image quality and detail level. Higher settings produce more refined, professional results.">Quality Level</label>
+                                <label class="option-label" data-tooltip="Image quality and detail level. Higher settings are more refined.">Quality Level</label>
                                 <select class="select-field" id="qualityLevel">
                                     <option value="standard">Standard</option>
                                     <option value="high" selected>High Quality</option>
@@ -676,7 +676,7 @@
 
                             <!-- Realism Level -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="How photorealistic the result appears. Cinematic adds a stylized film look.">Realism</label>
+                                <label class="option-label" data-tooltip="How photorealistic the result appears. Cinematic adds a film look.">Realism</label>
                                 <select class="select-field" id="realismLevel">
                                     <option value="auto" selected>Auto</option>
                                     <option value="photo">Photorealistic</option>
@@ -693,7 +693,7 @@
 
                             <!-- Lens Focal Length -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="Simulated lens focal length. 85mm is classic for portraits, 35mm shows more environment.">Lens</label>
+                                <label class="option-label" data-tooltip="Simulated focal length. 85mm is classic for portraits, 35mm shows more environment.">Lens</label>
                                 <select class="select-field" id="focalLength">
                                     <option value="auto" selected>Auto</option>
                                     <option value="35mm">35mm (Environmental)</option>
@@ -705,7 +705,7 @@
 
                             <!-- Film Grain -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="Adds film-like grain texture. Subtle adds character, Heavy creates a vintage analog feel.">Film Grain</label>
+                                <label class="option-label" data-tooltip="Film-like grain texture. Subtle adds character, Heavy creates a vintage feel.">Film Grain</label>
                                 <select class="select-field" id="filmGrain">
                                     <option value="none" selected>None (Clean)</option>
                                     <option value="subtle">Subtle</option>
@@ -715,7 +715,7 @@
 
                             <!-- Contrast -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="Difference between lights and darks. Low is flat/cinematic, High is punchy and vibrant.">Contrast</label>
+                                <label class="option-label" data-tooltip="Difference between lights and darks. Low is flat, High is punchy.">Contrast</label>
                                 <select class="select-field" id="contrast">
                                     <option value="auto" selected>Auto</option>
                                     <option value="low">Low (Flat/Cinematic)</option>
@@ -725,7 +725,7 @@
 
                             <!-- Product Enhancement -->
                             <div class="option-group">
-                                <label class="option-label" data-tooltip="How to emphasize the product. Texture shows material detail, Shine enhances glossy surfaces.">Product Focus</label>
+                                <label class="option-label" data-tooltip="Product emphasis. Texture shows material detail, Shine enhances glossy surfaces.">Product Focus</label>
                                 <select class="select-field" id="productEnhancement">
                                     <option value="auto" selected>Auto</option>
                                     <option value="texture">Emphasize Texture</option>
@@ -738,14 +738,14 @@
 
                             <!-- Context Description (shown when In Context selected) -->
                             <div class="option-group option-group-full" id="contextDescriptionGroup" style="display: none;">
-                                <label class="option-label" data-tooltip="Describe the setting or usage scenario for the product.">Describe the Context</label>
+                                <label class="option-label" data-tooltip="Describe the setting or usage scenario.">Describe the Context</label>
                                 <input type="text" class="input-field" id="contextDescription" placeholder="e.g., on a kitchen counter, being used outdoors, in a gym bag...">
                                 <span class="option-hint">How/where should the product be shown?</span>
                             </div>
 
                             <!-- Negative Prompt -->
                             <div class="option-group option-group-full">
-                                <label class="option-label" data-tooltip="Elements to exclude from the generated image. Helps avoid common AI artifacts.">Things to Avoid</label>
+                                <label class="option-label" data-tooltip="Elements to exclude from the generated image.">Things to Avoid</label>
                                 <textarea class="input-field textarea-field" id="negativePrompt" placeholder="e.g., blurry, distorted hands, unrealistic proportions, watermarks, text overlays..." rows="2"></textarea>
                                 <span class="option-hint">Specify elements you don't want in the generated image</span>
                             </div>
