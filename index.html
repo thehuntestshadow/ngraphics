@@ -1203,7 +1203,45 @@
                     <h3 class="history-title">History</h3>
                     <span class="history-count" id="historyCount"></span>
                 </div>
-                <button class="btn-text-danger" id="clearHistoryBtn">Clear All</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-text" id="bulkModeBtn" title="Select multiple">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                        </svg>
+                    </button>
+                    <button class="btn-text-danger" id="clearHistoryBtn">Clear All</button>
+                </div>
+            </div>
+            <!-- Search & Bulk Actions -->
+            <div class="org-search">
+                <input type="text" class="org-search-input" id="historySearch" placeholder="Search history...">
+            </div>
+            <div class="bulk-actions-bar" id="historyBulkBar">
+                <label class="bulk-select-all">
+                    <input type="checkbox" id="historySelectAll">
+                    Select all
+                </label>
+                <span class="bulk-selected-count"><strong id="historySelectedCount">0</strong> selected</span>
+                <div class="bulk-actions">
+                    <button class="bulk-btn" id="bulkDownloadBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Download
+                    </button>
+                    <button class="bulk-btn danger" id="bulkDeleteBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3,6 5,6 21,6"/>
+                            <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/>
+                        </svg>
+                        Delete
+                    </button>
+                </div>
             </div>
             <div class="history-grid" id="historyGrid"></div>
             <div class="history-empty empty-state" id="historyEmpty">
@@ -1230,6 +1268,34 @@
                         <span class="favorites-count" id="favoritesCount">0</span>
                     </div>
                     <button class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
+                </div>
+                <!-- Search -->
+                <div class="org-search">
+                    <input type="text" class="org-search-input" id="favoritesSearch" placeholder="Search favorites...">
+                </div>
+                <!-- Folder Navigation -->
+                <div class="folder-nav" id="folderNav">
+                    <button class="folder-btn active" data-folder="" title="All favorites">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        All
+                    </button>
+                    <button class="folder-btn" data-folder="null" title="Unfiled favorites">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                        </svg>
+                        Unfiled
+                    </button>
+                    <!-- Dynamic folder buttons will be inserted here -->
+                </div>
+                <!-- Tag Filters -->
+                <div class="tag-filters" id="tagFilters" style="display: none;">
+                    <span class="tag-filters-label">Tags:</span>
+                    <div class="tag-chips" id="tagChips"></div>
                 </div>
                 <div class="favorites-grid" id="favoritesGrid"></div>
                 <div class="favorites-empty empty-state" id="favoritesEmpty">
@@ -1344,6 +1410,34 @@
                             <button class="btn-copy-seed" id="copyFavoriteSeed">Copy</button>
                         </div>
                     </div>
+                    <!-- Folder Selection -->
+                    <div class="favorite-folder-row">
+                        <label class="favorite-folder-label">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+                            </svg>
+                            Folder:
+                        </label>
+                        <select class="favorite-folder-select" id="favoriteFolderSelect">
+                            <option value="">None</option>
+                        </select>
+                        <input type="text" class="favorite-folder-new" id="favoriteFolderNew" placeholder="New folder...">
+                    </div>
+                    <!-- Tags -->
+                    <div class="favorite-tags-row">
+                        <label class="favorite-tags-label">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+                                <line x1="7" y1="7" x2="7.01" y2="7"/>
+                            </svg>
+                            Tags:
+                        </label>
+                        <div class="favorite-tags-container" id="favoriteTagsContainer"></div>
+                        <div class="tag-input-container">
+                            <input type="text" class="tag-input" id="favoriteTagInput" placeholder="Add tag...">
+                            <button class="tag-add-btn" id="addFavoriteTagBtn" title="Add tag">+</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-actions">
@@ -1384,7 +1478,11 @@
         </div>
     </footer>
 
+    <script src="core.js"></script>
     <script src="shared.js"></script>
+    <script src="api.js"></script>
+    <script src="components.js"></script>
+    <script src="workers.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

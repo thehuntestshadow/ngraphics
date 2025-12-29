@@ -251,7 +251,7 @@ function setupImageUpload() {
 }
 
 // ============================================
-// AUTO IMAGE ANALYSIS
+// AUTO IMAGE ANALYSIS (uses unified API client)
 // ============================================
 async function analyzeProductImage() {
     if (!state.uploadedImageBase64) return;
@@ -267,29 +267,10 @@ async function analyzeProductImage() {
     elements.productDescription.disabled = true;
 
     try {
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${state.apiKey}`,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': window.location.origin,
-                'X-Title': 'NGRAPHICS Model Studio'
-            },
-            body: JSON.stringify({
-                model: 'google/gemini-2.0-flash-001',
-                messages: [
-                    {
-                        role: 'user',
-                        content: [
-                            {
-                                type: 'image_url',
-                                image_url: {
-                                    url: state.uploadedImageBase64
-                                }
-                            },
-                            {
-                                type: 'text',
-                                text: `Analyze this product image and return ONLY valid JSON (no markdown):
+        api.apiKey = state.apiKey;
+        const result = await api.analyzeImage({
+            image: state.uploadedImageBase64,
+            prompt: `Analyze this product image and return ONLY valid JSON (no markdown):
 {
   "description": "Brief product description for fashion photography (e.g., 'Black leather crossbody bag with gold chain strap')",
   "productType": "clothing|accessory|handheld|footwear|jewelry|bag",
@@ -297,20 +278,9 @@ async function analyzeProductImage() {
 }
 
 Be concise. Focus on key visual details: color, material, style.`
-                            }
-                        ]
-                    }
-                ],
-                max_tokens: 200
-            })
         });
 
-        if (!response.ok) {
-            throw new Error('Analysis failed');
-        }
-
-        const data = await response.json();
-        let content = data.choices?.[0]?.message?.content?.trim() || '';
+        let content = result.text?.trim() || '';
 
         // Clean up response
         content = content.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
@@ -836,10 +806,17 @@ ${negativePromptText}`;
 }
 
 // ============================================
-// IMAGE GENERATION (uses SharedRequest)
+// IMAGE GENERATION (uses unified API client)
 // ============================================
 async function makeGenerationRequest(requestBody, retries = 3) {
-    return SharedRequest.makeRequest(requestBody, state.apiKey, 'NGRAPHICS Model Studio', retries);
+    api.apiKey = state.apiKey;
+
+    const result = await api.request('/chat/completions', requestBody, {
+        maxRetries: retries,
+        title: 'NGRAPHICS Model Studio'
+    });
+
+    return result.image;
 }
 
 async function generateModelPhoto() {
@@ -932,7 +909,11 @@ async function generateModelPhoto() {
         console.error('Generation error:', error);
         hideLoading();
         elements.resultPlaceholder.style.display = 'flex';
-        showError(SharedRequest.formatError(error));
+
+        const errorMessage = error instanceof APIError
+            ? error.toUserMessage()
+            : error.message || 'An unexpected error occurred';
+        showError(errorMessage);
     }
 }
 

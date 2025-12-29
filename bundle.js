@@ -376,37 +376,19 @@ async function analyzeProduct(productId) {
     slot.classList.add('analyzing');
 
     try {
-        const requestBody = {
+        api.apiKey = state.apiKey;
+        const result = await api.analyzeImage({
+            image: product.imageBase64,
             model: 'google/gemini-2.0-flash-exp:free',
-            messages: [{
-                role: 'user',
-                content: [
-                    { type: 'image_url', image_url: { url: product.imageBase64 } },
-                    { type: 'text', text: `Analyze this product image. Respond in JSON format only:
+            prompt: `Analyze this product image. Respond in JSON format only:
 {
     "name": "Brief product name (2-4 words)",
     "description": "Detailed description including type, color, material, notable features (1-2 sentences)"
 }
-Do not include any other text, only valid JSON.` }
-                ]
-            }]
-        };
-
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${state.apiKey}`,
-                'HTTP-Referer': window.location.origin,
-                'X-Title': 'Bundle Studio - Product Analysis'
-            },
-            body: JSON.stringify(requestBody)
+Do not include any other text, only valid JSON.`
         });
 
-        if (!response.ok) throw new Error('Analysis failed');
-
-        const data = await response.json();
-        const content = data.choices?.[0]?.message?.content || '';
+        const content = result.text || '';
 
         // Try to parse JSON from response
         const jsonMatch = content.match(/\{[\s\S]*\}/);
@@ -637,7 +619,10 @@ async function generateBundle() {
 
     } catch (error) {
         console.error('Generation error:', error);
-        showError(SharedRequest.formatError(error));
+        const errorMessage = error instanceof APIError
+            ? error.toUserMessage()
+            : error.message || 'An unexpected error occurred';
+        showError(errorMessage);
     } finally {
         state.isGenerating = false;
         elements.generateBtn.classList.remove('loading');
@@ -713,7 +698,10 @@ Keep the same overall composition and style, but apply the requested adjustments
         elements.feedbackTextarea.value = '';
     } catch (error) {
         console.error('Adjustment error:', error);
-        showError(SharedRequest.formatError(error));
+        const errorMessage = error instanceof APIError
+            ? error.toUserMessage()
+            : error.message || 'An unexpected error occurred';
+        showError(errorMessage);
     } finally {
         state.isGenerating = false;
         elements.generateBtn.classList.remove('loading');
@@ -723,30 +711,17 @@ Keep the same overall composition and style, but apply the requested adjustments
 }
 
 async function makeGenerationRequest(requestBody) {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${state.apiKey}`,
-            'HTTP-Referer': window.location.origin,
-            'X-Title': 'Bundle Studio'
-        },
-        body: JSON.stringify(requestBody)
+    api.apiKey = state.apiKey;
+
+    const result = await api.request('/chat/completions', requestBody, {
+        title: 'Bundle Studio'
     });
 
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error?.message || `HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
-    const imageUrl = SharedRequest.extractImageFromResponse(data);
-
-    if (!imageUrl) {
+    if (!result.image) {
         throw new Error('No image in response');
     }
 
-    return imageUrl;
+    return result.image;
 }
 
 function showResult(imageUrl) {

@@ -57,7 +57,14 @@ const state = {
     complementaryImages: [],
     // Favorites
     selectedFavorite: null,
-    selectedFavoriteImages: null
+    selectedFavoriteImages: null,
+    // Organization state
+    historyBulkMode: false,
+    historySelectedIds: new Set(),
+    historySearchQuery: '',
+    favoritesSearchQuery: '',
+    favoritesActiveFolder: '', // '' = all, 'null' = unfiled, or folder name
+    favoritesActiveTag: ''
 };
 
 // Favorites instance
@@ -339,6 +346,14 @@ function initElements() {
         closeModal: document.getElementById('closeModal'),
         modalDownload: document.getElementById('modalDownload'),
         modalUseAsBase: document.getElementById('modalUseAsBase'),
+        // History Organization
+        historySearch: document.getElementById('historySearch'),
+        bulkModeBtn: document.getElementById('bulkModeBtn'),
+        historyBulkBar: document.getElementById('historyBulkBar'),
+        historySelectAll: document.getElementById('historySelectAll'),
+        historySelectedCount: document.getElementById('historySelectedCount'),
+        bulkDownloadBtn: document.getElementById('bulkDownloadBtn'),
+        bulkDeleteBtn: document.getElementById('bulkDeleteBtn'),
 
         // Favorites
         favoriteBtn: document.getElementById('favoriteBtn'),
@@ -358,6 +373,16 @@ function initElements() {
         loadFavoriteBtn: document.getElementById('loadFavoriteBtn'),
         downloadFavoriteBtn: document.getElementById('downloadFavoriteBtn'),
         deleteFavoriteBtn: document.getElementById('deleteFavoriteBtn'),
+        // Favorites Organization
+        favoritesSearch: document.getElementById('favoritesSearch'),
+        folderNav: document.getElementById('folderNav'),
+        tagFilters: document.getElementById('tagFilters'),
+        tagChips: document.getElementById('tagChips'),
+        favoriteFolderSelect: document.getElementById('favoriteFolderSelect'),
+        favoriteFolderNew: document.getElementById('favoriteFolderNew'),
+        favoriteTagsContainer: document.getElementById('favoriteTagsContainer'),
+        favoriteTagInput: document.getElementById('favoriteTagInput'),
+        addFavoriteTagBtn: document.getElementById('addFavoriteTagBtn'),
 
         // Product Copy
         productCopySection: document.getElementById('productCopySection'),
@@ -1270,48 +1295,168 @@ function renderHistory() {
     const empty = elements.historyEmpty;
     const count = elements.historyCount;
 
+    // Filter items based on search query
+    let items = state.historySearchQuery
+        ? history.search(state.historySearchQuery)
+        : state.history;
+
     count.textContent = state.history.length > 0 ? `(${state.history.length})` : '';
 
-    if (state.history.length === 0) {
+    if (items.length === 0) {
         grid.style.display = 'none';
         empty.style.display = 'block';
+        if (state.historySearchQuery && state.history.length > 0) {
+            empty.querySelector('.empty-state-title').textContent = 'No Results';
+            empty.querySelector('.empty-state-text').textContent = 'No history items match your search.';
+        } else {
+            empty.querySelector('.empty-state-title').textContent = 'No History Yet';
+            empty.querySelector('.empty-state-text').textContent = 'Generated images will appear here. Start by uploading a product image.';
+        }
         return;
     }
 
     grid.style.display = 'grid';
     empty.style.display = 'none';
 
-    grid.innerHTML = state.history.map(item => {
+    // Add bulk-mode class to grid if in bulk mode
+    grid.classList.toggle('bulk-mode', state.historyBulkMode);
+
+    grid.innerHTML = items.map(item => {
         const date = new Date(item.timestamp || item.date);
         const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         // Use thumbnail for grid display
         const imgSrc = item.thumbnail || item.imageUrl;
+        const isSelected = state.historySelectedIds.has(item.id);
 
         return `
-            <div class="history-item" data-id="${item.id}">
+            <div class="history-item${isSelected ? ' selected' : ''}" data-id="${item.id}">
                 <img src="${imgSrc}" alt="${item.title || 'History item'}" loading="lazy">
                 <div class="history-item-overlay">
                     <div class="history-item-date">${dateStr}</div>
                 </div>
-                <button class="history-item-delete" data-id="${item.id}" title="Delete">&times;</button>
+                ${!state.historyBulkMode ? `<button class="history-item-delete" data-id="${item.id}" title="Delete">&times;</button>` : ''}
             </div>
         `;
     }).join('');
 
     grid.querySelectorAll('.history-item').forEach(item => {
         item.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('history-item-delete')) {
+            if (state.historyBulkMode) {
+                // Toggle selection in bulk mode
+                toggleHistorySelection(parseInt(item.dataset.id, 10));
+            } else if (!e.target.classList.contains('history-item-delete')) {
                 openHistoryModal(item.dataset.id);
             }
         });
     });
 
-    grid.querySelectorAll('.history-item-delete').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            deleteFromHistory(btn.dataset.id);
+    if (!state.historyBulkMode) {
+        grid.querySelectorAll('.history-item-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteFromHistory(btn.dataset.id);
+            });
         });
-    });
+    }
+
+    // Update selected count
+    updateBulkSelectionCount();
+}
+
+function toggleHistoryBulkMode() {
+    state.historyBulkMode = !state.historyBulkMode;
+    state.historySelectedIds.clear();
+
+    elements.bulkModeBtn.classList.toggle('active', state.historyBulkMode);
+    elements.historyBulkBar.style.display = state.historyBulkMode ? 'flex' : 'none';
+    elements.historySelectAll.checked = false;
+
+    renderHistory();
+}
+
+function toggleHistorySelection(id) {
+    if (state.historySelectedIds.has(id)) {
+        state.historySelectedIds.delete(id);
+    } else {
+        state.historySelectedIds.add(id);
+    }
+
+    const item = elements.historyGrid.querySelector(`[data-id="${id}"]`);
+    if (item) {
+        item.classList.toggle('selected', state.historySelectedIds.has(id));
+    }
+
+    updateBulkSelectionCount();
+}
+
+function toggleSelectAllHistory() {
+    const items = state.historySearchQuery ? history.search(state.historySearchQuery) : state.history;
+
+    if (elements.historySelectAll.checked) {
+        // Select all
+        items.forEach(item => state.historySelectedIds.add(item.id));
+    } else {
+        // Deselect all
+        state.historySelectedIds.clear();
+    }
+
+    renderHistory();
+}
+
+function updateBulkSelectionCount() {
+    if (elements.historySelectedCount) {
+        elements.historySelectedCount.textContent = state.historySelectedIds.size;
+    }
+
+    // Update select all checkbox state
+    const items = state.historySearchQuery ? history.search(state.historySearchQuery) : state.history;
+    if (elements.historySelectAll && items.length > 0) {
+        elements.historySelectAll.checked = state.historySelectedIds.size === items.length;
+        elements.historySelectAll.indeterminate = state.historySelectedIds.size > 0 && state.historySelectedIds.size < items.length;
+    }
+}
+
+async function bulkDeleteHistory() {
+    if (state.historySelectedIds.size === 0) return;
+
+    const count = state.historySelectedIds.size;
+    if (!confirm(`Delete ${count} selected item${count > 1 ? 's' : ''}?`)) return;
+
+    await history.removeMultiple(Array.from(state.historySelectedIds));
+    state.history = history.getAll();
+    state.historySelectedIds.clear();
+
+    // Exit bulk mode after deletion
+    toggleHistoryBulkMode();
+    showSuccess(`Deleted ${count} item${count > 1 ? 's' : ''}`);
+}
+
+async function bulkDownloadHistory() {
+    if (state.historySelectedIds.size === 0) return;
+
+    const ids = Array.from(state.historySelectedIds);
+    showSuccess(`Downloading ${ids.length} image${ids.length > 1 ? 's' : ''}...`);
+
+    for (const id of ids) {
+        const item = history.findById(id);
+        if (!item) continue;
+
+        // Get full image from IndexedDB
+        const images = await history.getImages(id);
+        const imageUrl = images?.imageUrl || item.thumbnail;
+
+        if (imageUrl) {
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            const title = (item.title || 'infographic').replace(/[^a-zA-Z0-9]/g, '_').slice(0, 20);
+            link.download = `infographic_${title}_${timestamp}.png`;
+            link.href = imageUrl;
+            link.click();
+
+            // Small delay between downloads
+            await new Promise(r => setTimeout(r, 300));
+        }
+    }
 }
 
 async function openHistoryModal(id) {
@@ -1455,13 +1600,31 @@ function renderFavorites() {
     const grid = elements.favoritesGrid;
     const empty = elements.favoritesEmpty;
     const count = elements.favoritesCount;
-    const items = favorites.getAll();
+    const allItems = favorites.getAll();
 
-    count.textContent = items.length;
+    // Apply filters
+    let items = favorites.filter({
+        folder: state.favoritesActiveFolder === 'null' ? null : (state.favoritesActiveFolder || undefined),
+        tag: state.favoritesActiveTag || undefined,
+        query: state.favoritesSearchQuery || undefined
+    });
+
+    count.textContent = allItems.length;
+
+    // Update folder navigation
+    renderFolderNav();
+    renderTagFilters();
 
     if (items.length === 0) {
         grid.style.display = 'none';
         empty.style.display = 'flex';
+        if ((state.favoritesSearchQuery || state.favoritesActiveFolder || state.favoritesActiveTag) && allItems.length > 0) {
+            empty.querySelector('.empty-state-title').textContent = 'No Results';
+            empty.querySelector('.empty-state-text').textContent = 'No favorites match your current filters.';
+        } else {
+            empty.querySelector('.empty-state-title').textContent = 'No Favorites';
+            empty.querySelector('.empty-state-text').textContent = 'Star your best generations to save them here for easy style reuse.';
+        }
         return;
     }
 
@@ -1480,7 +1643,7 @@ function renderFavorites() {
             </div>
             <div class="favorite-item-overlay">
                 <div class="favorite-item-name">${item.name}</div>
-                <div class="favorite-item-seed">Seed: ${item.seed || 'N/A'}</div>
+                ${item.tags && item.tags.length > 0 ? `<div class="favorite-item-tags">${item.tags.slice(0, 2).map(t => `<span class="tag-mini">${t}</span>`).join('')}</div>` : ''}
             </div>
             <button class="favorite-item-delete" data-id="${item.id}" title="Delete">&times;</button>
         </div>
@@ -1502,6 +1665,129 @@ function renderFavorites() {
     });
 }
 
+function renderFolderNav() {
+    const nav = elements.folderNav;
+    if (!nav) return;
+
+    const folders = favorites.getAllFolders();
+
+    // Keep the static "All" and "Unfiled" buttons, add dynamic folder buttons
+    const existingFolderBtns = nav.querySelectorAll('.folder-btn[data-folder]:not([data-folder=""]):not([data-folder="null"])');
+    existingFolderBtns.forEach(btn => btn.remove());
+
+    // Add folder buttons
+    folders.forEach(folder => {
+        const btn = document.createElement('button');
+        btn.className = 'folder-btn' + (state.favoritesActiveFolder === folder ? ' active' : '');
+        btn.dataset.folder = folder;
+        btn.title = folder;
+        btn.innerHTML = `
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+            </svg>
+            ${folder}
+        `;
+        nav.appendChild(btn);
+    });
+
+    // Update active state on existing buttons
+    nav.querySelectorAll('.folder-btn').forEach(btn => {
+        const folder = btn.dataset.folder;
+        btn.classList.toggle('active', folder === state.favoritesActiveFolder);
+    });
+
+    // Setup click handlers
+    nav.querySelectorAll('.folder-btn').forEach(btn => {
+        btn.onclick = () => {
+            state.favoritesActiveFolder = btn.dataset.folder;
+            renderFavorites();
+        };
+    });
+}
+
+function renderTagFilters() {
+    const container = elements.tagFilters;
+    const chips = elements.tagChips;
+    if (!container || !chips) return;
+
+    const tags = favorites.getAllTags();
+
+    if (tags.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+
+    container.style.display = 'flex';
+    chips.innerHTML = tags.map(tag => `
+        <button class="tag-filter-chip${state.favoritesActiveTag === tag ? ' active' : ''}" data-tag="${tag}">
+            ${tag}
+            ${state.favoritesActiveTag === tag ? '<span class="tag-clear">&times;</span>' : ''}
+        </button>
+    `).join('');
+
+    chips.querySelectorAll('.tag-filter-chip').forEach(chip => {
+        chip.onclick = () => {
+            const tag = chip.dataset.tag;
+            state.favoritesActiveTag = state.favoritesActiveTag === tag ? '' : tag;
+            renderFavorites();
+        };
+    });
+}
+
+function renderFavoriteModalTags() {
+    if (!state.selectedFavorite || !elements.favoriteTagsContainer) return;
+
+    const tags = state.selectedFavorite.tags || [];
+    elements.favoriteTagsContainer.innerHTML = tags.map(tag => `
+        <span class="tag-chip">
+            ${tag}
+            <button class="tag-chip-remove" data-tag="${tag}">&times;</button>
+        </span>
+    `).join('');
+
+    elements.favoriteTagsContainer.querySelectorAll('.tag-chip-remove').forEach(btn => {
+        btn.onclick = () => {
+            const tag = btn.dataset.tag;
+            favorites.removeTag(state.selectedFavorite.id, tag);
+            state.selectedFavorite = favorites.findById(state.selectedFavorite.id);
+            renderFavoriteModalTags();
+            renderFavorites();
+        };
+    });
+}
+
+function renderFolderSelect() {
+    if (!elements.favoriteFolderSelect) return;
+
+    const folders = favorites.getAllFolders();
+    const currentFolder = state.selectedFavorite?.folder || '';
+
+    elements.favoriteFolderSelect.innerHTML = '<option value="">None</option>' +
+        folders.map(folder => `<option value="${folder}"${folder === currentFolder ? ' selected' : ''}>${folder}</option>`).join('');
+}
+
+function addTagToFavorite() {
+    if (!state.selectedFavorite || !elements.favoriteTagInput) return;
+
+    const tag = elements.favoriteTagInput.value.trim().toLowerCase();
+    if (!tag) return;
+
+    favorites.addTag(state.selectedFavorite.id, tag);
+    state.selectedFavorite = favorites.findById(state.selectedFavorite.id);
+    elements.favoriteTagInput.value = '';
+
+    renderFavoriteModalTags();
+    renderFavorites();
+}
+
+function setFavoriteFolder(folder) {
+    if (!state.selectedFavorite) return;
+
+    favorites.setFolder(state.selectedFavorite.id, folder || null);
+    state.selectedFavorite = favorites.findById(state.selectedFavorite.id);
+    renderFavorites();
+}
+
 async function openFavoritesModal(id) {
     const item = favorites.findById(id);
     if (!item) return;
@@ -1512,6 +1798,10 @@ async function openFavoritesModal(id) {
 
     const date = new Date(item.timestamp);
     elements.favoriteDate.textContent = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+    // Render tags and folder UI
+    renderFavoriteModalTags();
+    renderFolderSelect();
 
     // Load full image from IndexedDB (fall back to thumbnail/imageUrl for legacy items)
     elements.favoritePreviewImg.src = item.thumbnail || '';
@@ -2065,10 +2355,19 @@ STYLE RULES:
 }
 
 // ============================================
-// API INTEGRATION (uses SharedRequest)
+// API INTEGRATION (uses unified API client)
 // ============================================
 async function makeGenerationRequest(requestBody, retries = 3) {
-    return SharedRequest.makeRequest(requestBody, state.apiKey, 'AI Product Infographics Generator', retries);
+    // Set API key on client
+    api.apiKey = state.apiKey;
+
+    // Use the unified API client
+    const result = await api.request('/chat/completions', requestBody, {
+        maxRetries: retries,
+        title: 'AI Product Infographics Generator'
+    });
+
+    return result.image;
 }
 
 async function generateInfographic() {
@@ -2210,22 +2509,10 @@ async function generateInfographic() {
         hideLoading();
         resetToPlaceholder();
 
-        let errorMessage = error.message;
-        if (errorMessage.includes('401')) {
-            errorMessage = 'Invalid API key. Please check your OpenRouter API key.';
-        } else if (errorMessage.includes('429')) {
-            errorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
-        } else if (errorMessage.includes('500') || errorMessage.includes('502') || errorMessage.includes('503')) {
-            errorMessage = 'Server error. Please try a different model or try again later.';
-        } else if (errorMessage.includes('modalities')) {
-            errorMessage = 'This model does not support image generation. Please select a different model.';
-        } else if (errorMessage.toLowerCase().includes('provider')) {
-            errorMessage = 'Provider error: The AI service is temporarily unavailable. Please try again or select a different model.';
-        } else if (errorMessage.includes('capacity') || errorMessage.includes('overloaded')) {
-            errorMessage = 'The model is currently at capacity. Please try again in a few moments or select a different model.';
-        } else if (errorMessage.includes('insufficient')) {
-            errorMessage = 'Insufficient credits. Please add credits to your OpenRouter account.';
-        }
+        // Use APIError's user-friendly message if available
+        const errorMessage = error instanceof APIError
+            ? error.toUserMessage()
+            : error.message || 'An unexpected error occurred';
 
         showError(errorMessage);
     }
@@ -2276,65 +2563,23 @@ Generate an adjusted version of this infographic based on the feedback above.`;
     try {
         updateLoadingStatus('Sending adjustment request...');
 
-        const messageContent = [
-            {
-                type: 'text',
-                text: adjustPrompt
-            },
-            {
-                type: 'image_url',
-                image_url: {
-                    url: state.generatedImageUrl
-                }
-            }
-        ];
-
-        const requestBody = {
-            model: model,
-            messages: [
-                {
-                    role: 'user',
-                    content: messageContent
-                }
-            ],
-            modalities: ['image', 'text'],
-            max_tokens: 4096
-        };
+        api.apiKey = state.apiKey;
 
         updateLoadingStatus('Adjusting infographic...');
 
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${state.apiKey}`,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': window.location.origin,
-                'X-Title': 'AI Product Infographics Generator'
-            },
-            body: JSON.stringify(requestBody)
+        const result = await api.generateImage({
+            model,
+            prompt: adjustPrompt,
+            images: [state.generatedImageUrl]
         });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            const errorMsg = errorData.error?.message || errorData.message || `API error: ${response.status}`;
-            throw new Error(errorMsg);
-        }
-
-        const data = await response.json();
 
         updateLoadingStatus('Processing adjusted image...');
 
-        const imageUrl = SharedRequest.extractImageFromResponse(data);
-
-        if (!imageUrl && data.error) {
-            throw new Error(data.error.message || 'Provider returned an error');
-        }
-
-        if (!imageUrl) {
+        if (!result.image) {
             throw new Error('No adjusted image was generated. Try a different model or rephrase your feedback.');
         }
 
-        showResult(imageUrl);
+        showResult(result.image);
         showSuccess('Infographic adjusted successfully!');
 
     } catch (error) {
@@ -2344,14 +2589,9 @@ Generate an adjusted version of this infographic based on the feedback above.`;
         elements.loadingContainer.classList.remove('visible');
         elements.resultContainer.classList.add('visible');
 
-        let errorMessage = error.message;
-        if (errorMessage.includes('401')) {
-            errorMessage = 'Invalid API key. Please check your OpenRouter API key.';
-        } else if (errorMessage.includes('429')) {
-            errorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
-        } else if (errorMessage.includes('500') || errorMessage.includes('502') || errorMessage.includes('503')) {
-            errorMessage = 'Server error. Please try a different model or try again later.';
-        }
+        const errorMessage = error instanceof APIError
+            ? error.toUserMessage()
+            : error.message || 'An unexpected error occurred';
 
         showError(errorMessage);
     }
@@ -2375,37 +2615,18 @@ async function generateAltText(imageUrl) {
 
         const prompt = `Generate a concise SEO-friendly alt text (1-2 sentences, max 125 characters) for a product infographic. Product: ${productTitle}. Key features: ${features}. The alt text should be descriptive and include the product name. Return ONLY the alt text, nothing else.`;
 
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${state.apiKey}`,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': window.location.origin,
-                'X-Title': 'AI Product Infographics Generator'
-            },
-            body: JSON.stringify({
-                model: 'google/gemini-2.0-flash-001',
-                messages: [
-                    {
-                        role: 'user',
-                        content: prompt
-                    }
-                ],
-                max_tokens: 100
-            })
+        api.apiKey = state.apiKey;
+        const result = await api.generateText({
+            prompt,
+            maxTokens: 100
         });
 
-        if (response.ok) {
-            const data = await response.json();
-            const altText = data.choices?.[0]?.message?.content?.trim() || '';
-            if (altText) {
-                state.generatedAltText = altText;
-                elements.altTextContent.innerHTML = `"${altText}"`;
-            } else {
-                elements.altTextContent.innerHTML = '<span class="alt-text-loading">Could not generate alt text</span>';
-            }
+        const altText = result.text?.trim() || '';
+        if (altText) {
+            state.generatedAltText = altText;
+            elements.altTextContent.innerHTML = `"${altText}"`;
         } else {
-            elements.altTextContent.innerHTML = '<span class="alt-text-loading">Alt text unavailable</span>';
+            elements.altTextContent.innerHTML = '<span class="alt-text-loading">Could not generate alt text</span>';
         }
     } catch (error) {
         console.error('Alt text generation error:', error);
@@ -2474,57 +2695,38 @@ Return ONLY valid JSON (no markdown, no code blocks):
   }
 }`;
 
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${state.apiKey}`,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': window.location.origin,
-                'X-Title': 'AI Product Infographics Generator'
-            },
-            body: JSON.stringify({
-                model: 'google/gemini-2.0-flash-001',
-                messages: [
-                    {
-                        role: 'user',
-                        content: prompt
-                    }
-                ],
-                max_tokens: 1000
-            })
+        api.apiKey = state.apiKey;
+        const result = await api.generateText({
+            prompt,
+            maxTokens: 1000
         });
 
-        if (response.ok) {
-            const data = await response.json();
-            let content = data.choices?.[0]?.message?.content?.trim() || '';
+        let content = result.text?.trim() || '';
 
-            // Clean up response - remove markdown code blocks if present
-            content = content.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+        // Clean up response - remove markdown code blocks if present
+        content = content.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
 
-            try {
-                const copyData = JSON.parse(content);
-                state.generatedCopy = {
-                    shortDesc: copyData.shortDesc || null,
-                    longDesc: copyData.longDesc || null,
-                    taglines: copyData.taglines || [],
-                    social: {
-                        instagram: copyData.social?.instagram || null,
-                        facebook: copyData.social?.facebook || null,
-                        twitter: copyData.social?.twitter || null
-                    },
-                    seo: {
-                        title: copyData.seo?.title || null,
-                        description: copyData.seo?.description || null
-                    }
-                };
+        try {
+            const copyData = JSON.parse(content);
+            state.generatedCopy = {
+                shortDesc: copyData.shortDesc || null,
+                longDesc: copyData.longDesc || null,
+                taglines: copyData.taglines || [],
+                social: {
+                    instagram: copyData.social?.instagram || null,
+                    facebook: copyData.social?.facebook || null,
+                    twitter: copyData.social?.twitter || null
+                },
+                seo: {
+                    title: copyData.seo?.title || null,
+                    description: copyData.seo?.description || null
+                }
+            };
 
-                updateProductCopyUI();
-            } catch (parseError) {
-                console.error('Failed to parse copy response:', parseError);
-                showCopyError('Failed to parse generated content');
-            }
-        } else {
-            showCopyError('Failed to generate marketing copy');
+            updateProductCopyUI();
+        } catch (parseError) {
+            console.error('Failed to parse copy response:', parseError);
+            showCopyError('Failed to parse generated content');
         }
     } catch (error) {
         console.error('Product copy generation error:', error);
@@ -3096,29 +3298,10 @@ async function analyzeProductImage() {
     try {
         const language = state.language === 'ro' ? 'Romanian' : 'English';
 
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${state.apiKey}`,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': window.location.origin,
-                'X-Title': 'AI Product Infographics Generator'
-            },
-            body: JSON.stringify({
-                model: 'google/gemini-2.0-flash-001',
-                messages: [
-                    {
-                        role: 'user',
-                        content: [
-                            {
-                                type: 'image_url',
-                                image_url: {
-                                    url: state.uploadedImageBase64
-                                }
-                            },
-                            {
-                                type: 'text',
-                                text: `Analyze this product image and extract information in JSON format.
+        api.apiKey = state.apiKey;
+        const result = await api.analyzeImage({
+            image: state.uploadedImageBase64,
+            prompt: `Analyze this product image and extract information in JSON format.
 Language: ${language}${state.language === 'ro' ? ' (use proper Romanian characters: ă, â, î, ș, ț)' : ''}
 
 Return ONLY valid JSON (no markdown, no code blocks):
@@ -3144,23 +3327,9 @@ Return ONLY valid JSON (no markdown, no code blocks):
 
 Features = technical specs (e.g., "Bluetooth 5.3", "40mm drivers")
 Benefits = customer value (e.g., "Crystal-clear sound", "All-day comfort")`
-                            }
-                        ]
-                    }
-                ],
-                max_tokens: 500
-            })
         });
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            console.error('Analysis API error:', response.status, errorData);
-            showError(errorData.error?.message || `Analysis failed (${response.status})`);
-            return;
-        }
-
-        const data = await response.json();
-        let content = data.choices?.[0]?.message?.content?.trim() || '';
+        let content = result.text?.trim() || '';
 
         // Clean up response
         content = content.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
@@ -3206,7 +3375,10 @@ Benefits = customer value (e.g., "Crystal-clear sound", "All-day comfort")`
         }
     } catch (error) {
         console.error('Analysis error:', error);
-        showError('Error analyzing image');
+        const errorMessage = error instanceof APIError
+            ? error.toUserMessage()
+            : 'Error analyzing image';
+        showError(errorMessage);
     } finally {
         btn.disabled = false;
         btn.innerHTML = originalHTML;
@@ -3865,6 +4037,71 @@ function setupEventListeners() {
             closeFavoritesModal();
         }
     });
+
+    // Organization event handlers - History
+    if (elements.historySearch) {
+        elements.historySearch.addEventListener('input', (e) => {
+            state.historySearchQuery = e.target.value;
+            renderHistory();
+        });
+    }
+
+    if (elements.bulkModeBtn) {
+        elements.bulkModeBtn.addEventListener('click', toggleHistoryBulkMode);
+    }
+
+    if (elements.historySelectAll) {
+        elements.historySelectAll.addEventListener('change', toggleSelectAllHistory);
+    }
+
+    if (elements.bulkDeleteBtn) {
+        elements.bulkDeleteBtn.addEventListener('click', bulkDeleteHistory);
+    }
+
+    if (elements.bulkDownloadBtn) {
+        elements.bulkDownloadBtn.addEventListener('click', bulkDownloadHistory);
+    }
+
+    // Organization event handlers - Favorites
+    if (elements.favoritesSearch) {
+        elements.favoritesSearch.addEventListener('input', (e) => {
+            state.favoritesSearchQuery = e.target.value;
+            renderFavorites();
+        });
+    }
+
+    if (elements.addFavoriteTagBtn) {
+        elements.addFavoriteTagBtn.addEventListener('click', addTagToFavorite);
+    }
+
+    if (elements.favoriteTagInput) {
+        elements.favoriteTagInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addTagToFavorite();
+            }
+        });
+    }
+
+    if (elements.favoriteFolderSelect) {
+        elements.favoriteFolderSelect.addEventListener('change', (e) => {
+            setFavoriteFolder(e.target.value);
+        });
+    }
+
+    if (elements.favoriteFolderNew) {
+        elements.favoriteFolderNew.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const newFolder = e.target.value.trim();
+                if (newFolder) {
+                    setFavoriteFolder(newFolder);
+                    e.target.value = '';
+                    renderFolderSelect();
+                }
+            }
+        });
+    }
 
     // Product Copy Section
     if (elements.copyToggle) {
