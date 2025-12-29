@@ -53,14 +53,15 @@ Main page for creating product marketing infographics.
 - `generatePrompt()`: Builds comprehensive AI prompt based on all settings
 - `generateInfographic()`: Makes API call to OpenRouter with multimodal support
 - `enhanceImage()`: Client-side auto-levels and contrast adjustment
-- History management: localStorage-based with 20-item limit
+- History management: Hybrid storage (thumbnails in localStorage, full images in IndexedDB)
 - Language toggle: English/Romanian with proper diacritics support
 
 ### Features
 - Multimodal input: Product photo uploaded and sent to AI as reference
 - Background styles: Auto, Light, Dark, Gradient
-- Generation history: Stored in localStorage, viewable in modal, exportable
+- Generation history: Thumbnails in localStorage, full images in IndexedDB, viewable in modal
 - Favorites: Save generations with settings/seed for style reuse across products
+- Benefits section: Separate from features, auto-filled on image analysis (customer value propositions)
 - Bilingual: English and Romanian with proper character support (ă, â, î, ș, ț)
 - Feedback-based adjustment: Regenerate with text feedback to refine results
 - SEO alt text: Auto-generated descriptive text with copy button
@@ -97,6 +98,12 @@ Main page for creating product marketing infographics.
 - Drag-to-reorder: Reposition features by dragging the grip handle
 - Star button to mark primary features (shown larger/more prominent)
 - Auto icons: AI automatically selects appropriate icons based on feature text
+
+### Benefits Section
+- Separate from features: Benefits are customer value propositions (why to buy)
+- Features are technical specs (what it has)
+- Auto-filled when analyzing product image
+- Included in prompt generation and saved with favorites
 
 ---
 
@@ -249,7 +256,7 @@ DOM elements are cached in an `elements` object, initialized via `initElements()
 Each page has a `generatePrompt()` function that builds detailed AI prompts by concatenating descriptions from various option maps.
 
 ### History
-Generation history stored in localStorage with configurable limits, supporting view, re-use, and export.
+Generation history uses hybrid storage: thumbnails in localStorage for fast grid display, full images in IndexedDB. Supports view in modal/lightbox, download, and configurable limits (default 20 items).
 
 ### Error Handling
 `showError()` function displays user-friendly error messages. API errors are caught and displayed appropriately.
@@ -277,9 +284,11 @@ Common functionality used across all pages.
 - `makeRequest(body, key, title, retries)`: Request with retry logic
 - `formatError(error)`: User-friendly error messages
 
-**SharedHistory** - Generation history (localStorage):
+**SharedHistory** - Generation history with hybrid storage:
 - Constructor: `new SharedHistory(storageKey, maxItems)`
-- Methods: `load()`, `save()`, `add(imageUrl, metadata)`, `clear()`, `findById(id)`, `getAll()`
+- Stores metadata + thumbnails in localStorage, full images in IndexedDB
+- Methods (async): `add(imageUrl, metadata)`, `remove(id)`, `clear()`, `getImages(id)`
+- Methods (sync): `load()`, `save()`, `findById(id)`, `getAll()`, `setImageStore(store)`
 
 **ImageStore** - IndexedDB storage for large images:
 - Constructor: `new ImageStore(dbName)`
