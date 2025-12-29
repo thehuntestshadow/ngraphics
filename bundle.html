@@ -62,6 +62,22 @@
                     <span class="status-dot"></span>
                     <span class="status-text">Not Connected</span>
                 </div>
+                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
             </div>
         </div>
     </header>
@@ -463,48 +479,33 @@
                     </div>
 
                     <!-- Advanced Options -->
-                    <div class="config-section collapsible">
-                        <button type="button" class="section-toggle" id="advancedToggle">
-                            <span class="section-label">
-                                <span class="label-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="12" r="3"/>
-                                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                                    </svg>
-                                </span>
-                                Advanced Options
-                            </span>
+                    <div class="advanced-section" id="advancedSection">
+                        <button type="button" class="advanced-toggle" id="advancedToggle">
+                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="4" y1="21" x2="4" y2="14"/>
+                                <line x1="4" y1="10" x2="4" y2="3"/>
+                                <line x1="12" y1="21" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12" y2="3"/>
+                                <line x1="20" y1="21" x2="20" y2="16"/>
+                                <line x1="20" y1="12" x2="20" y2="3"/>
+                                <circle cx="4" cy="12" r="2"/>
+                                <circle cx="12" cy="10" r="2"/>
+                                <circle cx="20" cy="14" r="2"/>
+                            </svg>
+                            <span>Advanced Options</span>
                             <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="6 9 12 15 18 9"/>
                             </svg>
                         </button>
-                        <div class="section-content" id="advancedContent">
+                        <div class="advanced-content">
                             <!-- Bundle Title -->
-                            <div class="option-row">
+                            <div class="option-group">
                                 <label class="option-label" data-tooltip="Optional title text displayed on the image">Bundle Title</label>
                                 <input type="text" class="input-field" id="bundleTitleInput" placeholder="e.g., Complete Skincare Set">
                             </div>
 
-                            <!-- Labels -->
-                            <div class="option-row">
-                                <label class="option-label" data-tooltip="Show product names on the image">Show Labels</label>
-                                <div class="toggle-group">
-                                    <button type="button" class="toggle-btn active" data-labels="off">Off</button>
-                                    <button type="button" class="toggle-btn" data-labels="on">On</button>
-                                </div>
-                            </div>
-
-                            <!-- Numbering -->
-                            <div class="option-row">
-                                <label class="option-label" data-tooltip="Show step numbers for routine/sequence">Show Numbering</label>
-                                <div class="toggle-group">
-                                    <button type="button" class="toggle-btn active" data-numbering="off">Off</button>
-                                    <button type="button" class="toggle-btn" data-numbering="on">On</button>
-                                </div>
-                            </div>
-
                             <!-- Visual Style -->
-                            <div class="option-row">
+                            <div class="option-group">
                                 <label class="option-label">Visual Style</label>
                                 <select class="select-field" id="visualStyleSelect">
                                     <option value="commercial">Commercial / Clean</option>
@@ -516,7 +517,7 @@
                             </div>
 
                             <!-- Lighting -->
-                            <div class="option-row">
+                            <div class="option-group">
                                 <label class="option-label">Lighting</label>
                                 <select class="select-field" id="lightingSelect">
                                     <option value="bright">Bright Studio</option>
@@ -528,7 +529,7 @@
                             </div>
 
                             <!-- Aspect Ratio -->
-                            <div class="option-row">
+                            <div class="option-group">
                                 <label class="option-label">Aspect Ratio</label>
                                 <select class="select-field" id="aspectRatioSelect">
                                     <option value="1:1">1:1 Square</option>
@@ -539,18 +540,36 @@
                                 </select>
                             </div>
 
+                            <!-- Labels -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Show product names on the image">Show Labels</label>
+                                <div class="option-buttons">
+                                    <button type="button" class="option-btn active" data-labels="off">Off</button>
+                                    <button type="button" class="option-btn" data-labels="on">On</button>
+                                </div>
+                            </div>
+
+                            <!-- Numbering -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Show step numbers for routine/sequence">Show Numbering</label>
+                                <div class="option-buttons">
+                                    <button type="button" class="option-btn active" data-numbering="off">Off</button>
+                                    <button type="button" class="option-btn" data-numbering="on">On</button>
+                                </div>
+                            </div>
+
                             <!-- Variations -->
-                            <div class="option-row">
+                            <div class="option-group">
                                 <label class="option-label" data-tooltip="Generate multiple variations at once">Variations</label>
-                                <div class="toggle-group">
-                                    <button type="button" class="toggle-btn active" data-variations="1">1</button>
-                                    <button type="button" class="toggle-btn" data-variations="2">2</button>
-                                    <button type="button" class="toggle-btn" data-variations="4">4</button>
+                                <div class="option-buttons">
+                                    <button type="button" class="option-btn active" data-variations="1">1</button>
+                                    <button type="button" class="option-btn" data-variations="2">2</button>
+                                    <button type="button" class="option-btn" data-variations="4">4</button>
                                 </div>
                             </div>
 
                             <!-- Seed -->
-                            <div class="option-row">
+                            <div class="option-group">
                                 <label class="option-label" data-tooltip="Use a specific seed to reproduce results">Seed</label>
                                 <div class="seed-controls">
                                     <label class="checkbox-label">
@@ -562,7 +581,7 @@
                             </div>
 
                             <!-- Negative Prompt -->
-                            <div class="option-row option-row-full">
+                            <div class="option-group option-group-full">
                                 <label class="option-label" data-tooltip="Specify what to avoid in the generation">Negative Prompt</label>
                                 <input type="text" class="input-field" id="negativePromptInput" placeholder="e.g., blurry, text, watermark">
                             </div>
@@ -571,11 +590,16 @@
 
                     <!-- Generate Button -->
                     <button type="submit" class="btn-generate" id="generateBtn" disabled>
-                        <span class="btn-text">Generate Bundle Image</span>
-                        <span class="btn-loading">
-                            <div class="spinner"></div>
-                            <span id="loadingStatus">Generating...</span>
+                        <span class="btn-content">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"/>
+                                <rect x="14" y="3" width="7" height="7"/>
+                                <rect x="14" y="14" width="7" height="7"/>
+                                <rect x="3" y="14" width="7" height="7"/>
+                            </svg>
+                            Generate Bundle Image
                         </span>
+                        <span class="btn-glow"></span>
                     </button>
                     <div class="shortcut-hint">
                         <kbd>Ctrl</kbd><span>+</span><kbd>Enter</kbd>

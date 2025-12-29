@@ -99,6 +99,13 @@ const lightingDescriptions = {
     'warm': 'Warm, golden hour style lighting.'
 };
 
+const qualityDescriptions = {
+    'standard': 'Professional product photography.',
+    'high': 'Professional high-quality product photography, sharp details, 4K resolution.',
+    'ultra': '8K ultra high resolution, magazine-quality product photography, shot with professional medium format camera, perfectly retouched.',
+    'masterpiece': 'Award-winning masterpiece product photography, luxury brand campaign quality, shot by world-renowned still life photographer, 8K ultra-detailed, perfect lighting and composition, gallery-worthy.'
+};
+
 // ============================================
 // DOM ELEMENTS
 // ============================================
@@ -465,63 +472,79 @@ function generatePrompt() {
         .map((p, i) => `${i + 1}. ${p.name}${p.description ? ': ' + p.description : ''}`)
         .join('\n');
 
-    let prompt = `Create a professional product bundle photograph showing ${productCount} items arranged together as a cohesive set.\n\n`;
-    prompt += `Products in the bundle:\n${productDescriptions}\n\n`;
+    // Get quality level (default to 'high' if not set)
+    const qualityLevel = state.qualityLevel || 'high';
+    const qualityDesc = qualityDescriptions[qualityLevel] || qualityDescriptions.high;
+
+    let prompt = `Create a ${qualityDesc.toLowerCase()}
+
+TASK: Generate a product bundle image showing ${productCount} items arranged together as a cohesive set.
+
+CRITICAL: I am providing reference images of the actual products. Each product must appear EXACTLY as shown - same colors, labels, packaging, and details. Do NOT modify, reinterpret, or stylize any product.
+
+PRODUCTS IN BUNDLE:
+${productDescriptions}
+
+`;
 
     // Layout
-    prompt += `Layout: ${layoutDescriptions[state.layout]}\n\n`;
+    prompt += `LAYOUT: ${layoutDescriptions[state.layout]}\n\n`;
 
     // Container
     if (state.container !== 'none') {
         if (state.container === 'custom' && state.customContainer) {
-            prompt += `Container: ${state.customContainer}\n\n`;
+            prompt += `CONTAINER: ${state.customContainer}\n\n`;
         } else if (containerDescriptions[state.container]) {
-            prompt += `${containerDescriptions[state.container]}\n\n`;
+            prompt += `CONTAINER: ${containerDescriptions[state.container]}\n\n`;
         }
     }
 
     // Background
     if (state.background === 'white') {
-        prompt += `Background: Clean white or very light gray background.\n\n`;
+        prompt += `BACKGROUND: Clean white or very light gray background.\n\n`;
     } else if (state.background === 'gradient') {
-        prompt += `Background: Subtle gradient background that complements the products.\n\n`;
+        prompt += `BACKGROUND: Subtle gradient background that complements the products.\n\n`;
     } else if (state.background === 'surface') {
         if (state.surface === 'custom' && state.customSurface) {
-            prompt += `Surface: ${state.customSurface}\n\n`;
+            prompt += `SURFACE: ${state.customSurface}\n\n`;
         } else if (surfaceDescriptions[state.surface]) {
-            prompt += `${surfaceDescriptions[state.surface]}\n\n`;
+            prompt += `SURFACE: ${surfaceDescriptions[state.surface]}\n\n`;
         }
     } else if (state.background === 'lifestyle' && state.lifestyleScene) {
-        prompt += `Setting: ${state.lifestyleScene}\n\n`;
+        prompt += `SETTING: ${state.lifestyleScene}\n\n`;
     }
 
     // Labels & Numbering
+    let overlayInstructions = [];
     if (state.showLabels) {
-        prompt += `Include small, elegant labels or text showing each product name.\n`;
+        overlayInstructions.push('Include small, elegant labels showing each product name');
     }
     if (state.showNumbering) {
-        prompt += `Include subtle numbering (1, 2, 3...) next to each product.\n`;
+        overlayInstructions.push('Include subtle numbering (1, 2, 3...) next to each product');
     }
     if (state.bundleTitle) {
-        prompt += `Include the title "${state.bundleTitle}" elegantly displayed in the image.\n`;
+        overlayInstructions.push(`Display the title "${state.bundleTitle}" elegantly in the image`);
+    }
+    if (overlayInstructions.length > 0) {
+        prompt += `TEXT/LABELS:\n${overlayInstructions.map(i => `- ${i}`).join('\n')}\n\n`;
     }
 
-    // Style
-    prompt += `\nPhotography style: ${styleDescriptions[state.visualStyle]}\n`;
-    prompt += `Lighting: ${lightingDescriptions[state.lighting]}\n`;
+    // Style & Technical
+    prompt += `PHOTOGRAPHY STYLE: ${styleDescriptions[state.visualStyle]}
+LIGHTING: ${lightingDescriptions[state.lighting]}
+ASPECT RATIO: ${state.aspectRatio}
 
-    // Aspect ratio
-    prompt += `Aspect ratio: ${state.aspectRatio}\n`;
-
-    // Quality instructions
-    prompt += `\nEnsure all products are clearly visible and identifiable. `;
-    prompt += `Maintain consistent lighting and shadows across all items. `;
-    prompt += `The composition should feel cohesive, as if all products belong together as a set. `;
-    prompt += `High-quality, professional product photography.`;
+QUALITY REQUIREMENTS:
+- Every product must be clearly visible and identifiable
+- Maintain consistent lighting and shadows across all items
+- Sharp focus on all products
+- Colors must be accurate to the reference images
+- The composition should feel cohesive, as if all products belong together as a set
+- Photorealistic result, not illustrated or stylized`;
 
     // Negative prompt
     if (state.negativePrompt) {
-        prompt += `\n\nAvoid: ${state.negativePrompt}`;
+        prompt += `\n\nAVOID: ${state.negativePrompt}`;
     }
 
     return prompt;
@@ -1189,7 +1212,7 @@ function setupEventListeners() {
 
     // Advanced toggle
     elements.advancedToggle.addEventListener('click', () => {
-        const section = elements.advancedToggle.closest('.collapsible');
+        const section = elements.advancedToggle.closest('.advanced-section');
         section.classList.toggle('open');
     });
 
@@ -1326,6 +1349,8 @@ function updateConditionalRows() {
 // ============================================
 function init() {
     initElements();
+    SharedTheme.init();
+    SharedTheme.setupToggle(document.getElementById('themeToggle'));
 
     // Load API key
     const savedKey = SharedAPI.getKey();

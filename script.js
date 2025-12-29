@@ -20,6 +20,7 @@ const state = {
     styleReferenceBase64: null,
     lastSeed: null,
     generatedImages: [],
+    variations: 1,
     // Watermark
     watermarkLogoBase64: null,
     watermarkPosition: 'bc',
@@ -456,29 +457,16 @@ function updateLanguage(lang) {
 }
 
 // ============================================
-// THEME HANDLING
+// THEME HANDLING (uses SharedTheme)
 // ============================================
 function loadTheme() {
-    const savedTheme = localStorage.getItem('ngraphics_theme');
-    if (savedTheme) {
-        state.theme = savedTheme;
-    }
-    applyTheme(state.theme);
-}
-
-function applyTheme(theme) {
-    state.theme = theme;
-    if (theme === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-    } else {
-        document.documentElement.removeAttribute('data-theme');
-    }
-    localStorage.setItem('ngraphics_theme', theme);
+    SharedTheme.init();
+    state.theme = SharedTheme.current;
 }
 
 function toggleTheme() {
-    const newTheme = state.theme === 'dark' ? 'light' : 'dark';
-    applyTheme(newTheme);
+    SharedTheme.toggle();
+    state.theme = SharedTheme.current;
 }
 
 // ============================================
@@ -1393,7 +1381,7 @@ function captureCurrentSettings() {
         lineThickness: elements.lineThickness?.value,
         lineColorMode: elements.lineColorMode?.value,
         negativePrompt: elements.negativePrompt?.value || '',
-        variations: elements.variations?.value,
+        variations: state.variations,
         styleStrength: elements.styleStrength?.value,
         characteristics
     };
@@ -1608,7 +1596,12 @@ function loadFavorite() {
     }
     if (elements.lineColorMode && settings.lineColorMode) elements.lineColorMode.value = settings.lineColorMode;
     if (elements.negativePrompt && settings.negativePrompt) elements.negativePrompt.value = settings.negativePrompt;
-    if (elements.variations && settings.variations) elements.variations.value = settings.variations;
+    if (settings.variations) {
+        state.variations = parseInt(settings.variations, 10) || 1;
+        document.querySelectorAll('[data-option="variations"]').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.value === String(state.variations));
+        });
+    }
     if (elements.styleStrength && settings.styleStrength) {
         elements.styleStrength.value = settings.styleStrength;
         if (elements.styleStrengthValue) {
@@ -1770,6 +1763,15 @@ function generatePrompt() {
         gradient: 'Use a subtle gradient background derived from the product colors. Keep it simple and professional.'
     };
 
+    // Quality level descriptions
+    const qualityDescriptions = {
+        standard: 'professional marketing graphic',
+        high: 'high-quality professional marketing graphic with sharp text and crisp details',
+        ultra: 'premium quality marketing graphic, magazine-advertisement quality with perfect typography and refined design',
+        masterpiece: 'award-winning advertising campaign quality, luxury brand aesthetic with flawless execution and sophisticated design'
+    };
+    const qualityLevel = 'high'; // Default to high quality
+
     // Layout template descriptions
     const layoutDescriptions = {
         auto: '',
@@ -1836,50 +1838,66 @@ function generatePrompt() {
 
     const styleDesc = styleDescriptions[style] || styleDescriptions.auto;
     const hasImage = state.uploadedImageBase64 !== null;
+    const hasStyleRef = state.styleReferenceBase64 !== null;
+    const qualityDesc = qualityDescriptions[qualityLevel] || qualityDescriptions.high;
 
     // Build the enhanced prompt
     let prompt;
 
     if (hasImage) {
-        prompt = `I'm providing a product photo. Create a professional marketing infographic.
+        prompt = `Create a ${qualityDesc} - a product infographic IMAGE with text overlays, icons, and visual elements.
 
-CRITICAL INSTRUCTIONS:
-- DO NOT modify the product itself - keep it EXACTLY as shown
-- Analyze the product's colors and the original background
-- ${styleDesc}
-- Text should be readable and contrast well with the background
+PRODUCT REFERENCE: I am providing a photo of the actual product.
+CRITICAL: The product must appear EXACTLY as shown - same colors, shape, labels, and details. Do NOT modify or reinterpret the product.
+
+BACKGROUND: ${styleDesc}
+
+DESIGN REQUIREMENTS:
+- Text should be sharp, readable, and contrast well with the background
+- Include icons next to each feature
+- Professional marketing aesthetic
 
 PRODUCT TITLE: "${title}"
 
 `;
     } else {
-        prompt = `Create a professional marketing infographic for a product.
+        prompt = `Create a ${qualityDesc} - a product infographic IMAGE with text overlays, icons, and visual elements.
 
 PRODUCT TITLE: "${title}"
 
-BACKGROUND STYLE: ${styleDesc}
+BACKGROUND: ${styleDesc}
+
+DESIGN REQUIREMENTS:
+- Text should be sharp, readable, and contrast well with the background
+- Include icons next to each feature
+- Professional marketing aesthetic
 
 `;
     }
 
+    // Add style reference instruction if provided
+    if (hasStyleRef) {
+        prompt += `STYLE REFERENCE: I am also providing a style reference image. Match its visual aesthetic, color treatment, typography style, and overall design language. The influence should be ${styleStrength}%.\n\n`;
+    }
+
     // Add features with emphasis info
-    prompt += `PRODUCT FEATURES (use EXACTLY this text - do not expand, rephrase, or add words):\n`;
+    prompt += `PRODUCT FEATURES:\nDisplay each feature with an icon. Use the EXACT text provided - do not expand, rephrase, or add words.\n\n`;
 
     if (primaryFeatures.length > 0) {
-        prompt += `PRIMARY FEATURES (larger, more prominent, with icon):\n`;
+        prompt += `PRIMARY FEATURES (display larger/more prominent):\n`;
         primaryFeatures.forEach(f => {
-            const iconHint = f.icon !== 'auto' && f.icon !== 'none' ? ` → use ${f.icon} icon` : ' → add appropriate icon';
+            const iconHint = f.icon !== 'auto' && f.icon !== 'none' ? ` [icon: ${f.icon}]` : '';
             prompt += `★ "${f.text}"${iconHint}\n`;
         });
-        prompt += `\nSECONDARY FEATURES (with icon):\n`;
+        prompt += `\nSECONDARY FEATURES:\n`;
     }
 
     characteristics.filter(c => !c.isPrimary).forEach(c => {
-        const iconHint = c.icon !== 'auto' && c.icon !== 'none' ? ` → use ${c.icon} icon` : ' → add appropriate icon';
+        const iconHint = c.icon !== 'auto' && c.icon !== 'none' ? ` [icon: ${c.icon}]` : '';
         prompt += `• "${c.text}"${iconHint}\n`;
     });
 
-    prompt += `\nIMPORTANT: Display each feature with an ICON next to it. Use the EXACT text in quotes above - do not modify, expand, or elaborate on it.\n`;
+    prompt += `\n`;
 
     prompt += `\nLANGUAGE: ${language}${state.language === 'ro' ? ' (use proper Romanian characters: ă, â, î, ș, ț)' : ''}\n`;
 
@@ -2061,7 +2079,7 @@ async function generateInfographic() {
             max_tokens: 4096
         };
 
-        const variationsCount = parseInt(elements.variations.value, 10) || 1;
+        const variationsCount = state.variations || 1;
 
         if (!elements.randomSeed.checked && elements.seedInput.value) {
             const seedValue = parseInt(elements.seedInput.value, 10);
@@ -3479,6 +3497,15 @@ function setupEventListeners() {
     elements.styleRadios.forEach(radio => {
         radio.addEventListener('change', () => {
             elements.infographicStyle.value = radio.value;
+        });
+    });
+
+    // Variations buttons
+    document.querySelectorAll('[data-option="variations"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-option="variations"]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.variations = parseInt(btn.dataset.value, 10) || 1;
         });
     });
 

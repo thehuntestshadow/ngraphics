@@ -26,8 +26,13 @@ The application consists of multiple pages, each with its own JS file, sharing c
 | Documentation | `docs.html`, `docs.css` | User documentation |
 
 ### Shared Resources
-- `styles.css` - Base styles, CSS variables, theming (Anthropic-inspired color palette), common components
+- `styles.css` - Base styles, CSS variables, theming, common components
 - `shared.js` - Shared utilities: API handling, history, favorites, UI helpers, upload handling, lightbox, keyboard shortcuts
+
+### Documentation Files
+- `DESIGN.md` - **Design system** (colors, spacing, components, patterns) - consult for UI/UX consistency
+- `PROMPTS.md` - **Prompt engineering patterns** - how to write effective AI image generation prompts
+- `ROADMAP.md` - **Feature ideas & plans** - future directions and parking lot for ideas
 
 ## API Integration
 
@@ -159,6 +164,10 @@ Generate AI model photos with products (person wearing/holding product).
 **Product Enhancement:**
 - Focus: Auto, Texture, Shine, Color Accuracy, Detail, In Context
 
+**Generation Settings:**
+- Seed control for reproducible generations
+- Negative prompts to specify what to avoid
+
 ### Collage Mode
 - Generate multi-angle product collages (2, 3, 4, or 6 angles)
 - Face toggle: Show model face or product-only focus
@@ -284,6 +293,7 @@ Common functionality used across all pages.
 
 ### Utility Objects
 
+- **SharedTheme**: `init()`, `apply(theme)`, `toggle()`, `setupToggle(buttonEl)` - Theme management across all pages
 - **SharedUI**: `showError()`, `showSuccess()`, `updateApiStatus()`, `showLoading()`, `hideLoading()`
 - **SharedUpload**: `setup(uploadArea, fileInput, callbacks)`, `handleFile(file, callbacks)`
 - **SharedLightbox**: `setup()`, `open()`, `close()`

@@ -27,6 +27,47 @@ const SharedAPI = {
 };
 
 // ============================================
+// THEME MANAGEMENT
+// ============================================
+const THEME_STORAGE = 'ngraphics_theme';
+
+const SharedTheme = {
+    current: 'dark',
+
+    init() {
+        const saved = localStorage.getItem(THEME_STORAGE);
+        if (saved) {
+            this.apply(saved);
+        } else {
+            // Check system preference
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            this.apply(prefersDark ? 'dark' : 'light');
+        }
+    },
+
+    apply(theme) {
+        this.current = theme;
+        if (theme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+        localStorage.setItem(THEME_STORAGE, theme);
+    },
+
+    toggle() {
+        const newTheme = this.current === 'dark' ? 'light' : 'dark';
+        this.apply(newTheme);
+    },
+
+    setupToggle(buttonEl) {
+        if (buttonEl) {
+            buttonEl.addEventListener('click', () => this.toggle());
+        }
+    }
+};
+
+// ============================================
 // API REQUEST HANDLING
 // ============================================
 const SharedRequest = {

@@ -93,6 +93,9 @@ function initElements() {
         collageFaceOption: document.getElementById('collageFaceOption'),
         aiModel: document.getElementById('aiModel'),
         negativePrompt: document.getElementById('negativePrompt'),
+        // Seed control
+        randomSeedCheck: document.getElementById('randomSeedCheck'),
+        seedInput: document.getElementById('seedInput'),
         // Quality enhancements
         depthOfField: document.getElementById('depthOfField'),
         colorGrading: document.getElementById('colorGrading'),
@@ -380,59 +383,63 @@ function generatePrompt() {
         bag: `carrying/holding the ${productDesc}`
     };
 
-    // Model description
-    let modelDesc = '';
-    if (state.gender !== 'any') {
-        modelDesc += state.gender + ' ';
-    }
-    modelDesc += 'model';
-
-    // Age
+    // Build model description with proper sentence flow
     const ageDesc = {
-        child: 'around 8-12 years old, young child',
-        teen: 'around 13-17 years old, teenager',
+        child: 'around 8-12 years old',
+        teen: 'around 13-17 years old',
         young: 'in their early 20s',
         adult: 'in their late 20s to early 30s',
         mature: 'in their 40s',
         senior: 'in their 50s or older'
     };
-    modelDesc += ` ${ageDesc[state.age] || ''}`;
 
-    // Ethnicity
-    if (state.ethnicity !== 'any') {
-        const ethnicityMap = {
-            caucasian: 'Caucasian',
-            african: 'African/Black',
-            asian: 'East Asian',
-            hispanic: 'Hispanic/Latino',
-            'middle-eastern': 'Middle Eastern',
-            'south-asian': 'South Asian',
-            mixed: 'mixed ethnicity'
-        };
-        modelDesc += `, ${ethnicityMap[state.ethnicity] || state.ethnicity}`;
-    }
+    const ethnicityMap = {
+        any: '',
+        caucasian: 'Caucasian',
+        african: 'Black/African',
+        asian: 'East Asian',
+        hispanic: 'Hispanic/Latino',
+        'middle-eastern': 'Middle Eastern',
+        'south-asian': 'South Asian',
+        mixed: 'mixed-ethnicity'
+    };
 
-    // Body type for clothing
-    if (state.productType === 'clothing' || state.productType === 'footwear') {
-        const bodyTypeMap = {
-            slim: 'slim/athletic build',
-            average: 'average build',
-            curvy: 'curvy/plus size',
-            muscular: 'muscular/fit build'
-        };
-        modelDesc += ` with ${bodyTypeMap[state.bodyType] || 'average build'}`;
-    }
+    const bodyTypeMap = {
+        slim: 'slim build',
+        average: 'average build',
+        curvy: 'curvy build',
+        muscular: 'athletic/muscular build'
+    };
 
-    // Hair
-    if (state.hair !== 'any') {
-        const hairMap = {
-            long: 'long hair',
-            short: 'short hair',
-            curly: 'curly hair',
-            blonde: 'blonde hair',
-            bald: 'bald/shaved head'
-        };
-        modelDesc += `, ${hairMap[state.hair] || state.hair}`;
+    const hairMap = {
+        any: '',
+        long: 'long hair',
+        short: 'short hair',
+        curly: 'curly hair',
+        blonde: 'blonde hair',
+        bald: 'bald/shaved head'
+    };
+
+    // Build description parts
+    const ethnicity = ethnicityMap[state.ethnicity] || '';
+    const gender = state.gender !== 'any' ? state.gender : '';
+    const age = ageDesc[state.age] || '';
+    const hair = hairMap[state.hair] || '';
+    const bodyType = (state.productType === 'clothing' || state.productType === 'footwear')
+        ? (bodyTypeMap[state.bodyType] || '')
+        : '';
+
+    // Construct flowing sentence
+    let modelDesc = 'a';
+    if (ethnicity) modelDesc += ` ${ethnicity}`;
+    if (gender) modelDesc += ` ${gender}`;
+    modelDesc += ' model';
+    if (age) modelDesc += ` ${age}`;
+
+    // Add physical attributes
+    const attributes = [bodyType, hair].filter(Boolean);
+    if (attributes.length > 0) {
+        modelDesc += ` with ${attributes.join(' and ')}`;
     }
 
     // Shot type descriptions
@@ -652,51 +659,56 @@ function generatePrompt() {
     const currentProductEnhancement = elements.productEnhancement?.value || 'auto';
 
     // Build quality enhancements section
-    let qualitySection = '';
+    let qualityItems = [];
 
     // Only include realism if not auto
     if (currentRealism !== 'auto' && realismDesc[currentRealism]) {
-        qualitySection += `\nREALISM: ${realismDesc[currentRealism]}`;
+        qualityItems.push(`REALISM: ${realismDesc[currentRealism]}`);
     }
 
     // Camera & Technical
     if (currentFocalLength !== 'auto' && focalLengthDesc[currentFocalLength]) {
-        qualitySection += `\nLENS: ${focalLengthDesc[currentFocalLength]}`;
+        qualityItems.push(`LENS: ${focalLengthDesc[currentFocalLength]}`);
     }
 
     if (currentDof !== 'auto' && dofDesc[currentDof]) {
-        qualitySection += `\nDEPTH OF FIELD: ${dofDesc[currentDof]}`;
+        qualityItems.push(`DEPTH OF FIELD: ${dofDesc[currentDof]}`);
     }
 
     if (currentFilmGrain !== 'none' && filmGrainDesc[currentFilmGrain]) {
-        qualitySection += `\nFILM GRAIN: ${filmGrainDesc[currentFilmGrain]}`;
+        qualityItems.push(`FILM GRAIN: ${filmGrainDesc[currentFilmGrain]}`);
     }
 
     if (currentContrast !== 'auto' && contrastDesc[currentContrast]) {
-        qualitySection += `\nCONTRAST: ${contrastDesc[currentContrast]}`;
+        qualityItems.push(`CONTRAST: ${contrastDesc[currentContrast]}`);
     }
 
     if (currentColorGrading !== 'auto' && colorGradingDesc[currentColorGrading]) {
-        qualitySection += `\nCOLOR GRADING: ${colorGradingDesc[currentColorGrading]}`;
+        qualityItems.push(`COLOR GRADING: ${colorGradingDesc[currentColorGrading]}`);
     }
 
     if (currentSkinRetouch && skinRetouchDesc[currentSkinRetouch]) {
-        qualitySection += `\nSKIN/RETOUCH: ${skinRetouchDesc[currentSkinRetouch]}`;
+        qualityItems.push(`SKIN/RETOUCH: ${skinRetouchDesc[currentSkinRetouch]}`);
     }
 
     if (currentComposition !== 'auto' && compositionDesc[currentComposition]) {
-        qualitySection += `\nCOMPOSITION: ${compositionDesc[currentComposition]}`;
+        qualityItems.push(`COMPOSITION: ${compositionDesc[currentComposition]}`);
     }
 
     // Product
     if (currentProductEnhancement === 'in-context') {
         const contextDesc = elements.contextDescription?.value?.trim();
         if (contextDesc) {
-            qualitySection += `\nPRODUCT CONTEXT: Show the product ${contextDesc}. Make it look natural and realistic in this context.`;
+            qualityItems.push(`PRODUCT CONTEXT: Show the product ${contextDesc}. Make it look natural and realistic in this context.`);
         }
     } else if (currentProductEnhancement !== 'auto' && productEnhancementDesc[currentProductEnhancement]) {
-        qualitySection += `\nPRODUCT FOCUS: ${productEnhancementDesc[currentProductEnhancement]}`;
+        qualityItems.push(`PRODUCT FOCUS: ${productEnhancementDesc[currentProductEnhancement]}`);
     }
+
+    // Format quality section with header if there are items
+    const qualitySection = qualityItems.length > 0
+        ? `\n\nQUALITY ENHANCEMENTS:\n${qualityItems.join('\n')}`
+        : '';
 
     // Check for collage mode
     const currentCollageMode = elements.collageMode?.value || 'off';
@@ -805,7 +817,12 @@ IMPORTANT INSTRUCTIONS:
     }
 
     if (state.uploadedImageBase64) {
-        prompt += `\n\nI am providing a reference image of the product. Please incorporate this exact product into the photo, keeping its design, colors, and details accurate.`;
+        prompt += `\n\nPRODUCT REFERENCE IMAGE:
+I am providing a reference image of the actual product. CRITICAL requirements:
+- The product must appear EXACTLY as shown in the reference image
+- Preserve exact colors, patterns, logos, labels, and all design details
+- Do NOT modify, reinterpret, or stylize the product in any way
+- The product should be the hero of the shot while matching the reference precisely`;
     }
 
     // Add negative prompt if provided
@@ -866,7 +883,12 @@ async function generateModelPhoto() {
         const variationsCount = state.variations;
 
         // Generate and store seed for this generation
-        const baseSeed = Math.floor(Math.random() * 999999999);
+        let baseSeed;
+        if (!elements.randomSeedCheck?.checked && elements.seedInput?.value) {
+            baseSeed = parseInt(elements.seedInput.value, 10);
+        } else {
+            baseSeed = Math.floor(Math.random() * 999999999);
+        }
         state.lastSeed = baseSeed;
 
         if (variationsCount === 1) {
@@ -1634,6 +1656,17 @@ function setupEventListeners() {
         contextInput.addEventListener('input', (e) => state.contextDescription = e.target.value);
     }
 
+    // Seed control
+    if (elements.randomSeedCheck) {
+        elements.randomSeedCheck.addEventListener('change', () => {
+            const isRandom = elements.randomSeedCheck.checked;
+            elements.seedInput.disabled = isRandom;
+            if (isRandom) {
+                elements.seedInput.value = '';
+            }
+        });
+    }
+
     // Advanced toggle
     elements.advancedToggle?.addEventListener('click', () => {
         elements.advancedSection.classList.toggle('open');
@@ -1729,6 +1762,8 @@ function init() {
 
     console.log('Model Studio: Initializing...');
     initElements();
+    SharedTheme.init();
+    SharedTheme.setupToggle(document.getElementById('themeToggle'));
     loadApiKey();
     setupImageUpload();
     setupEventListeners();

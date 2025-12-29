@@ -449,6 +449,34 @@
     margin-top: 2px;
 }
 
+/* Seed Controls */
+.seed-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.seed-controls .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.seed-controls input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+}
+
+.seed-controls .input-sm {
+    width: 100px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+}
+
 .quality-divider {
     display: flex;
     align-items: center;

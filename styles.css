@@ -17,6 +17,7 @@
     --border-subtle: rgba(255, 255, 255, 0.06);
     --border-default: rgba(255, 255, 255, 0.1);
     --border-strong: rgba(255, 255, 255, 0.15);
+    --border-highlight: rgba(255, 255, 255, 0.25);
 
     /* Text colors */
     --text-primary: #f0f0f2;
@@ -81,6 +82,7 @@
     --border-subtle: rgba(0, 0, 0, 0.06);
     --border-default: rgba(0, 0, 0, 0.1);
     --border-strong: rgba(0, 0, 0, 0.15);
+    --border-highlight: rgba(0, 0, 0, 0.25);
 
     /* Text colors */
     --text-primary: #1a1a1f;
@@ -122,6 +124,10 @@
     opacity: 0.015;
 }
 
+[data-theme="light"] .site-header {
+    background: rgba(255, 255, 255, 0.85);
+}
+
 /* ============================================
    RESET & BASE
    ============================================ */
@@ -144,6 +150,19 @@ body {
     line-height: 1.6;
     min-height: 100vh;
     overflow-x: hidden;
+}
+
+/* Shared keyboard shortcut key style */
+kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
 }
 
 ::selection {
@@ -620,7 +639,7 @@ body {
     width: 18px;
     height: 18px;
     border: 2px solid var(--border-strong);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     transition: all var(--duration-fast) var(--ease-out);
     position: relative;
 }
@@ -1191,7 +1210,7 @@ body {
 .style-preview {
     width: 40px;
     height: 28px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border-subtle);
 }
 
@@ -1399,7 +1418,7 @@ body {
     color: var(--accent);
     background: var(--accent-subtle);
     padding: 2px 8px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
 .range-slider {
@@ -1631,7 +1650,7 @@ body {
     gap: 6px;
     padding: 4px 8px 4px 4px;
     background: var(--bg-hover);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     font-size: 0.75rem;
     font-family: var(--font-mono);
     color: var(--text-secondary);
@@ -1686,12 +1705,12 @@ body {
 }
 
 .color-input-native::-webkit-color-swatch {
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     border: none;
 }
 
 .color-input-native::-moz-color-swatch {
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     border: none;
 }
 
@@ -1786,6 +1805,35 @@ body {
 /* ============================================
    BUTTONS
    ============================================ */
+
+/* Global focus states for accessibility */
+.btn-icon:focus-visible,
+.btn-accent:focus-visible,
+.btn-secondary-sm:focus-visible,
+.btn-generate:focus-visible,
+.btn-download:focus-visible,
+.btn-secondary:focus-visible,
+.btn-adjust:focus-visible,
+.btn-analyze:focus-visible,
+.btn-complementary:focus-visible,
+.btn-template:focus-visible,
+.btn-copy:focus-visible,
+.btn-copy-sm:focus-visible,
+.btn-lightbox:focus-visible,
+.btn-add:focus-visible,
+.btn-favorite:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--accent);
+}
+
+/* Generic disabled state */
+button:disabled,
+.btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 .btn-icon {
     display: flex;
     align-items: center;
@@ -1928,11 +1976,6 @@ body {
 }
 
 .shortcut-hint kbd {
-    padding: 2px 6px;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-default);
-    border-radius: 4px;
-    font-family: var(--font-mono);
     font-size: 0.65rem;
 }
 
@@ -2176,7 +2219,7 @@ body {
     font-weight: 700;
     background: rgba(0, 0, 0, 0.7);
     color: white;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
 .result-grid-item.selected .result-grid-item-badge {
@@ -2206,7 +2249,7 @@ body {
     color: var(--accent);
     background: var(--accent-subtle);
     padding: 4px 10px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
 .btn-copy {
@@ -2309,6 +2352,36 @@ body {
 .btn-secondary:hover {
     border-color: var(--accent);
     color: var(--accent);
+}
+
+/* Option Buttons (toggle group for small sets of options) */
+.option-buttons {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.option-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.option-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+}
+
+.option-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-deep);
 }
 
 /* Feedback Section */
@@ -2447,7 +2520,7 @@ body {
     max-width: 80px;
     max-height: 40px;
     margin-top: 10px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
 .watermark-position {
@@ -2629,25 +2702,29 @@ body {
     background: var(--error);
 }
 
-.history-empty {
+/* Shared empty state base for history and favorites */
+.history-empty,
+.favorites-empty {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 40px;
+    padding: 32px;
     text-align: center;
     color: var(--text-muted);
 }
 
-.history-empty svg {
-    width: 48px;
-    height: 48px;
-    margin-bottom: 12px;
+.history-empty svg,
+.favorites-empty svg {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 10px;
     opacity: 0.5;
 }
 
-.history-empty p {
-    font-size: 0.9rem;
+.history-empty p,
+.favorites-empty p {
+    font-size: 0.85rem;
 }
 
 /* ============================================
@@ -2858,26 +2935,10 @@ body {
     object-fit: cover;
 }
 
-.favorites-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 32px;
-    text-align: center;
-    color: var(--text-muted);
-}
-
+/* Favorites-specific: warning color for star icon */
 .favorites-empty svg {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 10px;
-    opacity: 0.4;
     color: var(--warning);
-}
-
-.favorites-empty p {
-    font-size: 0.85rem;
+    opacity: 0.4;
 }
 
 /* Favorite Button on Result Image */
@@ -3004,7 +3065,7 @@ body {
     color: var(--warning);
     background: rgba(255, 184, 48, 0.1);
     padding: 2px 8px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
 .btn-copy-seed {
@@ -3014,7 +3075,7 @@ body {
     color: var(--text-muted);
     background: none;
     border: 1px solid var(--border-default);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     padding: 2px 6px;
     cursor: pointer;
     transition: all var(--duration-fast);
@@ -3315,15 +3376,7 @@ body {
     align-items: center;
     gap: 6px;
 }
-
-.footer-shortcut kbd {
-    padding: 2px 6px;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-default);
-    border-radius: 4px;
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-}
+/* .footer-shortcut kbd inherits from base kbd styles */
 
 /* ============================================
    PRODUCT COPY SECTION
@@ -4456,6 +4509,79 @@ body {
     }
 }
 
+/* Mobile breakpoint */
+@media (max-width: 480px) {
+    .header-content {
+        padding: 10px 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .header-controls {
+        gap: 8px;
+    }
+
+    .docs-link span {
+        display: none;
+    }
+
+    .logo-mark {
+        width: 28px;
+        height: 28px;
+    }
+
+    .logo-mark svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    .app-main {
+        padding: 12px;
+    }
+
+    .panel-header {
+        padding: 16px;
+    }
+
+    .panel-body {
+        padding: 16px;
+    }
+
+    .style-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .btn-generate {
+        padding: 14px 20px;
+        font-size: 0.9rem;
+    }
+
+    .modal-content {
+        width: 95%;
+        max-height: 90vh;
+        padding: 16px;
+    }
+
+    .lightbox-content {
+        padding: 12px;
+    }
+
+    .history-grid,
+    .favorites-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+    }
+
+    .toast {
+        width: 100%;
+    }
+}
+
 /* Animation for page load */
 @keyframes fadeInUp {
     from {
@@ -4718,16 +4844,8 @@ body {
 }
 
 .keyboard-hint kbd {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     min-width: 20px;
-    padding: 2px 6px;
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
     background: var(--bg-hover);
-    border: 1px solid var(--border-default);
-    border-radius: 4px;
     color: var(--text-secondary);
 }
 
