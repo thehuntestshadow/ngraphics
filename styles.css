@@ -916,6 +916,48 @@ kbd {
     color: var(--error);
 }
 
+/* Benefits List */
+.benefits-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.benefit-item .input-field {
+    flex: 1;
+}
+
+.benefit-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border-default);
+    background: var(--bg-surface);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-out);
+    flex-shrink: 0;
+}
+
+.benefit-remove svg {
+    width: 16px;
+    height: 16px;
+}
+
+.benefit-remove:hover {
+    border-color: var(--error);
+    color: var(--error);
+}
+
 /* Add Button */
 .btn-add {
     display: flex;

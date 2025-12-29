@@ -224,6 +224,8 @@ function initElements() {
         productTitle: document.getElementById('productTitle'),
         characteristicsList: document.getElementById('characteristicsList'),
         addCharBtn: document.getElementById('addCharBtn'),
+        benefitsList: document.getElementById('benefitsList'),
+        addBenefitBtn: document.getElementById('addBenefitBtn'),
         infographicStyle: document.getElementById('infographicStyle'),
         styleRadios: document.querySelectorAll('input[name="style"]'),
         generateBtn: document.getElementById('generateBtn'),
@@ -930,6 +932,43 @@ function setupCharacteristicsHandlers() {
     initDragAndDrop();
 }
 
+// ============================================
+// BENEFITS HANDLING
+// ============================================
+function setupBenefitsHandlers() {
+    elements.addBenefitBtn.addEventListener('click', () => {
+        addBenefitItem();
+    });
+
+    // Attach handlers to initial remove buttons
+    document.querySelectorAll('.benefit-remove').forEach(attachBenefitRemoveHandler);
+}
+
+function addBenefitItem() {
+    const div = document.createElement('div');
+    div.className = 'benefit-item';
+    div.innerHTML = `
+        <input type="text" class="input-field" placeholder="e.g., Crystal-clear sound quality">
+        <button type="button" class="benefit-remove" title="Remove">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+    `;
+    elements.benefitsList.appendChild(div);
+    attachBenefitRemoveHandler(div.querySelector('.benefit-remove'));
+}
+
+function attachBenefitRemoveHandler(btn) {
+    btn.addEventListener('click', () => {
+        const items = elements.benefitsList.querySelectorAll('.benefit-item');
+        if (items.length > 1) {
+            btn.closest('.benefit-item').remove();
+        }
+    });
+}
+
 function addCharacteristicItem() {
     const t = translations[state.language];
     const div = document.createElement('div');
@@ -1365,6 +1404,17 @@ function captureCurrentSettings() {
         }
     });
 
+    // Capture benefits
+    const benefitItems = elements.benefitsList.querySelectorAll('.benefit-item');
+    const benefits = [];
+    benefitItems.forEach(item => {
+        const input = item.querySelector('.input-field');
+        const text = input ? input.value.trim() : '';
+        if (text) {
+            benefits.push(text);
+        }
+    });
+
     return {
         model: elements.aiModel?.value,
         style: elements.infographicStyle?.value,
@@ -1383,7 +1433,8 @@ function captureCurrentSettings() {
         negativePrompt: elements.negativePrompt?.value || '',
         variations: state.variations,
         styleStrength: elements.styleStrength?.value,
-        characteristics
+        characteristics,
+        benefits
     };
 }
 
@@ -1643,6 +1694,22 @@ function loadFavorite() {
         }
     }
 
+    // Restore characteristics
+    if (settings.characteristics && settings.characteristics.length > 0) {
+        elements.characteristicsList.innerHTML = '';
+        settings.characteristics.forEach(char => {
+            addCharacteristic(char.text, char.starred);
+        });
+    }
+
+    // Restore benefits
+    if (settings.benefits && settings.benefits.length > 0) {
+        elements.benefitsList.innerHTML = '';
+        settings.benefits.forEach(benefit => {
+            addBenefit(benefit);
+        });
+    }
+
     closeFavoritesModal();
     showSuccess('Style loaded! Upload a product image to generate in this style.');
 
@@ -1898,6 +1965,26 @@ DESIGN REQUIREMENTS:
     });
 
     prompt += `\n`;
+
+    // Get benefits
+    const benefitItems = elements.benefitsList.querySelectorAll('.benefit-item');
+    const benefits = [];
+    benefitItems.forEach(item => {
+        const input = item.querySelector('.input-field');
+        const text = input ? input.value.trim() : '';
+        if (text) {
+            benefits.push(text);
+        }
+    });
+
+    // Add benefits to prompt if any
+    if (benefits.length > 0) {
+        prompt += `PRODUCT BENEFITS (customer value propositions - display these separately from features):\n`;
+        benefits.forEach(b => {
+            prompt += `✓ "${b}"\n`;
+        });
+        prompt += `\n`;
+    }
 
     prompt += `\nLANGUAGE: ${language}${state.language === 'ro' ? ' (use proper Romanian characters: ă, â, î, ș, ț)' : ''}\n`;
 
@@ -3061,16 +3148,24 @@ Return ONLY valid JSON (no markdown, no code blocks):
   "productTitle": "Concise product name (2-5 words)",
   "category": "Product category",
   "features": [
-    "Key feature 1 (brief, 3-6 words)",
-    "Key feature 2 (brief, 3-6 words)",
-    "Key feature 3 (brief, 3-6 words)",
-    "Key feature 4 (brief, 3-6 words)",
-    "Key feature 5 (brief, 3-6 words)"
+    "Technical feature 1 (specs, materials, tech - 3-6 words)",
+    "Technical feature 2 (specs, materials, tech - 3-6 words)",
+    "Technical feature 3 (specs, materials, tech - 3-6 words)",
+    "Technical feature 4 (specs, materials, tech - 3-6 words)",
+    "Technical feature 5 (specs, materials, tech - 3-6 words)"
+  ],
+  "benefits": [
+    "User benefit 1 (why buy, value proposition - 3-6 words)",
+    "User benefit 2 (why buy, value proposition - 3-6 words)",
+    "User benefit 3 (why buy, value proposition - 3-6 words)"
   ],
   "primaryFeature": 0,
   "suggestedStyle": "auto|rich|callout|light|dark|gradient",
   "dominantColors": ["#hex1", "#hex2"]
-}`
+}
+
+Features = technical specs (e.g., "Bluetooth 5.3", "40mm drivers")
+Benefits = customer value (e.g., "Crystal-clear sound", "All-day comfort")`
                             }
                         ]
                     }
@@ -3110,13 +3205,23 @@ Return ONLY valid JSON (no markdown, no code blocks):
                 });
             }
 
+            // Fill in benefits
+            if (analysis.benefits && Array.isArray(analysis.benefits)) {
+                // Clear existing benefits
+                elements.benefitsList.innerHTML = '';
+
+                analysis.benefits.forEach(benefit => {
+                    addBenefit(benefit);
+                });
+            }
+
             // Apply suggested style
             if (analysis.suggestedStyle) {
                 const styleRadio = document.querySelector(`input[name="style"][value="${analysis.suggestedStyle}"]`);
                 if (styleRadio) styleRadio.checked = true;
             }
 
-            showSuccess('Product analyzed! Title and features extracted.');
+            showSuccess('Product analyzed! Title, features, and benefits extracted.');
         } catch (parseError) {
             console.error('Failed to parse analysis:', parseError, content);
             showError('Failed to parse AI response');
@@ -3184,6 +3289,32 @@ function addCharacteristic(text = '', isPrimary = false) {
     if (isPrimary) {
         state.starredCharacteristics.add(charIndex);
     }
+}
+
+function addBenefit(text = '') {
+    const benefitItem = document.createElement('div');
+    benefitItem.className = 'benefit-item';
+
+    benefitItem.innerHTML = `
+        <input type="text" class="input-field" placeholder="Customer benefit..." value="${text}">
+        <button type="button" class="benefit-remove" title="Remove">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+    `;
+
+    // Remove button
+    const removeBtn = benefitItem.querySelector('.benefit-remove');
+    removeBtn.addEventListener('click', () => {
+        const items = elements.benefitsList.querySelectorAll('.benefit-item');
+        if (items.length > 1) {
+            benefitItem.remove();
+        }
+    });
+
+    elements.benefitsList.appendChild(benefitItem);
 }
 
 // ============================================
@@ -3944,6 +4075,7 @@ function init() {
     setupAdvancedOptionsHandlers();
     setupColorPickerHandlers();
     setupCharacteristicsHandlers();
+    setupBenefitsHandlers();
     setupEventListeners();
     updateLanguage('ro');
     loadHistory();
