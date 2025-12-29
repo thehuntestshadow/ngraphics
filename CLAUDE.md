@@ -22,6 +22,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 |------|-------|---------|
 | Infographics | `index.html`, `script.js` | Generate product infographics with features/callouts |
 | Model Studio | `models.html`, `models.js`, `models.css` | Generate AI model photos wearing/holding products |
+| Bundle Studio | `bundle.html`, `bundle.js`, `bundle.css` | Create bundle/kit images from multiple products |
 | Documentation | `docs.html`, `docs.css` | User documentation |
 
 ### Shared Resources
@@ -169,6 +170,64 @@ Generate AI model photos with products (person wearing/holding product).
 
 ---
 
+## Bundle Studio (`bundle.html` + `bundle.js` + `bundle.css`)
+
+Create professional bundle/kit images from multiple individual product photos.
+
+### Structure
+- `state` object: Products array, layout, presentation, background, visual style settings
+- `elements` object: Cached DOM references
+- Description maps: Layout, container, surface, style, and lighting descriptions for prompts
+
+### Key Functions
+- `generatePrompt()`: Builds prompt from all products and settings
+- `generateBundle()`: Makes API call with all product images
+- `generateWithAdjustment()`: Regenerate with user feedback/modifications
+- `analyzeProduct()`: Auto-detect product name and description
+- `addProduct()` / `removeProduct()`: Manage product slots
+- `updateLoadingStatus()`: Dynamic loading messages during generation
+
+### Features
+- Upload 2-6 product images with auto-analysis
+- Edit product details manually if needed
+- Drag to reorder (affects hero layout, numbering)
+- Feedback-based adjustment: Regenerate with text feedback to refine results
+- Keyboard shortcuts: Ctrl+Enter to generate, Ctrl+D to download
+- Dynamic loading status messages during generation
+- History and Favorites in right panel (matching other pages)
+- API settings in collapsible section at bottom of form
+
+### Layout Styles
+- **Flat Lay**: Top-down arrangement, artfully scattered
+- **Grouped**: Products clustered together naturally
+- **Grid**: Clean rows/columns, equal spacing
+- **Hero**: One main product large, others smaller around it
+- **Unboxing**: Products in/around an open container
+- **Numbered**: Products with sequence numbers (1, 2, 3...)
+
+### Presentation Options
+- **Container**: None, Gift Box, Shipping Box, Pouch/Bag, Tray, Basket, Custom
+- **Background**: White/Clean, Soft Gradient, Surface/Texture, Lifestyle Scene
+- **Surfaces**: White Marble, Light/Dark Wood, Linen, Concrete, Terrazzo, Custom
+
+### Advanced Options
+- Bundle Title: Optional text displayed on image
+- Show Labels: Product names on image
+- Show Numbering: Sequence numbers
+- Visual Style: Commercial, Editorial, Lifestyle, Minimal, Luxury
+- Lighting: Bright, Soft, Natural, Dramatic, Warm
+- Aspect Ratio: 1:1, 4:5, 3:2, 16:9, 9:16
+- Variations: 1, 2, or 4 images
+- Seed control for reproducible results
+- Negative prompts
+
+### Favorites & History
+- Save bundle with all settings, product references, and seed
+- Load favorite to restore settings, upload new products, regenerate
+- History and favorites displayed in right panel with grid view
+
+---
+
 ## Common Patterns
 
 ### State Management
@@ -187,12 +246,12 @@ Generation history stored in localStorage with configurable limits, supporting v
 `showError()` function displays user-friendly error messages. API errors are caught and displayed appropriately.
 
 ### Favorites System
-Both pages support saving generations as favorites for style reuse:
+All pages support saving generations as favorites for style reuse:
 - Save generated image(s) with all settings, seed, and reference images
 - Supports multiple variants: when generating 2-4 variations, all are saved together
 - Load favorite to restore settings, then upload new product to regenerate in same style
 - Storage: Thumbnails in localStorage, full images in IndexedDB (hybrid approach)
-- Storage keys: `ngraphics_favorites` (Infographics), `model_studio_favorites` (Model Studio)
+- Storage keys: `ngraphics_favorites` (Infographics), `model_studio_favorites` (Model Studio), `bundle_studio_favorites` (Bundle Studio)
 
 ---
 

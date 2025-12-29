@@ -269,6 +269,16 @@ class SharedHistory {
     findById(id) {
         return this.items.find(item => item.id === id);
     }
+
+    remove(id) {
+        const index = this.items.findIndex(item => item.id === id);
+        if (index !== -1) {
+            this.items.splice(index, 1);
+            this.save();
+            return true;
+        }
+        return false;
+    }
 }
 
 // ============================================
