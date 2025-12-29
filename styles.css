@@ -239,10 +239,40 @@ kbd {
     justify-content: space-between;
 }
 
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity var(--duration-fast);
+}
+
+.logo-link:hover {
+    opacity: 0.8;
+}
+
+.logo-link .logo-mark {
+    color: var(--accent);
+}
+
+.logo-link .logo-title {
+    color: var(--text-primary);
+}
+
+.logo-link .logo-subtitle {
+    color: var(--text-muted);
+}
+
 .logo-group {
     display: flex;
     align-items: center;
     gap: 14px;
+}
+
+/* When logo-group contains only a logo-link, it's just a wrapper */
+.logo-group:has(.logo-link) {
+    gap: 0;
 }
 
 .logo-mark {
