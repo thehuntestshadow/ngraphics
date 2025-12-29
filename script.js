@@ -1226,57 +1226,28 @@ function resetToPlaceholder() {
 }
 
 // ============================================
-// HISTORY MANAGEMENT
+// HISTORY MANAGEMENT (uses SharedHistory with IndexedDB)
 // ============================================
-const HISTORY_KEY = 'infographic_history';
-const MAX_HISTORY_ITEMS = 20;
+const history = new SharedHistory('infographic_history', 20);
 
 function loadHistory() {
-    try {
-        const saved = localStorage.getItem(HISTORY_KEY);
-        if (saved) {
-            state.history = JSON.parse(saved);
-        }
-    } catch (e) {
-        console.error('Failed to load history:', e);
-        state.history = [];
-    }
+    history.setImageStore(imageStore);
+    state.history = history.load();
     renderHistory();
 }
 
-function saveHistory() {
-    try {
-        localStorage.setItem(HISTORY_KEY, JSON.stringify(state.history));
-    } catch (e) {
-        console.error('Failed to save history:', e);
-        if (e.name === 'QuotaExceededError') {
-            state.history = state.history.slice(0, Math.floor(state.history.length / 2));
-            saveHistory();
-        }
-    }
-}
-
-function addToHistory(imageUrl, title) {
-    const item = {
-        id: Date.now().toString(),
-        imageUrl: imageUrl,
+async function addToHistory(imageUrl, title) {
+    await history.add(imageUrl, {
         title: title || 'Untitled',
-        date: new Date().toISOString()
-    };
-
-    state.history.unshift(item);
-
-    if (state.history.length > MAX_HISTORY_ITEMS) {
-        state.history = state.history.slice(0, MAX_HISTORY_ITEMS);
-    }
-
-    saveHistory();
+        imageUrls: [imageUrl]
+    });
+    state.history = history.getAll();
     renderHistory();
 }
 
-function deleteFromHistory(id) {
-    state.history = state.history.filter(item => item.id !== id);
-    saveHistory();
+async function deleteFromHistory(id) {
+    await history.remove(parseInt(id, 10) || id);
+    state.history = history.getAll();
     renderHistory();
 }
 
@@ -1287,8 +1258,8 @@ async function clearHistory() {
         icon: 'warning'
     });
     if (confirmed) {
+        await history.clear();
         state.history = [];
-        saveHistory();
         renderHistory();
         SharedUI.toast('History cleared', 'success');
     }
@@ -1311,12 +1282,14 @@ function renderHistory() {
     empty.style.display = 'none';
 
     grid.innerHTML = state.history.map(item => {
-        const date = new Date(item.date);
+        const date = new Date(item.timestamp || item.date);
         const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        // Use thumbnail for grid display
+        const imgSrc = item.thumbnail || item.imageUrl;
 
         return `
             <div class="history-item" data-id="${item.id}">
-                <img src="${item.imageUrl}" alt="${item.title}" loading="lazy">
+                <img src="${imgSrc}" alt="${item.title || 'History item'}" loading="lazy">
                 <div class="history-item-overlay">
                     <div class="history-item-date">${dateStr}</div>
                 </div>
@@ -1341,13 +1314,18 @@ function renderHistory() {
     });
 }
 
-function openHistoryModal(id) {
-    const item = state.history.find(h => h.id === id);
+async function openHistoryModal(id) {
+    const numId = parseInt(id, 10) || id;
+    const item = history.findById(numId);
     if (!item) return;
 
-    state.selectedHistoryItem = item;
-    elements.modalTitle.textContent = item.title;
-    elements.modalImage.src = item.imageUrl;
+    // Fetch full image from IndexedDB
+    const images = await history.getImages(numId);
+    const fullImageUrl = images?.imageUrl || item.thumbnail || item.imageUrl;
+
+    state.selectedHistoryItem = { ...item, imageUrl: fullImageUrl };
+    elements.modalTitle.textContent = item.title || 'Infographic';
+    elements.modalImage.src = fullImageUrl;
     elements.historyModal.classList.add('visible');
 }
 
@@ -1361,7 +1339,7 @@ function downloadFromModal() {
 
     const link = document.createElement('a');
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-    const title = state.selectedHistoryItem.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30);
+    const title = (state.selectedHistoryItem.title || 'infographic').replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30);
     link.download = `infographic_${title}_${timestamp}.png`;
     link.href = state.selectedHistoryItem.imageUrl;
     link.click();

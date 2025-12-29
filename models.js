@@ -1043,17 +1043,20 @@ Please regenerate the image with these specific changes applied.`;
 }
 
 // ============================================
-// HISTORY MANAGEMENT (uses SharedHistory)
+// HISTORY MANAGEMENT (uses SharedHistory with IndexedDB)
 // ============================================
 const history = new SharedHistory('model_studio_history', 20);
 
 function loadHistory() {
+    history.setImageStore(imageStore);
     state.history = history.load();
     renderHistory();
 }
 
-function addToHistory(imageUrl) {
-    history.add(imageUrl);
+async function addToHistory(imageUrl) {
+    await history.add(imageUrl, {
+        imageUrls: [imageUrl]
+    });
     state.history = history.getAll();
     renderHistory();
 }
@@ -1070,18 +1073,25 @@ function renderHistory() {
     elements.historyGrid.style.display = 'grid';
     elements.historyEmpty.style.display = 'none';
 
-    elements.historyGrid.innerHTML = history.getAll().map(item => `
-        <div class="history-item" data-id="${item.id}">
-            <img src="${item.imageUrl}" alt="History item">
-        </div>
-    `).join('');
+    elements.historyGrid.innerHTML = history.getAll().map(item => {
+        // Use thumbnail for grid display
+        const imgSrc = item.thumbnail || item.imageUrl;
+        return `
+            <div class="history-item" data-id="${item.id}">
+                <img src="${imgSrc}" alt="History item">
+            </div>
+        `;
+    }).join('');
 
     elements.historyGrid.querySelectorAll('.history-item').forEach(item => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', async () => {
             const id = parseInt(item.dataset.id, 10);
             const historyItem = history.findById(id);
             if (historyItem) {
-                openLightbox(historyItem.imageUrl);
+                // Fetch full image from IndexedDB
+                const images = await history.getImages(id);
+                const fullImageUrl = images?.imageUrl || historyItem.thumbnail || historyItem.imageUrl;
+                openLightbox(fullImageUrl);
             }
         });
     });
@@ -1094,7 +1104,7 @@ async function clearHistory() {
         icon: 'warning'
     });
     if (confirmed) {
-        history.clear();
+        await history.clear();
         state.history = [];
         renderHistory();
         SharedUI.toast('History cleared', 'success');

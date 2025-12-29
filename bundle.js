@@ -805,13 +805,14 @@ function showMultipleResults(imageUrls) {
 }
 
 // ============================================
-// HISTORY
+// HISTORY (uses IndexedDB for images)
 // ============================================
-function addToHistory(imageUrl) {
-    history.add(imageUrl, {
+async function addToHistory(imageUrl) {
+    await history.add(imageUrl, {
         seed: state.lastSeed,
         layout: state.layout,
-        productCount: state.products.length
+        productCount: state.products.length,
+        imageUrls: [imageUrl]
     });
     renderHistory();
 }
@@ -829,18 +830,25 @@ function renderHistory() {
     elements.historyGrid.style.display = 'grid';
     elements.historyEmpty.style.display = 'none';
 
-    elements.historyGrid.innerHTML = history.getAll().map(item => `
-        <div class="history-item" data-id="${item.id}">
-            <img src="${item.imageUrl}" alt="Generated bundle" loading="lazy">
-        </div>
-    `).join('');
+    elements.historyGrid.innerHTML = history.getAll().map(item => {
+        // Use thumbnail for grid display
+        const imgSrc = item.thumbnail || item.imageUrl;
+        return `
+            <div class="history-item" data-id="${item.id}">
+                <img src="${imgSrc}" alt="Generated bundle" loading="lazy">
+            </div>
+        `;
+    }).join('');
 
     elements.historyGrid.querySelectorAll('.history-item').forEach(item => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', async () => {
             const id = parseInt(item.dataset.id, 10);
             const historyItem = history.findById(id);
             if (historyItem) {
-                SharedLightbox.open(elements.lightbox, elements.lightboxImage, historyItem.imageUrl);
+                // Fetch full image from IndexedDB
+                const images = await history.getImages(id);
+                const fullImageUrl = images?.imageUrl || historyItem.thumbnail || historyItem.imageUrl;
+                SharedLightbox.open(elements.lightbox, elements.lightboxImage, fullImageUrl);
             }
         });
     });
@@ -1302,10 +1310,17 @@ function setupEventListeners() {
     });
 
     // History
-    elements.clearHistoryBtn.addEventListener('click', () => {
-        history.clear();
-        renderHistory();
-        showSuccess('History cleared');
+    elements.clearHistoryBtn.addEventListener('click', async () => {
+        const confirmed = await SharedUI.confirm('Are you sure you want to clear all history?', {
+            title: 'Clear History',
+            confirmText: 'Clear All',
+            icon: 'warning'
+        });
+        if (confirmed) {
+            await history.clear();
+            renderHistory();
+            showSuccess('History cleared');
+        }
     });
 
     // Favorites
@@ -1365,6 +1380,7 @@ function init() {
     updateGenerateButton();
 
     // Load history and favorites
+    history.setImageStore(imageStore);
     history.load();
     renderHistory();
     renderFavorites();

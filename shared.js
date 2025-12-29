@@ -246,13 +246,19 @@ const SharedRequest = {
 };
 
 // ============================================
-// HISTORY MANAGEMENT
+// HISTORY MANAGEMENT (IndexedDB for images)
 // ============================================
 class SharedHistory {
     constructor(storageKey, maxItems = 20) {
         this.storageKey = storageKey;
         this.maxItems = maxItems;
         this.items = [];
+        this.imageStore = null; // Will be set after ImageStore is created
+    }
+
+    // Set the image store (called after imageStore is available)
+    setImageStore(store) {
+        this.imageStore = store;
     }
 
     load() {
@@ -276,17 +282,52 @@ class SharedHistory {
         }
     }
 
-    add(imageUrl, metadata = {}) {
+    async add(imageUrl, metadata = {}) {
+        const id = Date.now();
+
+        // Support multiple images (variants)
+        const imageUrls = metadata.imageUrls || (imageUrl ? [imageUrl] : []);
+        const primaryImage = imageUrls[0] || imageUrl;
+
+        // Store images in IndexedDB if available
+        if (this.imageStore) {
+            const images = {
+                imageUrl: primaryImage,
+                imageUrls: imageUrls,
+                productImageBase64: metadata.productImageBase64 || null
+            };
+            try {
+                await this.imageStore.save(`history_${id}`, images);
+            } catch (error) {
+                console.error('Failed to save history images to IndexedDB:', error);
+            }
+        }
+
+        // Create thumbnail for grid display
+        const thumbnail = await this._createThumbnail(primaryImage);
+
         const item = {
-            id: Date.now(),
-            imageUrl,
+            id,
             timestamp: new Date().toISOString(),
-            ...metadata
+            thumbnail, // Small thumbnail for display
+            variantCount: imageUrls.length,
+            // Store metadata but not full images
+            title: metadata.title || '',
+            prompt: metadata.prompt || '',
+            seed: metadata.seed || null,
+            settings: metadata.settings || {}
         };
 
         this.items.unshift(item);
 
         if (this.items.length > this.maxItems) {
+            // Remove images from IndexedDB for items being removed
+            const removedItems = this.items.slice(this.maxItems);
+            for (const removed of removedItems) {
+                if (this.imageStore) {
+                    this.imageStore.delete(`history_${removed.id}`).catch(() => {});
+                }
+            }
             this.items = this.items.slice(0, this.maxItems);
         }
 
@@ -294,7 +335,45 @@ class SharedHistory {
         return item;
     }
 
-    clear() {
+    async _createThumbnail(imageUrl, maxSize = 150) {
+        if (!imageUrl) return null;
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ratio = Math.min(maxSize / img.width, maxSize / img.height);
+                canvas.width = img.width * ratio;
+                canvas.height = img.height * ratio;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL('image/jpeg', 0.7));
+            };
+            img.onerror = () => resolve(null);
+            img.src = imageUrl;
+        });
+    }
+
+    async getImages(id) {
+        if (!this.imageStore) return null;
+        try {
+            return await this.imageStore.get(`history_${id}`);
+        } catch (error) {
+            console.error('Failed to load history images:', error);
+            return null;
+        }
+    }
+
+    async clear() {
+        // Delete all images from IndexedDB
+        if (this.imageStore) {
+            for (const item of this.items) {
+                try {
+                    await this.imageStore.delete(`history_${item.id}`);
+                } catch (error) {
+                    // Continue even if delete fails
+                }
+            }
+        }
         this.items = [];
         this.save();
     }
@@ -311,11 +390,19 @@ class SharedHistory {
         return this.items.find(item => item.id === id);
     }
 
-    remove(id) {
+    async remove(id) {
         const index = this.items.findIndex(item => item.id === id);
         if (index !== -1) {
             this.items.splice(index, 1);
             this.save();
+            // Remove images from IndexedDB
+            if (this.imageStore) {
+                try {
+                    await this.imageStore.delete(`history_${id}`);
+                } catch (error) {
+                    console.error('Failed to delete history images:', error);
+                }
+            }
             return true;
         }
         return false;
