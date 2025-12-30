@@ -4,7 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-NGRAPHICS - AI Product Graphics Studio. A web application suite for creating marketing materials using the OpenRouter API with various AI image generation models (Gemini, GPT, Flux, Recraft).
+NGRAPHICS - AI E-commerce Toolkit. A collection of web-based tools that e-commerce brands need and use every day. Uses the OpenRouter API with various AI models (Gemini, GPT, Flux, Recraft) for image generation and text content.
+
+**What we build:**
+- **Visual content tools** - Product photography, infographics, lifestyle shots, model photos
+- **Marketing graphics** - Comparisons, size guides, packaging mockups
+- **Content writing** - Product descriptions, FAQs, SEO copy
+- **Utility tools** - Analyzers, generators, exporters
+
+**Guiding principles:**
+- Each tool solves one specific problem well
+- No accounts, no subscriptions - works locally in browser
+- AI-powered but user-controlled
+- Fast iteration: upload → configure → generate → download
 
 ## Development
 
@@ -26,6 +38,10 @@ The application consists of multiple pages, each with its own JS file, sharing c
 | Lifestyle Studio | `lifestyle.html`, `lifestyle.js`, `lifestyle.css` | Product photography in lifestyle environments (no overlays) |
 | Copywriter | `copywriter.html`, `copywriter.js`, `copywriter.css` | AI-powered marketing copy generator from product images |
 | Packaging Mockup | `packaging.html`, `packaging.js`, `packaging.css` | Product packaging visualization (boxes, bottles, bags, etc.) |
+| Comparison | `comparison.html`, `comparison.js`, `comparison.css` | Side-by-side and before/after product comparisons |
+| Size Visualizer | `size-visualizer.html`, `size-visualizer.js`, `size-visualizer.css` | Product scale visualization with reference objects |
+| FAQ Generator | `faq-generator.html`, `faq-generator.js`, `faq-generator.css` | Generate product Q&As with text and image output |
+| Background Studio | `background.html`, `background.js`, `background.css` | Remove and replace product backgrounds |
 | Dashboard | `dashboard.html`, `dashboard.js`, `dashboard.css` | Analytics, storage management, quick access to recent work |
 | Documentation | `docs.html`, `docs.css` | User documentation |
 
@@ -34,20 +50,23 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `core.js` - Core infrastructure: Reactive State, Event Bus, Image Compression, Virtual Scrolling, Lazy Loading
 - `shared.js` - Shared utilities: API handling, history, favorites, UI helpers, upload handling, lightbox, keyboard shortcuts
 - `api.js` - Unified API client with retry logic, rate limiting, response normalization
-- `components.js` - Reusable Web Components and UI elements (see Components section below)
+- `components.js` - Reusable Web Components and UI elements
 - `workers.js` - Web Worker and Service Worker managers
 - `image-worker.js` - Web Worker for image processing (compression, thumbnails, enhancement)
 - `service-worker.js` - Service Worker for caching and offline support
 
 ### Documentation Files
-- `DESIGN.md` - **Design system** (colors, spacing, components, patterns) - consult for UI/UX consistency
-- `PROMPTS.md` - **Prompt engineering patterns** - how to write effective AI image generation prompts
-- `ROADMAP.md` - **Feature ideas & plans** - future directions and parking lot for ideas
-- `UI_PATTERNS.md` - **HTML/CSS patterns** - copy-paste reference for consistent UI across pages (buttons, sections, icons)
+- `DESIGN.md` - Design system (colors, spacing, components, patterns)
+- `PROMPTS.md` - Prompt engineering patterns for AI image generation
+- `ROADMAP.md` - Feature ideas & plans
+- `UI_PATTERNS.md` - HTML/CSS patterns for consistent UI
+- `API_REFERENCE.md` - Code examples for shared infrastructure
 
 ## API Integration
 
 Uses OpenRouter's `/api/v1/chat/completions` endpoint with `modalities: ['image', 'text']` for image generation. Response handling supports multiple formats (Gemini's inline_data, OpenAI's image_url, base64 responses).
+
+**Default Model:** Gemini 3 Pro - Best balance of quality and speed for image generation tasks.
 
 ---
 
@@ -64,409 +83,221 @@ Main page for creating product marketing infographics.
 - `generatePrompt()`: Builds comprehensive AI prompt based on all settings
 - `generateInfographic()`: Makes API call to OpenRouter with multimodal support
 - `enhanceImage()`: Client-side auto-levels and contrast adjustment
-- History management: Hybrid storage (thumbnails in localStorage, full images in IndexedDB)
-- Language toggle: English/Romanian with proper diacritics support
 
 ### Features
-- Multimodal input: Product photo uploaded and sent to AI as reference
-- Background styles: Auto, Light, Dark, Gradient
-- Generation history: Thumbnails in localStorage, full images in IndexedDB, viewable in modal
-- Favorites: Save generations with settings/seed for style reuse across products
-- Benefits section: Separate from features, auto-filled on image analysis (customer value propositions)
-- Bilingual: English and Romanian with proper character support (ă, â, î, ș, ț)
-- Feedback-based adjustment: Regenerate with text feedback to refine results
-- SEO alt text: Auto-generated descriptive text with copy button
-- Watermark system: Text or logo watermarks with position/opacity controls
-- Keyboard shortcuts: Ctrl+Enter to generate, Ctrl+D to download, Escape to close modals
+- Multimodal input, background styles (Auto/Light/Dark/Gradient), generation history
+- Favorites with settings/seed for style reuse, benefits section (auto-filled on analysis)
+- Bilingual (English/Romanian), feedback-based adjustment, SEO alt text, watermarks
+- Keyboard shortcuts: Ctrl+Enter generate, Ctrl+D download, Escape close modals
 
 ### Advanced Options
-
-**Layout & Composition:**
-- Layout Template: Auto, Product Center/Left/Right/Top, Grid, Hero
-- Aspect Ratio: Auto, 1:1, 2:3, 4:5, 16:9, 9:16
-- Product Focus: Auto, Full, Close-up, Dynamic, In Context (with custom description input), Floating, Multi-View
-- Variations: Generate 1, 2, or 4 images at once (parallel API calls)
-
-**Visual Style:**
-- Visual Density Slider: Minimal to Rich (5 levels)
-- Font Style: Auto, Modern Sans-Serif, Classic Serif, Bold, Playful, Technical, Elegant
-- Icon Style: Auto, Realistic, Illustrated, 3D, Flat/Minimal, Outlined, Gradient, None
-- Callout Lines: Toggle with thickness (1-5) and color mode (mono/multi/gradient/match)
-
-**Colors:**
-- Color Harmony: Match Product, Complementary, Analogous, Triadic, Monochrome, High Contrast
-- Brand Colors: Custom hex codes to incorporate
-
-**Style Reference:**
-- Upload reference image to match visual style
-- Style Influence Slider: 10-100% control
-
-**Generation Settings:**
-- Seed control for reproducible generations
-- Negative prompts to specify what to avoid
-
-### Characteristic Features
-- Drag-to-reorder: Reposition features by dragging the grip handle
-- Star button to mark primary features (shown larger/more prominent)
-- Auto icons: AI automatically selects appropriate icons based on feature text
-
-### Benefits Section
-- Separate from features: Benefits are customer value propositions (why to buy)
-- Features are technical specs (what it has)
-- Auto-filled when analyzing product image
-- Included in prompt generation and saved with favorites
+- **Layout**: Template, Aspect Ratio, Product Focus, Variations (1/2/4)
+- **Visual Style**: Density slider, Font Style, Icon Style, Callout Lines
+- **Colors**: Color Harmony, Brand Colors
+- **Style Reference**: Upload reference image (10-100% influence)
+- **Generation**: Seed control, Negative prompts
 
 ---
 
-## Model Studio (`models.html` + `models.js` + `models.css`)
+## Model Studio (`models.html` + `models.js`)
 
 Generate AI model photos with products (person wearing/holding product).
-
-### Structure
-- `state` object: Product settings, model appearance, shot type, scene, quality enhancements
-- `elements` object: Cached DOM references
-- Description maps: Convert option values to detailed prompt text
 
 ### Key Functions
 - `generatePrompt()`: Builds prompt for model photo generation
 - `generateModelPhoto()`: Makes API call for model image
 - `analyzeProductImage()`: Auto-detect product type and description
 
-### Model Configuration
-
-**Product Settings:**
-- Product Type: Clothing, Footwear, Accessories, Beauty, Electronics, etc.
-- Product Description: Auto-analyzed or manual input
-
-**Model Appearance:**
-- Gender: Female (default), Male
-- Age: 18-25 (default), 25-35, 35-50, 50+
-- Ethnicity: Caucasian (default), Any/Diverse, African/Black, Asian, Hispanic/Latino, Middle Eastern, South Asian, Mixed
-- Body Type: Slim, Average, Curvy, Muscular (for clothing/footwear only)
-- Hair: Any, Long, Short, Curly, Blonde, Bald
-
-**Shot Types:**
-- Full Body, Half Body, Portrait, Close-up, Hands Only, Product Detail
-
-**Scenes (10 options):**
-- Studio, Urban, Nature, Beach, Café, Office, Gym, Home, Luxury, Outdoor
-- Scene Details: Auto (default description) or Custom (user-provided specific details)
-
-**Photography Styles:**
-- Editorial, Commercial, Lifestyle, Artistic
+### Configuration
+- **Product**: Type, Description (auto-analyzed or manual)
+- **Model Appearance**: Gender, Age, Ethnicity, Body Type, Hair
+- **Shot Types**: Full Body, Half Body, Portrait, Close-up, Hands Only, Product Detail
+- **Scenes**: Studio, Urban, Nature, Beach, Café, Office, Gym, Home, Luxury, Outdoor
+- **Photography Style**: Editorial, Commercial, Lifestyle, Artistic
 
 ### Advanced Options
-
-**Pose & Expression:**
-- Pose: Natural, Confident, Casual, Dynamic, Elegant, Seated, Walking, Leaning
-- Expression: Neutral, Smiling, Serious, Candid
-
-**Camera Settings:**
-- Lighting: Studio, Natural, Golden Hour, Soft, Dramatic, Bright, Dark, Backlit
-- Camera Angle: Eye Level, Low, High
-- Aspect Ratio: 1:1, 4:5, 3:4, 2:3, 9:16, 16:9
-
-**Quality Enhancements:**
-- Depth of Field: Auto, Shallow, Medium, Deep, Extreme Bokeh
-- Color Grading: Auto, Warm, Cool, Airy, Vibrant, Muted, Cinematic, B&W
-- Skin Retouch: Natural, Light, Moderate, Beauty, Flawless
-- Composition: Auto, Centered, Off-Center, Negative Space
-- Quality Level: Standard, High, Ultra, Masterpiece
-- Realism: Auto, Photorealistic, Cinematic
-
-**Camera & Technical:**
-- Lens: Auto, 35mm, 50mm, 85mm, 135mm
-- Film Grain: None, Subtle, Heavy
-- Contrast: Auto, Low, High
-
-**Product Enhancement:**
-- Focus: Auto, Texture, Shine, Color Accuracy, Detail, In Context
-
-**Style Reference:**
-- Upload reference image to match visual style
-- Style Influence Slider: 10-100% control
-- Saved with favorites for consistent branding
-
-**Generation Settings:**
-- Seed control for reproducible generations
-- Negative prompts to specify what to avoid
-
-### Collage Mode
-- Generate multi-angle product collages (2, 3, 4, or 6 angles)
-- Face toggle: Show model face or product-only focus
-- Variations: 1, 2, or 4 images
-
-### Smart Features
-- **Copy Prompt**: Copy the generated prompt to clipboard
-- **Compare Slider**: Side-by-side comparison of generated variations
-- **Image Info Overlay**: View seed, model, style details on hover
-- **Dynamic Loading Status**: Contextual progress messages during generation
-
-### Favorites
-- Save generations with all settings and seed for style reuse
-- Load favorite settings, upload new product, regenerate in same style
+- **Pose & Expression**: Pose (8 options), Expression (4 options)
+- **Camera**: Lighting (8), Angle (3), Aspect Ratio (6)
+- **Quality**: Depth of Field, Color Grading, Skin Retouch, Composition, Quality Level, Realism
+- **Technical**: Lens, Film Grain, Contrast, Product Focus
+- **Collage Mode**: Multi-angle collages (2/3/4/6 angles), Face toggle
 
 ---
 
-## Bundle Studio (`bundle.html` + `bundle.js` + `bundle.css`)
+## Bundle Studio (`bundle.html` + `bundle.js`)
 
 Create professional bundle/kit images from multiple individual product photos.
-
-### Structure
-- `state` object: Products array, layout, presentation, background, visual style settings
-- `elements` object: Cached DOM references
-- Description maps: Layout, container, surface, style, and lighting descriptions for prompts
 
 ### Key Functions
 - `generatePrompt()`: Builds prompt from all products and settings
 - `generateBundle()`: Makes API call with all product images
-- `generateWithAdjustment()`: Regenerate with user feedback/modifications
 - `analyzeProduct()`: Auto-detect product name and description
-- `addProduct()` / `removeProduct()`: Manage product slots
-- `updateLoadingStatus()`: Dynamic loading messages during generation
-
-### Features
-- Upload 2-6 product images with auto-analysis
-- Edit product details manually if needed
-- Drag to reorder (affects hero layout, numbering)
-- Feedback-based adjustment: Regenerate with text feedback to refine results
-- Keyboard shortcuts: Ctrl+Enter to generate, Ctrl+D to download
-- Dynamic loading status messages during generation
-- History and Favorites in right panel (matching other pages)
-- API settings in collapsible section at bottom of form
+- `addProduct()` / `removeProduct()`: Manage product slots (2-6)
 
 ### Layout Styles
-- **Flat Lay**: Top-down arrangement, artfully scattered
-- **Grouped**: Products clustered together naturally
-- **Grid**: Clean rows/columns, equal spacing
-- **Hero**: One main product large, others smaller around it
-- **Unboxing**: Products in/around an open container
-- **Numbered**: Products with sequence numbers (1, 2, 3...)
+- **Flat Lay**: Top-down, artfully scattered
+- **Grouped**: Clustered naturally
+- **Grid**: Clean rows/columns
+- **Hero**: One large, others smaller
+- **Unboxing**: In/around container
+- **Numbered**: With sequence numbers
 
-### Presentation Options
+### Options
 - **Container**: None, Gift Box, Shipping Box, Pouch/Bag, Tray, Basket, Custom
 - **Background**: White/Clean, Soft Gradient, Surface/Texture, Lifestyle Scene
 - **Surfaces**: White Marble, Light/Dark Wood, Linen, Concrete, Terrazzo, Custom
-
-### Advanced Options
-- Bundle Title: Optional text displayed on image
-- Show Labels: Product names on image
-- Show Numbering: Sequence numbers
-- Visual Style: Commercial, Editorial, Lifestyle, Minimal, Luxury
-- Lighting: Bright, Soft, Natural, Dramatic, Warm
-- Aspect Ratio: 1:1, 4:5, 3:2, 16:9, 9:16
-- Variations: 1, 2, or 4 images
-- Seed control for reproducible results
-- Negative prompts
-
-### Smart Features
-- **Copy Prompt**: Copy the generated prompt to clipboard
-- **Dynamic Loading Status**: Contextual progress messages during generation
-
-### Favorites & History
-- Save bundle with all settings, product references, and seed
-- Load favorite to restore settings, upload new products, regenerate
-- History and favorites displayed in right panel with grid view
+- **Advanced**: Bundle Title, Labels, Numbering, Visual Style, Lighting, Aspect Ratio
 
 ---
 
-## Lifestyle Studio (`lifestyle.html` + `lifestyle.js` + `lifestyle.css`)
+## Lifestyle Studio (`lifestyle.html` + `lifestyle.js`)
 
 Pure product photography in lifestyle environments - no infographic overlays.
-
-### Structure
-- `state` object: Scene, mood, time of day, lighting, camera settings
-- `elements` object: Cached DOM references
-- Description maps: Scene, mood, time, lighting, style descriptions for prompts
 
 ### Key Differences from Infographics "In Context"
 - **Output**: Pure photography (no text, icons, or callouts)
 - **Controls**: Rich scene, mood, lighting, and seasonal options
 - **Use Case**: Catalog/lookbook imagery vs marketing graphics
 
-### Scene Types (10 options)
-- Living Room, Kitchen, Bedroom, Office, Outdoor
-- Café, Beach, Gym, Garden, Urban
-
-### Mood Options (8)
-- Cozy, Energetic, Calm, Luxurious, Minimal, Vibrant, Romantic, Fresh
-
-### Time of Day (5)
-- Morning, Midday, Golden Hour, Evening, Night
-
-### Advanced Options
+### Options
+- **Scene**: Living Room, Kitchen, Bedroom, Office, Outdoor, Café, Beach, Gym, Garden, Urban
+- **Mood**: Cozy, Energetic, Calm, Luxurious, Minimal, Vibrant, Romantic, Fresh
+- **Time**: Morning, Midday, Golden Hour, Evening, Night
 - **Season**: Auto, Spring, Summer, Fall, Winter, Holiday
-- **Lighting**: Natural, Warm, Cool, Dramatic, Soft, Bright, Backlit
-- **Shot Type**: Wide, Medium, Close-up, Detail
-- **Camera Angle**: Eye Level, Low, High, Overhead
-- **Style**: Lifestyle, Editorial, Commercial, Candid, Artistic
-- **Aspect Ratio**: 1:1, 4:5, 3:4, 2:3, 16:9, 9:16
-- **Quality**: Standard, High, Ultra
-- **Depth of Field**: Auto, Shallow, Medium, Deep
-- **Color Grading**: Auto, Warm, Cool, Vibrant, Muted
-- **Style Reference**: Upload reference image to match visual style (10-100% influence)
-- **Seed & Negative Prompt**: For reproducibility and control
-- **Variations**: 1, 2, or 4 images
-
-### Smart Features
-- **Auto-Analyze**: AI suggests best scene, mood, and time based on product
-- **Compare Slider**: Side-by-side comparison of generated variations
-- **Image Info Overlay**: View seed, model, scene, mood details on hover
-- **Dynamic Loading Status**: Contextual progress messages during generation
-- **Copy Prompt**: Copy the generated prompt to clipboard
-
-### Favorites & History
-- Storage keys: `lifestyle_studio_history`, `lifestyle_studio_favorites`
-- Save generations with all settings and seed for style reuse
-- Load favorite settings, upload new product, regenerate in same style
+- **Advanced**: Lighting, Shot Type, Camera Angle, Style, Quality, Depth of Field, Color Grading
 
 ---
 
-## Copywriter (`copywriter.html` + `copywriter.js` + `copywriter.css`)
+## Copywriter (`copywriter.html` + `copywriter.js`)
 
-AI-powered marketing copy generator that creates comprehensive SEO-optimized content from product images.
-
-### Structure
-- `state` object: Product images, features, benefits, tone, language, generated copy
-- `elements` object: Cached DOM references
-- `toneDescriptions`: Maps tone values to detailed prompt descriptions
+AI-powered marketing copy generator from product images.
 
 ### Key Functions
-- `analyzeProductImages()`: AI analysis to auto-fill product title, features, and benefits
+- `analyzeProductImages()`: AI analysis to auto-fill product title, features, benefits
 - `buildCopyPrompt()`: Constructs comprehensive marketing copy generation prompt
 - `generateCopy()`: Generates all marketing copy via `api.generateText()`
-- `copyField()`, `copySection()`, `copyEverything()`: Copy functionality for individual fields or all content
 
-### Features
-- **Multi-image Upload**: Up to 4 product images with thumbnail previews
-- **Auto-Analysis**: AI automatically extracts product title, category, features, and benefits
-- **Feature Management**: Add/remove features, star primary features for emphasis
-- **Benefits Section**: Separate from features - customer value propositions
-- **Tone Selection**: Professional, Casual, Enthusiastic, or Luxury tone options
-- **Bilingual**: English and Romanian with proper diacritics support
+### Generated Content
+- **E-commerce**: Title, Short/Long Description, Feature Bullets, Benefits List
+- **SEO**: Meta Title (<60 chars), Meta Description (<160 chars), Keywords, Alt Text
+- **Social Media**: Instagram, Facebook, Twitter/X posts
+- **Extras**: Taglines, Email subject lines
 
-### Generated Content Structure
-
-**E-commerce Tab:**
-- Product Title (SEO-optimized, ~80 chars)
-- Short Description (1-2 sentences, ~50 words)
-- Long Description (100-200 words)
-- Feature Bullets (5-7 items)
-- Benefits List (3-5 items)
-
-**SEO Tab:**
-- Meta Title (<60 chars with character count)
-- Meta Description (<160 chars with character count)
-- Focus Keywords (5-10 tags)
-- Alt Text (~125 chars)
-
-**Social Media Tab:**
-- Instagram caption (with emojis/hashtags if enabled)
-- Facebook post (conversational with CTA)
-- Twitter/X post (<280 chars with character count)
-
-**Extras Tab:**
-- 3 Tagline options
-- 3 Email subject line options
-
-### Copy Options
-- Individual field copy buttons
-- "Copy All [Section]" for each tab
-- "Copy Everything" for all content formatted as text
-
-### History & Favorites
-- Storage keys: `copywriter_history`, `copywriter_favorites`
-- Save generations with all settings
-- Load favorites to restore settings and regenerate
+### Options
+- Multi-image upload (up to 4), Feature management with starring, Tone selection
+- Bilingual (English/Romanian), Copy individual fields or all content
 
 ---
 
-## Packaging Mockup (`packaging.html` + `packaging.js` + `packaging.css`)
+## Packaging Mockup (`packaging.html` + `packaging.js`)
 
-Visualize products in professional packaging designs - boxes, bottles, bags, and more.
-
-### Structure
-- `state` object: Packaging type, materials, scene, branding options
-- `elements` object: Cached DOM references
-- Description maps: Detailed prompt text for each packaging option
-
-### Key Functions
-- `generatePrompt()`: Builds packaging mockup prompt from all settings
-- `generateMockup()`: Makes API call for packaging visualization
-- `generateWithAdjustment()`: Regenerate with user feedback
-- `analyzeProduct()`: Auto-detect product name from image
+Visualize products in professional packaging designs.
 
 ### Packaging Types
-| Type | Description |
-|------|-------------|
-| Box | Product boxes, shipping boxes, gift boxes, mailer boxes |
-| Bottle | Cylinder, square, dropper, pump, spray bottles |
-| Bag | Shopping bags, gift bags |
-| Pouch | Stand-up pouches |
-| Jar | Glass/plastic jars with lids |
-| Tube | Cosmetic tubes |
-| Can | Tin cans |
-| Label | Product labels only |
+Box, Bottle, Bag, Pouch, Jar, Tube, Can, Label
 
-### Box Options
-- **Type**: Product box, shipping, gift, display, mailer, sleeve
-- **Material**: Cardboard, kraft, glossy, matte, textured, luxury rigid
-
-### Bottle Options
-- **Shape**: Cylinder, square, dropper, pump, spray, wine-style
-- **Material**: Clear/amber/frosted glass, clear/opaque plastic, metal
-
-### Scene Settings
-- **Studio**: Clean professional backdrop
-- **Retail Shelf**: Store shelf with other products
-- **Unboxing**: Unboxing scene with tissue paper
-- **Lifestyle**: Home/office environment
-- **Gift**: Gift-giving scene with ribbon
-- **Flat Lay**: Top-down arrangement with props
-
-### View Angles
-- Front, 3/4 View, Side, Top Down, Isometric
-
-### Branding Options
-- **Color Scheme**: Match product, minimal white, kraft, black, pastels, vibrant, custom
-- **Design Style**: Modern, luxury, organic, playful, vintage, tech
-
-### Advanced Options
-- Lighting: Studio, natural, soft, dramatic, bright
-- Background: White, gradient, surface, contextual, transparent
-- Seed control for reproducibility
-- Negative prompts
-- 1, 2, or 4 variations
-
-### History & Favorites
-- Storage keys: `packaging_history`, `packaging_favorites`
-- Save mockups with all settings and seed
-- Load favorites to restore settings and regenerate with new products
+### Options
+- **Box**: Type (product/shipping/gift/display/mailer/sleeve), Material
+- **Bottle**: Shape (cylinder/square/dropper/pump/spray), Material
+- **Scene**: Studio, Retail Shelf, Unboxing, Lifestyle, Gift, Flat Lay
+- **View**: Front, 3/4 View, Side, Top Down, Isometric
+- **Branding**: Color Scheme, Design Style (Modern/Luxury/Organic/Playful/Vintage/Tech)
 
 ---
 
-## Dashboard (`dashboard.html` + `dashboard.js` + `dashboard.css`)
+## Comparison Generator (`comparison.html` + `comparison.js`)
 
-Central hub for analytics, storage management, and quick access to all studios.
+Side-by-side and before/after product comparison images.
 
-### Features
-- **Overview Cards**: Total generations, favorites count, storage used, API connection status
-- **Charts** (Chart.js): Generation trends (7-day line chart), model usage (doughnut), studio breakdown (bar)
-- **Quick Access Grid**: Recent generation thumbnails with lightbox preview
-- **Storage Management**: Per-studio usage bars, Export All (JSON), Clear Old Items (>30 days)
-- **Activity Table**: Recent generations with preview, title, studio, model, seed, time
-- **Tab Filtering**: Overview (all studios) or filter by Infographics/Models/Bundles
+### Comparison Types
+| Type | Description | Required Images |
+|------|-------------|-----------------|
+| Before/After | Transformation comparison | 2 images |
+| vs-competitor | Product versus competitor | 2 images + features |
+| Feature Table | Feature comparison table | 1 image + feature/value pairs |
+| Size Lineup | Size variants (S, M, L, XL) | 2-4 images |
+| Multi-Product | Product comparison grid | 2-4 images |
+
+### Options
+- **Layout**: Split, Slider, Grid, Table
+- **Style**: Clean, Bold, Professional, Playful, Luxury
+- **Advanced**: Winner Badge, Show Prices, Aspect Ratio
+
+---
+
+## Size Visualizer (`size-visualizer.html` + `size-visualizer.js`)
+
+Product scale visualization with reference objects.
+
+### Reference Objects
+Hand, Smartphone, Coin, Ruler, Credit Card, Pen, Coffee Mug, Laptop, Person
+
+### Display Modes
+- **Side-by-Side**: Product next to reference
+- **In Hand**: Product held in hand
+- **Context Scene**: In real-world environment (Desk, Pocket, Bag, Shelf, Car, Kitchen)
+- **Technical Drawing**: Blueprint-style with dimension lines
+
+### Options
+- Product dimensions (W/H/D) with cm/inches toggle
+- Show Dimensions, Scale, Grid toggles
+- Visual Style, Background, Multi-Angle options
+
+---
+
+## FAQ Generator (`faq-generator.html` + `faq-generator.js`)
+
+Generate product Q&As with text output and optional visual FAQ infographic.
+
+### Categories
+General, Technical, Shipping, Usage, Comparison, Warranty
+
+### Output
+- FAQ text with questions and answers
+- Schema.org JSON-LD for SEO
+- Visual FAQ infographic image (Infographic, Q&A Card, Top 5 styles)
+
+### Options
+- Q&A count per category (3/5/7), Tone (Professional/Friendly/Casual/Technical)
+- Bilingual (EN/RO), Export as Markdown, Copy individual or all FAQs
+
+---
+
+## Background Studio (`background.html` + `background.js`)
+
+Remove and replace product backgrounds for e-commerce ready images.
 
 ### Key Functions
-- `renderCards()`: Updates stat cards based on active tab filter
-- `renderQuickAccess()`: Shows recent thumbnails, filtered by tab
-- `renderActivityTable()`: Populates activity list, filtered by tab
-- `initCharts()` / `updateChartsForTab()`: Chart.js initialization and updates
-- `exportAllData()`: Downloads all history/favorites as JSON
-- `clearOldItems()`: Removes items older than 30 days with confirmation
+- `generatePrompt()`: Builds prompt for background replacement
+- `generateBackground()`: Makes API call with product image
+- `adjustBackground()`: Regenerate with user feedback
 
-### Data Source
-Uses `SharedDashboard` utility from shared.js to aggregate data from all three studios.
+### Background Types
+- **Solid**: Pure colors (white, gray, black, custom)
+- **Gradient**: Vertical, horizontal, or radial gradients
+- **Scene**: AI-generated scenes (studio, living room, kitchen, office, outdoor, marble, wood, concrete)
+- **Custom**: Upload custom background image
+- **Transparent**: PNG with alpha channel
+
+### Options
+- **Shadow**: None, Drop, Reflection, Natural, Contact
+- **Padding**: 0-50% slider
+- **Aspect Ratio**: 1:1, 4:5, 3:4, 16:9, 9:16
+- **Quality**: Standard, High, Ultra
+- **Variations**: 1, 2, or 4 images
+
+---
+
+## Dashboard (`dashboard.html` + `dashboard.js`)
+
+Central hub for analytics, storage management, and quick access.
+
+### Features
+- Overview cards (generations, favorites, storage, API status)
+- Charts: Generation trends (7-day), model usage, studio breakdown
+- Quick access grid with recent thumbnails
+- Storage management: per-studio usage, Export All, Clear Old Items
+- Activity table with filtering by studio
 
 ---
 
@@ -476,415 +307,92 @@ Uses `SharedDashboard` utility from shared.js to aggregate data from all three s
 Each page uses a `state` object for reactive state management, persisting key values to localStorage.
 
 ### Element Caching
-DOM elements are cached in an `elements` object, initialized via `initElements()` on page load.
+DOM elements cached in `elements` object, initialized via `initElements()` on page load.
 
 ### Prompt Generation
-Each page has a `generatePrompt()` function that builds detailed AI prompts by concatenating descriptions from various option maps.
+Each page has `generatePrompt()` that builds AI prompts by concatenating descriptions from option maps.
 
-### History
-Generation history uses hybrid storage: thumbnails in localStorage for fast grid display, full images in IndexedDB. Supports view in modal/lightbox, download, and configurable limits (default 20 items).
+### History & Favorites
+- Hybrid storage: thumbnails in localStorage, full images in IndexedDB
+- History: view in modal, download, configurable limits (default 20)
+- Favorites: save with all settings/seed/reference images, supports multiple variants
+- Storage keys: `ngraphics_*`, `model_studio_*`, `bundle_studio_*`, `lifestyle_studio_*`, `copywriter_*`, `packaging_*`, `comparison_generator_*`, `size_visualizer_*`, `faq_generator_*`, `background_studio_*`
 
 ### Error Handling
-`showError()` function displays user-friendly error messages. API errors are caught and displayed appropriately.
-
-### Favorites System
-All pages support saving generations as favorites for style reuse:
-- Save generated image(s) with all settings, seed, and reference images
-- Supports multiple variants: when generating 2-4 variations, all are saved together
-- Load favorite to restore settings, then upload new product to regenerate in same style
-- Storage: Thumbnails in localStorage, full images in IndexedDB (hybrid approach)
-- Storage keys: `ngraphics_favorites` (Infographics), `model_studio_favorites` (Model Studio), `bundle_studio_favorites` (Bundle Studio), `lifestyle_studio_favorites` (Lifestyle Studio), `copywriter_favorites` (Copywriter), `packaging_favorites` (Packaging Mockup)
+`showError()` displays user-friendly error messages. API errors caught and displayed appropriately.
 
 ---
 
 ## Shared Utilities (`shared.js`)
 
-Common functionality used across all pages.
-
 ### Classes
-
-**SharedAPI** - API key management (localStorage)
-
-**SharedRequest** - API request handling:
-- `extractImageFromResponse(data)`: Handles multiple response formats (OpenAI, Gemini, Anthropic, DALL-E)
-- `makeRequest(body, key, title, retries)`: Request with retry logic
-- `formatError(error)`: User-friendly error messages
-
-**SharedHistory** - Generation history with hybrid storage:
-- Constructor: `new SharedHistory(storageKey, maxItems)`
-- Stores metadata + thumbnails in localStorage, full images in IndexedDB
-- Methods (async): `add(imageUrl, metadata)`, `remove(id)`, `clear()`, `getImages(id)`
-- Methods (sync): `load()`, `save()`, `findById(id)`, `getAll()`, `setImageStore(store)`
-
-**ImageStore** - IndexedDB storage for large images:
-- Constructor: `new ImageStore(dbName)`
-- Methods: `init()`, `save(id, images)`, `get(id)`, `delete(id)`, `clear()`
-
-**SharedFavorites** - Favorites with hybrid storage:
-- Constructor: `new SharedFavorites(storageKey, maxItems)`
-- Stores metadata + thumbnails in localStorage, full images in IndexedDB
-- Methods (async): `add(favorite)`, `remove(id)`, `clear()`, `getImages(id)`
-- Methods (sync): `load()`, `save()`, `update(id, updates)`, `findById(id)`, `getAll()`
+- **SharedAPI**: API key management (localStorage)
+- **SharedRequest**: `extractImageFromResponse()`, `makeRequest()`, `formatError()`
+- **SharedHistory**: Hybrid storage with `add()`, `remove()`, `clear()`, `getImages()`, `findById()`, `getAll()`
+- **ImageStore**: IndexedDB storage with `init()`, `save()`, `get()`, `delete()`, `clear()`
+- **SharedFavorites**: Hybrid storage with same interface as SharedHistory
 
 ### Utility Objects
-
-- **SharedTheme**: `init()`, `apply(theme)`, `toggle()`, `setupToggle(buttonEl)` - Theme management across all pages
-- **SharedHeader**: `render(options)` - Renders consistent header across all pages
-  - Options: `currentPage` (infographics|dashboard|models|bundles|lifestyle|docs), `showApiStatus`, `showLanguageToggle`
-  - Centralizes all nav icons and page configurations
-  - Auto-excludes current page from navigation links
-- **SharedDashboard**: Cross-studio data aggregation for dashboard
-  - `loadAllData()`: Loads history/favorites from all studios
-  - `getMetrics(data)`: Returns totalGenerations, totalFavorites, perStudio counts
-  - `getGenerationTrends(data, days)`: Returns array of {date, count} for charts
-  - `getModelUsage(data)`: Returns model usage breakdown
-  - `getRecentActivity(data, limit)`: Combined recent activity sorted by timestamp
-  - `getStorageEstimate()`: Returns browser storage usage estimate
-  - `clearOldItems(studioKey, days)`: Removes old history items
+- **SharedTheme**: `init()`, `apply()`, `toggle()`, `setupToggle()`
+- **SharedHeader**: `render(options)` - consistent header across pages
+- **SharedDashboard**: `loadAllData()`, `getMetrics()`, `getGenerationTrends()`, `getModelUsage()`, `getRecentActivity()`, `getStorageEstimate()`, `clearOldItems()`
 - **SharedUI**: `showError()`, `showSuccess()`, `updateApiStatus()`, `showLoading()`, `hideLoading()`
-- **SharedUpload**: `setup(uploadArea, fileInput, callbacks)`, `handleFile(file, callbacks)`
+- **SharedUpload**: `setup()`, `handleFile()`
 - **SharedLightbox**: `setup()`, `open()`, `close()`
-- **SharedDownload**: `downloadImage(imageUrl, prefix)`
+- **SharedDownload**: `downloadImage()`
 - **SharedKeyboard**: `setup(handlers)` - Ctrl+Enter, Ctrl+D, Escape
-- **SharedCollapsible**: `setup(toggleBtn, sectionEl)`
-- **SharedComponents**: Factory functions for creating UI components dynamically
+- **SharedCollapsible**: `setup()`
 
 ---
 
 ## Reusable Components (`components.js`)
 
-Native Web Components for common UI patterns. No build step required.
-
-### Web Components (Custom Elements)
-
+### Web Components
 | Component | Tag | Description |
 |-----------|-----|-------------|
-| UploadArea | `<upload-area>` | Drag-and-drop file upload with preview |
-| CollapsibleSection | `<collapsible-section>` | Expandable content section |
-| ModalDialog | `<modal-dialog>` | Modal overlay with header/body/actions |
-| OptionGroup | `<option-group>` | Button group for single selection |
-| SliderInput | `<slider-input>` | Range slider with label and value display |
-| TagInput | `<tag-input>` | Add/remove tags with chips |
-| LoadingSpinner | `<loading-spinner>` | Animated loading indicator |
+| UploadArea | `<upload-area>` | Drag-and-drop file upload |
+| CollapsibleSection | `<collapsible-section>` | Expandable content |
+| ModalDialog | `<modal-dialog>` | Modal overlay |
+| OptionGroup | `<option-group>` | Button group selection |
+| SliderInput | `<slider-input>` | Range slider |
+| TagInput | `<tag-input>` | Add/remove tags |
+| LoadingSpinner | `<loading-spinner>` | Loading indicator |
 | ToastNotification | `<toast-notification>` | Auto-dismissing notification |
-| ImageGrid | `<image-grid>` | Grid of images with selection/delete |
-
-### Web Component Usage Examples
-
-```html
-<!-- Upload Area -->
-<upload-area
-  label="Product Photo"
-  hint="PNG, JPG up to 10MB"
-  accept="image/*">
-</upload-area>
-
-<script>
-  document.querySelector('upload-area').addEventListener('file-selected', (e) => {
-    console.log(e.detail.file, e.detail.dataUrl);
-  });
-</script>
-
-<!-- Collapsible Section -->
-<collapsible-section title="Advanced Options" open>
-  <p>Content goes here</p>
-</collapsible-section>
-
-<!-- Slider -->
-<slider-input
-  label="Quality"
-  min="1" max="100" value="75"
-  show-value>
-</slider-input>
-```
+| ImageGrid | `<image-grid>` | Grid with selection/delete |
 
 ### Factory Functions (SharedComponents)
+- `createFormGroup()`, `createOptionButtons()`, `confirm()`, `createResultCard()`
+- `createProgress()`, `wrapWithTooltip()`, `createTabs()`, `createDropdown()`, `createEmptyState()`
 
-For more dynamic component creation via JavaScript:
-
-```javascript
-// Confirmation dialog
-const confirmed = await SharedComponents.confirm('Delete this item?', {
-  title: 'Confirm Delete',
-  confirmText: 'Delete',
-  type: 'danger'
-});
-
-// Option buttons
-const buttons = SharedComponents.createOptionButtons({
-  name: 'layout',
-  options: [
-    { value: 'grid', label: 'Grid' },
-    { value: 'list', label: 'List' }
-  ],
-  value: 'grid',
-  onChange: (val) => console.log('Selected:', val)
-});
-
-// Tabs
-const tabs = SharedComponents.createTabs({
-  tabs: [
-    { id: 'tab1', label: 'First', content: '<p>Tab 1 content</p>' },
-    { id: 'tab2', label: 'Second', content: '<p>Tab 2 content</p>' }
-  ],
-  activeTab: 'tab1',
-  onTabChange: (tabId) => console.log('Switched to:', tabId)
-});
-
-// Dropdown menu
-const dropdown = SharedComponents.createDropdown({
-  trigger: document.querySelector('.menu-btn'),
-  items: [
-    { label: 'Edit', icon: '✏️', onClick: () => {} },
-    { divider: true },
-    { label: 'Delete', danger: true, onClick: () => {} }
-  ]
-});
-
-// Progress bar
-const progress = SharedComponents.createProgress({
-  value: 45,
-  max: 100,
-  label: 'Uploading...'
-});
-progress.setValue(75); // Update progress
-
-// Empty state
-const empty = SharedComponents.createEmptyState({
-  icon: '<svg>...</svg>',
-  title: 'No Items',
-  message: 'Get started by adding your first item.',
-  action: { label: 'Add Item', onClick: () => {} }
-});
-```
-
-### Available Factory Functions
-
-- `createFormGroup({ id, label, type, value, placeholder, options })` - Form input with label
-- `createOptionButtons({ name, options, value, onChange })` - Button group
-- `confirm(message, options)` - Async confirmation dialog
-- `createResultCard({ imageUrl, title, actions, onImageClick })` - Image result card
-- `createProgress({ value, max, label, showPercent })` - Progress bar
-- `wrapWithTooltip(element, text, position)` - Add tooltip to element
-- `createTabs({ tabs, activeTab, onTabChange })` - Tab navigation
-- `createDropdown({ trigger, items, position })` - Dropdown menu
-- `createEmptyState({ icon, title, message, action })` - Empty state placeholder
+See `API_REFERENCE.md` for usage examples.
 
 ---
 
 ## Core Infrastructure (`core.js`)
 
-Foundational systems for state management, events, and performance optimization.
+- **Event Bus**: Global pub/sub with `on()`, `once()`, `emit()`, wildcard support
+- **Reactive State**: Proxy-based with `watch()`, `batch()`, `computed()`, persistence
+- **Image Compression**: Auto-compress on upload (files > 500KB)
+- **Virtual Scroller**: Efficient rendering for large lists
 
-### Event Bus
-
-Global pub/sub system for decoupled component communication:
-
-```javascript
-// Subscribe to events
-events.on('image:generated', (data) => {
-    console.log('Image generated:', data.imageUrl);
-});
-
-// Wildcard subscription
-events.on('image:*', (data) => {
-    console.log('Any image event:', data._event);
-});
-
-// Emit events
-events.emit('image:generated', { imageUrl, seed, prompt });
-
-// One-time listener
-events.once('api:ready', () => initApp());
-
-// Unsubscribe
-const unsubscribe = events.on('event', handler);
-unsubscribe();
-```
-
-### Reactive State
-
-Proxy-based state management with automatic change detection:
-
-```javascript
-// Create reactive state
-const state = new ReactiveState({
-    apiKey: '',
-    theme: 'dark',
-    settings: { quality: 85 }
-}, {
-    persistKey: 'app_state',
-    persistFields: ['apiKey', 'theme']
-});
-
-// Watch for changes
-state.watch('apiKey', (newVal, oldVal) => {
-    updateApiStatus();
-});
-
-// Deep watching
-state.watch('settings', (val) => {
-    console.log('Settings changed');
-}, { deep: true });
-
-// Debounced watching
-state.watch('searchQuery', (val) => {
-    search(val);
-}, { debounce: 300 });
-
-// Batch updates
-state.batch((s) => {
-    s.theme = 'light';
-    s.quality = 90;
-}); // Single notification
-
-// Computed properties
-state.computed('isReady', (s) => !!s.apiKey, ['apiKey']);
-```
-
-### Image Compression
-
-Automatic compression on upload (files > 500KB):
-
-```javascript
-// Via SharedUpload (automatic)
-SharedUpload.handleFile(file, {
-    options: { maxWidth: 1920, quality: 0.85 },
-    onLoad: (base64, file, compressionInfo) => {
-        console.log('Compressed:', compressionInfo.compressionRatio);
-    }
-});
-
-// Direct usage
-const result = await imageCompressor.compress(file, {
-    maxWidth: 1920,
-    quality: 0.85
-});
-console.log(result.base64, result.compressionRatio);
-```
-
-### Virtual Scroller
-
-Efficient rendering for large lists (history, favorites):
-
-```javascript
-const scroller = new VirtualScroller('#container', {
-    itemHeight: 150,
-    itemWidth: 150,
-    gap: 12,
-    columns: 'auto',
-    renderItem: (item, index) => `
-        <img src="${item.thumbnail}" alt="Item ${index}">
-    `,
-    onItemClick: (item) => openItem(item)
-});
-
-scroller.setItems(items);
-scroller.scrollToItem(index);
-```
+See `API_REFERENCE.md` for usage examples.
 
 ---
 
 ## Workers (`workers.js`)
 
-Web Worker and Service Worker managers.
+- **Image Worker**: Background processing - `compress()`, `thumbnail()`, `analyze()`, `enhance()`, `batch()`
+- **Service Worker Manager**: Caching, offline support - `checkForUpdate()`, `applyUpdate()`, `cacheUrls()`, `getCacheSize()`
 
-### Image Worker
-
-Offloads heavy image processing from main thread:
-
-```javascript
-// Compress image in background
-const result = await imageWorker.compress(base64, {
-    maxWidth: 1920,
-    quality: 0.85
-});
-
-// Create thumbnail
-const thumb = await imageWorker.thumbnail(base64, 150);
-
-// Analyze image (colors, brightness)
-const analysis = await imageWorker.analyze(base64);
-
-// Enhance image
-const enhanced = await imageWorker.enhance(base64, {
-    contrast: 1.1,
-    saturation: 1.1,
-    autoLevels: true
-});
-
-// Batch processing with progress
-const results = await imageWorker.batch(images, 'compress', {}, (current, total) => {
-    console.log(`${current}/${total}`);
-});
-```
-
-### Service Worker Manager
-
-Handles caching and offline support:
-
-```javascript
-// Check for updates
-await serviceWorkerManager.checkForUpdate();
-
-// Apply update
-serviceWorkerManager.applyUpdate();
-
-// Cache specific URLs
-await serviceWorkerManager.cacheUrls(['/api/models']);
-
-// Get cache size
-const size = await serviceWorkerManager.getCacheSize();
-
-// Check offline status
-if (serviceWorkerManager.isOffline) {
-    showOfflineBanner();
-}
-
-// Listen for update available
-serviceWorkerManager.onUpdateAvailable = () => {
-    showUpdatePrompt();
-};
-```
+See `API_REFERENCE.md` for usage examples.
 
 ---
 
 ## API Client (`api.js`)
 
-Unified API client with retry logic and response normalization.
+- `generateImage()`: Image generation with multimodal support
+- `analyzeImage()`: Image analysis
+- `generateText()`: Text generation
+- Features: Automatic retries, rate limiting, response normalization, request cancellation, caching, error classification
 
-### Basic Usage
-
-```javascript
-// Set API key
-api.apiKey = 'your-key';
-
-// Generate image
-const result = await api.generateImage({
-    model: 'google/gemini-2.0-flash-exp',
-    prompt: 'Product infographic...',
-    images: [base64Image],
-    seed: 12345
-});
-
-// Analyze image
-const analysis = await api.analyzeImage({
-    image: base64,
-    prompt: 'Describe this product...'
-});
-
-// Generate text
-const text = await api.generateText({
-    prompt: 'Write a tagline...',
-    maxTokens: 100
-});
-```
-
-### Features
-
-- **Automatic Retries**: Exponential backoff with jitter
-- **Rate Limiting**: Queue-based request management
-- **Response Normalization**: Handles Gemini, OpenAI, DALL-E formats
-- **Request Cancellation**: AbortController support
-- **Caching**: Optional response caching
-- **Error Classification**: User-friendly error messages via `APIError.toUserMessage()`
+See `API_REFERENCE.md` for usage examples.
