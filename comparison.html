@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparison Generator - NGRAPHICS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="comparison.css">
+</head>
+<body>
+    <!-- Noise overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Gradient orbs for atmosphere -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <!-- Header (rendered by SharedHeader) -->
+    <header class="site-header"></header>
+
+    <!-- Main Application -->
+    <main class="app-main">
+        <div class="app-grid">
+
+            <!-- Left Panel: Configuration -->
+            <section class="panel panel-config">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="title-number">01</span>
+                        Comparison Generator
+                    </h2>
+                </div>
+
+                <!-- Error/Success Messages -->
+                <div class="message message-error" id="errorMessage">
+                    <div class="message-icon">!</div>
+                    <div class="message-content">
+                        <span class="error-text"></span>
+                    </div>
+                </div>
+                <div class="message message-success" id="successMessage">
+                    <div class="message-icon">&#10003;</div>
+                    <div class="message-content">Generated successfully</div>
+                </div>
+
+                <form id="comparisonForm" class="config-form">
+                    <!-- Comparison Type Selector -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Choose the type of comparison to generate">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="2" x2="12" y2="22"/>
+                                    <rect x="2" y="4" width="8" height="16" rx="1"/>
+                                    <rect x="14" y="4" width="8" height="16" rx="1"/>
+                                </svg>
+                            </span>
+                            Comparison Type
+                        </div>
+                        <div class="comparison-type-tabs" id="comparisonTypeTabs">
+                            <button type="button" class="comparison-type-tab active" data-type="before-after">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <line x1="12" y1="2" x2="12" y2="22"/>
+                                    <path d="M5 12H2l3-3v6l-3-3"/>
+                                    <path d="M19 12h3l-3-3v6l3-3"/>
+                                </svg>
+                                <span>Before/After</span>
+                            </button>
+                            <button type="button" class="comparison-type-tab" data-type="vs-competitor">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <circle cx="7" cy="12" r="5"/>
+                                    <circle cx="17" cy="12" r="5"/>
+                                    <text x="7" y="14" font-size="6" text-anchor="middle" fill="currentColor">A</text>
+                                    <text x="17" y="14" font-size="6" text-anchor="middle" fill="currentColor">B</text>
+                                </svg>
+                                <span>Product vs Product</span>
+                            </button>
+                            <button type="button" class="comparison-type-tab" data-type="feature-table">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <line x1="3" y1="9" x2="21" y2="9"/>
+                                    <line x1="3" y1="15" x2="21" y2="15"/>
+                                    <line x1="9" y1="3" x2="9" y2="21"/>
+                                </svg>
+                                <span>Feature Table</span>
+                            </button>
+                            <button type="button" class="comparison-type-tab" data-type="size-lineup">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="2" y="14" width="4" height="8" rx="1"/>
+                                    <rect x="8" y="10" width="4" height="12" rx="1"/>
+                                    <rect x="14" y="6" width="4" height="16" rx="1"/>
+                                    <rect x="20" y="2" width="2" height="20" rx="0.5"/>
+                                </svg>
+                                <span>Size Lineup</span>
+                            </button>
+                            <button type="button" class="comparison-type-tab" data-type="multi-product">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="8" height="8" rx="1"/>
+                                    <rect x="13" y="3" width="8" height="8" rx="1"/>
+                                    <rect x="3" y="13" width="8" height="8" rx="1"/>
+                                    <rect x="13" y="13" width="8" height="8" rx="1"/>
+                                </svg>
+                                <span>Multi-Product Grid</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Before/After Section -->
+                    <div class="comparison-section" id="beforeAfterSection">
+                        <div class="config-section">
+                            <div class="section-label" data-tooltip="Upload the 'before' image">
+                                <span class="label-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <path d="M12 8v8M8 12h8"/>
+                                    </svg>
+                                </span>
+                                Before Image
+                            </div>
+                            <div class="upload-zone upload-zone-small" id="beforeUploadArea">
+                                <input type="file" class="file-input" id="beforeFileInput" accept="image/*">
+                                <div class="upload-content">
+                                    <div class="upload-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                            <polyline points="17,8 12,3 7,8"/>
+                                            <line x1="12" y1="3" x2="12" y2="15"/>
+                                        </svg>
+                                    </div>
+                                    <p class="upload-text">Before</p>
+                                </div>
+                                <div class="upload-preview">
+                                    <img class="preview-image" id="beforePreview" src="" alt="">
+                                    <button type="button" class="btn-remove-image" id="beforeRemoveBtn">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"/>
+                                            <line x1="6" y1="6" x2="18" y2="18"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="config-section">
+                            <div class="section-label" data-tooltip="Upload the 'after' image">
+                                <span class="label-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <polyline points="9 11 12 14 22 4"/>
+                                    </svg>
+                                </span>
+                                After Image
+                            </div>
+                            <div class="upload-zone upload-zone-small" id="afterUploadArea">
+                                <input type="file" class="file-input" id="afterFileInput" accept="image/*">
+                                <div class="upload-content">
+                                    <div class="upload-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                            <polyline points="17,8 12,3 7,8"/>
+                                            <line x1="12" y1="3" x2="12" y2="15"/>
+                                        </svg>
+                                    </div>
+                                    <p class="upload-text">After</p>
+                                </div>
+                                <div class="upload-preview">
+                                    <img class="preview-image" id="afterPreview" src="" alt="">
+                                    <button type="button" class="btn-remove-image" id="afterRemoveBtn">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"/>
+                                            <line x1="6" y1="6" x2="18" y2="18"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="config-section">
+                            <div class="section-label">Labels</div>
+                            <div class="label-inputs">
+                                <div class="label-input-group">
+                                    <label>Left Label</label>
+                                    <input type="text" class="input-field" id="beforeLabel" value="Before" placeholder="Before">
+                                </div>
+                                <div class="label-input-group">
+                                    <label>Right Label</label>
+                                    <input type="text" class="input-field" id="afterLabel" value="After" placeholder="After">
+                                </div>
+                            </div>
+                            <div class="label-presets">
+                                <button type="button" class="label-preset-btn active" data-before="Before" data-after="After">Before/After</button>
+                                <button type="button" class="label-preset-btn" data-before="Old" data-after="New">Old/New</button>
+                                <button type="button" class="label-preset-btn" data-before="Without" data-after="With">Without/With</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product vs Product Section -->
+                    <div class="comparison-section hidden" id="vsCompetitorSection">
+                        <div class="config-section">
+                            <div class="section-label" data-tooltip="Upload the first product (left side)">
+                                <span class="label-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                                        <path d="M21 15l-5-5L5 21"/>
+                                    </svg>
+                                </span>
+                                Product A
+                            </div>
+                            <div class="upload-zone upload-zone-small" id="productAUploadArea">
+                                <input type="file" class="file-input" id="productAFileInput" accept="image/*">
+                                <div class="upload-content">
+                                    <div class="upload-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                            <polyline points="17,8 12,3 7,8"/>
+                                            <line x1="12" y1="3" x2="12" y2="15"/>
+                                        </svg>
+                                    </div>
+                                    <p class="upload-text">Product A</p>
+                                </div>
+                                <div class="upload-preview">
+                                    <img class="preview-image" id="productAPreview" src="" alt="">
+                                    <button type="button" class="btn-remove-image" id="productARemoveBtn">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"/>
+                                            <line x1="6" y1="6" x2="18" y2="18"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <input type="text" class="input-field" id="productAName" placeholder="Our Product" value="Our Product">
+                        </div>
+                        <div class="config-section">
+                            <div class="section-label" data-tooltip="Upload the second product (right side)">
+                                <span class="label-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                                        <path d="M21 15l-5-5L5 21"/>
+                                    </svg>
+                                </span>
+                                Product B
+                            </div>
+                            <div class="upload-zone upload-zone-small" id="productBUploadArea">
+                                <input type="file" class="file-input" id="productBFileInput" accept="image/*">
+                                <div class="upload-content">
+                                    <div class="upload-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                            <polyline points="17,8 12,3 7,8"/>
+                                            <line x1="12" y1="3" x2="12" y2="15"/>
+                                        </svg>
+                                    </div>
+                                    <p class="upload-text">Product B</p>
+                                </div>
+                                <div class="upload-preview">
+                                    <img class="preview-image" id="productBPreview" src="" alt="">
+                                    <button type="button" class="btn-remove-image" id="productBRemoveBtn">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"/>
+                                            <line x1="6" y1="6" x2="18" y2="18"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <input type="text" class="input-field" id="productBName" placeholder="Competitor" value="Competitor">
+                        </div>
+                        <div class="config-section">
+                            <div class="section-label" data-tooltip="Features to compare with checkmarks">Features to Compare</div>
+                            <div class="feature-compare-list" id="featureCompareList">
+                                <!-- Features dynamically added -->
+                            </div>
+                            <button type="button" class="btn-add-feature" id="addCompareFeatureBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"/>
+                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                                Add Feature
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Feature Table Section -->
+                    <div class="comparison-section hidden" id="featureTableSection">
+                        <div class="config-section">
+                            <div class="section-label" data-tooltip="Upload product image for the table">
+                                <span class="label-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                                        <path d="M21 15l-5-5L5 21"/>
+                                    </svg>
+                                </span>
+                                Product Image
+                            </div>
+                            <div class="upload-zone upload-zone-small" id="tableProductUploadArea">
+                                <input type="file" class="file-input" id="tableProductFileInput" accept="image/*">
+                                <div class="upload-content">
+                                    <div class="upload-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                            <polyline points="17,8 12,3 7,8"/>
+                                            <line x1="12" y1="3" x2="12" y2="15"/>
+                                        </svg>
+                                    </div>
+                                    <p class="upload-text">Product</p>
+                                </div>
+                                <div class="upload-preview">
+                                    <img class="preview-image" id="tableProductPreview" src="" alt="">
+                                    <button type="button" class="btn-remove-image" id="tableProductRemoveBtn">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"/>
+                                            <line x1="6" y1="6" x2="18" y2="18"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="config-section">
+                            <div class="section-label">Feature Values</div>
+                            <div class="feature-value-list" id="featureValueList">
+                                <!-- Feature values dynamically added -->
+                            </div>
+                            <button type="button" class="btn-add-feature" id="addFeatureValueBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"/>
+                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                                Add Feature Row
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Size Lineup Section -->
+                    <div class="comparison-section hidden" id="sizeLineupSection">
+                        <div class="config-section">
+                            <div class="section-label" data-tooltip="Upload product variants (S/M/L)">
+                                <span class="label-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="7" height="7"/>
+                                        <rect x="14" y="3" width="7" height="7"/>
+                                        <rect x="3" y="14" width="7" height="7"/>
+                                        <rect x="14" y="14" width="7" height="7"/>
+                                    </svg>
+                                </span>
+                                Size Variants
+                                <span class="product-count" id="sizeProductCount">0/4</span>
+                            </div>
+                            <div class="size-upload-grid" id="sizeUploadGrid">
+                                <div class="size-slot" data-slot="0">
+                                    <input type="file" class="size-file-input" accept="image/*" data-slot="0">
+                                    <div class="size-slot-empty">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="12" y1="5" x2="12" y2="19"/>
+                                            <line x1="5" y1="12" x2="19" y2="12"/>
+                                        </svg>
+                                        <span>Small</span>
+                                    </div>
+                                    <img class="size-slot-image" src="" alt="">
+                                    <div class="size-slot-overlay">
+                                        <input type="text" class="size-label-input" placeholder="S" value="S">
+                                        <button type="button" class="btn-remove-size">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                                <line x1="6" y1="6" x2="18" y2="18"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="size-slot" data-slot="1">
+                                    <input type="file" class="size-file-input" accept="image/*" data-slot="1">
+                                    <div class="size-slot-empty">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="12" y1="5" x2="12" y2="19"/>
+                                            <line x1="5" y1="12" x2="19" y2="12"/>
+                                        </svg>
+                                        <span>Medium</span>
+                                    </div>
+                                    <img class="size-slot-image" src="" alt="">
+                                    <div class="size-slot-overlay">
+                                        <input type="text" class="size-label-input" placeholder="M" value="M">
+                                        <button type="button" class="btn-remove-size">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                                <line x1="6" y1="6" x2="18" y2="18"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="size-slot" data-slot="2">
+                                    <input type="file" class="size-file-input" accept="image/*" data-slot="2">
+                                    <div class="size-slot-empty">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="12" y1="5" x2="12" y2="19"/>
+                                            <line x1="5" y1="12" x2="19" y2="12"/>
+                                        </svg>
+                                        <span>Large</span>
+                                    </div>
+                                    <img class="size-slot-image" src="" alt="">
+                                    <div class="size-slot-overlay">
+                                        <input type="text" class="size-label-input" placeholder="L" value="L">
+                                        <button type="button" class="btn-remove-size">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                                <line x1="6" y1="6" x2="18" y2="18"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="size-slot" data-slot="3">
+                                    <input type="file" class="size-file-input" accept="image/*" data-slot="3">
+                                    <div class="size-slot-empty">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="12" y1="5" x2="12" y2="19"/>
+                                            <line x1="5" y1="12" x2="19" y2="12"/>
+                                        </svg>
+                                        <span>XL</span>
+                                    </div>
+                                    <img class="size-slot-image" src="" alt="">
+                                    <div class="size-slot-overlay">
+                                        <input type="text" class="size-label-input" placeholder="XL" value="XL">
+                                        <button type="button" class="btn-remove-size">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                                <line x1="6" y1="6" x2="18" y2="18"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Multi-Product Grid Section -->
+                    <div class="comparison-section hidden" id="multiProductSection">
+                        <div class="config-section">
+                            <div class="section-label" data-tooltip="Upload 2-4 products for comparison grid">
+                                <span class="label-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="7" height="7"/>
+                                        <rect x="14" y="3" width="7" height="7"/>
+                                        <rect x="3" y="14" width="7" height="7"/>
+                                        <rect x="14" y="14" width="7" height="7"/>
+                                    </svg>
+                                </span>
+                                Products
+                                <span class="product-count" id="multiProductCount">0/4</span>
+                            </div>
+                            <div class="multi-product-grid" id="multiProductGrid">
+                                <div class="multi-slot" data-slot="0">
+                                    <input type="file" class="multi-file-input" accept="image/*" data-slot="0">
+                                    <div class="multi-slot-empty">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="12" y1="5" x2="12" y2="19"/>
+                                            <line x1="5" y1="12" x2="19" y2="12"/>
+                                        </svg>
+                                        <span>Product 1</span>
+                                    </div>
+                                    <img class="multi-slot-image" src="" alt="">
+                                    <div class="multi-slot-overlay">
+                                        <input type="text" class="multi-label-input" placeholder="Name">
+                                        <button type="button" class="btn-remove-multi">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                                <line x1="6" y1="6" x2="18" y2="18"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="multi-slot" data-slot="1">
+                                    <input type="file" class="multi-file-input" accept="image/*" data-slot="1">
+                                    <div class="multi-slot-empty">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="12" y1="5" x2="12" y2="19"/>
+                                            <line x1="5" y1="12" x2="19" y2="12"/>
+                                        </svg>
+                                        <span>Product 2</span>
+                                    </div>
+                                    <img class="multi-slot-image" src="" alt="">
+                                    <div class="multi-slot-overlay">
+                                        <input type="text" class="multi-label-input" placeholder="Name">
+                                        <button type="button" class="btn-remove-multi">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                                <line x1="6" y1="6" x2="18" y2="18"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="multi-slot" data-slot="2">
+                                    <input type="file" class="multi-file-input" accept="image/*" data-slot="2">
+                                    <div class="multi-slot-empty">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="12" y1="5" x2="12" y2="19"/>
+                                            <line x1="5" y1="12" x2="19" y2="12"/>
+                                        </svg>
+                                        <span>Product 3</span>
+                                    </div>
+                                    <img class="multi-slot-image" src="" alt="">
+                                    <div class="multi-slot-overlay">
+                                        <input type="text" class="multi-label-input" placeholder="Name">
+                                        <button type="button" class="btn-remove-multi">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                                <line x1="6" y1="6" x2="18" y2="18"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="multi-slot" data-slot="3">
+                                    <input type="file" class="multi-file-input" accept="image/*" data-slot="3">
+                                    <div class="multi-slot-empty">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="12" y1="5" x2="12" y2="19"/>
+                                            <line x1="5" y1="12" x2="19" y2="12"/>
+                                        </svg>
+                                        <span>Product 4</span>
+                                    </div>
+                                    <img class="multi-slot-image" src="" alt="">
+                                    <div class="multi-slot-overlay">
+                                        <input type="text" class="multi-label-input" placeholder="Name">
+                                        <button type="button" class="btn-remove-multi">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                                <line x1="6" y1="6" x2="18" y2="18"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Layout Options -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Choose how the comparison is arranged">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <line x1="12" y1="3" x2="12" y2="21"/>
+                                </svg>
+                            </span>
+                            Layout
+                        </div>
+                        <div class="layout-options" id="layoutOptions">
+                            <button type="button" class="layout-option selected" data-layout="split" data-tooltip="50/50 vertical split">
+                                <div class="layout-option-icon">
+                                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <rect x="4" y="4" width="10" height="24" rx="1"/>
+                                        <rect x="18" y="4" width="10" height="24" rx="1"/>
+                                    </svg>
+                                </div>
+                                <span class="layout-option-label">Split</span>
+                            </button>
+                            <button type="button" class="layout-option" data-layout="slider" data-tooltip="Interactive slider style">
+                                <div class="layout-option-icon">
+                                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <rect x="4" y="4" width="24" height="24" rx="1"/>
+                                        <line x1="16" y1="4" x2="16" y2="28"/>
+                                        <circle cx="16" cy="16" r="3" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                                <span class="layout-option-label">Slider</span>
+                            </button>
+                            <button type="button" class="layout-option" data-layout="grid" data-tooltip="Grid arrangement">
+                                <div class="layout-option-icon">
+                                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <rect x="4" y="4" width="10" height="10" rx="1"/>
+                                        <rect x="18" y="4" width="10" height="10" rx="1"/>
+                                        <rect x="4" y="18" width="10" height="10" rx="1"/>
+                                        <rect x="18" y="18" width="10" height="10" rx="1"/>
+                                    </svg>
+                                </div>
+                                <span class="layout-option-label">Grid</span>
+                            </button>
+                            <button type="button" class="layout-option" data-layout="table" data-tooltip="Table format with features">
+                                <div class="layout-option-icon">
+                                    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <rect x="4" y="4" width="24" height="24" rx="1"/>
+                                        <line x1="4" y1="12" x2="28" y2="12"/>
+                                        <line x1="4" y1="20" x2="28" y2="20"/>
+                                        <line x1="14" y1="4" x2="14" y2="28"/>
+                                    </svg>
+                                </div>
+                                <span class="layout-option-label">Table</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Visual Style Options -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Overall visual style">Visual Style</div>
+                        <select class="select-field" id="visualStyleSelect">
+                            <option value="clean">Clean / Minimal</option>
+                            <option value="bold">Bold / High Contrast</option>
+                            <option value="professional">Professional / Corporate</option>
+                            <option value="playful">Playful / Casual</option>
+                            <option value="luxury">Luxury / Premium</option>
+                        </select>
+                    </div>
+
+                    <!-- Advanced Options -->
+                    <div class="advanced-section" id="advancedSection">
+                        <button type="button" class="advanced-toggle" id="advancedToggle">
+                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="4" y1="21" x2="4" y2="14"/>
+                                <line x1="4" y1="10" x2="4" y2="3"/>
+                                <line x1="12" y1="21" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12" y2="3"/>
+                                <line x1="20" y1="21" x2="20" y2="16"/>
+                                <line x1="20" y1="12" x2="20" y2="3"/>
+                                <circle cx="4" cy="12" r="2"/>
+                                <circle cx="12" cy="10" r="2"/>
+                                <circle cx="20" cy="14" r="2"/>
+                            </svg>
+                            <span>Advanced Options</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="advanced-content" id="advancedContent">
+                            <!-- Winner Badge -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Add a badge like 'Best Value' or 'Most Popular'">Winner Badge</label>
+                                <input type="text" class="input-field" id="winnerBadgeInput" placeholder="e.g., Best Value, Most Popular">
+                            </div>
+
+                            <!-- Show Price -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Display price on the comparison">Show Price</label>
+                                <div class="option-buttons">
+                                    <button type="button" class="option-btn active" data-show-price="off">Off</button>
+                                    <button type="button" class="option-btn" data-show-price="on">On</button>
+                                </div>
+                            </div>
+
+                            <!-- Price Inputs (shown when Show Price is on) -->
+                            <div class="option-group price-inputs hidden" id="priceInputs">
+                                <label class="option-label">Prices</label>
+                                <div class="price-input-row">
+                                    <input type="text" class="input-field input-sm" id="priceAInput" placeholder="$99">
+                                    <input type="text" class="input-field input-sm" id="priceBInput" placeholder="$149">
+                                </div>
+                            </div>
+
+                            <!-- Aspect Ratio -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Output image dimensions">Aspect Ratio</label>
+                                <select class="select-field" id="aspectRatioSelect">
+                                    <option value="1:1">1:1 Square</option>
+                                    <option value="4:5">4:5 Portrait</option>
+                                    <option value="16:9" selected>16:9 Wide</option>
+                                    <option value="9:16">9:16 Story</option>
+                                    <option value="3:2">3:2 Landscape</option>
+                                </select>
+                            </div>
+
+                            <!-- Variations -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Generate multiple variations">Variations</label>
+                                <div class="option-buttons">
+                                    <button type="button" class="option-btn active" data-variations="1">1</button>
+                                    <button type="button" class="option-btn" data-variations="2">2</button>
+                                    <button type="button" class="option-btn" data-variations="4">4</button>
+                                </div>
+                            </div>
+
+                            <!-- Seed -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Use a specific seed to reproduce results">Seed</label>
+                                <div class="seed-controls">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="randomSeedCheck" checked>
+                                        <span>Random</span>
+                                    </label>
+                                    <input type="number" class="input-field input-sm" id="seedInput" placeholder="Seed" disabled>
+                                </div>
+                            </div>
+
+                            <!-- Negative Prompt -->
+                            <div class="option-group option-group-full">
+                                <label class="option-label" data-tooltip="Specify what to avoid">Negative Prompt</label>
+                                <input type="text" class="input-field" id="negativePromptInput" placeholder="e.g., blurry, text, watermark">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button type="submit" class="btn-generate" id="generateBtn" disabled>
+                        <span class="btn-content">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="2" x2="12" y2="22"/>
+                                <rect x="2" y="4" width="8" height="16" rx="1"/>
+                                <rect x="14" y="4" width="8" height="16" rx="1"/>
+                            </svg>
+                            Generate Comparison
+                        </span>
+                        <span class="btn-loading">
+                            <span class="spinner"></span>
+                            <span id="loadingStatus">Generating...</span>
+                        </span>
+                        <span class="btn-glow"></span>
+                    </button>
+                    <div class="shortcut-hint">
+                        <kbd>Ctrl</kbd><span>+</span><kbd>Enter</kbd>
+                    </div>
+                    <p class="helper-text generate-helper" id="generateHelper">Upload images to generate</p>
+
+                    <!-- API Settings (collapsible at bottom) -->
+                    <div class="settings-section" id="settingsSection">
+                        <button type="button" class="settings-toggle" id="settingsToggle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                            </svg>
+                            <span>API Settings</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="settings-content">
+                            <div class="option-row">
+                                <label class="option-label" data-tooltip="AI model for generation">AI Model</label>
+                                <select class="select-field" id="modelSelect">
+                                    <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
+                                    <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash</option>
+                                    <option value="openai/gpt-4o">GPT-4o</option>
+                                    <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+                                </select>
+                            </div>
+                            <div class="api-key-group">
+                                <label class="option-label" data-tooltip="Your OpenRouter API key">OpenRouter API Key</label>
+                                <div class="api-key-input">
+                                    <input type="password" class="input-field" id="apiKeyInput" placeholder="sk-or-...">
+                                    <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </button>
+                                    <button type="button" class="btn-secondary btn-sm" id="saveKeyBtn">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Right Panel: Output -->
+            <section class="panel panel-output">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="title-number">02</span>
+                        Output
+                    </h2>
+                    <div class="result-actions" id="resultActions" style="display: none;">
+                        <button class="btn-action" id="favoriteBtn" title="Save to favorites">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                        </button>
+                        <button class="btn-action" id="downloadBtn" title="Download image">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </button>
+                        <button class="btn-action" id="copyPromptBtn" title="Copy prompt">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="result-container" id="resultContainer">
+                    <div class="result-placeholder">
+                        <div class="placeholder-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <line x1="12" y1="2" x2="12" y2="22"/>
+                                <rect x="2" y="4" width="8" height="16" rx="1"/>
+                                <rect x="14" y="4" width="8" height="16" rx="1"/>
+                            </svg>
+                        </div>
+                        <p class="placeholder-text">Upload images and generate a comparison</p>
+                    </div>
+                    <div class="result-image-container" id="resultImageContainer" style="display: none;">
+                        <img class="result-image" id="resultImage" src="" alt="Generated comparison">
+                        <button class="btn-image-info" id="imageInfoBtn" title="Show image info">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="16" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12.01" y2="8"/>
+                            </svg>
+                        </button>
+                        <div class="image-info-overlay" id="imageInfoOverlay" style="display: none;"></div>
+                    </div>
+                    <div class="result-variants" id="resultVariants" style="display: none;"></div>
+                </div>
+                <div class="result-info" id="resultInfo" style="display: none;">
+                    <div class="result-seed">
+                        <span class="seed-label">Seed:</span>
+                        <code class="seed-value" id="seedValue"></code>
+                        <button class="btn-copy-seed" id="copySeedBtn" title="Copy seed">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Feedback -->
+                    <div class="feedback-section">
+                        <label class="option-label" data-tooltip="Describe changes you want to make">Adjustments</label>
+                        <textarea class="input-field textarea-field" id="feedbackTextarea" placeholder="e.g., Make the divider thicker, add more contrast..." rows="2"></textarea>
+                        <button type="button" class="btn-secondary" id="adjustBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                            Adjust
+                        </button>
+                    </div>
+                </div>
+
+                <!-- History -->
+                <div class="history-section" id="historySection">
+                    <div class="history-header">
+                        <h3>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            Recent
+                            <span class="history-count" id="historyCount">0</span>
+                        </h3>
+                        <button type="button" class="btn-text" id="clearHistoryBtn">Clear</button>
+                    </div>
+                    <div class="history-grid" id="historyGrid"></div>
+                    <div class="empty-state" id="historyEmpty">
+                        <div class="empty-state-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <path d="M21 15l-5-5L5 21"/>
+                            </svg>
+                        </div>
+                        <p class="empty-state-title">No images yet</p>
+                        <p class="empty-state-text">Generated comparisons will appear here</p>
+                    </div>
+
+                    <!-- Favorites Section -->
+                    <div class="favorites-section" id="favoritesSection">
+                        <div class="favorites-header">
+                            <div class="favorites-title-group">
+                                <h3 class="favorites-title">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                    Favorites
+                                </h3>
+                                <span class="favorites-count" id="favoritesCount">0</span>
+                            </div>
+                            <button class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
+                        </div>
+                        <div class="favorites-grid" id="favoritesGrid"></div>
+                        <div class="empty-state" id="favoritesEmpty">
+                            <div class="empty-state-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </div>
+                            <p class="empty-state-title">No favorites yet</p>
+                            <p class="empty-state-text">Click the star on generated images to save them</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Favorites Modal -->
+    <div class="modal" id="favoritesModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Favorite Details</h3>
+                <button class="modal-close" id="favoritesModalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="favorite-preview-container">
+                    <img class="favorite-preview" id="favoritePreviewImage" src="" alt="">
+                </div>
+                <div class="favorite-variants" id="favoriteVariants"></div>
+                <div class="favorite-details">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="input-field" id="favoriteNameInput">
+                    </div>
+                    <div class="favorite-seed">
+                        <span class="seed-label">Seed:</span>
+                        <code class="seed-value" id="favoriteSeedValue"></code>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="deleteFavoriteBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                    Delete
+                </button>
+                <button class="btn-primary" id="loadFavoriteBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Load Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close">&times;</button>
+        <img class="lightbox-image" id="lightboxImage" src="" alt="">
+    </div>
+
+    <script src="core.js"></script>
+    <script src="shared.js"></script>
+    <script src="api.js"></script>
+    <script src="components.js"></script>
+    <script src="workers.js"></script>
+    <script src="comparison.js"></script>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <span>NGRAPHICS</span>
+            <span class="footer-divider">-</span>
+            <span>Powered by OpenRouter AI</span>
+            <span class="footer-divider">-</span>
+            <span class="footer-shortcut"><kbd>Ctrl</kbd>+<kbd>D</kbd> Download</span>
+        </div>
+    </footer>
+</body>
+</html>
