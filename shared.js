@@ -142,6 +142,9 @@ const SharedHeader = {
         lifestyle: { href: 'lifestyle.html', label: 'Lifestyle', subtitle: 'Lifestyle Studio' },
         copywriter: { href: 'copywriter.html', label: 'Copywriter', subtitle: 'AI Copywriter' },
         packaging: { href: 'packaging.html', label: 'Packaging', subtitle: 'Packaging Mockup' },
+        comparison: { href: 'comparison.html', label: 'Compare', subtitle: 'Comparison Generator' },
+        'size-visualizer': { href: 'size-visualizer.html', label: 'Size', subtitle: 'Size Visualizer' },
+        'faq-generator': { href: 'faq-generator.html', label: 'FAQ', subtitle: 'FAQ Generator' },
         docs: { href: 'docs.html', label: 'Docs', subtitle: 'Documentation' }
     },
 
