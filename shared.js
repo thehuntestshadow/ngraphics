@@ -4050,9 +4050,12 @@ const SharedRating = {
 // Export for use in other modules (if using ES modules in future)
 if (typeof window !== 'undefined') {
     window.SharedAPI = SharedAPI;
+    window.SharedTheme = SharedTheme;
+    window.SharedHeader = SharedHeader;
     window.SharedRequest = SharedRequest;
     window.SharedHistory = SharedHistory;
     window.SharedFavorites = SharedFavorites;
+    window.ImageStore = ImageStore;
     window.SharedUI = SharedUI;
     window.SharedUpload = SharedUpload;
     window.SharedLightbox = SharedLightbox;
