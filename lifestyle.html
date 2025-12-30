@@ -75,7 +75,7 @@
                                 <p class="upload-text">Drop image or click to upload</p>
                                 <p class="upload-formats">PNG, JPG, WebP • Max 10MB</p>
                             </div>
-                            <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp">
+                            <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="Upload product photo">
                         </div>
                         <div class="image-preview" id="imagePreview" style="display: none;">
                             <img id="previewImg" alt="Preview" class="preview-img">
@@ -145,7 +145,7 @@
                         <!-- Scene Details (optional) -->
                         <div class="scene-details-section">
                             <input type="text" class="input-field" id="sceneDetails"
-                                   placeholder="Optional: Describe specific details (e.g., marble countertop, cozy armchair)">
+                                   placeholder="Optional: Describe specific details (e.g., marble countertop, cozy armchair)" aria-label="Scene details">
                             <p class="scene-details-hint">Add custom details to personalize the scene</p>
                         </div>
                     </div>
@@ -334,7 +334,7 @@
                             <!-- Seed -->
                             <div class="option-group">
                                 <label class="option-label" data-tooltip="Fixed number for reproducible results. Same seed with same settings creates similar images.">Seed (optional)</label>
-                                <input type="number" class="input-field input-sm" id="seedInput" placeholder="Random">
+                                <input type="number" class="input-field input-sm" id="seedInput" placeholder="Random" aria-label="Generation seed">
                                 <p class="option-hint">Use same seed to reproduce similar results</p>
                             </div>
 
@@ -349,7 +349,7 @@
                                             <path d="M21 15l-5-5L5 21"/>
                                         </svg>
                                         <span>Upload style reference</span>
-                                        <input type="file" class="upload-input" id="styleReference" accept="image/png,image/jpeg,image/jpg,image/webp">
+                                        <input type="file" class="upload-input" id="styleReference" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="Upload style reference image">
                                     </div>
                                     <div class="style-preview-wrap" id="stylePreviewContainer" style="display: none;">
                                         <img src="" alt="Style Reference" id="stylePreviewImg">
@@ -361,7 +361,7 @@
                                         <span class="slider-label" data-tooltip="How closely to follow the reference style.">Style Influence</span>
                                         <span class="slider-value" id="styleStrengthValue">70%</span>
                                     </div>
-                                    <input type="range" class="range-slider" id="styleStrength" min="10" max="100" value="70">
+                                    <input type="range" class="range-slider" id="styleStrength" min="10" max="100" value="70" aria-label="Style influence strength">
                                     <div class="slider-marks">
                                         <span>Subtle</span>
                                         <span>Strong</span>
@@ -373,7 +373,7 @@
                             <div class="option-group">
                                 <label class="option-label" data-tooltip="Elements to exclude from the generated image.">Negative Prompt</label>
                                 <textarea class="input-field textarea-field" id="negativePrompt" rows="2"
-                                          placeholder="Things to avoid (e.g., text, logos, watermarks)"></textarea>
+                                          placeholder="Things to avoid (e.g., text, logos, watermarks)" aria-label="Negative prompts"></textarea>
                             </div>
 
                             <!-- Variations -->
@@ -404,7 +404,7 @@
                             <div class="api-key-group">
                                 <label class="option-label" data-tooltip="Your OpenRouter API key for AI image generation. Get one free at openrouter.ai">OpenRouter API Key</label>
                                 <div class="api-key-input">
-                                    <input type="password" class="input-field" id="apiKeyInput" placeholder="sk-or-...">
+                                    <input type="password" class="input-field" id="apiKeyInput" placeholder="sk-or-..." aria-label="OpenRouter API key">
                                     <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -531,7 +531,7 @@
                         <!-- Feedback Section -->
                         <div class="feedback-section">
                             <textarea class="textarea-field" id="feedbackTextarea" rows="2"
-                                      placeholder="Describe adjustments (e.g., warmer lighting, more plants in background)"></textarea>
+                                      placeholder="Describe adjustments (e.g., warmer lighting, more plants in background)" aria-label="Adjustment feedback"></textarea>
                             <button type="button" class="btn-secondary" id="adjustBtn">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
@@ -638,7 +638,7 @@
                 </div>
                 <div class="favorite-details">
                     <div class="favorite-name-row">
-                        <input type="text" class="favorite-name-input" id="favoriteNameInput" placeholder="Favorite name...">
+                        <input type="text" class="favorite-name-input" id="favoriteNameInput" placeholder="Favorite name..." aria-label="Favorite name">
                     </div>
                     <div class="favorite-meta">
                         <div class="favorite-meta-item">

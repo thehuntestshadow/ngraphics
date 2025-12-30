@@ -72,7 +72,7 @@
                                 <p class="upload-text">Drop images or click to upload</p>
                                 <p class="upload-formats">PNG, JPG, WebP - Max 4 images</p>
                             </div>
-                            <input type="file" class="upload-input" id="productPhotos" accept="image/png,image/jpeg,image/jpg,image/webp" multiple>
+                            <input type="file" class="upload-input" id="productPhotos" accept="image/png,image/jpeg,image/jpg,image/webp" multiple aria-label="Upload product photos">
                         </div>
                         <div class="image-previews" id="imagePreviews"></div>
                     </div>
@@ -88,7 +88,7 @@
                             </span>
                             Product Title
                         </div>
-                        <input type="text" class="input-field" id="productTitle" placeholder="e.g., Premium Wireless Headphones">
+                        <input type="text" class="input-field" id="productTitle" placeholder="e.g., Premium Wireless Headphones" aria-label="Product title">
                     </div>
 
                     <!-- Product Category -->
@@ -250,7 +250,7 @@
                             <div class="api-key-group">
                                 <label class="option-label" data-tooltip="Your OpenRouter API key for AI text generation.">OpenRouter API Key</label>
                                 <div class="api-key-input">
-                                    <input type="password" class="input-field" id="apiKey" placeholder="sk-or-...">
+                                    <input type="password" class="input-field" id="apiKey" placeholder="sk-or-..." aria-label="OpenRouter API key">
                                     <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>

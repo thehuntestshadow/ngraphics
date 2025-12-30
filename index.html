@@ -100,7 +100,7 @@
                                         <p class="upload-text">Drop image or click to upload</p>
                                         <p class="upload-formats">PNG, JPG, WebP • Max 10MB</p>
                                     </div>
-                                    <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp">
+                                    <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="Upload product photo">
                                 </div>
                                 <div class="image-preview" id="imagePreview">
                                     <img src="" alt="Preview" class="preview-img" id="previewImg">
@@ -125,7 +125,7 @@
                                     </svg>
                                     <span>Add angle</span>
                                     <span class="multi-angle-count" id="multiAngleCount">0/4</span>
-                                    <input type="file" class="upload-input" id="multiAngleInput" accept="image/png,image/jpeg,image/jpg,image/webp" multiple>
+                                    <input type="file" class="upload-input" id="multiAngleInput" accept="image/png,image/jpeg,image/jpg,image/webp" multiple aria-label="Upload multiple angle photos">
                                 </div>
                                 <p class="multi-angle-hint">Upload 2-4 photos of the same product from different angles for better AI understanding</p>
                             </div>
@@ -161,7 +161,7 @@
                                     <p class="upload-text">Drop multiple images or click to upload</p>
                                     <p class="upload-formats">PNG, JPG, WebP • Max 10MB each</p>
                                 </div>
-                                <input type="file" class="upload-input" id="batchProductPhotos" accept="image/png,image/jpeg,image/jpg,image/webp" multiple>
+                                <input type="file" class="upload-input" id="batchProductPhotos" accept="image/png,image/jpeg,image/jpg,image/webp" multiple aria-label="Upload batch product photos">
                             </div>
                             <div class="batch-queue" id="batchQueue"></div>
                             <div class="batch-controls" id="batchControls" style="display: none;">
@@ -202,7 +202,7 @@
                             Product Title
                             <span class="label-hint" id="titleHint">(in English)</span>
                         </div>
-                        <input type="text" class="input-field" id="productTitle" placeholder="e.g., Premium Wireless Headphones" required>
+                        <input type="text" class="input-field" id="productTitle" placeholder="e.g., Premium Wireless Headphones" required aria-label="Product title">
                     </div>
 
                     <!-- Product Characteristics -->
@@ -471,7 +471,7 @@
                                 </div>
                                 <div id="contextDescriptionGroup" style="display: none; margin-top: 12px;">
                                     <label class="field-label" data-tooltip="Describe the scene when using 'In Context' focus. E.g., 'on a kitchen counter' or 'being used outdoors'.">Context Description</label>
-                                    <input type="text" class="input-field" id="contextDescription" placeholder="Describe the context (e.g., kitchen countertop, office desk, outdoor picnic)">
+                                    <input type="text" class="input-field" id="contextDescription" placeholder="Describe the context (e.g., kitchen countertop, office desk, outdoor picnic)" aria-label="Context description">
                                 </div>
                             </div>
 
@@ -483,7 +483,7 @@
                                         <span class="slider-label" data-tooltip="Amount of visual detail. Minimal is clean, Rich includes more decorative elements.">Visual Density</span>
                                         <span class="slider-value" id="visualDensityValue">Balanced</span>
                                     </div>
-                                    <input type="range" class="range-slider" id="visualDensity" min="1" max="5" value="3">
+                                    <input type="range" class="range-slider" id="visualDensity" min="1" max="5" value="3" aria-label="Visual density">
                                     <div class="slider-marks">
                                         <span>Minimal</span>
                                         <span>Rich</span>
@@ -532,7 +532,7 @@
                                                 <span class="slider-label">Line Thickness</span>
                                                 <span class="slider-value" id="lineThicknessValue">Medium</span>
                                             </div>
-                                            <input type="range" class="range-slider" id="lineThickness" min="1" max="5" value="3">
+                                            <input type="range" class="range-slider" id="lineThickness" min="1" max="5" value="3" aria-label="Line thickness">
                                             <div class="slider-marks">
                                                 <span>Thin</span>
                                                 <span>Thick</span>
@@ -602,9 +602,9 @@
                                                 <div class="selected-colors" id="selectedColors"></div>
                                                 <div class="custom-color-row">
                                                     <div class="color-input-wrapper">
-                                                        <input type="color" class="color-input-native" id="customColorPicker" value="#6366F1">
+                                                        <input type="color" class="color-input-native" id="customColorPicker" value="#6366F1" aria-label="Custom color picker">
                                                     </div>
-                                                    <input type="text" class="input-field input-sm input-mono" id="customColorHex" placeholder="#6366F1" maxlength="7">
+                                                    <input type="text" class="input-field input-sm input-mono" id="customColorHex" placeholder="#6366F1" maxlength="7" aria-label="Custom color hex code">
                                                     <button type="button" class="btn-add-color" id="addCustomColor">Add</button>
                                                 </div>
                                             </div>
@@ -623,7 +623,7 @@
                                                     <path d="M21 15l-5-5L5 21"/>
                                                 </svg>
                                                 <span>Upload style reference</span>
-                                                <input type="file" class="upload-input" id="styleReference" accept="image/png,image/jpeg,image/jpg,image/webp">
+                                                <input type="file" class="upload-input" id="styleReference" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="Upload style reference image">
                                             </div>
                                             <div class="style-preview-wrap" id="stylePreviewContainer" style="display: none;">
                                                 <img src="" alt="Style Reference" id="stylePreviewImg">
@@ -635,7 +635,7 @@
                                                 <span class="slider-label" data-tooltip="How closely to follow the reference style. Higher values create a stronger match.">Style Influence</span>
                                                 <span class="slider-value" id="styleStrengthValue">70%</span>
                                             </div>
-                                            <input type="range" class="range-slider" id="styleStrength" min="10" max="100" value="70">
+                                            <input type="range" class="range-slider" id="styleStrength" min="10" max="100" value="70" aria-label="Style influence strength">
                                             <div class="slider-marks">
                                                 <span>Subtle</span>
                                                 <span>Strong</span>
@@ -649,7 +649,7 @@
                                         <div class="field-group full-width">
                                             <label class="field-label" data-tooltip="Fixed number for reproducible results. Same seed with same settings creates similar images.">Seed</label>
                                             <div class="seed-input-group">
-                                                <input type="number" class="input-field input-sm input-mono" id="seedInput" placeholder="Random" min="0" max="999999999">
+                                                <input type="number" class="input-field input-sm input-mono" id="seedInput" placeholder="Random" min="0" max="999999999" aria-label="Generation seed">
                                                 <label class="checkbox-field checkbox-inline">
                                                     <input type="checkbox" id="randomSeed" checked>
                                                     <span class="checkbox-mark"></span>
@@ -659,7 +659,7 @@
                                         </div>
                                         <div class="field-group full-width">
                                             <label class="field-label" data-tooltip="Elements to exclude from the generated image.">Negative Prompts <span class="label-hint">(what to avoid)</span></label>
-                                            <textarea class="textarea-field" id="negativePrompt" rows="2" placeholder="e.g., clipart, busy backgrounds, small text, watermarks"></textarea>
+                                            <textarea class="textarea-field" id="negativePrompt" rows="2" placeholder="e.g., clipart, busy backgrounds, small text, watermarks" aria-label="Negative prompts"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -684,7 +684,7 @@
                             <div class="settings-field">
                                 <label class="field-label" data-tooltip="Your OpenRouter API key for AI image generation. Get one free at openrouter.ai">API Key</label>
                                 <div class="api-input-group">
-                                    <input type="password" class="input-field input-mono input-sm" id="apiKey" placeholder="sk-or-v1-...">
+                                    <input type="password" class="input-field input-mono input-sm" id="apiKey" placeholder="sk-or-v1-..." aria-label="OpenRouter API key">
                                     <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -972,7 +972,7 @@
                                     <span class="slider-label">Variation Strength</span>
                                     <span class="slider-value" id="variationStrengthValue">Medium</span>
                                 </div>
-                                <input type="range" class="range-slider" id="variationStrength" min="1" max="5" value="3">
+                                <input type="range" class="range-slider" id="variationStrength" min="1" max="5" value="3" aria-label="Variation strength">
                                 <div class="slider-marks">
                                     <span>Similar</span>
                                     <span>Different</span>
@@ -1125,7 +1125,7 @@
                     <!-- Feedback Section -->
                     <div class="feedback-section">
                         <label class="feedback-label">Adjust this infographic</label>
-                        <textarea class="textarea-field" id="feedbackTextarea" placeholder="Describe changes: 'Make background darker', 'Use larger font'..."></textarea>
+                        <textarea class="textarea-field" id="feedbackTextarea" placeholder="Describe changes: 'Make background darker', 'Use larger font'..." aria-label="Adjustment feedback"></textarea>
                         <button class="btn-adjust" id="adjustBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
@@ -1149,10 +1149,10 @@
                                 <button type="button" class="watermark-tab" data-tab="logo">Logo</button>
                             </div>
                             <div class="watermark-tab-content active" id="watermarkTextTab">
-                                <input type="text" class="input-field input-sm" id="watermarkText" placeholder="Watermark text">
+                                <input type="text" class="input-field input-sm" id="watermarkText" placeholder="Watermark text" aria-label="Watermark text">
                             </div>
                             <div class="watermark-tab-content" id="watermarkLogoTab">
-                                <input type="file" id="watermarkLogo" accept="image/png,image/jpeg,image/webp" style="display: none;">
+                                <input type="file" id="watermarkLogo" accept="image/png,image/jpeg,image/webp" style="display: none;" aria-label="Upload watermark logo">
                                 <button type="button" class="btn-secondary-sm" id="uploadLogoBtn">Upload Logo</button>
                                 <img src="" alt="Logo" class="watermark-logo-preview" id="watermarkLogoPreview" style="display: none;">
                             </div>
@@ -1175,14 +1175,14 @@
                                     <span class="slider-label">Opacity</span>
                                     <span class="slider-value" id="opacityValue">50%</span>
                                 </div>
-                                <input type="range" class="range-slider" id="watermarkOpacity" min="10" max="100" value="50">
+                                <input type="range" class="range-slider" id="watermarkOpacity" min="10" max="100" value="50" aria-label="Watermark opacity">
                             </div>
                             <div class="slider-field slider-sm" id="watermarkSizeGroup" style="display: none;">
                                 <div class="slider-header">
                                     <span class="slider-label">Size</span>
                                     <span class="slider-value" id="sizeValue">20%</span>
                                 </div>
-                                <input type="range" class="range-slider" id="watermarkSize" min="5" max="50" value="20">
+                                <input type="range" class="range-slider" id="watermarkSize" min="5" max="50" value="20" aria-label="Watermark size">
                             </div>
                             <button type="button" class="btn-accent" id="applyWatermark">Apply Watermark</button>
                         </div>
@@ -1214,7 +1214,7 @@
             </div>
             <!-- Search & Bulk Actions -->
             <div class="org-search">
-                <input type="text" class="org-search-input" id="historySearch" placeholder="Search history...">
+                <input type="text" class="org-search-input" id="historySearch" placeholder="Search history..." aria-label="Search history">
             </div>
             <div class="bulk-actions-bar" id="historyBulkBar">
                 <label class="bulk-select-all">
@@ -1268,7 +1268,7 @@
                 </div>
                 <!-- Search -->
                 <div class="org-search">
-                    <input type="text" class="org-search-input" id="favoritesSearch" placeholder="Search favorites...">
+                    <input type="text" class="org-search-input" id="favoritesSearch" placeholder="Search favorites..." aria-label="Search favorites">
                 </div>
                 <!-- Folder Navigation -->
                 <div class="folder-nav" id="folderNav">
@@ -1388,7 +1388,7 @@
                 </div>
                 <div class="favorite-details">
                     <div class="favorite-name-row">
-                        <input type="text" class="favorite-name-input" id="favoriteNameInput" placeholder="Favorite name...">
+                        <input type="text" class="favorite-name-input" id="favoriteNameInput" placeholder="Favorite name..." aria-label="Favorite name">
                     </div>
                     <div class="favorite-meta">
                         <div class="favorite-meta-item">
@@ -1418,7 +1418,7 @@
                         <select class="favorite-folder-select" id="favoriteFolderSelect">
                             <option value="">None</option>
                         </select>
-                        <input type="text" class="favorite-folder-new" id="favoriteFolderNew" placeholder="New folder...">
+                        <input type="text" class="favorite-folder-new" id="favoriteFolderNew" placeholder="New folder..." aria-label="New folder name">
                     </div>
                     <!-- Tags -->
                     <div class="favorite-tags-row">
@@ -1431,7 +1431,7 @@
                         </label>
                         <div class="favorite-tags-container" id="favoriteTagsContainer"></div>
                         <div class="tag-input-container">
-                            <input type="text" class="tag-input" id="favoriteTagInput" placeholder="Add tag...">
+                            <input type="text" class="tag-input" id="favoriteTagInput" placeholder="Add tag..." aria-label="Add tag">
                             <button class="tag-add-btn" id="addFavoriteTagBtn" title="Add tag">+</button>
                         </div>
                     </div>

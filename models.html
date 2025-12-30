@@ -74,7 +74,7 @@
                                 <p class="upload-text">Drop image or click to upload</p>
                                 <p class="upload-formats">PNG, JPG, WebP • Max 10MB</p>
                             </div>
-                            <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp">
+                            <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="Upload product photo">
                         </div>
                         <div class="image-preview" id="imagePreview" style="display: none;">
                             <img id="previewImg" alt="Preview" class="preview-img">
@@ -161,7 +161,7 @@
                             </span>
                             Product Description
                         </div>
-                        <textarea class="input-field textarea-field" id="productDescription" placeholder="e.g., Black leather crossbody bag with gold chain strap" rows="2"></textarea>
+                        <textarea class="input-field textarea-field" id="productDescription" placeholder="e.g., Black leather crossbody bag with gold chain strap" rows="2" aria-label="Product description"></textarea>
                     </div>
 
                     <!-- Model Selection -->
@@ -380,7 +380,7 @@
                                 <button type="button" class="scene-detail-btn" data-detail="custom">Custom</button>
                             </div>
                             <div class="scene-detail-input" id="sceneDetailInput" style="display: none;">
-                                <input type="text" class="input-field" id="sceneDetailText" placeholder="e.g., in front of a graffiti wall, next to vintage cars, near a fountain...">
+                                <input type="text" class="input-field" id="sceneDetailText" placeholder="e.g., in front of a graffiti wall, next to vintage cars, near a fountain..." aria-label="Scene detail description">
                                 <span class="option-hint">Describe specific elements or atmosphere for the <span id="sceneNameLabel">studio</span> setting</span>
                             </div>
                         </div>
@@ -703,7 +703,7 @@
                             <!-- Context Description (shown when In Context selected) -->
                             <div class="option-group option-group-full" id="contextDescriptionGroup" style="display: none;">
                                 <label class="option-label" data-tooltip="Describe the setting or usage scenario.">Describe the Context</label>
-                                <input type="text" class="input-field" id="contextDescription" placeholder="e.g., on a kitchen counter, being used outdoors, in a gym bag...">
+                                <input type="text" class="input-field" id="contextDescription" placeholder="e.g., on a kitchen counter, being used outdoors, in a gym bag..." aria-label="Context description">
                                 <span class="option-hint">How/where should the product be shown?</span>
                             </div>
 
@@ -715,7 +715,7 @@
                                         <input type="checkbox" id="randomSeedCheck" checked>
                                         <span>Random</span>
                                     </label>
-                                    <input type="number" class="input-field input-sm" id="seedInput" placeholder="Seed" disabled>
+                                    <input type="number" class="input-field input-sm" id="seedInput" placeholder="Seed" disabled aria-label="Generation seed">
                                 </div>
                             </div>
 
@@ -730,7 +730,7 @@
                                             <path d="M21 15l-5-5L5 21"/>
                                         </svg>
                                         <span>Upload style reference</span>
-                                        <input type="file" class="upload-input" id="styleReference" accept="image/png,image/jpeg,image/jpg,image/webp">
+                                        <input type="file" class="upload-input" id="styleReference" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="Upload style reference image">
                                     </div>
                                     <div class="style-preview-wrap" id="stylePreviewContainer" style="display: none;">
                                         <img src="" alt="Style Reference" id="stylePreviewImg">
@@ -742,7 +742,7 @@
                                         <span class="slider-label" data-tooltip="How closely to follow the reference style. Higher values create a stronger match.">Style Influence</span>
                                         <span class="slider-value" id="styleStrengthValue">70%</span>
                                     </div>
-                                    <input type="range" class="range-slider" id="styleStrength" min="10" max="100" value="70">
+                                    <input type="range" class="range-slider" id="styleStrength" min="10" max="100" value="70" aria-label="Style influence strength">
                                     <div class="slider-marks">
                                         <span>Subtle</span>
                                         <span>Strong</span>
@@ -753,7 +753,7 @@
                             <!-- Negative Prompt -->
                             <div class="option-group option-group-full">
                                 <label class="option-label" data-tooltip="Elements to exclude from the generated image.">Things to Avoid</label>
-                                <textarea class="input-field textarea-field" id="negativePrompt" placeholder="e.g., blurry, distorted hands, unrealistic proportions, watermarks, text overlays..." rows="2"></textarea>
+                                <textarea class="input-field textarea-field" id="negativePrompt" placeholder="e.g., blurry, distorted hands, unrealistic proportions, watermarks, text overlays..." rows="2" aria-label="Negative prompts"></textarea>
                                 <span class="option-hint">Specify elements you don't want in the generated image</span>
                             </div>
                         </div>
@@ -794,7 +794,7 @@
                             <div class="api-key-group">
                                 <label class="option-label" data-tooltip="Your OpenRouter API key for AI image generation. Get one free at openrouter.ai">OpenRouter API Key</label>
                                 <div class="api-key-input">
-                                    <input type="password" class="input-field" id="apiKey" placeholder="sk-or-...">
+                                    <input type="password" class="input-field" id="apiKey" placeholder="sk-or-..." aria-label="OpenRouter API key">
                                     <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -907,7 +907,7 @@
                         <!-- Feedback -->
                         <div class="feedback-section">
                             <label class="option-label" data-tooltip="Describe changes you want to make. The AI will regenerate with your feedback applied.">Adjustments</label>
-                            <textarea class="input-field textarea-field" id="feedbackTextarea" placeholder="e.g., Make the model smile more, adjust lighting to be warmer..." rows="2"></textarea>
+                            <textarea class="input-field textarea-field" id="feedbackTextarea" placeholder="e.g., Make the model smile more, adjust lighting to be warmer..." rows="2" aria-label="Adjustment feedback"></textarea>
                             <button type="button" class="btn-secondary" id="adjustBtn">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
@@ -1014,7 +1014,7 @@
                 </div>
                 <div class="favorite-details">
                     <div class="favorite-name-row">
-                        <input type="text" class="favorite-name-input" id="favoriteNameInput" placeholder="Favorite name...">
+                        <input type="text" class="favorite-name-input" id="favoriteNameInput" placeholder="Favorite name..." aria-label="Favorite name">
                     </div>
                     <div class="favorite-meta">
                         <div class="favorite-meta-item">

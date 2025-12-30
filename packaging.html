@@ -71,7 +71,7 @@
                                 <p class="upload-text">Drop image or click to upload</p>
                                 <p class="upload-formats">PNG, JPG, WebP - Max 10MB</p>
                             </div>
-                            <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp">
+                            <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="Upload product photo">
                         </div>
                         <div class="image-preview" id="imagePreview" style="display: none;">
                             <img id="previewImg" alt="Preview" class="preview-img">
@@ -95,7 +95,7 @@
                             </span>
                             Product Name
                         </div>
-                        <input type="text" class="input-field" id="productName" placeholder="e.g., Premium Organic Skincare">
+                        <input type="text" class="input-field" id="productName" placeholder="e.g., Premium Organic Skincare" aria-label="Product name">
                     </div>
 
                     <!-- Packaging Type -->
@@ -349,7 +349,7 @@
                             </div>
                             <div class="option-group" id="customColorGroup" style="display: none;">
                                 <label class="option-label">Custom Color</label>
-                                <input type="color" class="color-input" id="customColor" value="#6366f1">
+                                <input type="color" class="color-input" id="customColor" value="#6366f1" aria-label="Custom color picker">
                             </div>
                             <div class="option-group">
                                 <label class="option-label">Design Style</label>
@@ -461,14 +461,14 @@
                                         <input type="checkbox" id="randomSeedCheck" checked>
                                         <span>Random</span>
                                     </label>
-                                    <input type="number" class="input-field input-sm" id="seedInput" placeholder="Seed" disabled>
+                                    <input type="number" class="input-field input-sm" id="seedInput" placeholder="Seed" disabled aria-label="Generation seed">
                                 </div>
                             </div>
 
                             <!-- Negative Prompt -->
                             <div class="option-group option-group-full">
                                 <label class="option-label">Things to Avoid</label>
-                                <textarea class="input-field textarea-field" id="negativePrompt" placeholder="e.g., blurry, distorted text, unrealistic shadows..." rows="2"></textarea>
+                                <textarea class="input-field textarea-field" id="negativePrompt" placeholder="e.g., blurry, distorted text, unrealistic shadows..." rows="2" aria-label="Negative prompts"></textarea>
                             </div>
                         </div>
                     </div>
@@ -505,7 +505,7 @@
                             <div class="api-key-group">
                                 <label class="option-label">OpenRouter API Key</label>
                                 <div class="api-key-input">
-                                    <input type="password" class="input-field" id="apiKey" placeholder="sk-or-...">
+                                    <input type="password" class="input-field" id="apiKey" placeholder="sk-or-..." aria-label="OpenRouter API key">
                                     <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -612,7 +612,7 @@
                         <!-- Feedback -->
                         <div class="feedback-section">
                             <label class="option-label">Adjustments</label>
-                            <textarea class="input-field textarea-field" id="feedbackTextarea" placeholder="e.g., Make the box more glossy, add tissue paper..." rows="2"></textarea>
+                            <textarea class="input-field textarea-field" id="feedbackTextarea" placeholder="e.g., Make the box more glossy, add tissue paper..." rows="2" aria-label="Adjustment feedback"></textarea>
                             <button type="button" class="btn-secondary" id="adjustBtn">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>

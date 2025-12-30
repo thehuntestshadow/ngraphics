@@ -67,7 +67,7 @@
                         <div class="product-upload-grid" id="productGrid">
                             <!-- Product slot 1 -->
                             <div class="product-slot" data-slot="0">
-                                <input type="file" class="product-file-input" accept="image/*" data-slot="0">
+                                <input type="file" class="product-file-input" accept="image/*" data-slot="0" aria-label="Upload product 1">
                                 <div class="product-slot-empty">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <line x1="12" y1="5" x2="12" y2="19"/>
@@ -104,7 +104,7 @@
                             </div>
                             <!-- Product slot 2 -->
                             <div class="product-slot" data-slot="1">
-                                <input type="file" class="product-file-input" accept="image/*" data-slot="1">
+                                <input type="file" class="product-file-input" accept="image/*" data-slot="1" aria-label="Upload product 2">
                                 <div class="product-slot-empty">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <line x1="12" y1="5" x2="12" y2="19"/>
@@ -141,7 +141,7 @@
                             </div>
                             <!-- Product slot 3 -->
                             <div class="product-slot" data-slot="2">
-                                <input type="file" class="product-file-input" accept="image/*" data-slot="2">
+                                <input type="file" class="product-file-input" accept="image/*" data-slot="2" aria-label="Upload product 3">
                                 <div class="product-slot-empty">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <line x1="12" y1="5" x2="12" y2="19"/>
@@ -178,7 +178,7 @@
                             </div>
                             <!-- Product slot 4 -->
                             <div class="product-slot" data-slot="3">
-                                <input type="file" class="product-file-input" accept="image/*" data-slot="3">
+                                <input type="file" class="product-file-input" accept="image/*" data-slot="3" aria-label="Upload product 4">
                                 <div class="product-slot-empty">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <line x1="12" y1="5" x2="12" y2="19"/>
@@ -215,7 +215,7 @@
                             </div>
                             <!-- Product slot 5 -->
                             <div class="product-slot" data-slot="4">
-                                <input type="file" class="product-file-input" accept="image/*" data-slot="4">
+                                <input type="file" class="product-file-input" accept="image/*" data-slot="4" aria-label="Upload product 5">
                                 <div class="product-slot-empty">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <line x1="12" y1="5" x2="12" y2="19"/>
@@ -252,7 +252,7 @@
                             </div>
                             <!-- Product slot 6 -->
                             <div class="product-slot" data-slot="5">
-                                <input type="file" class="product-file-input" accept="image/*" data-slot="5">
+                                <input type="file" class="product-file-input" accept="image/*" data-slot="5" aria-label="Upload product 6">
                                 <div class="product-slot-empty">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <line x1="12" y1="5" x2="12" y2="19"/>
@@ -403,7 +403,7 @@
                         </div>
                         <div class="option-row" id="customContainerRow" style="display: none;">
                             <label class="option-label" data-tooltip="Describe the custom container for your products.">Container Description</label>
-                            <input type="text" class="input-field" id="customContainerInput" placeholder="e.g., rustic wooden crate">
+                            <input type="text" class="input-field" id="customContainerInput" placeholder="e.g., rustic wooden crate" aria-label="Custom container description">
                         </div>
                     </div>
 
@@ -442,11 +442,11 @@
                         </div>
                         <div class="option-row" id="customSurfaceRow" style="display: none;">
                             <label class="option-label" data-tooltip="Describe the custom surface for your products.">Surface Description</label>
-                            <input type="text" class="input-field" id="customSurfaceInput" placeholder="e.g., pink velvet fabric">
+                            <input type="text" class="input-field" id="customSurfaceInput" placeholder="e.g., pink velvet fabric" aria-label="Custom surface description">
                         </div>
                         <div class="option-row" id="lifestyleRow" style="display: none;">
                             <label class="option-label" data-tooltip="Describe the lifestyle setting where products will appear.">Scene Description</label>
-                            <input type="text" class="input-field" id="lifestyleInput" placeholder="e.g., bathroom vanity, kitchen counter">
+                            <input type="text" class="input-field" id="lifestyleInput" placeholder="e.g., bathroom vanity, kitchen counter" aria-label="Lifestyle scene description">
                         </div>
                     </div>
 
@@ -473,7 +473,7 @@
                             <!-- Bundle Title -->
                             <div class="option-group">
                                 <label class="option-label" data-tooltip="Optional title text displayed on the image">Bundle Title</label>
-                                <input type="text" class="input-field" id="bundleTitleInput" placeholder="e.g., Complete Skincare Set">
+                                <input type="text" class="input-field" id="bundleTitleInput" placeholder="e.g., Complete Skincare Set" aria-label="Bundle title">
                             </div>
 
                             <!-- Visual Style -->
@@ -548,14 +548,14 @@
                                         <input type="checkbox" id="randomSeedCheck" checked>
                                         <span>Random</span>
                                     </label>
-                                    <input type="number" class="input-field input-sm" id="seedInput" placeholder="Seed" disabled>
+                                    <input type="number" class="input-field input-sm" id="seedInput" placeholder="Seed" disabled aria-label="Generation seed">
                                 </div>
                             </div>
 
                             <!-- Negative Prompt -->
                             <div class="option-group option-group-full">
                                 <label class="option-label" data-tooltip="Specify what to avoid in the generation">Negative Prompt</label>
-                                <input type="text" class="input-field" id="negativePromptInput" placeholder="e.g., blurry, text, watermark">
+                                <input type="text" class="input-field" id="negativePromptInput" placeholder="e.g., blurry, text, watermark" aria-label="Negative prompts">
                             </div>
                         </div>
                     </div>
@@ -607,7 +607,7 @@
                             <div class="api-key-group">
                                 <label class="option-label" data-tooltip="Your OpenRouter API key for AI image generation. Get one free at openrouter.ai">OpenRouter API Key</label>
                                 <div class="api-key-input">
-                                    <input type="password" class="input-field" id="apiKeyInput" placeholder="sk-or-...">
+                                    <input type="password" class="input-field" id="apiKeyInput" placeholder="sk-or-..." aria-label="OpenRouter API key">
                                     <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -697,7 +697,7 @@
                     <!-- Feedback -->
                     <div class="feedback-section">
                         <label class="option-label" data-tooltip="Describe changes you want to make. The AI will regenerate with your feedback applied.">Adjustments</label>
-                        <textarea class="input-field textarea-field" id="feedbackTextarea" placeholder="e.g., Make products larger, add more spacing, change lighting..." rows="2"></textarea>
+                        <textarea class="input-field textarea-field" id="feedbackTextarea" placeholder="e.g., Make products larger, add more spacing, change lighting..." rows="2" aria-label="Adjustment feedback"></textarea>
                         <button type="button" class="btn-secondary" id="adjustBtn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
@@ -780,11 +780,11 @@
                 <div class="product-edit-form">
                     <div class="form-group">
                         <label>Product Name</label>
-                        <input type="text" class="input-field" id="productEditName" placeholder="e.g., Face Cream">
+                        <input type="text" class="input-field" id="productEditName" placeholder="e.g., Face Cream" aria-label="Product name">
                     </div>
                     <div class="form-group">
                         <label>Description (optional)</label>
-                        <textarea class="input-field" id="productEditDescription" rows="3" placeholder="e.g., White jar with gold lid, moisturizing cream"></textarea>
+                        <textarea class="input-field" id="productEditDescription" rows="3" placeholder="e.g., White jar with gold lid, moisturizing cream" aria-label="Product description"></textarea>
                     </div>
                 </div>
             </div>
@@ -811,7 +811,7 @@
                 <div class="favorite-details">
                     <div class="form-group">
                         <label>Name</label>
-                        <input type="text" class="input-field" id="favoriteNameInput">
+                        <input type="text" class="input-field" id="favoriteNameInput" aria-label="Favorite name">
                     </div>
                     <div class="favorite-seed">
                         <span class="seed-label">Seed:</span>
