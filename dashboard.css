@@ -2,6 +2,115 @@
    DASHBOARD STYLES
    ============================================ */
 
+/* Studio Navigation Grid */
+.studio-nav {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.studio-nav-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 16px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all var(--duration-fast) var(--ease-out);
+}
+
+.studio-nav-card:hover {
+    border-color: var(--accent);
+    background: var(--bg-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.studio-nav-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    transition: all var(--duration-fast) var(--ease-out);
+}
+
+.studio-nav-card:hover .studio-nav-icon {
+    background: var(--accent);
+}
+
+.studio-nav-icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--accent);
+    transition: color var(--duration-fast) var(--ease-out);
+}
+
+.studio-nav-card:hover .studio-nav-icon svg {
+    color: white;
+}
+
+.studio-nav-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
+}
+
+.studio-nav-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.studio-nav-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.3;
+}
+
+@media (max-width: 1200px) {
+    .studio-nav {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .studio-nav {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .studio-nav-card {
+        padding: 16px 12px;
+    }
+
+    .studio-nav-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .studio-nav-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .studio-nav-title {
+        font-size: 13px;
+    }
+
+    .studio-nav-desc {
+        display: none;
+    }
+}
+
 /* Dashboard Layout */
 .dashboard-container {
     max-width: 1400px;

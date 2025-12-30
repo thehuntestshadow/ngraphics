@@ -160,13 +160,19 @@ const SharedHeader = {
 
         const currentConfig = this.pages[currentPage] || this.pages.infographics;
         const isHome = currentPage === 'infographics';
+        const isDashboard = currentPage === 'dashboard';
 
         // Navigation order: Dashboard, Infographics, Models, Bundles, Lifestyle, Copywriter, Packaging, Docs
         const navOrder = ['dashboard', 'infographics', 'models', 'bundles', 'lifestyle', 'copywriter', 'packaging', 'docs'];
 
-        // Build navigation links (exclude current page)
-        const navLinks = navOrder
-            .filter(key => key !== currentPage)
+        // For dashboard, only show docs link (nav is in the page itself)
+        // For other pages, show all nav links except current page
+        const filteredNav = isDashboard
+            ? ['docs']
+            : navOrder.filter(key => key !== currentPage);
+
+        // Build navigation links
+        const navLinks = filteredNav
             .map(key => {
                 const page = this.pages[key];
                 return `
