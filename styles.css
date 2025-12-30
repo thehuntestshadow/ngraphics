@@ -802,6 +802,142 @@ kbd {
     height: 16px;
 }
 
+/* Multi-Angle Upload */
+.multi-angle-toggle {
+    margin-bottom: 12px;
+}
+
+.multi-angle-toggle .toggle-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-left: 4px;
+}
+
+.multi-angle-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.multi-angle-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.multi-angle-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-default);
+    background: var(--bg-deep);
+}
+
+.multi-angle-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.multi-angle-item-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 4px 8px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    font-size: 10px;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.multi-angle-item-remove {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.multi-angle-item:hover .multi-angle-item-remove {
+    opacity: 1;
+}
+
+.multi-angle-item-remove:hover {
+    background: var(--error);
+}
+
+.multi-angle-item-remove svg {
+    width: 14px;
+    height: 14px;
+}
+
+.multi-angle-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    border: 2px dashed var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-out);
+    position: relative;
+}
+
+.multi-angle-add:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-subtle);
+}
+
+.multi-angle-add.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.multi-angle-add svg {
+    width: 20px;
+    height: 20px;
+}
+
+.multi-angle-add .upload-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.multi-angle-count {
+    font-size: 11px;
+    padding: 2px 6px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+}
+
+.multi-angle-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    margin: 0;
+}
+
 /* ============================================
    CHARACTERISTICS LIST
    ============================================ */
@@ -3552,6 +3688,317 @@ button:disabled,
     height: 20px;
 }
 
+/* Image Info Button */
+.btn-image-info {
+    position: absolute;
+    top: 12px;
+    right: 60px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-default);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-out);
+    z-index: 10;
+}
+
+.btn-image-info:hover {
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--accent);
+    transform: scale(1.1);
+    border-color: var(--accent);
+}
+
+.btn-image-info.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-deep);
+}
+
+.btn-image-info svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Image Info Overlay */
+.image-info-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 70%, transparent 100%);
+    padding: 40px 16px 16px;
+    color: var(--text-primary);
+    z-index: 5;
+}
+
+.image-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+}
+
+.image-info-item {
+    text-align: center;
+}
+
+.image-info-label {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.image-info-value {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
+/* ============================================
+   BATCH MODE
+   ============================================ */
+
+/* Batch Mode Toggle Button */
+.batch-mode-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-out);
+}
+
+.batch-mode-toggle:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.batch-mode-toggle.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.batch-mode-toggle svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Batch Upload Zone */
+.batch-upload-zone {
+    position: relative;
+    padding: 32px;
+    border: 2px dashed var(--border-default);
+    border-radius: var(--radius-lg);
+    background: var(--bg-elevated);
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-out);
+}
+
+.batch-upload-zone:hover,
+.batch-upload-zone.drag-over {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 5%, var(--bg-elevated));
+}
+
+/* Batch Queue */
+.batch-queue {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.batch-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+}
+
+.batch-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.batch-item-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.batch-item:hover .batch-item-overlay {
+    opacity: 1;
+}
+
+.batch-item.processing .batch-item-overlay,
+.batch-item.completed .batch-item-overlay,
+.batch-item.failed .batch-item-overlay {
+    opacity: 1;
+}
+
+.batch-item-status {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.batch-item.processing .batch-item-status {
+    color: var(--accent);
+}
+
+.batch-item.completed .batch-item-status {
+    color: var(--success);
+}
+
+.batch-item.failed .batch-item-status {
+    color: var(--error);
+}
+
+.batch-item-remove {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    opacity: 0;
+    transition: all var(--duration-fast) var(--ease-out);
+}
+
+.batch-item:hover .batch-item-remove {
+    opacity: 1;
+}
+
+.batch-item-remove:hover {
+    background: var(--error);
+    color: white;
+}
+
+.batch-item-remove svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Batch Item Spinner */
+.batch-item-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Batch Controls */
+.batch-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+}
+
+.batch-progress {
+    flex: 1;
+}
+
+.batch-status {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.progress-bar {
+    height: 6px;
+    background: var(--bg-deep);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: var(--radius-sm);
+    transition: width var(--duration-normal) var(--ease-out);
+    width: 0%;
+}
+
+.batch-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+.btn-sm svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Batch View Result Button */
+.btn-view-result {
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--bg-deep);
+    background: var(--success);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-out);
+}
+
+.btn-view-result:hover {
+    background: color-mix(in srgb, var(--success) 80%, white);
+    transform: scale(1.05);
+}
+
 /* Favorites Modal */
 .favorites-modal .modal-content {
     max-width: 600px;
@@ -5878,4 +6325,818 @@ button:disabled,
 
 .toast-container > * {
     pointer-events: auto;
+}
+
+/* ============================================
+   KEYBOARD SHORTCUTS MODAL
+   ============================================ */
+.keyboard-shortcuts-modal .shortcuts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.shortcut-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+}
+
+.shortcut-item kbd {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 2px 0 var(--border-default);
+}
+
+.shortcut-item span {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.shortcuts-hint {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-subtle);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.shortcuts-hint kbd {
+    padding: 2px 6px;
+    font-size: 0.75rem;
+}
+
+/* ============================================
+   IMAGE INFO OVERLAY
+   ============================================ */
+.image-info-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.result-image-container:hover .image-info-overlay,
+.image-info-overlay.visible {
+    opacity: 1;
+}
+
+.image-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 8px;
+}
+
+.image-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.image-info-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.image-info-value {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-primary);
+}
+
+.image-info-value.copyable {
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.image-info-value.copyable:hover {
+    color: var(--accent);
+}
+
+/* Info toggle button */
+.btn-info-toggle {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--border-default);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.2s ease;
+    z-index: 5;
+}
+
+.result-image-container:hover .btn-info-toggle {
+    opacity: 1;
+}
+
+.btn-info-toggle:hover {
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--text-primary);
+}
+
+.btn-info-toggle.active {
+    background: var(--accent);
+    color: var(--bg-deep);
+    border-color: var(--accent);
+}
+
+.btn-info-toggle svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ============================================
+   COPY PROMPT BUTTON
+   ============================================ */
+.copy-prompt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.copy-prompt-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+}
+
+.copy-prompt-btn.copied {
+    color: var(--success);
+    border-color: var(--success);
+}
+
+.copy-prompt-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* ============================================
+   CONFIRMATION DIALOG ENHANCEMENTS
+   ============================================ */
+.confirm-dialog-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: var(--radius-md);
+}
+
+.confirm-dialog-warning svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--warning);
+}
+
+.confirm-dialog-warning p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.confirm-dialog-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.confirm-dialog-checkbox input {
+    width: 16px;
+    height: 16px;
+}
+
+/* ==========================================================================
+   PRESET SYSTEM
+   ========================================================================== */
+
+.preset-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+}
+
+.preset-selector-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.preset-dropdown {
+    flex: 1;
+    display: flex;
+    gap: 8px;
+}
+
+.preset-select {
+    flex: 1;
+    padding: 8px 12px;
+    background: var(--bg-deep);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.preset-select:hover {
+    border-color: var(--border-active);
+}
+
+.preset-select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.preset-select option {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+.preset-select optgroup {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.preset-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 12px;
+    background: var(--bg-deep);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.preset-btn:hover {
+    background: var(--bg-elevated);
+    border-color: var(--border-active);
+    color: var(--text-primary);
+}
+
+.preset-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.preset-save-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.preset-delete-btn:hover {
+    border-color: var(--error);
+    color: var(--error);
+}
+
+.preset-export-btn:hover {
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.preset-import-btn:hover {
+    border-color: var(--info);
+    color: var(--info);
+}
+
+/* ==========================================================================
+   COST ESTIMATOR
+   ========================================================================== */
+
+.cost-estimator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(59, 130, 246, 0.08));
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
+}
+
+.cost-estimate {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cost-estimate-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.cost-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent);
+    font-family: var(--font-mono);
+}
+
+.cost-value.free {
+    color: var(--success);
+}
+
+.cost-session {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--bg-deep);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.cost-session-value {
+    color: var(--text-primary);
+    font-weight: 500;
+    font-family: var(--font-mono);
+}
+
+.cost-model-label {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin-left: 4px;
+}
+
+/* ==========================================================================
+   COMPARISON SLIDER
+   ========================================================================== */
+
+.comparison-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    cursor: ew-resize;
+    user-select: none;
+}
+
+.comparison-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: var(--bg-deep);
+}
+
+.comparison-image-before {
+    z-index: 1;
+}
+
+.comparison-image-after {
+    z-index: 2;
+    clip-path: inset(0 50% 0 0);
+}
+
+.comparison-handle {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 100%;
+    background: white;
+    transform: translateX(-50%);
+    z-index: 3;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.comparison-handle::before,
+.comparison-handle::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+}
+
+.comparison-handle::before {
+    top: 50%;
+    margin-top: -20px;
+    border-bottom: 10px solid white;
+}
+
+.comparison-handle::after {
+    top: 50%;
+    margin-top: 10px;
+    border-top: 10px solid white;
+}
+
+.comparison-handle-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.comparison-handle-circle svg {
+    width: 24px;
+    height: 24px;
+    color: var(--bg-deep);
+}
+
+.comparison-labels {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 4;
+    pointer-events: none;
+}
+
+.comparison-label {
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    color: white;
+    font-weight: 500;
+}
+
+/* Comparison Modal */
+.comparison-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.comparison-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.comparison-modal-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+}
+
+.comparison-modal-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 32px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.comparison-modal-close:hover {
+    opacity: 1;
+}
+
+/* Compare Button */
+.compare-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.compare-btn:hover {
+    background: var(--bg-deep);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.compare-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.compare-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ============================================
+   TOOLTIPS
+   ============================================ */
+.shared-tooltip {
+    position: fixed;
+    z-index: 10000;
+    padding: 8px 12px;
+    background: var(--bg-deep);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.15s, transform 0.15s;
+    max-width: 280px;
+}
+
+.shared-tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.shared-tooltip .tooltip-content {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-primary);
+}
+
+.shared-tooltip.position-bottom {
+    transform: translateY(-4px);
+}
+
+.shared-tooltip.position-bottom.visible {
+    transform: translateY(0);
+}
+
+/* ============================================
+   PROMPT TEMPLATES
+   ============================================ */
+.template-selector {
+    margin-bottom: 20px;
+}
+
+.template-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.template-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.template-save-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.template-save-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.template-save-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+}
+
+.template-card {
+    padding: 12px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.template-card:hover {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 5%, var(--bg-elevated));
+}
+
+.template-card.user-template {
+    border-color: var(--secondary);
+    border-style: dashed;
+}
+
+.template-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.template-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.template-delete-btn {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.template-delete-btn:hover {
+    background: var(--error);
+    color: white;
+}
+
+.template-delete-btn svg {
+    width: 12px;
+    height: 12px;
+}
+
+.template-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* ============================================
+   OPTION EXAMPLES
+   ============================================ */
+.option-example {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: var(--bg-deep);
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+}
+
+.example-preview {
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.example-desc {
+    color: var(--text-muted);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ============================================
+   GENERATION RATING
+   ============================================ */
+.rating-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.rating-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.rating-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--text-secondary);
+}
+
+.rating-btn.up:hover,
+.rating-btn.up.active {
+    background: color-mix(in srgb, var(--success) 15%, transparent);
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.rating-btn.down:hover,
+.rating-btn.down.active {
+    background: color-mix(in srgb, var(--error) 15%, transparent);
+    border-color: var(--error);
+    color: var(--error);
+}
+
+.rating-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Rating in result actions */
+.result-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.result-rating .rating-btn {
+    width: 32px;
+    height: 32px;
+}
+
+.result-rating .rating-btn svg {
+    width: 16px;
+    height: 16px;
 }

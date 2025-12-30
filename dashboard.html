@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGRAPHICS - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Noise overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Gradient orbs for atmosphere -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <!-- Header (rendered by SharedHeader) -->
+    <header class="site-header"></header>
+
+    <!-- Main Content -->
+    <main class="dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Dashboard</h1>
+            <p class="dashboard-subtitle">Overview of your generation activity and storage</p>
+        </div>
+
+        <!-- Overview Cards -->
+        <div class="dashboard-cards" id="dashboardCards">
+            <div class="dashboard-card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <path d="M21 15l-5-5L5 21"/>
+                    </svg>
+                </div>
+                <div class="card-value" id="totalGenerations">0</div>
+                <div class="card-label">Total Generations</div>
+            </div>
+            <div class="dashboard-card">
+                <div class="card-icon success">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                </div>
+                <div class="card-value" id="totalFavorites">0</div>
+                <div class="card-label">Saved Favorites</div>
+            </div>
+            <div class="dashboard-card">
+                <div class="card-icon warning">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                    </svg>
+                </div>
+                <div class="card-value" id="storageUsed">0 B</div>
+                <div class="card-label">Storage Used</div>
+            </div>
+            <div class="dashboard-card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <div class="card-value">
+                    <span class="card-status" id="apiStatus">
+                        <span class="card-status-dot"></span>
+                        <span id="apiStatusText">Checking...</span>
+                    </span>
+                </div>
+                <div class="card-label">API Connection</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="dashboard-tabs" id="dashboardTabs">
+            <button class="tab-btn active" data-tab="overview">Overview</button>
+            <button class="tab-btn" data-tab="infographics">Infographics</button>
+            <button class="tab-btn" data-tab="models">Model Studio</button>
+            <button class="tab-btn" data-tab="bundles">Bundle Studio</button>
+        </div>
+
+        <!-- Cost Tracker -->
+        <div class="cost-tracker-section">
+            <div class="cost-tracker-header">
+                <h3 class="cost-tracker-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                    Cost Tracker
+                </h3>
+                <button class="btn-secondary btn-sm" id="resetCostBtn" title="Reset all cost data">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                        <path d="M3 3v5h5"/>
+                    </svg>
+                    Reset
+                </button>
+            </div>
+            <div class="cost-tracker-grid">
+                <div class="cost-card today">
+                    <div class="cost-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                    </div>
+                    <div class="cost-card-content">
+                        <span class="cost-card-value" id="todayCost">$0.00</span>
+                        <span class="cost-card-label">Today</span>
+                    </div>
+                    <span class="cost-card-count" id="todayGenerations">0 gen</span>
+                </div>
+                <div class="cost-card alltime">
+                    <div class="cost-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                    </div>
+                    <div class="cost-card-content">
+                        <span class="cost-card-value" id="alltimeCost">$0.00</span>
+                        <span class="cost-card-label">All Time</span>
+                    </div>
+                    <span class="cost-card-count" id="alltimeGenerations">0 gen</span>
+                </div>
+                <div class="cost-breakdown">
+                    <h4 class="cost-breakdown-title">Cost by Studio</h4>
+                    <div class="cost-breakdown-list" id="costBreakdownList">
+                        <div class="cost-breakdown-empty">No cost data yet</div>
+                    </div>
+                </div>
+                <div class="cost-chart-card">
+                    <h4 class="cost-chart-title">7-Day Trend</h4>
+                    <div class="cost-chart-container">
+                        <canvas id="costTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Generation Trends</h3>
+                    <span class="chart-subtitle">Last 7 days</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendsChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Model Usage</h3>
+                    <span class="chart-subtitle">By AI model</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="modelChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Studio Breakdown</h3>
+                    <span class="chart-subtitle">Generations per studio</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="studioChart"></canvas>
+                </div>
+            </div>
+            <div class="quick-access-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Recent Work</h3>
+                    <span class="chart-subtitle">Quick access</span>
+                </div>
+                <div class="quick-access-grid" id="quickAccessGrid">
+                    <div class="quick-access-empty">No recent generations</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Storage Panel -->
+        <div class="storage-panel">
+            <div class="storage-header">
+                <h3 class="storage-title">Storage Management</h3>
+                <div class="storage-actions">
+                    <button class="btn-secondary btn-sm" id="exportAllBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Export All
+                    </button>
+                    <button class="btn-secondary btn-sm" id="clearOldBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                        </svg>
+                        Clear Old Items
+                    </button>
+                </div>
+            </div>
+            <div class="storage-breakdown" id="storageBreakdown">
+                <div class="storage-item">
+                    <div class="storage-item-header">
+                        <span class="storage-item-label">Infographics</span>
+                        <span class="storage-item-value" id="storageInfographics">0 items</span>
+                    </div>
+                    <div class="storage-bar">
+                        <div class="storage-fill infographics" id="storageFillInfographics" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="storage-item">
+                    <div class="storage-item-header">
+                        <span class="storage-item-label">Model Studio</span>
+                        <span class="storage-item-value" id="storageModels">0 items</span>
+                    </div>
+                    <div class="storage-bar">
+                        <div class="storage-fill models" id="storageFillModels" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="storage-item">
+                    <div class="storage-item-header">
+                        <span class="storage-item-label">Bundle Studio</span>
+                        <span class="storage-item-value" id="storageBundles">0 items</span>
+                    </div>
+                    <div class="storage-bar">
+                        <div class="storage-fill bundles" id="storageFillBundles" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trash Section -->
+        <div class="trash-section" id="trashSection">
+            <div class="trash-header">
+                <div class="trash-title-group">
+                    <h3 class="trash-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                        </svg>
+                        Trash
+                    </h3>
+                    <span class="trash-count" id="trashCount">0 items</span>
+                </div>
+                <div class="trash-actions">
+                    <span class="trash-info">Auto-deletes after 7 days</span>
+                    <button class="btn-secondary btn-sm" id="emptyTrashBtn" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                            <line x1="10" y1="11" x2="10" y2="17"/>
+                            <line x1="14" y1="11" x2="14" y2="17"/>
+                        </svg>
+                        Empty Trash
+                    </button>
+                </div>
+            </div>
+            <div class="trash-content" id="trashContent">
+                <div class="trash-empty">
+                    <svg class="trash-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                    </svg>
+                    <p>Trash is empty</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="activity-section">
+            <div class="activity-header">
+                <h3 class="activity-title">Recent Activity</h3>
+            </div>
+            <table class="activity-table" id="activityTable">
+                <thead>
+                    <tr>
+                        <th>Preview</th>
+                        <th>Title</th>
+                        <th>Studio</th>
+                        <th>Model</th>
+                        <th>Seed</th>
+                        <th>Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="activityBody">
+                    <tr>
+                        <td colspan="7" class="activity-empty">No recent activity</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose">&times;</button>
+        <img class="lightbox-image" id="lightboxImage" src="" alt="Preview">
+    </div>
+
+    <!-- Scripts -->
+    <script src="shared.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

@@ -23,6 +23,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 | Infographics | `index.html`, `script.js` | Generate product infographics with features/callouts |
 | Model Studio | `models.html`, `models.js`, `models.css` | Generate AI model photos wearing/holding products |
 | Bundle Studio | `bundle.html`, `bundle.js`, `bundle.css` | Create bundle/kit images from multiple products |
+| Dashboard | `dashboard.html`, `dashboard.js`, `dashboard.css` | Analytics, storage management, quick access to recent work |
 | Documentation | `docs.html`, `docs.css` | User documentation |
 
 ### Shared Resources
@@ -250,6 +251,31 @@ Create professional bundle/kit images from multiple individual product photos.
 
 ---
 
+## Dashboard (`dashboard.html` + `dashboard.js` + `dashboard.css`)
+
+Central hub for analytics, storage management, and quick access to all studios.
+
+### Features
+- **Overview Cards**: Total generations, favorites count, storage used, API connection status
+- **Charts** (Chart.js): Generation trends (7-day line chart), model usage (doughnut), studio breakdown (bar)
+- **Quick Access Grid**: Recent generation thumbnails with lightbox preview
+- **Storage Management**: Per-studio usage bars, Export All (JSON), Clear Old Items (>30 days)
+- **Activity Table**: Recent generations with preview, title, studio, model, seed, time
+- **Tab Filtering**: Overview (all studios) or filter by Infographics/Models/Bundles
+
+### Key Functions
+- `renderCards()`: Updates stat cards based on active tab filter
+- `renderQuickAccess()`: Shows recent thumbnails, filtered by tab
+- `renderActivityTable()`: Populates activity list, filtered by tab
+- `initCharts()` / `updateChartsForTab()`: Chart.js initialization and updates
+- `exportAllData()`: Downloads all history/favorites as JSON
+- `clearOldItems()`: Removes items older than 30 days with confirmation
+
+### Data Source
+Uses `SharedDashboard` utility from shared.js to aggregate data from all three studios.
+
+---
+
 ## Common Patterns
 
 ### State Management
@@ -309,6 +335,18 @@ Common functionality used across all pages.
 ### Utility Objects
 
 - **SharedTheme**: `init()`, `apply(theme)`, `toggle()`, `setupToggle(buttonEl)` - Theme management across all pages
+- **SharedHeader**: `render(options)` - Renders consistent header across all pages
+  - Options: `currentPage` (infographics|dashboard|models|bundles|docs), `showApiStatus`, `showLanguageToggle`
+  - Centralizes all nav icons and page configurations
+  - Auto-excludes current page from navigation links
+- **SharedDashboard**: Cross-studio data aggregation for dashboard
+  - `loadAllData()`: Loads history/favorites from all studios
+  - `getMetrics(data)`: Returns totalGenerations, totalFavorites, perStudio counts
+  - `getGenerationTrends(data, days)`: Returns array of {date, count} for charts
+  - `getModelUsage(data)`: Returns model usage breakdown
+  - `getRecentActivity(data, limit)`: Combined recent activity sorted by timestamp
+  - `getStorageEstimate()`: Returns browser storage usage estimate
+  - `clearOldItems(studioKey, days)`: Removes old history items
 - **SharedUI**: `showError()`, `showSuccess()`, `updateApiStatus()`, `showLoading()`, `hideLoading()`
 - **SharedUpload**: `setup(uploadArea, fileInput, callbacks)`, `handleFile(file, callbacks)`
 - **SharedLightbox**: `setup()`, `open()`, `close()`

@@ -141,6 +141,7 @@ function initElements() {
         resultGrid: document.getElementById('resultGrid'),
         downloadBtn: document.getElementById('downloadBtn'),
         regenerateBtn: document.getElementById('regenerateBtn'),
+        compareBtn: document.getElementById('compareBtn'),
         feedbackTextarea: document.getElementById('feedbackTextarea'),
         adjustBtn: document.getElementById('adjustBtn'),
 
@@ -874,6 +875,10 @@ async function generateModelPhoto() {
             const imageUrl = await makeGenerationRequest(requestBody);
             showResult(imageUrl);
             showSuccess('Photo generated successfully!');
+
+            // Record cost
+            SharedCostEstimator.recordCost(model, 1, 'modelStudio', prompt.length);
+            updateCostEstimator();
         } else {
             updateLoadingStatus(`Generating ${variationsCount} variations...`);
 
@@ -903,6 +908,10 @@ async function generateModelPhoto() {
             }
 
             showSuccess(`Generated ${successfulImages.length} of ${variationsCount} photos!`);
+
+            // Record cost for successful generations only
+            SharedCostEstimator.recordCost(model, successfulImages.length, 'modelStudio', prompt.length);
+            updateCostEstimator();
         }
 
     } catch (error) {
@@ -926,6 +935,11 @@ function showResult(imageUrl) {
     elements.resultContainer.classList.add('visible');
     state.generatedImageUrl = imageUrl;
     state.generatedImages = [imageUrl];
+
+    // Hide compare button for single image
+    if (elements.compareBtn) {
+        elements.compareBtn.style.display = 'none';
+    }
 
     elements.feedbackTextarea.value = '';
 
@@ -962,6 +976,11 @@ function showMultipleResults(imageUrls) {
     elements.resultContainer.classList.add('visible');
     state.generatedImageUrl = imageUrls[0];
     state.generatedImages = imageUrls;
+
+    // Show compare button for multiple images
+    if (elements.compareBtn) {
+        elements.compareBtn.style.display = imageUrls.length >= 2 ? 'inline-flex' : 'none';
+    }
 
     elements.feedbackTextarea.value = '';
 
@@ -1079,16 +1098,22 @@ function renderHistory() {
 }
 
 async function clearHistory() {
-    const confirmed = await SharedUI.confirm('Are you sure you want to clear all history?', {
+    const confirmed = await SharedUI.confirm('Are you sure you want to clear all history? Items will be moved to trash.', {
         title: 'Clear History',
         confirmText: 'Clear All',
         icon: 'warning'
     });
     if (confirmed) {
+        // Move all items to trash before clearing
+        const items = history.getAll();
+        items.forEach(item => {
+            SharedTrash.add(item, 'history', 'modelStudio');
+        });
+
         await history.clear();
         state.history = [];
         renderHistory();
-        SharedUI.toast('History cleared', 'success');
+        SharedUI.toast(`${items.length} items moved to trash`, 'success');
     }
 }
 
@@ -1682,6 +1707,17 @@ function setupEventListeners() {
     // Regenerate
     elements.regenerateBtn?.addEventListener('click', generateModelPhoto);
 
+    // Compare
+    elements.compareBtn?.addEventListener('click', () => {
+        if (state.generatedImages && state.generatedImages.length >= 2) {
+            SharedComparison.openModal(
+                state.generatedImages[0],
+                state.generatedImages[1],
+                { label1: 'Variation 1', label2: 'Variation 2' }
+            );
+        }
+    });
+
     // Adjust
     elements.adjustBtn?.addEventListener('click', adjustPhoto);
 
@@ -1724,10 +1760,51 @@ function setupEventListeners() {
 
     elements.lightboxDownload?.addEventListener('click', downloadFromLightbox);
 
+    // Image info toggle
+    const imageInfoBtn = document.getElementById('imageInfoBtn');
+    const imageInfoOverlay = document.getElementById('imageInfoOverlay');
+    if (imageInfoBtn && imageInfoOverlay) {
+        imageInfoBtn.addEventListener('click', () => {
+            const isVisible = imageInfoOverlay.style.display !== 'none';
+            if (isVisible) {
+                imageInfoOverlay.style.display = 'none';
+                imageInfoBtn.classList.remove('active');
+            } else {
+                const info = {
+                    seed: state.lastSeed,
+                    model: elements.model.value,
+                    dimensions: elements.aspectRatio?.value || '4:5',
+                    style: elements.photoStyle?.value || 'Commercial',
+                    variations: state.generatedImages?.length || 1
+                };
+                imageInfoOverlay.innerHTML = SharedImageInfo.createOverlay(info).innerHTML;
+                imageInfoOverlay.style.display = 'block';
+                imageInfoBtn.classList.add('active');
+            }
+        });
+    }
+
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
+        const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName);
+
         if (e.key === 'Escape') {
-            closeLightbox();
+            if (SharedKeyboard._modalVisible) {
+                SharedKeyboard.hideShortcutsModal();
+            } else {
+                closeLightbox();
+            }
+        }
+
+        // ? - show keyboard shortcuts
+        if (e.key === '?' && !isTyping) {
+            e.preventDefault();
+            SharedKeyboard.showShortcutsModal([
+                { key: 'Ctrl+Enter', action: 'generate', description: 'Generate model photo' },
+                { key: 'Ctrl+D', action: 'download', description: 'Download current image' },
+                { key: 'Escape', action: 'close', description: 'Close modals' },
+                { key: '?', action: 'help', description: 'Show this help' }
+            ]);
         }
 
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
@@ -1743,6 +1820,172 @@ function setupEventListeners() {
 }
 
 // ============================================
+// PRESET SELECTOR (SharedPresets Integration)
+// ============================================
+function getCurrentSettings() {
+    return {
+        model: elements.aiModel?.value,
+        productType: state.productType,
+        gender: state.gender,
+        age: state.age,
+        ethnicity: elements.modelEthnicity?.value || state.ethnicity,
+        bodyType: elements.modelBodyType?.value || state.bodyType,
+        hair: elements.modelHair?.value || state.hair,
+        shotType: state.shotType,
+        scene: state.scene,
+        photoStyle: state.photoStyle,
+        pose: elements.modelPose?.value || state.pose,
+        lighting: elements.lighting?.value || state.lighting,
+        cameraAngle: elements.cameraAngle?.value || state.cameraAngle,
+        expression: elements.expression?.value || state.expression,
+        aspectRatio: elements.aspectRatio?.value || state.aspectRatio,
+        variations: state.variations,
+        collageMode: elements.collageMode?.value || state.collageMode,
+        depthOfField: elements.depthOfField?.value || state.depthOfField,
+        colorGrading: elements.colorGrading?.value || state.colorGrading,
+        skinRetouch: elements.skinRetouch?.value || state.skinRetouch,
+        composition: elements.composition?.value || state.composition,
+        qualityLevel: elements.qualityLevel?.value || state.qualityLevel,
+        realismLevel: elements.realismLevel?.value || state.realismLevel,
+        focalLength: elements.focalLength?.value || state.focalLength,
+        filmGrain: elements.filmGrain?.value || state.filmGrain,
+        contrast: elements.contrast?.value || state.contrast,
+        productEnhancement: elements.productEnhancement?.value || state.productEnhancement
+    };
+}
+
+function applySettings(settings) {
+    if (!settings) return;
+
+    // Update state
+    if (settings.productType) state.productType = settings.productType;
+    if (settings.gender) state.gender = settings.gender;
+    if (settings.age) state.age = settings.age;
+    if (settings.shotType) state.shotType = settings.shotType;
+    if (settings.scene) state.scene = settings.scene;
+    if (settings.photoStyle) state.photoStyle = settings.photoStyle;
+    if (settings.variations) state.variations = settings.variations;
+
+    // Update form elements
+    if (settings.model && elements.aiModel) elements.aiModel.value = settings.model;
+    if (settings.ethnicity && elements.modelEthnicity) elements.modelEthnicity.value = settings.ethnicity;
+    if (settings.bodyType && elements.modelBodyType) elements.modelBodyType.value = settings.bodyType;
+    if (settings.hair && elements.modelHair) elements.modelHair.value = settings.hair;
+    if (settings.pose && elements.modelPose) elements.modelPose.value = settings.pose;
+    if (settings.lighting && elements.lighting) elements.lighting.value = settings.lighting;
+    if (settings.cameraAngle && elements.cameraAngle) elements.cameraAngle.value = settings.cameraAngle;
+    if (settings.expression && elements.expression) elements.expression.value = settings.expression;
+    if (settings.aspectRatio && elements.aspectRatio) elements.aspectRatio.value = settings.aspectRatio;
+    if (settings.collageMode && elements.collageMode) elements.collageMode.value = settings.collageMode;
+    if (settings.depthOfField && elements.depthOfField) elements.depthOfField.value = settings.depthOfField;
+    if (settings.colorGrading && elements.colorGrading) elements.colorGrading.value = settings.colorGrading;
+    if (settings.skinRetouch && elements.skinRetouch) elements.skinRetouch.value = settings.skinRetouch;
+    if (settings.composition && elements.composition) elements.composition.value = settings.composition;
+    if (settings.qualityLevel && elements.qualityLevel) elements.qualityLevel.value = settings.qualityLevel;
+    if (settings.realismLevel && elements.realismLevel) elements.realismLevel.value = settings.realismLevel;
+    if (settings.focalLength && elements.focalLength) elements.focalLength.value = settings.focalLength;
+    if (settings.filmGrain && elements.filmGrain) elements.filmGrain.value = settings.filmGrain;
+    if (settings.contrast && elements.contrast) elements.contrast.value = settings.contrast;
+    if (settings.productEnhancement && elements.productEnhancement) {
+        elements.productEnhancement.value = settings.productEnhancement;
+        elements.productEnhancement.dispatchEvent(new Event('change'));
+    }
+
+    // Update radio buttons
+    document.querySelectorAll('[name="productType"]').forEach(radio => {
+        radio.checked = radio.value === state.productType;
+    });
+    document.querySelectorAll('.product-type-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.type === state.productType);
+    });
+    document.querySelectorAll('[name="gender"]').forEach(radio => {
+        radio.checked = radio.value === state.gender;
+    });
+    document.querySelectorAll('.gender-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.gender === state.gender);
+    });
+    document.querySelectorAll('[name="age"]').forEach(radio => {
+        radio.checked = radio.value === state.age;
+    });
+    document.querySelectorAll('.age-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.age === state.age);
+    });
+    document.querySelectorAll('[name="shotType"]').forEach(radio => {
+        radio.checked = radio.value === state.shotType;
+    });
+    document.querySelectorAll('.shot-type-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.shot === state.shotType);
+    });
+    document.querySelectorAll('[name="scene"]').forEach(radio => {
+        radio.checked = radio.value === state.scene;
+    });
+    document.querySelectorAll('.scene-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.scene === state.scene);
+    });
+    document.querySelectorAll('[name="photoStyle"]').forEach(radio => {
+        radio.checked = radio.value === state.photoStyle;
+    });
+    document.querySelectorAll('.style-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.style === state.photoStyle);
+    });
+    document.querySelectorAll('[name="variations"]').forEach(radio => {
+        radio.checked = radio.value === String(state.variations);
+    });
+
+    showSuccess('Settings applied!');
+}
+
+function initPresetSelector() {
+    const container = document.getElementById('presetSelectorContainer');
+    if (!container) return;
+
+    SharedPresets.renderSelector(
+        'models',
+        (preset) => {
+            if (preset && preset.settings) {
+                applySettings(preset.settings);
+            }
+        },
+        () => getCurrentSettings(),
+        container
+    );
+}
+
+// ============================================
+// COST ESTIMATOR (SharedCostEstimator Integration)
+// ============================================
+function initCostEstimator() {
+    const container = document.getElementById('costEstimatorContainer');
+    if (!container) return;
+
+    const modelId = elements.aiModel?.value || 'google/gemini-2.0-flash-exp:free';
+    const variations = state.variations || 1;
+    SharedCostEstimator.renderDisplay(modelId, variations, 500, container);
+
+    // Update when model changes
+    if (elements.aiModel) {
+        elements.aiModel.addEventListener('change', updateCostEstimator);
+    }
+
+    // Update when variations change
+    document.querySelectorAll('input[name="variations"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            state.variations = parseInt(radio.value) || 1;
+            updateCostEstimator();
+        });
+    });
+}
+
+function updateCostEstimator() {
+    const container = document.getElementById('costEstimatorContainer');
+    if (!container) return;
+
+    const modelId = elements.aiModel?.value || 'google/gemini-2.0-flash-exp:free';
+    const variations = state.variations || 1;
+    SharedCostEstimator.updateDisplay(container, modelId, variations, 500);
+}
+
+// ============================================
 // INITIALIZATION
 // ============================================
 let initialized = false;
@@ -1752,15 +1995,27 @@ function init() {
     initialized = true;
 
     console.log('Model Studio: Initializing...');
+
+    // Render shared header
+    SharedHeader.render({
+        currentPage: 'models',
+        showApiStatus: true
+    });
+
     initElements();
     SharedTheme.init();
-    SharedTheme.setupToggle(document.getElementById('themeToggle'));
+    SharedTooltips.init();
     loadApiKey();
     setupImageUpload();
     setupEventListeners();
     loadHistory();
     favorites.load();
     renderFavorites();
+
+    // Initialize preset selector and cost estimator
+    initPresetSelector();
+    initCostEstimator();
+
     console.log('Model Studio: Ready!');
 }
 

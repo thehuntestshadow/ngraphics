@@ -17,75 +17,8 @@
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
 
-    <!-- Header -->
-    <header class="site-header">
-        <div class="header-content">
-            <div class="logo-group">
-                <div class="logo-mark">
-                    <svg viewBox="0 0 40 40" fill="none">
-                        <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
-                        <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
-                    </svg>
-                </div>
-                <div class="logo-text">
-                    <span class="logo-title">NGRAPHICS</span>
-                    <span class="logo-subtitle">Infographic Studio</span>
-                </div>
-            </div>
-            <div class="header-controls">
-                <a href="models.html" class="docs-link" title="Model Studio - AI Model Photos">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="8" r="4"/>
-                        <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
-                    </svg>
-                    <span>Models</span>
-                </a>
-                <a href="bundle.html" class="docs-link" title="Bundle Studio - Product Bundle Images">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="7" height="7" rx="1"/>
-                        <rect x="14" y="3" width="7" height="7" rx="1"/>
-                        <rect x="3" y="14" width="7" height="7" rx="1"/>
-                        <rect x="14" y="14" width="7" height="7" rx="1"/>
-                    </svg>
-                    <span>Bundles</span>
-                </a>
-                <a href="docs.html" class="docs-link" title="Documentation">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="16" y1="13" x2="8" y2="13"/>
-                        <line x1="16" y1="17" x2="8" y2="17"/>
-                        <polyline points="10 9 9 9 8 9"/>
-                    </svg>
-                    <span>Docs</span>
-                </a>
-                <div class="language-toggle">
-                    <button class="lang-btn" data-lang="en">EN</button>
-                    <button class="lang-btn active" data-lang="ro">RO</button>
-                </div>
-                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
-                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                    </svg>
-                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="5"/>
-                        <line x1="12" y1="1" x2="12" y2="3"/>
-                        <line x1="12" y1="21" x2="12" y2="23"/>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                        <line x1="1" y1="12" x2="3" y2="12"/>
-                        <line x1="21" y1="12" x2="23" y2="12"/>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                    </svg>
-                </button>
-                <div class="api-status" id="apiStatus">
-                    <span class="status-dot"></span>
-                    <span class="status-text">Not Connected</span>
-                </div>
-            </div>
-        </div>
-    </header>
+    <!-- Header (rendered by SharedHeader) -->
+    <header class="site-header"></header>
 
     <!-- Main Application -->
     <main class="app-main">
@@ -112,64 +45,8 @@
                     <div class="message-content">Saved successfully</div>
                 </div>
 
-                <!-- Templates & Presets Section (commented out for now)
-                <div class="templates-section">
-                    <div class="templates-header">
-                        <div class="section-label">
-                            <span class="label-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                    <path d="M3 9h18M9 21V9"/>
-                                </svg>
-                            </span>
-                            Templates & Presets
-                        </div>
-                    </div>
-                    <div class="templates-content">
-                        <div class="presets-row">
-                            <span class="presets-label">Platform:</span>
-                            <div class="presets-buttons" id="platformPresets">
-                                <button type="button" class="preset-btn" data-preset="amazon" title="Amazon (1500x1500, white bg)">
-                                    <span class="preset-icon">A</span>
-                                </button>
-                                <button type="button" class="preset-btn" data-preset="shopify" title="Shopify (2048x2048)">
-                                    <span class="preset-icon">S</span>
-                                </button>
-                                <button type="button" class="preset-btn" data-preset="instagram" title="Instagram (1080x1080)">
-                                    <span class="preset-icon">IG</span>
-                                </button>
-                                <button type="button" class="preset-btn" data-preset="instagram-story" title="Instagram Story (1080x1920)">
-                                    <span class="preset-icon">ST</span>
-                                </button>
-                                <button type="button" class="preset-btn" data-preset="facebook" title="Facebook (1200x628)">
-                                    <span class="preset-icon">FB</span>
-                                </button>
-                                <button type="button" class="preset-btn" data-preset="etsy" title="Etsy (2000x2000)">
-                                    <span class="preset-icon">E</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="templates-row">
-                            <select class="select-field select-sm" id="templateSelect">
-                                <option value="">Load template...</option>
-                            </select>
-                            <button type="button" class="btn-template" id="saveTemplateBtn" title="Save current settings as template">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
-                                    <polyline points="17,21 17,13 7,13 7,21"/>
-                                    <polyline points="7,3 7,8 15,8"/>
-                                </svg>
-                            </button>
-                            <button type="button" class="btn-template btn-danger" id="deleteTemplateBtn" title="Delete selected template">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="3,6 5,6 21,6"/>
-                                    <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                -->
+                <!-- Preset Selector -->
+                <div id="presetSelectorContainer"></div>
 
                 <form id="infographicForm" class="config-form">
                     <!-- Product Photo Upload -->
@@ -184,35 +61,76 @@
                             </span>
                             Product Photo
                             <span class="label-hint">Reference image</span>
-                        </div>
-                        <div class="upload-zone" id="uploadArea">
-                            <div class="upload-content">
-                                <div class="upload-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                                        <polyline points="17,8 12,3 7,8"/>
-                                        <line x1="12" y1="3" x2="12" y2="15"/>
-                                    </svg>
-                                </div>
-                                <p class="upload-text">Drop image or click to upload</p>
-                                <p class="upload-formats">PNG, JPG, WebP • Max 10MB</p>
-                            </div>
-                            <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp">
-                        </div>
-                        <div class="image-preview" id="imagePreview">
-                            <img src="" alt="Preview" class="preview-img" id="previewImg">
-                            <button type="button" class="preview-remove" id="removeImage">
+                            <button type="button" class="batch-mode-toggle" id="batchModeToggle" title="Switch to batch mode">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="18" y1="6" x2="6" y2="18"/>
-                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                    <rect x="3" y="3" width="7" height="7"/>
+                                    <rect x="14" y="3" width="7" height="7"/>
+                                    <rect x="3" y="14" width="7" height="7"/>
+                                    <rect x="14" y="14" width="7" height="7"/>
                                 </svg>
+                                <span>Batch</span>
                             </button>
                         </div>
-                        <label class="checkbox-field">
-                            <input type="checkbox" id="autoEnhance">
-                            <span class="checkbox-mark"></span>
-                            Auto-enhance (brightness/contrast)
-                        </label>
+
+                        <!-- Single Image Upload (default) -->
+                        <div class="single-upload-container" id="singleUploadContainer">
+                            <!-- Multi-angle toggle -->
+                            <label class="checkbox-field multi-angle-toggle">
+                                <input type="checkbox" id="multiAngleToggle">
+                                <span class="checkbox-mark"></span>
+                                Multiple angles
+                                <span class="toggle-hint">(2-4 photos for better accuracy)</span>
+                            </label>
+
+                            <!-- Single image upload (default) -->
+                            <div class="single-image-upload" id="singleImageUpload">
+                                <div class="upload-zone" id="uploadArea">
+                                    <div class="upload-content">
+                                        <div class="upload-icon">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                                <polyline points="17,8 12,3 7,8"/>
+                                                <line x1="12" y1="3" x2="12" y2="15"/>
+                                            </svg>
+                                        </div>
+                                        <p class="upload-text">Drop image or click to upload</p>
+                                        <p class="upload-formats">PNG, JPG, WebP • Max 10MB</p>
+                                    </div>
+                                    <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp">
+                                </div>
+                                <div class="image-preview" id="imagePreview">
+                                    <img src="" alt="Preview" class="preview-img" id="previewImg">
+                                    <button type="button" class="preview-remove" id="removeImage">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"/>
+                                            <line x1="6" y1="6" x2="18" y2="18"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Multi-angle upload (hidden by default) -->
+                            <div class="multi-angle-upload" id="multiAngleUpload" style="display: none;">
+                                <div class="multi-angle-grid" id="multiAngleGrid">
+                                    <!-- Uploaded images will appear here -->
+                                </div>
+                                <div class="multi-angle-add" id="multiAngleAdd">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    <span>Add angle</span>
+                                    <span class="multi-angle-count" id="multiAngleCount">0/4</span>
+                                    <input type="file" class="upload-input" id="multiAngleInput" accept="image/png,image/jpeg,image/jpg,image/webp" multiple>
+                                </div>
+                                <p class="multi-angle-hint">Upload 2-4 photos of the same product from different angles for better AI understanding</p>
+                            </div>
+
+                            <label class="checkbox-field">
+                                <input type="checkbox" id="autoEnhance">
+                                <span class="checkbox-mark"></span>
+                                Auto-enhance (brightness/contrast)
+                            </label>
                         <!-- AI Feature Extraction -->
                         <button type="button" class="btn-analyze" id="analyzeImageBtn" style="display: none;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -222,6 +140,49 @@
                             <span>Analyze with AI</span>
                             <span class="analyze-hint">Extract title & features</span>
                         </button>
+                        </div><!-- /single-upload-container -->
+
+                        <!-- Batch Upload Container (hidden by default) -->
+                        <div class="batch-upload-container" id="batchUploadContainer" style="display: none;">
+                            <div class="batch-upload-zone" id="batchUploadArea">
+                                <div class="upload-content">
+                                    <div class="upload-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <rect x="3" y="3" width="7" height="7"/>
+                                            <rect x="14" y="3" width="7" height="7"/>
+                                            <rect x="3" y="14" width="7" height="7"/>
+                                            <rect x="14" y="14" width="7" height="7"/>
+                                        </svg>
+                                    </div>
+                                    <p class="upload-text">Drop multiple images or click to upload</p>
+                                    <p class="upload-formats">PNG, JPG, WebP • Max 10MB each</p>
+                                </div>
+                                <input type="file" class="upload-input" id="batchProductPhotos" accept="image/png,image/jpeg,image/jpg,image/webp" multiple>
+                            </div>
+                            <div class="batch-queue" id="batchQueue"></div>
+                            <div class="batch-controls" id="batchControls" style="display: none;">
+                                <div class="batch-progress">
+                                    <span class="batch-status" id="batchStatus">0 / 0 processed</span>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" id="batchProgressFill"></div>
+                                    </div>
+                                </div>
+                                <div class="batch-actions">
+                                    <button type="button" class="btn-secondary btn-sm" id="clearBatchBtn">Clear All</button>
+                                    <button type="button" class="btn-primary btn-sm" id="startBatchBtn">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polygon points="5 3 19 12 5 21 5 3"/>
+                                        </svg>
+                                        Process All
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Start Templates -->
+                    <div class="config-section">
+                        <div id="templateSelectorContainer"></div>
                     </div>
 
                     <!-- Product Title -->
@@ -494,7 +455,7 @@
                                     </div>
                                 </div>
                                 <div id="contextDescriptionGroup" style="display: none; margin-top: 12px;">
-                                    <label class="field-label">Context Description</label>
+                                    <label class="field-label" data-tooltip="Describe the scene when using 'In Context' focus. E.g., 'on a kitchen counter' or 'being used outdoors'.">Context Description</label>
                                     <input type="text" class="input-field" id="contextDescription" placeholder="Describe the context (e.g., kitchen countertop, office desk, outdoor picnic)">
                                 </div>
                             </div>
@@ -563,7 +524,7 @@
                                             </div>
                                         </div>
                                         <div class="field-group" style="margin-top: 12px;">
-                                            <label class="field-label">Line Colors</label>
+                                            <label class="field-label" data-tooltip="Color mode for callout lines. Mono uses one color, Multi uses different colors for each line.">Line Colors</label>
                                             <select class="select-field select-sm" id="lineColorMode">
                                                 <option value="auto" selected>Auto</option>
                                                 <option value="mono">Monochrome (single color)</option>
@@ -706,7 +667,7 @@
                         <div class="settings-content">
                             <!-- API Key -->
                             <div class="settings-field">
-                                <label class="field-label">API Key</label>
+                                <label class="field-label" data-tooltip="Your OpenRouter API key for AI image generation. Get one free at openrouter.ai">API Key</label>
                                 <div class="api-input-group">
                                     <input type="password" class="input-field input-mono input-sm" id="apiKey" placeholder="sk-or-v1-...">
                                     <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
@@ -720,7 +681,7 @@
                             </div>
                             <!-- AI Model -->
                             <div class="settings-field">
-                                <label class="field-label">AI Model</label>
+                                <label class="field-label" data-tooltip="Different AI models produce different styles. Gemini is best for product photos, GPT-4o for creative imagery.">AI Model</label>
                                 <select class="select-field select-sm" id="aiModel">
                                     <optgroup label="Google Gemini (Image Gen)">
                                         <option value="google/gemini-3-pro-image-preview" selected>Gemini 3 Pro Image (Best)</option>
@@ -732,6 +693,9 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Cost Estimator -->
+                    <div id="costEstimatorContainer"></div>
 
                     <!-- Generate Button -->
                     <button type="submit" class="btn-generate" id="generateBtn">
@@ -797,6 +761,14 @@
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                             </svg>
                         </button>
+                        <button class="btn-image-info" id="imageInfoBtn" title="Show image info">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="16" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12.01" y2="8"/>
+                            </svg>
+                        </button>
+                        <div class="image-info-overlay" id="imageInfoOverlay" style="display: none;"></div>
                     </div>
 
                     <!-- Grid for variations -->
@@ -934,6 +906,16 @@
                             </svg>
                             Download All
                         </button>
+                        <button class="btn-meta" id="compareBtn" style="display: none;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="2" x2="12" y2="22"/>
+                                <rect x="2" y="4" width="8" height="16" rx="1"/>
+                                <rect x="14" y="4" width="8" height="16" rx="1"/>
+                            </svg>
+                            Compare
+                        </button>
+                        <!-- Rating -->
+                        <div class="result-rating" id="ratingContainer"></div>
                     </div>
 
                     <!-- Smart Regeneration -->
@@ -1007,7 +989,7 @@
                         <div class="complementary-content">
                             <!-- Image Type Selection -->
                             <div class="comp-type-selector">
-                                <label class="field-label">Image Type</label>
+                                <label class="field-label" data-tooltip="Type of supplementary image to generate. Close-ups show detail, Angles show different perspectives, Features highlight specific attributes.">Image Type</label>
                                 <div class="comp-type-buttons">
                                     <button type="button" class="comp-type-btn active" data-type="closeup">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1036,7 +1018,7 @@
 
                             <!-- Close-up Options -->
                             <div class="comp-options" id="closeupOptions">
-                                <label class="field-label">Focus On</label>
+                                <label class="field-label" data-tooltip="What aspect of the product to focus on in the close-up shot.">Focus On</label>
                                 <select class="select-field select-sm" id="closeupFocus">
                                     <option value="detail">Fine Details & Texture</option>
                                     <option value="material">Material & Craftsmanship</option>
@@ -1048,7 +1030,7 @@
 
                             <!-- Angle Options -->
                             <div class="comp-options" id="angleOptions" style="display: none;">
-                                <label class="field-label">Select Angles</label>
+                                <label class="field-label" data-tooltip="Choose which viewing angles to generate. Select multiple for a complete product showcase.">Select Angles</label>
                                 <div class="angle-checkboxes">
                                     <label class="angle-checkbox">
                                         <input type="checkbox" value="front" checked>
@@ -1079,7 +1061,7 @@
 
                             <!-- Feature Options -->
                             <div class="comp-options" id="featureOptions" style="display: none;">
-                                <label class="field-label">Highlight Feature</label>
+                                <label class="field-label" data-tooltip="Select which product feature to emphasize in the generated image.">Highlight Feature</label>
                                 <select class="select-field select-sm" id="featureSelect">
                                     <option value="">Select a feature...</option>
                                 </select>
@@ -1088,7 +1070,7 @@
                             <!-- Common Options -->
                             <div class="comp-common-options">
                                 <div class="comp-option-row">
-                                    <label class="field-label">Style</label>
+                                    <label class="field-label" data-tooltip="Match Main keeps the same style as your infographic, Variation adds creative differences, Clean uses a minimal isolated background.">Style</label>
                                     <div class="style-toggle">
                                         <button type="button" class="style-btn active" data-style="match">Match Main</button>
                                         <button type="button" class="style-btn" data-style="variation">Variation</button>
@@ -1096,7 +1078,7 @@
                                     </div>
                                 </div>
                                 <div class="comp-option-row">
-                                    <label class="field-label">Quantity</label>
+                                    <label class="field-label" data-tooltip="Number of complementary images to generate at once.">Quantity</label>
                                     <div class="quantity-selector">
                                         <button type="button" class="qty-btn active" data-qty="1">1</button>
                                         <button type="button" class="qty-btn" data-qty="2">2</button>
@@ -1119,7 +1101,7 @@
 
                             <!-- Results Grid -->
                             <div class="comp-results" id="compResults" style="display: none;">
-                                <label class="field-label">Generated Images</label>
+                                <label class="field-label" data-tooltip="Your generated complementary images. Click to view full size, use the download button to save.">Generated Images</label>
                                 <div class="comp-results-grid" id="compResultsGrid"></div>
                             </div>
                         </div>
@@ -1160,7 +1142,7 @@
                                 <img src="" alt="Logo" class="watermark-logo-preview" id="watermarkLogoPreview" style="display: none;">
                             </div>
                             <div class="watermark-position">
-                                <label class="field-label">Position</label>
+                                <label class="field-label" data-tooltip="Where to place the watermark on the image. Click a position button to select.">Position</label>
                                 <div class="position-grid">
                                     <button type="button" class="pos-btn" data-pos="tl">↖</button>
                                     <button type="button" class="pos-btn" data-pos="tc">↑</button>

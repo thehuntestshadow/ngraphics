@@ -11,7 +11,10 @@
       "Bash(wc:*)",
       "Bash( comm -23 /tmp/models_js_ids.txt /tmp/models_html_ids.txt)",
       "Bash( comm -23 /tmp/script_js_ids.txt /tmp/index_html_ids.txt)",
-      "Grep"
+      "Grep",
+      "Bash(node -c:*)",
+      "Bash(node -e:*)",
+      "Bash(ls:*)"
     ]
   }
 }

@@ -18,65 +18,8 @@
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
 
-    <!-- Header -->
-    <header class="site-header">
-        <div class="header-content">
-            <div class="logo-group">
-                <a href="index.html" class="logo-link">
-                    <div class="logo-mark">
-                        <svg viewBox="0 0 40 40" fill="none">
-                            <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
-                            <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
-                        </svg>
-                    </div>
-                    <div class="logo-text">
-                        <span class="logo-title">NGRAPHICS</span>
-                        <span class="logo-subtitle">Documentation</span>
-                    </div>
-                </a>
-            </div>
-            <div class="header-controls">
-                <a href="index.html" class="btn-back">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
-                    </svg>
-                    Infographics
-                </a>
-                <a href="models.html" class="docs-link" title="Model Studio">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="8" r="4"/>
-                        <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
-                    </svg>
-                    <span>Models</span>
-                </a>
-                <a href="bundle.html" class="docs-link" title="Bundle Studio">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="7" height="7" rx="1"/>
-                        <rect x="14" y="3" width="7" height="7" rx="1"/>
-                        <rect x="3" y="14" width="7" height="7" rx="1"/>
-                        <rect x="14" y="14" width="7" height="7" rx="1"/>
-                    </svg>
-                    <span>Bundles</span>
-                </a>
-                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
-                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                    </svg>
-                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="5"/>
-                        <line x1="12" y1="1" x2="12" y2="3"/>
-                        <line x1="12" y1="21" x2="12" y2="23"/>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                        <line x1="1" y1="12" x2="3" y2="12"/>
-                        <line x1="21" y1="12" x2="23" y2="12"/>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </header>
+    <!-- Header (rendered by SharedHeader) -->
+    <header class="site-header"></header>
 
     <!-- Documentation Content -->
     <main class="docs-main">
@@ -1609,9 +1552,14 @@
 
     <script src="shared.js"></script>
     <script>
+        // Render shared header
+        SharedHeader.render({
+            currentPage: 'docs',
+            showApiStatus: false
+        });
+
         // Initialize theme
         SharedTheme.init();
-        SharedTheme.setupToggle(document.getElementById('themeToggle'));
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('.docs-nav a').forEach(link => {

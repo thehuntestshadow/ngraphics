@@ -68,6 +68,148 @@ const SharedTheme = {
 };
 
 // ============================================
+// SHARED HEADER
+// ============================================
+const SharedHeader = {
+    // SVG icons for navigation
+    icons: {
+        logo: `<svg viewBox="0 0 40 40" fill="none">
+            <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
+        </svg>`,
+        dashboard: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="9" rx="1"/>
+            <rect x="14" y="3" width="7" height="5" rx="1"/>
+            <rect x="14" y="12" width="7" height="9" rx="1"/>
+            <rect x="3" y="16" width="7" height="5" rx="1"/>
+        </svg>`,
+        infographics: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <path d="M21 15l-5-5L5 21"/>
+        </svg>`,
+        models: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+        </svg>`,
+        bundles: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>`,
+        docs: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>`,
+        moon: `<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>`,
+        sun: `<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>`
+    },
+
+    // Page configurations
+    pages: {
+        infographics: { href: 'index.html', label: 'Infographics', subtitle: 'Infographic Studio' },
+        dashboard: { href: 'dashboard.html', label: 'Dashboard', subtitle: 'Dashboard' },
+        models: { href: 'models.html', label: 'Models', subtitle: 'Model Studio' },
+        bundles: { href: 'bundle.html', label: 'Bundles', subtitle: 'Bundle Studio' },
+        docs: { href: 'docs.html', label: 'Docs', subtitle: 'Documentation' }
+    },
+
+    /**
+     * Render header into the page
+     * @param {Object} options
+     * @param {string} options.currentPage - Current page key (infographics, dashboard, models, bundles, docs)
+     * @param {boolean} options.showApiStatus - Whether to show API status indicator
+     * @param {boolean} options.showLanguageToggle - Whether to show language toggle (EN/RO)
+     */
+    render(options = {}) {
+        const { currentPage = 'infographics', showApiStatus = false, showLanguageToggle = false } = options;
+
+        const headerEl = document.querySelector('.site-header');
+        if (!headerEl) return;
+
+        const currentConfig = this.pages[currentPage] || this.pages.infographics;
+        const isHome = currentPage === 'infographics';
+
+        // Navigation order: Dashboard, Infographics, Models, Bundles, Docs
+        const navOrder = ['dashboard', 'infographics', 'models', 'bundles', 'docs'];
+
+        // Build navigation links (exclude current page)
+        const navLinks = navOrder
+            .filter(key => key !== currentPage)
+            .map(key => {
+                const page = this.pages[key];
+                return `
+                    <a href="${page.href}" class="docs-link" title="${page.label}">
+                        ${this.icons[key]}
+                        <span>${page.label}</span>
+                    </a>
+                `;
+            })
+            .join('');
+
+        // Language toggle (only for infographics)
+        const languageToggle = showLanguageToggle ? `
+            <div class="language-toggle">
+                <button class="lang-btn" data-lang="en">EN</button>
+                <button class="lang-btn active" data-lang="ro">RO</button>
+            </div>
+        ` : '';
+
+        // API status
+        const apiStatus = showApiStatus ? `
+            <div class="api-status" id="apiStatus">
+                <span class="status-dot"></span>
+                <span class="status-text">Not Connected</span>
+            </div>
+        ` : '';
+
+        // Build header HTML
+        headerEl.innerHTML = `
+            <div class="header-content">
+                <div class="logo-group">
+                    ${isHome ? '' : '<a href="index.html" class="logo-link">'}
+                        <div class="logo-mark">
+                            ${this.icons.logo}
+                        </div>
+                        <div class="logo-text">
+                            <span class="logo-title">NGRAPHICS</span>
+                            <span class="logo-subtitle">${currentConfig.subtitle}</span>
+                        </div>
+                    ${isHome ? '' : '</a>'}
+                </div>
+                <div class="header-controls">
+                    ${navLinks}
+                    ${languageToggle}
+                    <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+                        ${this.icons.moon}
+                        ${this.icons.sun}
+                    </button>
+                    ${apiStatus}
+                </div>
+            </div>
+        `;
+
+        // Setup theme toggle
+        SharedTheme.setupToggle(document.getElementById('themeToggle'));
+    }
+};
+
+// ============================================
 // API REQUEST HANDLING
 // ============================================
 const SharedRequest = {
@@ -1500,11 +1642,39 @@ const SharedDownload = {
 // KEYBOARD SHORTCUTS
 // ============================================
 const SharedKeyboard = {
+    _handlers: {},
+    _modalVisible: false,
+
+    /**
+     * Default shortcuts configuration
+     */
+    defaultShortcuts: [
+        { key: 'Ctrl+Enter', action: 'generate', description: 'Generate image' },
+        { key: 'Ctrl+D', action: 'download', description: 'Download image' },
+        { key: 'Ctrl+C', action: 'copyPrompt', description: 'Copy prompt (when focused)' },
+        { key: 'Escape', action: 'escape', description: 'Close modal/cancel' },
+        { key: '?', action: 'showHelp', description: 'Show keyboard shortcuts' }
+    ],
+
     /**
      * Setup common keyboard shortcuts
      */
     setup(handlers = {}) {
+        this._handlers = handlers;
+
         document.addEventListener('keydown', (e) => {
+            // Don't trigger shortcuts when typing in inputs
+            const isInput = e.target.tagName === 'INPUT' ||
+                           e.target.tagName === 'TEXTAREA' ||
+                           e.target.isContentEditable;
+
+            // ? - Show shortcuts help (unless typing)
+            if (e.key === '?' && !isInput) {
+                e.preventDefault();
+                this.showShortcutsModal();
+                return;
+            }
+
             // Ctrl/Cmd + Enter - Generate
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                 e.preventDefault();
@@ -1517,11 +1687,98 @@ const SharedKeyboard = {
                 if (handlers.download) handlers.download();
             }
 
+            // Ctrl/Cmd + Shift + C - Copy prompt
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') {
+                e.preventDefault();
+                if (handlers.copyPrompt) handlers.copyPrompt();
+            }
+
             // Escape - Close modals
             if (e.key === 'Escape') {
-                if (handlers.escape) handlers.escape();
+                if (this._modalVisible) {
+                    this.hideShortcutsModal();
+                } else if (handlers.escape) {
+                    handlers.escape();
+                }
             }
         });
+
+        // Create modal element
+        this._createModal();
+    },
+
+    /**
+     * Create the shortcuts modal
+     */
+    _createModal() {
+        if (document.getElementById('keyboardShortcutsModal')) return;
+
+        const modal = document.createElement('div');
+        modal.id = 'keyboardShortcutsModal';
+        modal.className = 'modal keyboard-shortcuts-modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 480px;">
+                <div class="modal-header">
+                    <h3>Keyboard Shortcuts</h3>
+                    <button class="modal-close" id="closeShortcutsModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="shortcuts-list">
+                        ${this.defaultShortcuts.map(s => `
+                            <div class="shortcut-item">
+                                <kbd>${s.key.replace('Ctrl', navigator.platform.includes('Mac') ? '⌘' : 'Ctrl')}</kbd>
+                                <span>${s.description}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <p class="shortcuts-hint">Press <kbd>?</kbd> anytime to show this help</p>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Close handlers
+        modal.querySelector('#closeShortcutsModal').addEventListener('click', () => {
+            this.hideShortcutsModal();
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) this.hideShortcutsModal();
+        });
+    },
+
+    /**
+     * Show shortcuts modal
+     */
+    showShortcutsModal() {
+        const modal = document.getElementById('keyboardShortcutsModal');
+        if (modal) {
+            modal.classList.add('visible');
+            this._modalVisible = true;
+        }
+    },
+
+    /**
+     * Hide shortcuts modal
+     */
+    hideShortcutsModal() {
+        const modal = document.getElementById('keyboardShortcutsModal');
+        if (modal) {
+            modal.classList.remove('visible');
+            this._modalVisible = false;
+        }
+    },
+
+    /**
+     * Add custom shortcuts to the modal
+     */
+    addShortcuts(shortcuts) {
+        this.defaultShortcuts.push(...shortcuts);
+        // Recreate modal with new shortcuts
+        const existing = document.getElementById('keyboardShortcutsModal');
+        if (existing) existing.remove();
+        this._createModal();
     }
 };
 
@@ -1541,6 +1798,2264 @@ const SharedCollapsible = {
     }
 };
 
+// ============================================
+// ZIP DOWNLOAD
+// ============================================
+const SharedZip = {
+    _jsZipLoaded: false,
+    _jsZipLoading: null,
+
+    /**
+     * Load JSZip library dynamically
+     */
+    async _loadJSZip() {
+        if (this._jsZipLoaded) return window.JSZip;
+        if (this._jsZipLoading) return this._jsZipLoading;
+
+        this._jsZipLoading = new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+            script.onload = () => {
+                this._jsZipLoaded = true;
+                resolve(window.JSZip);
+            };
+            script.onerror = () => reject(new Error('Failed to load JSZip'));
+            document.head.appendChild(script);
+        });
+
+        return this._jsZipLoading;
+    },
+
+    /**
+     * Download images as ZIP with metadata
+     * @param {Object} options - { images: [], metadata: {}, filename: 'images' }
+     */
+    async downloadAsZip({ images, metadata = {}, filename = 'ngraphics-export' }) {
+        try {
+            const JSZip = await this._loadJSZip();
+            const zip = new JSZip();
+
+            // Add images
+            for (let i = 0; i < images.length; i++) {
+                const image = images[i];
+                const imageData = image.url || image;
+
+                // Convert base64 to blob
+                let blob;
+                if (imageData.startsWith('data:')) {
+                    const response = await fetch(imageData);
+                    blob = await response.blob();
+                } else {
+                    const response = await fetch(imageData);
+                    blob = await response.blob();
+                }
+
+                const ext = blob.type.includes('png') ? 'png' : 'jpg';
+                const imageName = image.name || `image-${i + 1}.${ext}`;
+                zip.file(imageName, blob);
+            }
+
+            // Add metadata JSON
+            if (Object.keys(metadata).length > 0) {
+                const metadataJson = JSON.stringify({
+                    ...metadata,
+                    exportedAt: new Date().toISOString(),
+                    imageCount: images.length
+                }, null, 2);
+                zip.file('metadata.json', metadataJson);
+            }
+
+            // Generate and download
+            const content = await zip.generateAsync({ type: 'blob' });
+            const url = URL.createObjectURL(content);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${filename}.zip`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            return true;
+        } catch (error) {
+            console.error('ZIP download error:', error);
+            throw error;
+        }
+    }
+};
+
+// ============================================
+// COPY TO CLIPBOARD
+// ============================================
+const SharedClipboard = {
+    /**
+     * Copy text to clipboard
+     */
+    async copy(text) {
+        try {
+            await navigator.clipboard.writeText(text);
+            return true;
+        } catch (error) {
+            // Fallback for older browsers
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            const success = document.execCommand('copy');
+            document.body.removeChild(textarea);
+            return success;
+        }
+    },
+
+    /**
+     * Copy with visual feedback on a button
+     */
+    async copyWithFeedback(text, button, successText = 'Copied!') {
+        const originalHTML = button.innerHTML;
+        const success = await this.copy(text);
+
+        if (success) {
+            button.classList.add('copied');
+            button.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg><span>${successText}</span>`;
+
+            setTimeout(() => {
+                button.classList.remove('copied');
+                button.innerHTML = originalHTML;
+            }, 2000);
+        }
+
+        return success;
+    }
+};
+
+// ============================================
+// IMAGE INFO OVERLAY
+// ============================================
+const SharedImageInfo = {
+    /**
+     * Create image info overlay element
+     */
+    createOverlay(info = {}) {
+        const overlay = document.createElement('div');
+        overlay.className = 'image-info-overlay';
+        overlay.innerHTML = `
+            <div class="image-info-grid">
+                ${info.seed ? `
+                    <div class="image-info-item">
+                        <span class="image-info-label">Seed</span>
+                        <span class="image-info-value copyable" data-copy="${info.seed}">${info.seed}</span>
+                    </div>
+                ` : ''}
+                ${info.model ? `
+                    <div class="image-info-item">
+                        <span class="image-info-label">Model</span>
+                        <span class="image-info-value">${this._formatModel(info.model)}</span>
+                    </div>
+                ` : ''}
+                ${info.dimensions ? `
+                    <div class="image-info-item">
+                        <span class="image-info-label">Size</span>
+                        <span class="image-info-value">${info.dimensions}</span>
+                    </div>
+                ` : ''}
+                ${info.aspectRatio ? `
+                    <div class="image-info-item">
+                        <span class="image-info-label">Ratio</span>
+                        <span class="image-info-value">${info.aspectRatio}</span>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+
+        // Add click to copy for copyable values
+        overlay.querySelectorAll('.copyable').forEach(el => {
+            el.addEventListener('click', async () => {
+                const value = el.dataset.copy;
+                const success = await SharedClipboard.copy(value);
+                if (success) {
+                    const original = el.textContent;
+                    el.textContent = 'Copied!';
+                    el.style.color = 'var(--success)';
+                    setTimeout(() => {
+                        el.textContent = original;
+                        el.style.color = '';
+                    }, 1500);
+                }
+            });
+        });
+
+        return overlay;
+    },
+
+    /**
+     * Create info toggle button
+     */
+    createToggleButton(overlay) {
+        const button = document.createElement('button');
+        button.className = 'btn-info-toggle';
+        button.title = 'Toggle image info';
+        button.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+        `;
+
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            button.classList.toggle('active');
+            overlay.classList.toggle('visible');
+        });
+
+        return button;
+    },
+
+    /**
+     * Add info overlay to an image container
+     */
+    addToContainer(container, info) {
+        const overlay = this.createOverlay(info);
+        const button = this.createToggleButton(overlay);
+
+        container.style.position = 'relative';
+        container.appendChild(overlay);
+        container.appendChild(button);
+
+        return { overlay, button };
+    },
+
+    /**
+     * Format model name for display
+     */
+    _formatModel(model) {
+        if (!model) return '';
+        // Extract just the model name from full path
+        const parts = model.split('/');
+        return parts[parts.length - 1].split(':')[0];
+    }
+};
+
+// ============================================
+// CONFIRMATION DIALOGS
+// ============================================
+const SharedConfirm = {
+    /**
+     * Show confirmation dialog
+     * @param {Object} options - { title, message, confirmText, cancelText, type, warning }
+     */
+    async show({ title = 'Confirm', message, confirmText = 'Confirm', cancelText = 'Cancel', type = 'default', warning = null }) {
+        return new Promise((resolve) => {
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = 'modal confirm-modal visible';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 420px;">
+                    <div class="modal-header">
+                        <h3>${title}</h3>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        ${warning ? `
+                            <div class="confirm-dialog-warning">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                                    <line x1="12" y1="9" x2="12" y2="13"/>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                </svg>
+                                <p>${warning}</p>
+                            </div>
+                        ` : ''}
+                        <p style="margin: 0; color: var(--text-secondary);">${message}</p>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-secondary cancel-btn">${cancelText}</button>
+                        <button class="btn ${type === 'danger' ? 'btn-danger' : 'btn-primary'} confirm-btn">${confirmText}</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            const cleanup = (result) => {
+                modal.classList.remove('visible');
+                setTimeout(() => modal.remove(), 200);
+                resolve(result);
+            };
+
+            modal.querySelector('.modal-close').addEventListener('click', () => cleanup(false));
+            modal.querySelector('.cancel-btn').addEventListener('click', () => cleanup(false));
+            modal.querySelector('.confirm-btn').addEventListener('click', () => cleanup(true));
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) cleanup(false);
+            });
+
+            // Focus confirm button
+            modal.querySelector('.confirm-btn').focus();
+        });
+    },
+
+    /**
+     * Confirm before clearing (with export option)
+     */
+    async confirmClear({ itemCount, exportFn, itemName = 'items' }) {
+        return new Promise((resolve) => {
+            const modal = document.createElement('div');
+            modal.className = 'modal confirm-modal visible';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 420px;">
+                    <div class="modal-header">
+                        <h3>Clear ${itemName}?</h3>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="confirm-dialog-warning">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                                <line x1="12" y1="9" x2="12" y2="13"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            <p>This will permanently delete ${itemCount} ${itemName}. This action cannot be undone.</p>
+                        </div>
+                        ${exportFn ? `
+                            <label class="confirm-dialog-checkbox">
+                                <input type="checkbox" id="exportBeforeClear">
+                                <span>Export before clearing</span>
+                            </label>
+                        ` : ''}
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-secondary cancel-btn">Cancel</button>
+                        <button class="btn btn-danger confirm-btn">Clear All</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            const cleanup = async (confirmed) => {
+                if (confirmed && exportFn) {
+                    const exportCheckbox = modal.querySelector('#exportBeforeClear');
+                    if (exportCheckbox?.checked) {
+                        await exportFn();
+                    }
+                }
+                modal.classList.remove('visible');
+                setTimeout(() => modal.remove(), 200);
+                resolve(confirmed);
+            };
+
+            modal.querySelector('.modal-close').addEventListener('click', () => cleanup(false));
+            modal.querySelector('.cancel-btn').addEventListener('click', () => cleanup(false));
+            modal.querySelector('.confirm-btn').addEventListener('click', () => cleanup(true));
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) cleanup(false);
+            });
+        });
+    }
+};
+
+// ============================================
+// DASHBOARD UTILITIES
+// ============================================
+const SharedDashboard = {
+    // Storage keys for each studio
+    STORAGE_KEYS: {
+        infographics: { history: 'infographics_history', favorites: 'ngraphics_favorites' },
+        modelStudio: { history: 'model_studio_history', favorites: 'model_studio_favorites' },
+        bundleStudio: { history: 'bundle_studio_history', favorites: 'bundle_studio_favorites' }
+    },
+
+    /**
+     * Load all history and favorites from all studios
+     */
+    loadAllData() {
+        const data = {};
+
+        for (const [studio, keys] of Object.entries(this.STORAGE_KEYS)) {
+            data[studio] = {
+                history: this._loadFromStorage(keys.history),
+                favorites: this._loadFromStorage(keys.favorites)
+            };
+        }
+
+        return data;
+    },
+
+    _loadFromStorage(key) {
+        try {
+            const stored = localStorage.getItem(key);
+            return stored ? JSON.parse(stored) : [];
+        } catch {
+            return [];
+        }
+    },
+
+    /**
+     * Get aggregated metrics from all data
+     */
+    getMetrics(data) {
+        let totalGenerations = 0;
+        let totalFavorites = 0;
+        const perStudio = {};
+
+        for (const [studio, items] of Object.entries(data)) {
+            const historyCount = items.history?.length || 0;
+            const favoritesCount = items.favorites?.length || 0;
+
+            totalGenerations += historyCount;
+            totalFavorites += favoritesCount;
+            perStudio[studio] = { history: historyCount, favorites: favoritesCount };
+        }
+
+        return {
+            totalGenerations,
+            totalFavorites,
+            perStudio,
+            apiConnected: !!localStorage.getItem('openrouter_api_key')
+        };
+    },
+
+    /**
+     * Get generation trends over last N days
+     */
+    getGenerationTrends(data, days = 7) {
+        const allHistory = [];
+
+        // Combine all history
+        for (const studio of Object.values(data)) {
+            if (studio.history) {
+                studio.history.forEach(item => allHistory.push(item));
+            }
+        }
+
+        // Group by date
+        const now = new Date();
+        const trends = [];
+
+        for (let i = days - 1; i >= 0; i--) {
+            const date = new Date(now);
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
+
+            const count = allHistory.filter(item => {
+                const itemDate = new Date(item.timestamp).toISOString().split('T')[0];
+                return itemDate === dateStr;
+            }).length;
+
+            trends.push({
+                date: date.toLocaleDateString('en-US', { weekday: 'short' }),
+                fullDate: dateStr,
+                count
+            });
+        }
+
+        return trends;
+    },
+
+    /**
+     * Get model usage breakdown
+     */
+    getModelUsage(data) {
+        const modelCounts = {};
+
+        for (const studio of Object.values(data)) {
+            if (studio.history) {
+                studio.history.forEach(item => {
+                    const model = item.model || item.settings?.model || 'Unknown';
+                    modelCounts[model] = (modelCounts[model] || 0) + 1;
+                });
+            }
+        }
+
+        return Object.entries(modelCounts)
+            .map(([model, count]) => ({ model: this._formatModelName(model), count }))
+            .sort((a, b) => b.count - a.count);
+    },
+
+    _formatModelName(model) {
+        // Shorten model names for display
+        if (model.includes('gemini')) return 'Gemini';
+        if (model.includes('gpt-4')) return 'GPT-4';
+        if (model.includes('gpt-3')) return 'GPT-3.5';
+        if (model.includes('dall-e')) return 'DALL-E';
+        if (model.includes('flux')) return 'Flux';
+        if (model.includes('recraft')) return 'Recraft';
+        return model.split('/').pop() || model;
+    },
+
+    /**
+     * Get recent activity across all studios
+     */
+    getRecentActivity(data, limit = 20) {
+        const allItems = [];
+
+        const studioLabels = {
+            infographics: 'Infographics',
+            modelStudio: 'Model Studio',
+            bundleStudio: 'Bundle Studio'
+        };
+
+        for (const [studio, items] of Object.entries(data)) {
+            if (items.history) {
+                items.history.forEach(item => {
+                    allItems.push({
+                        ...item,
+                        studio,
+                        studioLabel: studioLabels[studio]
+                    });
+                });
+            }
+        }
+
+        // Sort by timestamp descending and limit
+        return allItems
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+            .slice(0, limit);
+    },
+
+    /**
+     * Estimate storage size (approximate based on localStorage)
+     */
+    async getStorageEstimate() {
+        const breakdown = {};
+        let total = 0;
+
+        for (const [studio, keys] of Object.entries(this.STORAGE_KEYS)) {
+            let size = 0;
+
+            const historyData = localStorage.getItem(keys.history);
+            const favoritesData = localStorage.getItem(keys.favorites);
+
+            if (historyData) size += historyData.length * 2; // UTF-16
+            if (favoritesData) size += favoritesData.length * 2;
+
+            breakdown[studio] = size;
+            total += size;
+        }
+
+        // Try to get IndexedDB estimate
+        if (navigator.storage && navigator.storage.estimate) {
+            try {
+                const estimate = await navigator.storage.estimate();
+                if (estimate.usage) {
+                    total = estimate.usage;
+                }
+            } catch (e) {
+                // Fallback to localStorage estimate
+            }
+        }
+
+        return {
+            total,
+            formatted: this._formatBytes(total),
+            breakdown: Object.fromEntries(
+                Object.entries(breakdown).map(([k, v]) => [k, this._formatBytes(v)])
+            )
+        };
+    },
+
+    _formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    },
+
+    /**
+     * Clear items older than N days from a specific studio
+     */
+    clearOldItems(studioKey, days) {
+        const keys = this.STORAGE_KEYS[studioKey];
+        if (!keys) return 0;
+
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - days);
+
+        let removed = 0;
+
+        // Clear old history
+        const history = this._loadFromStorage(keys.history);
+        const filteredHistory = history.filter(item => {
+            const keep = new Date(item.timestamp) >= cutoff;
+            if (!keep) removed++;
+            return keep;
+        });
+        localStorage.setItem(keys.history, JSON.stringify(filteredHistory));
+
+        return removed;
+    },
+
+    /**
+     * Get studio breakdown for charts
+     */
+    getStudioBreakdown(data) {
+        return [
+            { studio: 'Infographics', count: data.infographics?.history?.length || 0, color: '#6366f1' },
+            { studio: 'Model Studio', count: data.modelStudio?.history?.length || 0, color: '#22c55e' },
+            { studio: 'Bundle Studio', count: data.bundleStudio?.history?.length || 0, color: '#f59e0b' }
+        ];
+    }
+};
+
+// ============================================
+// PRESET SYSTEM
+// ============================================
+const SharedPresets = {
+    /**
+     * Get storage key for presets
+     */
+    getStorageKey(pageKey) {
+        return `ngraphics_presets_${pageKey}`;
+    },
+
+    /**
+     * Load all presets for a page
+     */
+    load(pageKey) {
+        try {
+            const data = localStorage.getItem(this.getStorageKey(pageKey));
+            return data ? JSON.parse(data) : [];
+        } catch (e) {
+            console.error('Failed to load presets:', e);
+            return [];
+        }
+    },
+
+    /**
+     * Save presets for a page
+     */
+    save(pageKey, presets) {
+        try {
+            localStorage.setItem(this.getStorageKey(pageKey), JSON.stringify(presets));
+            return true;
+        } catch (e) {
+            console.error('Failed to save presets:', e);
+            return false;
+        }
+    },
+
+    /**
+     * Add a new preset
+     */
+    add(pageKey, name, settings, isBuiltIn = false) {
+        const presets = this.load(pageKey);
+        const preset = {
+            id: `preset_${Date.now()}`,
+            name,
+            settings,
+            isBuiltIn,
+            createdAt: new Date().toISOString()
+        };
+        presets.push(preset);
+        this.save(pageKey, presets);
+        return preset;
+    },
+
+    /**
+     * Update an existing preset
+     */
+    update(pageKey, presetId, settings) {
+        const presets = this.load(pageKey);
+        const index = presets.findIndex(p => p.id === presetId);
+        if (index !== -1 && !presets[index].isBuiltIn) {
+            presets[index].settings = settings;
+            presets[index].updatedAt = new Date().toISOString();
+            this.save(pageKey, presets);
+            return presets[index];
+        }
+        return null;
+    },
+
+    /**
+     * Delete a preset
+     */
+    delete(pageKey, presetId) {
+        const presets = this.load(pageKey);
+        const index = presets.findIndex(p => p.id === presetId);
+        if (index !== -1 && !presets[index].isBuiltIn) {
+            presets.splice(index, 1);
+            this.save(pageKey, presets);
+            return true;
+        }
+        return false;
+    },
+
+    /**
+     * Get a preset by ID
+     */
+    get(pageKey, presetId) {
+        const presets = this.load(pageKey);
+        return presets.find(p => p.id === presetId);
+    },
+
+    /**
+     * Export presets as JSON
+     */
+    export(pageKey) {
+        const presets = this.load(pageKey);
+        return JSON.stringify(presets, null, 2);
+    },
+
+    /**
+     * Import presets from JSON
+     */
+    import(pageKey, jsonString, merge = true) {
+        try {
+            const imported = JSON.parse(jsonString);
+            if (!Array.isArray(imported)) return false;
+
+            if (merge) {
+                const existing = this.load(pageKey);
+                // Add imported presets with new IDs to avoid conflicts
+                imported.forEach(preset => {
+                    preset.id = `preset_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                    preset.isBuiltIn = false;
+                    existing.push(preset);
+                });
+                this.save(pageKey, existing);
+            } else {
+                this.save(pageKey, imported);
+            }
+            return true;
+        } catch (e) {
+            console.error('Failed to import presets:', e);
+            return false;
+        }
+    },
+
+    /**
+     * Built-in presets for each page
+     */
+    builtIn: {
+        infographics: [
+            {
+                id: 'builtin_ecommerce_white',
+                name: 'E-commerce White',
+                isBuiltIn: true,
+                settings: {
+                    background: 'light',
+                    layout: 'product-center',
+                    visualDensity: '3',
+                    colorHarmony: 'monochrome',
+                    fontStyle: 'modern',
+                    iconStyle: 'flat'
+                }
+            },
+            {
+                id: 'builtin_social_vibrant',
+                name: 'Social Vibrant',
+                isBuiltIn: true,
+                settings: {
+                    background: 'gradient',
+                    layout: 'hero',
+                    visualDensity: '4',
+                    colorHarmony: 'complementary',
+                    fontStyle: 'bold',
+                    iconStyle: 'gradient'
+                }
+            },
+            {
+                id: 'builtin_minimal_clean',
+                name: 'Minimal Clean',
+                isBuiltIn: true,
+                settings: {
+                    background: 'light',
+                    layout: 'product-center',
+                    visualDensity: '1',
+                    colorHarmony: 'monochrome',
+                    fontStyle: 'modern',
+                    iconStyle: 'outlined',
+                    showCalloutLines: false
+                }
+            },
+            {
+                id: 'builtin_dark_premium',
+                name: 'Dark Premium',
+                isBuiltIn: true,
+                settings: {
+                    background: 'dark',
+                    layout: 'product-center',
+                    visualDensity: '3',
+                    colorHarmony: 'analogous',
+                    fontStyle: 'elegant',
+                    iconStyle: '3d'
+                }
+            }
+        ],
+        models: [
+            {
+                id: 'builtin_studio_classic',
+                name: 'Studio Classic',
+                isBuiltIn: true,
+                settings: {
+                    scene: 'studio',
+                    lighting: 'studio',
+                    photoStyle: 'commercial',
+                    pose: 'natural',
+                    depthOfField: 'medium',
+                    colorGrading: 'auto'
+                }
+            },
+            {
+                id: 'builtin_lifestyle_warm',
+                name: 'Lifestyle Warm',
+                isBuiltIn: true,
+                settings: {
+                    scene: 'cafe',
+                    lighting: 'golden-hour',
+                    photoStyle: 'lifestyle',
+                    pose: 'casual',
+                    depthOfField: 'shallow',
+                    colorGrading: 'warm'
+                }
+            },
+            {
+                id: 'builtin_editorial_bold',
+                name: 'Editorial Bold',
+                isBuiltIn: true,
+                settings: {
+                    scene: 'urban',
+                    lighting: 'dramatic',
+                    photoStyle: 'editorial',
+                    pose: 'confident',
+                    depthOfField: 'shallow',
+                    colorGrading: 'cinematic'
+                }
+            }
+        ],
+        bundles: [
+            {
+                id: 'builtin_flatlay_marble',
+                name: 'Flatlay Marble',
+                isBuiltIn: true,
+                settings: {
+                    layout: 'flatlay',
+                    background: 'surface',
+                    surface: 'marble',
+                    visualStyle: 'minimal',
+                    lighting: 'bright'
+                }
+            },
+            {
+                id: 'builtin_gift_box',
+                name: 'Gift Box',
+                isBuiltIn: true,
+                settings: {
+                    layout: 'unboxing',
+                    container: 'gift-box',
+                    background: 'gradient',
+                    visualStyle: 'luxury',
+                    lighting: 'soft'
+                }
+            },
+            {
+                id: 'builtin_grid_clean',
+                name: 'Grid Clean',
+                isBuiltIn: true,
+                settings: {
+                    layout: 'grid',
+                    background: 'white',
+                    visualStyle: 'commercial',
+                    lighting: 'bright',
+                    showLabels: true
+                }
+            }
+        ]
+    },
+
+    /**
+     * Get all presets including built-in
+     */
+    getAll(pageKey) {
+        const builtIn = this.builtIn[pageKey] || [];
+        const custom = this.load(pageKey);
+        return [...builtIn, ...custom];
+    },
+
+    /**
+     * Render preset selector UI
+     */
+    renderSelector(pageKey, onSelect, onSave) {
+        const presets = this.getAll(pageKey);
+
+        const container = document.createElement('div');
+        container.className = 'preset-selector';
+        container.innerHTML = `
+            <div class="preset-dropdown">
+                <select class="preset-select" id="presetSelect">
+                    <option value="">Load Preset...</option>
+                    ${presets.length > 0 ? `
+                        <optgroup label="Built-in">
+                            ${presets.filter(p => p.isBuiltIn).map(p => `
+                                <option value="${p.id}">${p.name}</option>
+                            `).join('')}
+                        </optgroup>
+                        ${presets.filter(p => !p.isBuiltIn).length > 0 ? `
+                            <optgroup label="Custom">
+                                ${presets.filter(p => !p.isBuiltIn).map(p => `
+                                    <option value="${p.id}">${p.name}</option>
+                                `).join('')}
+                            </optgroup>
+                        ` : ''}
+                    ` : ''}
+                </select>
+                <button class="preset-save-btn" title="Save current settings as preset">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                </button>
+                <button class="preset-delete-btn" title="Delete selected preset" style="display:none">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                    </svg>
+                </button>
+            </div>
+        `;
+
+        const select = container.querySelector('.preset-select');
+        const saveBtn = container.querySelector('.preset-save-btn');
+        const deleteBtn = container.querySelector('.preset-delete-btn');
+
+        select.addEventListener('change', () => {
+            const presetId = select.value;
+            if (presetId) {
+                const preset = presets.find(p => p.id === presetId);
+                if (preset && onSelect) {
+                    onSelect(preset.settings);
+                }
+                // Show delete button for custom presets
+                deleteBtn.style.display = preset && !preset.isBuiltIn ? 'flex' : 'none';
+            } else {
+                deleteBtn.style.display = 'none';
+            }
+        });
+
+        saveBtn.addEventListener('click', async () => {
+            const name = prompt('Enter preset name:');
+            if (name && name.trim()) {
+                if (onSave) {
+                    const settings = onSave();
+                    this.add(pageKey, name.trim(), settings);
+                    SharedUI.toast('Preset saved!', 'success');
+                    // Refresh the selector
+                    const newContainer = this.renderSelector(pageKey, onSelect, onSave);
+                    container.replaceWith(newContainer);
+                }
+            }
+        });
+
+        deleteBtn.addEventListener('click', async () => {
+            const presetId = select.value;
+            const preset = presets.find(p => p.id === presetId);
+            if (preset && !preset.isBuiltIn) {
+                const confirmed = await SharedUI.confirm(`Delete preset "${preset.name}"?`, {
+                    title: 'Delete Preset',
+                    confirmText: 'Delete',
+                    icon: 'warning'
+                });
+                if (confirmed) {
+                    this.delete(pageKey, presetId);
+                    SharedUI.toast('Preset deleted', 'success');
+                    // Refresh the selector
+                    const newContainer = this.renderSelector(pageKey, onSelect, onSave);
+                    container.replaceWith(newContainer);
+                }
+            }
+        });
+
+        return container;
+    }
+};
+
+// ============================================
+// COST ESTIMATOR
+// ============================================
+const SharedCostEstimator = {
+    // Model pricing per 1M tokens (approximate, from OpenRouter)
+    // Format: { input: cost per 1M input tokens, output: cost per 1M output tokens, image: cost per image }
+    pricing: {
+        'google/gemini-2.0-flash-exp:free': { input: 0, output: 0, image: 0, label: 'Free' },
+        'google/gemini-2.0-flash-001': { input: 0.1, output: 0.4, image: 0.0025, label: '$0.0025/img' },
+        'google/gemini-2.0-flash-exp': { input: 0, output: 0, image: 0, label: 'Free' },
+        'google/gemini-2.5-flash-preview': { input: 0.15, output: 0.6, image: 0.003, label: '$0.003/img' },
+        'google/gemini-2.5-pro-preview': { input: 1.25, output: 5, image: 0.01, label: '$0.01/img' },
+        'google/gemini-3-pro-image-preview': { input: 1.25, output: 5, image: 0.015, label: '$0.015/img' },
+        'openai/gpt-4o': { input: 2.5, output: 10, image: 0.02, label: '$0.02/img' },
+        'openai/gpt-4o-mini': { input: 0.15, output: 0.6, image: 0.005, label: '$0.005/img' }
+    },
+
+    // Session totals
+    session: {
+        totalCost: 0,
+        generations: 0
+    },
+
+    // History storage key
+    HISTORY_KEY: 'ngraphics_cost_history',
+
+    /**
+     * Reset session totals
+     */
+    resetSession() {
+        this.session.totalCost = 0;
+        this.session.generations = 0;
+    },
+
+    /**
+     * Load cost history from localStorage
+     */
+    loadHistory() {
+        try {
+            return JSON.parse(localStorage.getItem(this.HISTORY_KEY) || '[]');
+        } catch (e) {
+            return [];
+        }
+    },
+
+    /**
+     * Save cost history to localStorage
+     */
+    saveHistory(history) {
+        // Keep last 90 days of history
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - 90);
+        const filtered = history.filter(h => new Date(h.date) >= cutoff);
+        localStorage.setItem(this.HISTORY_KEY, JSON.stringify(filtered));
+    },
+
+    /**
+     * Record a cost entry with studio breakdown
+     */
+    recordCost(modelId, variations = 1, studio = 'unknown', promptLength = 500) {
+        const estimate = this.estimate(modelId, variations, promptLength);
+        const today = new Date().toISOString().split('T')[0];
+
+        // Update session
+        this.session.totalCost += estimate.totalCost;
+        this.session.generations += variations;
+        this.saveSession();
+
+        // Update history
+        const history = this.loadHistory();
+        let dayEntry = history.find(h => h.date === today);
+
+        if (!dayEntry) {
+            dayEntry = {
+                date: today,
+                totalCost: 0,
+                generations: 0,
+                studios: {}
+            };
+            history.push(dayEntry);
+        }
+
+        dayEntry.totalCost += estimate.totalCost;
+        dayEntry.generations += variations;
+
+        if (!dayEntry.studios[studio]) {
+            dayEntry.studios[studio] = { cost: 0, generations: 0 };
+        }
+        dayEntry.studios[studio].cost += estimate.totalCost;
+        dayEntry.studios[studio].generations += variations;
+
+        this.saveHistory(history);
+        return estimate;
+    },
+
+    /**
+     * Get total all-time cost
+     */
+    getAllTimeCost() {
+        const history = this.loadHistory();
+        const totalCost = history.reduce((sum, day) => sum + day.totalCost, 0);
+        const totalGenerations = history.reduce((sum, day) => sum + day.generations, 0);
+        return {
+            totalCost,
+            totalGenerations,
+            formatted: this.formatCost(totalCost)
+        };
+    },
+
+    /**
+     * Get cost breakdown by studio
+     */
+    getStudioBreakdown() {
+        const history = this.loadHistory();
+        const breakdown = {};
+
+        history.forEach(day => {
+            Object.entries(day.studios || {}).forEach(([studio, data]) => {
+                if (!breakdown[studio]) {
+                    breakdown[studio] = { cost: 0, generations: 0 };
+                }
+                breakdown[studio].cost += data.cost;
+                breakdown[studio].generations += data.generations;
+            });
+        });
+
+        return Object.entries(breakdown).map(([studio, data]) => ({
+            studio,
+            cost: data.cost,
+            generations: data.generations,
+            formatted: this.formatCost(data.cost)
+        })).sort((a, b) => b.cost - a.cost);
+    },
+
+    /**
+     * Get cost trends for last N days
+     */
+    getCostTrends(days = 7) {
+        const history = this.loadHistory();
+        const result = [];
+
+        for (let i = days - 1; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
+            const dayData = history.find(h => h.date === dateStr);
+
+            result.push({
+                date: date.toLocaleDateString('en-US', { weekday: 'short' }),
+                fullDate: dateStr,
+                cost: dayData?.totalCost || 0,
+                generations: dayData?.generations || 0
+            });
+        }
+
+        return result;
+    },
+
+    /**
+     * Get pricing for a model
+     */
+    getModelPricing(modelId) {
+        return this.pricing[modelId] || { input: 0.5, output: 2, image: 0.01, label: '~$0.01/img' };
+    },
+
+    /**
+     * Estimate cost for a generation
+     */
+    estimate(modelId, variations = 1, promptLength = 500) {
+        const pricing = this.getModelPricing(modelId);
+
+        // Estimate tokens (rough approximation)
+        const inputTokens = promptLength * 1.3; // ~1.3 tokens per character
+        const outputTokens = 500; // Typical response tokens
+        const imageCount = variations;
+
+        // Calculate costs
+        const inputCost = (inputTokens / 1000000) * pricing.input;
+        const outputCost = (outputTokens / 1000000) * pricing.output;
+        const imageCost = imageCount * pricing.image;
+
+        const totalCost = inputCost + outputCost + imageCost;
+
+        return {
+            inputCost,
+            outputCost,
+            imageCost,
+            totalCost,
+            formatted: this.formatCost(totalCost),
+            label: pricing.label,
+            isFree: totalCost === 0
+        };
+    },
+
+    /**
+     * Record a generation (add to session total)
+     */
+    recordGeneration(modelId, variations = 1, promptLength = 500) {
+        const estimate = this.estimate(modelId, variations, promptLength);
+        this.session.totalCost += estimate.totalCost;
+        this.session.generations += variations;
+        this.saveSession();
+        return estimate;
+    },
+
+    /**
+     * Format cost for display
+     */
+    formatCost(cost) {
+        if (cost === 0) return 'Free';
+        if (cost < 0.001) return '<$0.001';
+        if (cost < 0.01) return `$${cost.toFixed(4)}`;
+        if (cost < 1) return `$${cost.toFixed(3)}`;
+        return `$${cost.toFixed(2)}`;
+    },
+
+    /**
+     * Get session summary
+     */
+    getSessionSummary() {
+        return {
+            totalCost: this.session.totalCost,
+            formatted: this.formatCost(this.session.totalCost),
+            generations: this.session.generations
+        };
+    },
+
+    /**
+     * Save session to localStorage
+     */
+    saveSession() {
+        localStorage.setItem('ngraphics_cost_session', JSON.stringify({
+            ...this.session,
+            date: new Date().toISOString().split('T')[0]
+        }));
+    },
+
+    /**
+     * Load session from localStorage (resets if different day)
+     */
+    loadSession() {
+        try {
+            const data = JSON.parse(localStorage.getItem('ngraphics_cost_session') || '{}');
+            const today = new Date().toISOString().split('T')[0];
+            if (data.date === today) {
+                this.session.totalCost = data.totalCost || 0;
+                this.session.generations = data.generations || 0;
+            } else {
+                this.resetSession();
+            }
+        } catch (e) {
+            this.resetSession();
+        }
+    },
+
+    /**
+     * Render cost display UI
+     */
+    renderDisplay(modelId, variations = 1, promptLength = 500) {
+        const estimate = this.estimate(modelId, variations, promptLength);
+        const session = this.getSessionSummary();
+
+        const container = document.createElement('div');
+        container.className = 'cost-estimator';
+        container.innerHTML = `
+            <div class="cost-estimate">
+                <span class="cost-label">Est. cost:</span>
+                <span class="cost-value ${estimate.isFree ? 'free' : ''}">${estimate.formatted}</span>
+                ${variations > 1 ? `<span class="cost-variations">(${variations} images)</span>` : ''}
+            </div>
+            <div class="cost-session">
+                <span class="session-label">Session:</span>
+                <span class="session-value">${session.formatted}</span>
+                <span class="session-count">(${session.generations} gen)</span>
+            </div>
+        `;
+
+        return container;
+    },
+
+    /**
+     * Update an existing cost display
+     */
+    updateDisplay(container, modelId, variations = 1, promptLength = 500) {
+        if (!container) return;
+
+        const estimate = this.estimate(modelId, variations, promptLength);
+        const session = this.getSessionSummary();
+
+        const costValue = container.querySelector('.cost-value');
+        const costVariations = container.querySelector('.cost-variations');
+        const sessionValue = container.querySelector('.session-value');
+        const sessionCount = container.querySelector('.session-count');
+
+        if (costValue) {
+            costValue.textContent = estimate.formatted;
+            costValue.className = `cost-value ${estimate.isFree ? 'free' : ''}`;
+        }
+        if (costVariations) {
+            costVariations.textContent = variations > 1 ? `(${variations} images)` : '';
+        }
+        if (sessionValue) {
+            sessionValue.textContent = session.formatted;
+        }
+        if (sessionCount) {
+            sessionCount.textContent = `(${session.generations} gen)`;
+        }
+    }
+};
+
+// Initialize cost session on load
+SharedCostEstimator.loadSession();
+
+// ============================================
+// COMPARISON SLIDER
+// ============================================
+const SharedComparison = {
+    /**
+     * Create a comparison slider element
+     */
+    create(image1Url, image2Url, options = {}) {
+        const {
+            label1 = 'Before',
+            label2 = 'After',
+            initialPosition = 50
+        } = options;
+
+        const container = document.createElement('div');
+        container.className = 'comparison-slider';
+        container.innerHTML = `
+            <div class="comparison-container">
+                <div class="comparison-image comparison-before">
+                    <img src="${image1Url}" alt="${label1}">
+                    <span class="comparison-label">${label1}</span>
+                </div>
+                <div class="comparison-image comparison-after" style="clip-path: inset(0 0 0 ${initialPosition}%)">
+                    <img src="${image2Url}" alt="${label2}">
+                    <span class="comparison-label">${label2}</span>
+                </div>
+                <div class="comparison-handle" style="left: ${initialPosition}%">
+                    <div class="handle-line"></div>
+                    <div class="handle-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8l4 4-4 4M6 8l-4 4 4 4"/>
+                        </svg>
+                    </div>
+                    <div class="handle-line"></div>
+                </div>
+            </div>
+        `;
+
+        const handle = container.querySelector('.comparison-handle');
+        const afterImage = container.querySelector('.comparison-after');
+        const containerEl = container.querySelector('.comparison-container');
+
+        let isDragging = false;
+
+        const updatePosition = (clientX) => {
+            const rect = containerEl.getBoundingClientRect();
+            let position = ((clientX - rect.left) / rect.width) * 100;
+            position = Math.max(0, Math.min(100, position));
+
+            handle.style.left = `${position}%`;
+            afterImage.style.clipPath = `inset(0 0 0 ${position}%)`;
+        };
+
+        // Mouse events
+        handle.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                updatePosition(e.clientX);
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // Touch events
+        handle.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            e.preventDefault();
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (isDragging && e.touches[0]) {
+                updatePosition(e.touches[0].clientX);
+            }
+        });
+
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        // Click on container to move handle
+        containerEl.addEventListener('click', (e) => {
+            if (e.target !== handle && !handle.contains(e.target)) {
+                updatePosition(e.clientX);
+            }
+        });
+
+        return container;
+    },
+
+    /**
+     * Open comparison in a modal
+     */
+    openModal(image1Url, image2Url, options = {}) {
+        const {
+            label1 = 'Before',
+            label2 = 'After',
+            title = 'Compare Images'
+        } = options;
+
+        // Create modal
+        const modal = document.createElement('div');
+        modal.className = 'comparison-modal';
+        modal.innerHTML = `
+            <div class="comparison-modal-backdrop"></div>
+            <div class="comparison-modal-content">
+                <div class="comparison-modal-header">
+                    <h3>${title}</h3>
+                    <button class="comparison-modal-close">&times;</button>
+                </div>
+                <div class="comparison-modal-body"></div>
+            </div>
+        `;
+
+        const body = modal.querySelector('.comparison-modal-body');
+        const slider = this.create(image1Url, image2Url, { label1, label2 });
+        body.appendChild(slider);
+
+        // Close handlers
+        const close = () => {
+            modal.classList.remove('visible');
+            setTimeout(() => modal.remove(), 300);
+        };
+
+        modal.querySelector('.comparison-modal-close').addEventListener('click', close);
+        modal.querySelector('.comparison-modal-backdrop').addEventListener('click', close);
+
+        document.addEventListener('keydown', function handler(e) {
+            if (e.key === 'Escape') {
+                close();
+                document.removeEventListener('keydown', handler);
+            }
+        });
+
+        document.body.appendChild(modal);
+        requestAnimationFrame(() => modal.classList.add('visible'));
+
+        return { modal, close };
+    },
+
+    /**
+     * Add comparison button to result actions
+     */
+    addCompareButton(container, getImages) {
+        const btn = document.createElement('button');
+        btn.className = 'btn-icon compare-btn';
+        btn.title = 'Compare images';
+        btn.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="8" height="18" rx="1"/>
+                <rect x="13" y="3" width="8" height="18" rx="1"/>
+                <path d="M12 8v8M9 12h6"/>
+            </svg>
+        `;
+
+        btn.addEventListener('click', () => {
+            const images = getImages();
+            if (images && images.length >= 2) {
+                this.openModal(images[0], images[1], {
+                    label1: 'Image 1',
+                    label2: 'Image 2'
+                });
+            } else if (images && images.original && images.generated) {
+                this.openModal(images.original, images.generated, {
+                    label1: 'Original',
+                    label2: 'Generated'
+                });
+            } else {
+                SharedUI.toast('Need at least 2 images to compare', 'warning');
+            }
+        });
+
+        container.appendChild(btn);
+        return btn;
+    }
+};
+
+// ==========================================================================
+// TRASH / RECYCLE BIN
+// ==========================================================================
+const SharedTrash = {
+    STORAGE_KEY: 'ngraphics_trash',
+    RETENTION_DAYS: 7,
+    MAX_ITEMS: 50,
+
+    // Load trash from localStorage
+    load() {
+        try {
+            const data = localStorage.getItem(this.STORAGE_KEY);
+            const items = data ? JSON.parse(data) : [];
+            // Auto-cleanup expired items
+            return this.cleanup(items);
+        } catch (error) {
+            console.error('Failed to load trash:', error);
+            return [];
+        }
+    },
+
+    // Save trash to localStorage
+    save(items) {
+        try {
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(items));
+        } catch (error) {
+            console.error('Failed to save trash:', error);
+        }
+    },
+
+    // Add item to trash
+    add(item, source, page) {
+        const items = this.load();
+
+        const trashItem = {
+            id: Date.now(),
+            deletedAt: new Date().toISOString(),
+            source: source, // 'history' or 'favorites'
+            page: page, // 'infographics', 'models', 'bundles'
+            data: item
+        };
+
+        items.unshift(trashItem);
+
+        // Limit trash size
+        if (items.length > this.MAX_ITEMS) {
+            items.splice(this.MAX_ITEMS);
+        }
+
+        this.save(items);
+        return trashItem;
+    },
+
+    // Remove item from trash permanently
+    remove(id) {
+        const items = this.load();
+        const filtered = items.filter(item => item.id !== id);
+        this.save(filtered);
+    },
+
+    // Get all trash items
+    getAll() {
+        return this.load();
+    },
+
+    // Get trash items by page
+    getByPage(page) {
+        return this.load().filter(item => item.page === page);
+    },
+
+    // Get trash items by source
+    getBySource(source) {
+        return this.load().filter(item => item.source === source);
+    },
+
+    // Find item by id
+    findById(id) {
+        return this.load().find(item => item.id === id);
+    },
+
+    // Restore item from trash (returns the original item data)
+    restore(id) {
+        const items = this.load();
+        const itemIndex = items.findIndex(item => item.id === id);
+
+        if (itemIndex === -1) return null;
+
+        const [trashItem] = items.splice(itemIndex, 1);
+        this.save(items);
+
+        return {
+            data: trashItem.data,
+            source: trashItem.source,
+            page: trashItem.page
+        };
+    },
+
+    // Clear all trash
+    clear() {
+        this.save([]);
+    },
+
+    // Remove items older than RETENTION_DAYS
+    cleanup(items) {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - this.RETENTION_DAYS);
+
+        const filtered = items.filter(item => {
+            const deletedAt = new Date(item.deletedAt);
+            return deletedAt > cutoff;
+        });
+
+        if (filtered.length !== items.length) {
+            this.save(filtered);
+        }
+
+        return filtered;
+    },
+
+    // Get count of items in trash
+    count() {
+        return this.load().length;
+    },
+
+    // Check if trash has items
+    hasItems() {
+        return this.count() > 0;
+    },
+
+    // Format time since deletion
+    formatDeletedAt(isoString) {
+        const deleted = new Date(isoString);
+        const now = new Date();
+        const diffMs = now - deleted;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffHours < 24) return `${diffHours}h ago`;
+        if (diffDays === 1) return 'Yesterday';
+        return `${diffDays} days ago`;
+    },
+
+    // Get days remaining before auto-delete
+    getDaysRemaining(isoString) {
+        const deleted = new Date(isoString);
+        const expiry = new Date(deleted);
+        expiry.setDate(expiry.getDate() + this.RETENTION_DAYS);
+
+        const now = new Date();
+        const diffMs = expiry - now;
+        const diffDays = Math.ceil(diffMs / 86400000);
+
+        return Math.max(0, diffDays);
+    }
+};
+
+// ============================================
+// TOOLTIPS
+// ============================================
+const SharedTooltips = {
+    tooltip: null,
+    activeElement: null,
+    hideTimeout: null,
+
+    /**
+     * Initialize tooltip system
+     */
+    init() {
+        // Create tooltip element if not exists
+        if (!this.tooltip) {
+            this.tooltip = document.createElement('div');
+            this.tooltip.className = 'shared-tooltip';
+            this.tooltip.innerHTML = '<div class="tooltip-content"></div>';
+            document.body.appendChild(this.tooltip);
+        }
+
+        // Add event listeners for elements with data-tooltip
+        document.addEventListener('mouseenter', (e) => {
+            const target = e.target.closest('[data-tooltip]');
+            if (target) this.show(target);
+        }, true);
+
+        document.addEventListener('mouseleave', (e) => {
+            const target = e.target.closest('[data-tooltip]');
+            if (target) this.scheduleHide();
+        }, true);
+
+        // Keep tooltip visible when hovering over it
+        this.tooltip.addEventListener('mouseenter', () => {
+            clearTimeout(this.hideTimeout);
+        });
+
+        this.tooltip.addEventListener('mouseleave', () => {
+            this.hide();
+        });
+    },
+
+    /**
+     * Show tooltip for element
+     */
+    show(element) {
+        clearTimeout(this.hideTimeout);
+        this.activeElement = element;
+
+        const text = element.dataset.tooltip;
+        const position = element.dataset.tooltipPosition || 'top';
+
+        if (!text) return;
+
+        const content = this.tooltip.querySelector('.tooltip-content');
+        content.textContent = text;
+
+        this.tooltip.className = `shared-tooltip visible position-${position}`;
+
+        // Position tooltip
+        const rect = element.getBoundingClientRect();
+        const tooltipRect = this.tooltip.getBoundingClientRect();
+
+        let top, left;
+
+        switch (position) {
+            case 'bottom':
+                top = rect.bottom + 8;
+                left = rect.left + (rect.width - tooltipRect.width) / 2;
+                break;
+            case 'left':
+                top = rect.top + (rect.height - tooltipRect.height) / 2;
+                left = rect.left - tooltipRect.width - 8;
+                break;
+            case 'right':
+                top = rect.top + (rect.height - tooltipRect.height) / 2;
+                left = rect.right + 8;
+                break;
+            default: // top
+                top = rect.top - tooltipRect.height - 8;
+                left = rect.left + (rect.width - tooltipRect.width) / 2;
+        }
+
+        // Keep within viewport
+        left = Math.max(8, Math.min(left, window.innerWidth - tooltipRect.width - 8));
+        top = Math.max(8, Math.min(top, window.innerHeight - tooltipRect.height - 8));
+
+        this.tooltip.style.top = `${top}px`;
+        this.tooltip.style.left = `${left}px`;
+    },
+
+    /**
+     * Schedule hide with delay
+     */
+    scheduleHide() {
+        this.hideTimeout = setTimeout(() => this.hide(), 100);
+    },
+
+    /**
+     * Hide tooltip
+     */
+    hide() {
+        this.tooltip.classList.remove('visible');
+        this.activeElement = null;
+    }
+};
+
+// ============================================
+// PROMPT TEMPLATES
+// ============================================
+const SharedTemplates = {
+    STORAGE_KEY: 'ngraphics_templates',
+
+    // Built-in templates
+    builtIn: {
+        infographics: [
+            {
+                id: 'ecommerce-clean',
+                name: 'E-commerce Clean',
+                description: 'Minimal white background, perfect for marketplaces',
+                settings: {
+                    infographicStyle: 'light',
+                    layoutTemplate: 'center',
+                    visualDensity: 2,
+                    fontStyle: 'modern',
+                    iconStyle: 'flat',
+                    colorHarmony: 'match'
+                }
+            },
+            {
+                id: 'social-vibrant',
+                name: 'Social Media Vibrant',
+                description: 'Bold colors and dynamic layout for social posts',
+                settings: {
+                    infographicStyle: 'gradient',
+                    layoutTemplate: 'hero',
+                    visualDensity: 4,
+                    fontStyle: 'bold',
+                    iconStyle: 'gradient',
+                    colorHarmony: 'complementary'
+                }
+            },
+            {
+                id: 'premium-dark',
+                name: 'Premium Dark',
+                description: 'Elegant dark theme for luxury products',
+                settings: {
+                    infographicStyle: 'dark',
+                    layoutTemplate: 'center',
+                    visualDensity: 3,
+                    fontStyle: 'elegant',
+                    iconStyle: '3d',
+                    colorHarmony: 'monochrome'
+                }
+            },
+            {
+                id: 'tech-minimal',
+                name: 'Tech Minimal',
+                description: 'Clean technical aesthetic for electronics',
+                settings: {
+                    infographicStyle: 'light',
+                    layoutTemplate: 'grid',
+                    visualDensity: 3,
+                    fontStyle: 'technical',
+                    iconStyle: 'outlined',
+                    colorHarmony: 'match'
+                }
+            }
+        ],
+        modelStudio: [
+            {
+                id: 'fashion-editorial',
+                name: 'Fashion Editorial',
+                description: 'High-fashion magazine style',
+                settings: {
+                    photoStyle: 'editorial',
+                    lighting: 'dramatic',
+                    pose: 'elegant',
+                    depthOfField: 'shallow',
+                    colorGrading: 'cinematic'
+                }
+            },
+            {
+                id: 'lifestyle-casual',
+                name: 'Lifestyle Casual',
+                description: 'Natural, everyday feel',
+                settings: {
+                    photoStyle: 'lifestyle',
+                    lighting: 'natural',
+                    pose: 'casual',
+                    depthOfField: 'medium',
+                    colorGrading: 'warm'
+                }
+            },
+            {
+                id: 'studio-commercial',
+                name: 'Studio Commercial',
+                description: 'Clean studio product shots',
+                settings: {
+                    photoStyle: 'commercial',
+                    lighting: 'studio',
+                    pose: 'confident',
+                    depthOfField: 'deep',
+                    colorGrading: 'auto'
+                }
+            }
+        ],
+        bundleStudio: [
+            {
+                id: 'flatlay-minimal',
+                name: 'Flat Lay Minimal',
+                description: 'Clean top-down arrangement',
+                settings: {
+                    layout: 'flatlay',
+                    background: 'white',
+                    visualStyle: 'minimal',
+                    lighting: 'bright'
+                }
+            },
+            {
+                id: 'gift-box',
+                name: 'Gift Box Presentation',
+                description: 'Products in elegant gift packaging',
+                settings: {
+                    layout: 'unboxing',
+                    container: 'gift',
+                    background: 'gradient',
+                    visualStyle: 'luxury'
+                }
+            }
+        ]
+    },
+
+    /**
+     * Load user templates
+     */
+    loadUserTemplates(page) {
+        try {
+            const all = JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '{}');
+            return all[page] || [];
+        } catch (e) {
+            return [];
+        }
+    },
+
+    /**
+     * Save user template
+     */
+    saveUserTemplate(page, template) {
+        const all = JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '{}');
+        if (!all[page]) all[page] = [];
+
+        template.id = `user-${Date.now()}`;
+        template.isUserTemplate = true;
+        template.createdAt = new Date().toISOString();
+
+        all[page].unshift(template);
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(all));
+        return template;
+    },
+
+    /**
+     * Delete user template
+     */
+    deleteUserTemplate(page, templateId) {
+        const all = JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '{}');
+        if (all[page]) {
+            all[page] = all[page].filter(t => t.id !== templateId);
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(all));
+        }
+    },
+
+    /**
+     * Get all templates for a page
+     */
+    getAll(page) {
+        const builtIn = this.builtIn[page] || [];
+        const user = this.loadUserTemplates(page);
+        return [...user, ...builtIn];
+    },
+
+    /**
+     * Render template selector UI
+     */
+    render(container, page, onSelect, currentSettings = null) {
+        const templates = this.getAll(page);
+
+        container.innerHTML = `
+            <div class="template-selector">
+                <div class="template-header">
+                    <span class="template-label">Quick Start Templates</span>
+                    ${currentSettings ? `
+                        <button type="button" class="template-save-btn" title="Save current settings as template">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                                <polyline points="17 21 17 13 7 13 7 21"/>
+                                <polyline points="7 3 7 8 15 8"/>
+                            </svg>
+                            Save Current
+                        </button>
+                    ` : ''}
+                </div>
+                <div class="template-grid">
+                    ${templates.map(t => `
+                        <div class="template-card ${t.isUserTemplate ? 'user-template' : ''}" data-id="${t.id}">
+                            <div class="template-card-header">
+                                <span class="template-name">${t.name}</span>
+                                ${t.isUserTemplate ? `
+                                    <button type="button" class="template-delete-btn" data-id="${t.id}" title="Delete template">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"/>
+                                            <line x1="6" y1="6" x2="18" y2="18"/>
+                                        </svg>
+                                    </button>
+                                ` : ''}
+                            </div>
+                            <p class="template-desc">${t.description}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        // Add click handlers
+        container.querySelectorAll('.template-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('.template-delete-btn')) return;
+                const id = card.dataset.id;
+                const template = templates.find(t => t.id === id);
+                if (template && onSelect) {
+                    onSelect(template);
+                    SharedUI.toast(`Applied "${template.name}" template`, 'success');
+                }
+            });
+        });
+
+        // Delete buttons
+        container.querySelectorAll('.template-delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = btn.dataset.id;
+                this.deleteUserTemplate(page, id);
+                this.render(container, page, onSelect, currentSettings);
+                SharedUI.toast('Template deleted', 'success');
+            });
+        });
+
+        // Save button
+        const saveBtn = container.querySelector('.template-save-btn');
+        if (saveBtn && currentSettings) {
+            saveBtn.addEventListener('click', async () => {
+                const name = prompt('Template name:');
+                if (!name) return;
+
+                const description = prompt('Short description (optional):') || '';
+
+                this.saveUserTemplate(page, {
+                    name,
+                    description,
+                    settings: currentSettings()
+                });
+
+                this.render(container, page, onSelect, currentSettings);
+                SharedUI.toast(`Saved "${name}" template`, 'success');
+            });
+        }
+    }
+};
+
+// ============================================
+// EXAMPLE GALLERY
+// ============================================
+const SharedExamples = {
+    // Example images for different options (using placeholder descriptions)
+    examples: {
+        layoutTemplate: {
+            center: { desc: 'Product centered with features around it', preview: '🎯 Balanced, symmetrical layout' },
+            left: { desc: 'Product on left, text on right', preview: '⬅️ Product emphasis on left side' },
+            right: { desc: 'Product on right, text on left', preview: '➡️ Product emphasis on right side' },
+            top: { desc: 'Product at top, features below', preview: '⬆️ Hero product with details below' },
+            grid: { desc: 'Product and features in grid cells', preview: '▦ Organized grid structure' },
+            hero: { desc: 'Large product with feature row below', preview: '🌟 Bold hero presentation' }
+        },
+        infographicStyle: {
+            auto: { desc: 'AI picks best style for your product', preview: '🤖 Smart automatic selection' },
+            light: { desc: 'Clean white/light background', preview: '☀️ Bright, clean, professional' },
+            dark: { desc: 'Dark/black background', preview: '🌙 Bold, premium, dramatic' },
+            gradient: { desc: 'Subtle gradient background', preview: '🌈 Modern, dynamic feel' }
+        },
+        iconStyle: {
+            auto: { desc: 'AI chooses best icon style', preview: '🤖 Automatic selection' },
+            realistic: { desc: 'Photo-like detailed icons', preview: '📷 Photorealistic detail' },
+            illustrated: { desc: 'Hand-drawn artistic style', preview: '✏️ Artistic, warm feel' },
+            '3d': { desc: '3D rendered with depth', preview: '🎲 Depth and dimension' },
+            flat: { desc: 'Simple solid color icons', preview: '⬜ Clean and minimal' },
+            outlined: { desc: 'Line icons, no fill', preview: '⭕ Technical, precise' },
+            gradient: { desc: 'Glossy with color transitions', preview: '💎 Polished, modern' }
+        },
+        colorHarmony: {
+            match: { desc: 'Colors from product', preview: '🎨 Product-derived palette' },
+            complementary: { desc: 'Opposite on color wheel', preview: '🔄 High contrast, vibrant' },
+            analogous: { desc: 'Adjacent colors', preview: '🌊 Harmonious, flowing' },
+            triadic: { desc: 'Three evenly spaced', preview: '🔺 Balanced, diverse' },
+            monochrome: { desc: 'Single color variations', preview: '⚫ Elegant, unified' },
+            'high-contrast': { desc: 'Bold opposing colors', preview: '⚡ Striking, attention-grabbing' }
+        },
+        productFocus: {
+            auto: { desc: 'AI decides best presentation', preview: '🤖 Smart framing' },
+            full: { desc: 'Entire product visible', preview: '📦 Complete product view' },
+            closeup: { desc: 'Zoomed in on details', preview: '🔍 Detail emphasis' },
+            dynamic: { desc: 'Angled, action-oriented', preview: '💫 Energy and movement' },
+            context: { desc: 'Product in use/setting', preview: '🏠 Lifestyle context' },
+            floating: { desc: 'Product floating with shadow', preview: '🎈 Clean isolation' }
+        },
+        visualDensity: {
+            1: { desc: 'Maximum whitespace, minimal elements', preview: '○ Ultra minimal' },
+            2: { desc: 'Clean with some elements', preview: '◔ Light and airy' },
+            3: { desc: 'Balanced content and space', preview: '◑ Balanced' },
+            4: { desc: 'Rich with many elements', preview: '◕ Content-rich' },
+            5: { desc: 'Maximum detail and elements', preview: '● Information-dense' }
+        }
+    },
+
+    /**
+     * Get example for an option
+     */
+    get(optionType, value) {
+        return this.examples[optionType]?.[value] || null;
+    },
+
+    /**
+     * Attach example previews to a select element
+     */
+    attachToSelect(selectElement, optionType) {
+        if (!selectElement || !this.examples[optionType]) return;
+
+        // Create preview container
+        let preview = selectElement.parentElement.querySelector('.option-example');
+        if (!preview) {
+            preview = document.createElement('div');
+            preview.className = 'option-example';
+            selectElement.parentElement.appendChild(preview);
+        }
+
+        const updatePreview = () => {
+            const example = this.get(optionType, selectElement.value);
+            if (example) {
+                preview.innerHTML = `
+                    <span class="example-preview">${example.preview}</span>
+                    <span class="example-desc">${example.desc}</span>
+                `;
+                preview.style.display = 'flex';
+            } else {
+                preview.style.display = 'none';
+            }
+        };
+
+        selectElement.addEventListener('change', updatePreview);
+        updatePreview(); // Initial
+    }
+};
+
+// ============================================
+// GENERATION RATING
+// ============================================
+const SharedRating = {
+    STORAGE_KEY: 'ngraphics_ratings',
+
+    /**
+     * Load all ratings
+     */
+    load() {
+        try {
+            return JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '{}');
+        } catch (e) {
+            return {};
+        }
+    },
+
+    /**
+     * Save rating for a generation
+     */
+    rate(generationId, rating, metadata = {}) {
+        const ratings = this.load();
+
+        ratings[generationId] = {
+            rating, // 'up' or 'down'
+            timestamp: new Date().toISOString(),
+            ...metadata
+        };
+
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(ratings));
+        return ratings[generationId];
+    },
+
+    /**
+     * Get rating for a generation
+     */
+    get(generationId) {
+        const ratings = this.load();
+        return ratings[generationId] || null;
+    },
+
+    /**
+     * Remove rating
+     */
+    remove(generationId) {
+        const ratings = this.load();
+        delete ratings[generationId];
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(ratings));
+    },
+
+    /**
+     * Get statistics
+     */
+    getStats() {
+        const ratings = this.load();
+        const entries = Object.values(ratings);
+
+        return {
+            total: entries.length,
+            positive: entries.filter(r => r.rating === 'up').length,
+            negative: entries.filter(r => r.rating === 'down').length,
+            successRate: entries.length > 0
+                ? Math.round((entries.filter(r => r.rating === 'up').length / entries.length) * 100)
+                : 0
+        };
+    },
+
+    /**
+     * Get insights from ratings
+     */
+    getInsights() {
+        const ratings = this.load();
+        const entries = Object.entries(ratings).map(([id, data]) => ({ id, ...data }));
+
+        if (entries.length < 5) {
+            return null; // Not enough data
+        }
+
+        // Analyze patterns
+        const modelStats = {};
+        const styleStats = {};
+
+        entries.forEach(entry => {
+            if (entry.model) {
+                if (!modelStats[entry.model]) {
+                    modelStats[entry.model] = { up: 0, down: 0 };
+                }
+                modelStats[entry.model][entry.rating]++;
+            }
+
+            if (entry.style) {
+                if (!styleStats[entry.style]) {
+                    styleStats[entry.style] = { up: 0, down: 0 };
+                }
+                styleStats[entry.style][entry.rating]++;
+            }
+        });
+
+        // Find best performing
+        const bestModel = Object.entries(modelStats)
+            .map(([model, stats]) => ({
+                model,
+                rate: stats.up / (stats.up + stats.down) * 100
+            }))
+            .sort((a, b) => b.rate - a.rate)[0];
+
+        const bestStyle = Object.entries(styleStats)
+            .map(([style, stats]) => ({
+                style,
+                rate: stats.up / (stats.up + stats.down) * 100
+            }))
+            .sort((a, b) => b.rate - a.rate)[0];
+
+        return {
+            bestModel: bestModel?.model,
+            bestModelRate: bestModel?.rate,
+            bestStyle: bestStyle?.style,
+            bestStyleRate: bestStyle?.rate,
+            totalRated: entries.length
+        };
+    },
+
+    /**
+     * Render rating buttons
+     */
+    render(container, generationId, metadata = {}) {
+        const existing = this.get(generationId);
+
+        container.innerHTML = `
+            <div class="rating-buttons">
+                <button type="button" class="rating-btn up ${existing?.rating === 'up' ? 'active' : ''}"
+                        data-rating="up" title="Good result">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+                    </svg>
+                </button>
+                <button type="button" class="rating-btn down ${existing?.rating === 'down' ? 'active' : ''}"
+                        data-rating="down" title="Poor result">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>
+                    </svg>
+                </button>
+            </div>
+        `;
+
+        container.querySelectorAll('.rating-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const rating = btn.dataset.rating;
+                const wasActive = btn.classList.contains('active');
+
+                // Remove active from all
+                container.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('active'));
+
+                if (wasActive) {
+                    // Toggle off
+                    this.remove(generationId);
+                } else {
+                    // Set rating
+                    btn.classList.add('active');
+                    this.rate(generationId, rating, metadata);
+                    SharedUI.toast(rating === 'up' ? 'Thanks for the feedback!' : 'Thanks, we\'ll try to improve', 'info');
+                }
+            });
+        });
+    }
+};
+
 // Export for use in other modules (if using ES modules in future)
 if (typeof window !== 'undefined') {
     window.SharedAPI = SharedAPI;
@@ -1553,4 +4068,17 @@ if (typeof window !== 'undefined') {
     window.SharedDownload = SharedDownload;
     window.SharedKeyboard = SharedKeyboard;
     window.SharedCollapsible = SharedCollapsible;
+    window.SharedDashboard = SharedDashboard;
+    window.SharedZip = SharedZip;
+    window.SharedClipboard = SharedClipboard;
+    window.SharedImageInfo = SharedImageInfo;
+    window.SharedConfirm = SharedConfirm;
+    window.SharedPresets = SharedPresets;
+    window.SharedCostEstimator = SharedCostEstimator;
+    window.SharedComparison = SharedComparison;
+    window.SharedTrash = SharedTrash;
+    window.SharedTooltips = SharedTooltips;
+    window.SharedTemplates = SharedTemplates;
+    window.SharedExamples = SharedExamples;
+    window.SharedRating = SharedRating;
 }

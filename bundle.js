@@ -179,6 +179,9 @@ function initElements() {
         copySeedBtn: document.getElementById('copySeedBtn'),
         favoriteBtn: document.getElementById('favoriteBtn'),
         downloadBtn: document.getElementById('downloadBtn'),
+        compareBtn: document.getElementById('compareBtn'),
+        imageInfoBtn: document.getElementById('imageInfoBtn'),
+        imageInfoOverlay: document.getElementById('imageInfoOverlay'),
 
         // Feedback
         feedbackTextarea: document.getElementById('feedbackTextarea'),
@@ -587,11 +590,14 @@ async function generateBundle() {
     state.lastSeed = baseSeed;
 
     try {
+        let generatedCount = 1;
+
         if (state.variations === 1) {
             requestBody.seed = baseSeed;
             updateLoadingStatus('Generating bundle image...');
             const imageUrl = await makeGenerationRequest(requestBody);
             showResult(imageUrl);
+            generatedCount = 1;
         } else {
             updateLoadingStatus(`Generating ${state.variations} variations...`);
             const requests = [];
@@ -613,7 +619,12 @@ async function generateBundle() {
             }
 
             showMultipleResults(successfulImages);
+            generatedCount = successfulImages.length;
         }
+
+        // Record cost
+        SharedCostEstimator.recordCost(model, generatedCount, 'bundleStudio', prompt.length);
+        updateCostEstimator();
 
         showSuccess('Bundle image generated!');
 
@@ -735,6 +746,11 @@ function showResult(imageUrl) {
     elements.resultInfo.style.display = 'flex';
     elements.seedValue.textContent = state.lastSeed;
 
+    // Hide compare button for single image
+    if (elements.compareBtn) {
+        elements.compareBtn.style.display = 'none';
+    }
+
     // Hide placeholder
     const placeholder = elements.resultContainer.querySelector('.result-placeholder');
     if (placeholder) placeholder.style.display = 'none';
@@ -770,6 +786,11 @@ function showMultipleResults(imageUrls) {
             variant.classList.add('active');
         });
     });
+
+    // Show compare button for multiple images
+    if (elements.compareBtn) {
+        elements.compareBtn.style.display = imageUrls.length >= 2 ? 'inline-flex' : 'none';
+    }
 
     // Hide placeholder
     const placeholder = elements.resultContainer.querySelector('.result-placeholder');
@@ -1267,6 +1288,41 @@ function setupEventListeners() {
         }
     });
 
+    // Compare button
+    if (elements.compareBtn) {
+        elements.compareBtn.addEventListener('click', () => {
+            if (state.generatedImages && state.generatedImages.length >= 2) {
+                SharedComparison.openModal(
+                    state.generatedImages[0],
+                    state.generatedImages[1],
+                    { label1: 'Variation 1', label2: 'Variation 2' }
+                );
+            }
+        });
+    }
+
+    // Image info toggle
+    if (elements.imageInfoBtn && elements.imageInfoOverlay) {
+        elements.imageInfoBtn.addEventListener('click', () => {
+            const isVisible = elements.imageInfoOverlay.style.display !== 'none';
+            if (isVisible) {
+                elements.imageInfoOverlay.style.display = 'none';
+                elements.imageInfoBtn.classList.remove('active');
+            } else {
+                const info = {
+                    seed: state.lastSeed,
+                    model: elements.modelSelect?.value || 'gemini-2.0-flash-exp',
+                    dimensions: state.aspectRatio || '1:1',
+                    style: state.visualStyle || 'Commercial',
+                    variations: state.generatedImages?.length || 1
+                };
+                elements.imageInfoOverlay.innerHTML = SharedImageInfo.createOverlay(info).innerHTML;
+                elements.imageInfoOverlay.style.display = 'block';
+                elements.imageInfoBtn.classList.add('active');
+            }
+        });
+    }
+
     elements.copySeedBtn.addEventListener('click', () => {
         if (state.lastSeed) {
             navigator.clipboard.writeText(String(state.lastSeed));
@@ -1286,15 +1342,21 @@ function setupEventListeners() {
 
     // History
     elements.clearHistoryBtn.addEventListener('click', async () => {
-        const confirmed = await SharedUI.confirm('Are you sure you want to clear all history?', {
+        const confirmed = await SharedUI.confirm('Are you sure you want to clear all history? Items will be moved to trash.', {
             title: 'Clear History',
             confirmText: 'Clear All',
             icon: 'warning'
         });
         if (confirmed) {
+            // Move all items to trash before clearing
+            const items = history.getAll();
+            items.forEach(item => {
+                SharedTrash.add(item, 'history', 'bundleStudio');
+            });
+
             await history.clear();
             renderHistory();
-            showSuccess('History cleared');
+            showSuccess(`${items.length} items moved to trash`);
         }
     });
 
@@ -1313,13 +1375,41 @@ function setupEventListeners() {
     // Lightbox
     SharedLightbox.setup(elements.lightbox);
 
-    // Keyboard shortcuts
-    SharedKeyboard.setup({
-        generate: generateBundle,
-        download: () => {
-            if (state.generatedImageUrl) {
-                SharedDownload.downloadImage(state.generatedImageUrl, 'bundle');
+    // Keyboard shortcuts with ? help modal
+    document.addEventListener('keydown', (e) => {
+        const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName);
+
+        if (e.key === 'Escape') {
+            if (SharedKeyboard._modalVisible) {
+                SharedKeyboard.hideShortcutsModal();
+            } else if (elements.lightbox.classList.contains('active')) {
+                SharedLightbox.close(elements.lightbox);
+            } else if (elements.favoritesModal.classList.contains('active')) {
+                closeFavoritesModal();
             }
+        }
+
+        // ? - show keyboard shortcuts
+        if (e.key === '?' && !isTyping) {
+            e.preventDefault();
+            SharedKeyboard.showShortcutsModal([
+                { key: 'Ctrl+Enter', action: 'generate', description: 'Generate bundle' },
+                { key: 'Ctrl+D', action: 'download', description: 'Download current image' },
+                { key: 'Escape', action: 'close', description: 'Close modals' },
+                { key: '?', action: 'help', description: 'Show this help' }
+            ]);
+        }
+
+        // Ctrl/Cmd + Enter - generate
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            generateBundle();
+        }
+
+        // Ctrl/Cmd + D - download
+        if ((e.ctrlKey || e.metaKey) && e.key === 'd' && state.generatedImageUrl) {
+            e.preventDefault();
+            SharedDownload.downloadImage(state.generatedImageUrl, 'bundle');
         }
     });
 }
@@ -1335,12 +1425,129 @@ function updateConditionalRows() {
 }
 
 // ============================================
+// PRESET SELECTOR (SharedPresets Integration)
+// ============================================
+function getCurrentSettings() {
+    return {
+        model: elements.modelSelect?.value,
+        layout: state.layout,
+        container: state.container,
+        customContainer: state.customContainer,
+        background: state.background,
+        surface: state.surface,
+        customSurface: state.customSurface,
+        showLabels: state.showLabels,
+        showNumbering: state.showNumbering,
+        visualStyle: state.visualStyle,
+        lighting: state.lighting,
+        aspectRatio: state.aspectRatio,
+        variations: state.variations
+    };
+}
+
+function applySettings(settings) {
+    if (!settings) return;
+
+    // Update state
+    if (settings.layout) state.layout = settings.layout;
+    if (settings.container) state.container = settings.container;
+    if (settings.customContainer) state.customContainer = settings.customContainer;
+    if (settings.background) state.background = settings.background;
+    if (settings.surface) state.surface = settings.surface;
+    if (settings.customSurface) state.customSurface = settings.customSurface;
+    if (typeof settings.showLabels === 'boolean') state.showLabels = settings.showLabels;
+    if (typeof settings.showNumbering === 'boolean') state.showNumbering = settings.showNumbering;
+    if (settings.visualStyle) state.visualStyle = settings.visualStyle;
+    if (settings.lighting) state.lighting = settings.lighting;
+    if (settings.aspectRatio) state.aspectRatio = settings.aspectRatio;
+    if (settings.variations) state.variations = settings.variations;
+
+    // Update form elements
+    if (settings.model && elements.modelSelect) elements.modelSelect.value = settings.model;
+    if (settings.layout && elements.layoutSelect) elements.layoutSelect.value = settings.layout;
+    if (settings.container && elements.containerSelect) elements.containerSelect.value = settings.container;
+    if (settings.background && elements.backgroundSelect) elements.backgroundSelect.value = settings.background;
+    if (settings.surface && elements.surfaceSelect) elements.surfaceSelect.value = settings.surface;
+    if (settings.visualStyle && elements.visualStyleSelect) elements.visualStyleSelect.value = settings.visualStyle;
+    if (settings.lighting && elements.lightingSelect) elements.lightingSelect.value = settings.lighting;
+    if (settings.aspectRatio && elements.aspectRatioSelect) elements.aspectRatioSelect.value = settings.aspectRatio;
+
+    // Update checkboxes
+    if (elements.showLabelsCheck) elements.showLabelsCheck.checked = state.showLabels;
+    if (elements.showNumberingCheck) elements.showNumberingCheck.checked = state.showNumbering;
+
+    // Update variations
+    document.querySelectorAll('[name="variations"]').forEach(radio => {
+        radio.checked = radio.value === String(state.variations);
+    });
+
+    updateConditionalRows();
+    showSuccess('Settings applied!');
+}
+
+function initPresetSelector() {
+    const container = document.getElementById('presetSelectorContainer');
+    if (!container) return;
+
+    SharedPresets.renderSelector(
+        'bundles',
+        (preset) => {
+            if (preset && preset.settings) {
+                applySettings(preset.settings);
+            }
+        },
+        () => getCurrentSettings(),
+        container
+    );
+}
+
+// ============================================
+// COST ESTIMATOR (SharedCostEstimator Integration)
+// ============================================
+function initCostEstimator() {
+    const container = document.getElementById('costEstimatorContainer');
+    if (!container) return;
+
+    const modelId = elements.modelSelect?.value || 'google/gemini-2.0-flash-exp:free';
+    const variations = state.variations || 1;
+    SharedCostEstimator.renderDisplay(modelId, variations, 500, container);
+
+    // Update when model changes
+    if (elements.modelSelect) {
+        elements.modelSelect.addEventListener('change', updateCostEstimator);
+    }
+
+    // Update when variations change
+    document.querySelectorAll('input[name="variations"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            state.variations = parseInt(radio.value) || 1;
+            updateCostEstimator();
+        });
+    });
+}
+
+function updateCostEstimator() {
+    const container = document.getElementById('costEstimatorContainer');
+    if (!container) return;
+
+    const modelId = elements.modelSelect?.value || 'google/gemini-2.0-flash-exp:free';
+    const variations = state.variations || 1;
+    SharedCostEstimator.updateDisplay(container, modelId, variations, 500);
+}
+
+// ============================================
 // INITIALIZATION
 // ============================================
 function init() {
+    // Render shared header
+    SharedHeader.render({
+        currentPage: 'bundles',
+        showApiStatus: true
+    });
+
     initElements();
     SharedTheme.init();
-    SharedTheme.setupToggle(document.getElementById('themeToggle'));
+    SharedTooltips.init();
 
     // Load API key
     const savedKey = SharedAPI.getKey();
@@ -1359,6 +1566,10 @@ function init() {
     history.load();
     renderHistory();
     renderFavorites();
+
+    // Initialize preset selector and cost estimator
+    initPresetSelector();
+    initCostEstimator();
 }
 
 // Start when DOM is ready

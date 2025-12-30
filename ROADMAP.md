@@ -10,6 +10,7 @@ Feature ideas and future plans for NGRAPHICS. Not commitments, just possibilitie
 - **Infographics** - Product marketing infographics with features/callouts
 - **Model Studio** - AI model photos wearing/holding products
 - **Bundle Studio** - Multi-product bundle/kit images
+- **Dashboard** - Analytics, storage management, quick access hub
 - **Documentation** - User docs
 
 ### Core Features (All Pages)
@@ -27,53 +28,122 @@ Feature ideas and future plans for NGRAPHICS. Not commitments, just possibilitie
 
 ## Potential Features
 
-### High Priority / Quick Wins
+### 🚀 Quick Wins (1-2 hours each)
 
-**Batch Processing**
-- Upload multiple products, generate for each
-- Queue system with progress indicator
-- Useful for catalog generation
+**Keyboard Shortcuts Modal** ✅
+- Press `?` to show all shortcuts
+- Works on all pages (Infographics, Model Studio, Bundle Studio)
+- Difficulty: Easy
 
-**Export Improvements**
-- Download all variations as ZIP
-- Export with metadata (prompt, seed, settings)
-- Bulk download from history
+**Download as ZIP** ✅
+- Bundle all variations into ZIP with metadata JSON
+- Uses JSZip library (loaded dynamically)
+- Difficulty: Easy
 
-**Preset System**
-- Save/load setting combinations
-- Share presets via JSON export
-- Built-in presets for common use cases
+**Copy Prompt Button** ✅
+- Copy the generated prompt to clipboard
+- Already implemented in result actions
+- Difficulty: Easy
 
-### Medium Priority
+**Image Info Overlay** ✅
+- Show seed, model, dimensions on image
+- Toggle with info button
+- Works on all pages
+- Difficulty: Easy
+
+**Clear History Confirmation** ✅
+- Confirmation dialog before clearing
+- Already uses SharedUI.confirm
+- Difficulty: Easy
+
+### ⚡ Medium Effort (half day each)
+
+**Preset System** ✅
+- Save current settings as named preset
+- Load/delete presets
+- Export/import as JSON
+- Built-in presets (e.g., "E-commerce White", "Social Media Vibrant")
+- Difficulty: Medium
+
+**Comparison Slider** ✅
+- Before/after slider view
+- Compare two variations side-by-side
+- Drag handle to reveal
+- Difficulty: Medium
+
+**Batch Processing** ✅
+- Upload multiple products via batch mode toggle
+- Queue with visual progress bar
+- Process sequentially with cancellation support
+- Individual item removal before processing
+- Difficulty: Medium
+
+**Cost Estimator** ✅
+- Show estimated cost before generation
+- Based on model pricing from OpenRouter
+- Running total for session
+- Difficulty: Medium
+
+**Image Cropping**
+- Crop before sending to API
+- Aspect ratio presets
+- Uses built-in canvas
+- Difficulty: Medium
+
+**Prompt Templates**
+- Save successful prompts as templates
+- Variables for product name, features
+- Quick-apply from dropdown
+- Difficulty: Medium
+
+### 🔧 Larger Features (1+ day each)
 
 **Style Library**
-- Save successful style references
-- Browse and apply saved styles
-- Community style sharing (future)
+- Save style reference images with metadata
+- Tag and search styles
+- Preview style effect
+- Extends existing Favorites system
+- Difficulty: Medium-Hard
 
-**Comparison View**
-- Side-by-side before/after
-- Compare multiple variations
-- Swipe/slider comparison tool
+**Background Removal**
+- Remove background before generation
+- Uses remove.bg API or local ML
+- Preview before/after
+- Difficulty: Hard
 
 **Smart Suggestions**
-- Auto-suggest features based on product type
-- Recommend styles based on industry
-- Learn from user patterns
+- Analyze product image for category
+- Suggest relevant features/styles
+- Learn from user selections
+- Difficulty: Hard
 
-**Image Enhancement**
-- Built-in cropping/resizing
-- Background removal
-- Color adjustment tools
+**Trash / Recycle Bin** ✅
+- Deleted items go to trash instead of permanent delete
+- 7-day retention before auto-cleanup
+- Restore accidentally deleted items
+- Accessible from Dashboard
+- Difficulty: Easy
+
+**Onboarding Tour**
+- Step-by-step first-time guide
+- Highlight key features
+- Skip/resume capability
+- Difficulty: Medium
+
+**Mobile Optimization**
+- Touch-friendly controls
+- Responsive layouts
+- Swipe gestures
+- Difficulty: Hard
 
 ### Lower Priority / Exploratory
 
 **New Page Ideas**
 
-*Social Media Studio*
-- Templates for Instagram, Facebook, Pinterest
+*Social Media Studio* (partially covered by Infographics platform presets)
 - Auto-sizing for different platforms
 - Caption generation
+- Story/Reel templates
 
 *Ad Creative Studio*
 - Banner ad layouts
@@ -107,39 +177,51 @@ Feature ideas and future plans for NGRAPHICS. Not commitments, just possibilitie
 - Team workspaces
 - Comment/feedback on generations
 
-*Analytics*
-- Usage statistics
+*Analytics* (partially covered by Dashboard)
 - Popular styles/settings
 - Generation success rates
+- Export analytics data
 
 ---
 
 ## Technical Improvements
 
 ### Performance
-- [ ] Image compression before storage
-- [ ] Lazy loading for history/favorites
-- [ ] Service worker for offline access
+- [x] Image compression before upload (core.js, image-worker.js)
+- [x] Web Worker for background processing (image-worker.js)
+- [x] Service worker for caching/offline (service-worker.js)
+- [x] Virtual scrolling for large lists (core.js)
+- [x] Request deduplication (core.js)
 - [ ] IndexedDB cleanup for old entries
+- [ ] Lazy loading of page-specific code
 
 ### Code Quality
+- [x] Unified API client with retries (api.js)
+- [x] Reusable Web Components (components.js)
+- [x] Event bus for decoupled communication (core.js)
+- [x] Reactive state management (core.js)
 - [ ] TypeScript migration (optional)
 - [ ] Unit tests for shared utilities
 - [ ] E2E tests for critical flows
 - [ ] ESLint/Prettier setup
 
 ### UX Improvements
-- [ ] Onboarding tour for new users
 - [ ] Tooltips for all options
-- [ ] Undo/redo for settings
-- [ ] Mobile responsive improvements
 - [ ] Drag-and-drop reordering everywhere
+- [ ] Skeleton loading states
+- [ ] Progress indicators for long operations
+- [x] Keyboard shortcut help modal (see Quick Wins)
+<!-- Onboarding, Mobile listed in Larger Features section -->
 
 ### API
-- [ ] Rate limiting awareness
-- [ ] Cost estimation before generation
+- [x] Unified API client (api.js)
+- [x] Rate limiting with queue (api.js)
+- [x] Response normalization (api.js)
+- [x] Error classification with user-friendly messages (api.js)
+- [x] Cost estimation before generation (see Medium Effort)
 - [ ] Model capability detection
 - [ ] Fallback model chains
+- [ ] Usage statistics/tracking
 
 ---
 
@@ -153,14 +235,12 @@ Random ideas to evaluate later:
 - WordPress plugin
 - API endpoint for programmatic access
 - White-label version
-- Usage-based pricing model
 - Gallery of community generations
 - Template marketplace
 - AI-powered product description generation
 - Automatic A/B testing integration
-- Brand kit management (logos, colors, fonts)
+- Brand kit management (extends existing brand colors feature)
 - Seasonal auto-theming
-- Competitor analysis (style matching)
 
 ---
 
@@ -182,15 +262,41 @@ Things explicitly out of scope:
 ### v1.0 (Current)
 Core generation across 3 studios with history/favorites
 
+### v1.1 (In Progress)
+- [x] Unified API client
+- [x] Image compression
+- [x] Service worker caching
+- [x] Web Components library
+- [x] Event bus architecture
+
 ### v1.5 (Near-term)
-- Presets system
-- Export improvements
-- Comparison view
+- [x] Presets system
+- [x] ZIP export with metadata
+- [x] Comparison slider
+- [x] Keyboard shortcuts modal
+- [x] Cost estimator
+- [x] Batch processing
+- [x] Image info overlay
 
 ### v2.0 (Future)
-- Batch processing
-- Style library
-- 1-2 new studio pages
+- [ ] Style library
+- [ ] Prompt templates
+- [ ] Background removal
+- [ ] 1-2 new studio pages
+
+---
+
+## What to Work On Next?
+
+Pick based on your goals:
+
+| Goal | Recommended Feature |
+|------|---------------------|
+| User convenience | Prompt Templates |
+| New capability | Background Removal |
+| Better UX | Onboarding Tour |
+| Mobile users | Mobile Optimization |
+| New page | Ad Creative Studio |
 
 ---
 

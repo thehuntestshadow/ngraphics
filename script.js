@@ -12,6 +12,10 @@ const state = {
     apiKey: '',
     uploadedImage: null,
     uploadedImageBase64: null,
+    // Multi-angle references
+    multiAngleMode: false,
+    referenceImages: [], // Array of { id, file, base64, label }
+    maxReferenceImages: 4,
     generatedImageUrl: null,
     lastPrompt: null,
     history: [],
@@ -64,7 +68,12 @@ const state = {
     historySearchQuery: '',
     favoritesSearchQuery: '',
     favoritesActiveFolder: '', // '' = all, 'null' = unfiled, or folder name
-    favoritesActiveTag: ''
+    favoritesActiveTag: '',
+    // Batch processing
+    batchMode: false,
+    batchQueue: [], // Array of { id, file, imageBase64, status: 'pending'|'processing'|'completed'|'failed', result: null|imageUrl, error: null }
+    batchProcessing: false,
+    batchProgress: { current: 0, total: 0 }
 };
 
 // Favorites instance
@@ -228,6 +237,20 @@ function initElements() {
         previewImg: document.getElementById('previewImg'),
         removeImageBtn: document.getElementById('removeImage'),
         autoEnhance: document.getElementById('autoEnhance'),
+
+        // Multi-angle upload
+        multiAngleToggle: document.getElementById('multiAngleToggle'),
+        singleImageUpload: document.getElementById('singleImageUpload'),
+        multiAngleUpload: document.getElementById('multiAngleUpload'),
+        multiAngleGrid: document.getElementById('multiAngleGrid'),
+        multiAngleAdd: document.getElementById('multiAngleAdd'),
+        multiAngleInput: document.getElementById('multiAngleInput'),
+        multiAngleCount: document.getElementById('multiAngleCount'),
+
+        // Templates and rating
+        templateSelectorContainer: document.getElementById('templateSelectorContainer'),
+        ratingContainer: document.getElementById('ratingContainer'),
+
         productTitle: document.getElementById('productTitle'),
         characteristicsList: document.getElementById('characteristicsList'),
         addCharBtn: document.getElementById('addCharBtn'),
@@ -296,6 +319,7 @@ function initElements() {
         regenerateBtn: document.getElementById('regenerateBtn'),
         copyPromptBtn: document.getElementById('copyPromptBtn'),
         downloadAllBtn: document.getElementById('downloadAllBtn'),
+        compareBtn: document.getElementById('compareBtn'),
 
         // Aspect Ratio Preview
         aspectPreviewBox: document.getElementById('aspectPreviewBox'),
@@ -354,6 +378,23 @@ function initElements() {
         historySelectedCount: document.getElementById('historySelectedCount'),
         bulkDownloadBtn: document.getElementById('bulkDownloadBtn'),
         bulkDeleteBtn: document.getElementById('bulkDeleteBtn'),
+
+        // Image info
+        imageInfoBtn: document.getElementById('imageInfoBtn'),
+        imageInfoOverlay: document.getElementById('imageInfoOverlay'),
+
+        // Batch mode
+        batchModeToggle: document.getElementById('batchModeToggle'),
+        singleUploadContainer: document.getElementById('singleUploadContainer'),
+        batchUploadContainer: document.getElementById('batchUploadContainer'),
+        batchUploadArea: document.getElementById('batchUploadArea'),
+        batchProductPhotos: document.getElementById('batchProductPhotos'),
+        batchQueue: document.getElementById('batchQueue'),
+        batchControls: document.getElementById('batchControls'),
+        batchStatus: document.getElementById('batchStatus'),
+        batchProgressFill: document.getElementById('batchProgressFill'),
+        clearBatchBtn: document.getElementById('clearBatchBtn'),
+        startBatchBtn: document.getElementById('startBatchBtn'),
 
         // Favorites
         favoriteBtn: document.getElementById('favoriteBtn'),
@@ -577,6 +618,41 @@ function setupImageUploadHandlers() {
             elements.analyzeImageBtn.style.display = 'none';
         }
     });
+
+    // Multi-angle toggle
+    elements.multiAngleToggle?.addEventListener('change', (e) => {
+        state.multiAngleMode = e.target.checked;
+        toggleMultiAngleMode(state.multiAngleMode);
+    });
+
+    // Multi-angle file input
+    elements.multiAngleInput?.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleMultiAngleUpload(Array.from(e.target.files));
+            e.target.value = ''; // Reset for re-upload
+        }
+    });
+
+    // Multi-angle drag and drop
+    elements.multiAngleAdd?.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        elements.multiAngleAdd.classList.add('dragover');
+    });
+
+    elements.multiAngleAdd?.addEventListener('dragleave', () => {
+        elements.multiAngleAdd.classList.remove('dragover');
+    });
+
+    elements.multiAngleAdd?.addEventListener('drop', (e) => {
+        e.preventDefault();
+        elements.multiAngleAdd.classList.remove('dragover');
+        const files = Array.from(e.dataTransfer.files).filter(f =>
+            ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'].includes(f.type)
+        );
+        if (files.length > 0) {
+            handleMultiAngleUpload(files);
+        }
+    });
 }
 
 function handleImageUpload(file) {
@@ -622,6 +698,130 @@ function handleImageUpload(file) {
     };
     reader.readAsDataURL(file);
 }
+
+// ============================================
+// MULTI-ANGLE UPLOAD
+// ============================================
+function toggleMultiAngleMode(enabled) {
+    if (enabled) {
+        elements.singleImageUpload.style.display = 'none';
+        elements.multiAngleUpload.style.display = 'flex';
+        // Clear single image if switching
+        state.uploadedImage = null;
+        state.uploadedImageBase64 = null;
+        elements.imagePreview.classList.remove('visible');
+    } else {
+        elements.singleImageUpload.style.display = 'block';
+        elements.multiAngleUpload.style.display = 'none';
+        // Clear multi-angle images if switching
+        state.referenceImages = [];
+        renderMultiAngleGrid();
+    }
+    updateMultiAngleCount();
+}
+
+async function handleMultiAngleUpload(files) {
+    const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+    const remaining = state.maxReferenceImages - state.referenceImages.length;
+
+    if (remaining <= 0) {
+        showError(`Maximum ${state.maxReferenceImages} images allowed`);
+        return;
+    }
+
+    const filesToProcess = files.slice(0, remaining);
+    const angleLabels = ['Front', 'Back', 'Side', 'Detail'];
+
+    for (const file of filesToProcess) {
+        if (!validTypes.includes(file.type)) {
+            showError(`Skipped ${file.name}: Invalid file type`);
+            continue;
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+            showError(`Skipped ${file.name}: File too large (max 10MB)`);
+            continue;
+        }
+
+        const base64 = await readFileAsBase64(file);
+        const enhanced = elements.autoEnhance?.checked
+            ? await enhanceImage(base64)
+            : base64;
+
+        const currentIndex = state.referenceImages.length;
+        state.referenceImages.push({
+            id: Date.now() + Math.random(),
+            file: file,
+            base64: enhanced,
+            label: angleLabels[currentIndex] || `Angle ${currentIndex + 1}`
+        });
+    }
+
+    renderMultiAngleGrid();
+    updateMultiAngleCount();
+
+    // Also set the first image as the primary for compatibility
+    if (state.referenceImages.length > 0) {
+        state.uploadedImageBase64 = state.referenceImages[0].base64;
+    }
+}
+
+function readFileAsBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function removeMultiAngleImage(id) {
+    state.referenceImages = state.referenceImages.filter(img => img.id !== id);
+    renderMultiAngleGrid();
+    updateMultiAngleCount();
+
+    // Update primary image
+    if (state.referenceImages.length > 0) {
+        state.uploadedImageBase64 = state.referenceImages[0].base64;
+    } else {
+        state.uploadedImageBase64 = null;
+    }
+}
+
+function renderMultiAngleGrid() {
+    if (!elements.multiAngleGrid) return;
+
+    if (state.referenceImages.length === 0) {
+        elements.multiAngleGrid.innerHTML = '';
+        return;
+    }
+
+    elements.multiAngleGrid.innerHTML = state.referenceImages.map(img => `
+        <div class="multi-angle-item" data-id="${img.id}">
+            <img src="${img.base64}" alt="${img.label}">
+            <span class="multi-angle-item-label">${img.label}</span>
+            <button type="button" class="multi-angle-item-remove" onclick="removeMultiAngleImage(${img.id})">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+    `).join('');
+}
+
+function updateMultiAngleCount() {
+    if (!elements.multiAngleCount) return;
+    elements.multiAngleCount.textContent = `${state.referenceImages.length}/${state.maxReferenceImages}`;
+
+    // Disable add button if at max
+    if (elements.multiAngleAdd) {
+        elements.multiAngleAdd.classList.toggle('disabled', state.referenceImages.length >= state.maxReferenceImages);
+    }
+}
+
+// Make removeMultiAngleImage globally accessible for onclick
+window.removeMultiAngleImage = removeMultiAngleImage;
 
 // Auto-enhance image function
 async function enhanceImage(base64Image) {
@@ -1172,6 +1372,9 @@ function showResult(imageUrl) {
     if (elements.downloadAllBtn) {
         elements.downloadAllBtn.style.display = 'none';
     }
+    if (elements.compareBtn) {
+        elements.compareBtn.style.display = 'none';
+    }
 
     if (state.lastSeed !== null) {
         elements.seedValue.textContent = state.lastSeed;
@@ -1220,9 +1423,12 @@ function showMultipleResults(imageUrls) {
     state.generatedImageUrl = imageUrls[0];
     state.generatedImages = imageUrls;
 
-    // Show download all button for multiple images
+    // Show download all and compare buttons for multiple images
     if (elements.downloadAllBtn) {
         elements.downloadAllBtn.style.display = imageUrls.length > 1 ? 'inline-flex' : 'none';
+    }
+    if (elements.compareBtn) {
+        elements.compareBtn.style.display = imageUrls.length >= 2 ? 'inline-flex' : 'none';
     }
 
     if (state.lastSeed !== null) {
@@ -1271,22 +1477,37 @@ async function addToHistory(imageUrl, title) {
 }
 
 async function deleteFromHistory(id) {
-    await history.remove(parseInt(id, 10) || id);
+    const itemId = parseInt(id, 10) || id;
+    const item = history.findById(itemId);
+
+    // Move to trash before removing
+    if (item) {
+        SharedTrash.add(item, 'history', 'infographics');
+    }
+
+    await history.remove(itemId);
     state.history = history.getAll();
     renderHistory();
+    SharedUI.toast('Moved to trash', 'info');
 }
 
 async function clearHistory() {
-    const confirmed = await SharedUI.confirm('Are you sure you want to clear all history?', {
+    const confirmed = await SharedUI.confirm('Are you sure you want to clear all history? Items will be moved to trash.', {
         title: 'Clear History',
         confirmText: 'Clear All',
         icon: 'warning'
     });
     if (confirmed) {
+        // Move all items to trash before clearing
+        const items = history.getAll();
+        items.forEach(item => {
+            SharedTrash.add(item, 'history', 'infographics');
+        });
+
         await history.clear();
         state.history = [];
         renderHistory();
-        SharedUI.toast('History cleared', 'success');
+        SharedUI.toast(`${items.length} items moved to trash`, 'success');
     }
 }
 
@@ -2172,7 +2393,10 @@ function generatePrompt() {
     };
 
     const styleDesc = styleDescriptions[style] || styleDescriptions.auto;
-    const hasImage = state.uploadedImageBase64 !== null;
+    const hasImage = state.multiAngleMode
+        ? state.referenceImages.length > 0
+        : state.uploadedImageBase64 !== null;
+    const hasMultipleAngles = state.multiAngleMode && state.referenceImages.length > 1;
     const hasStyleRef = state.styleReferenceBase64 !== null;
     const qualityDesc = qualityDescriptions[qualityLevel] || qualityDescriptions.high;
 
@@ -2180,10 +2404,20 @@ function generatePrompt() {
     let prompt;
 
     if (hasImage) {
+        let productRefText;
+        if (hasMultipleAngles) {
+            const angleLabels = state.referenceImages.map(img => img.label).join(', ');
+            productRefText = `PRODUCT REFERENCE: I am providing ${state.referenceImages.length} photos of the same product from different angles (${angleLabels}).
+Use ALL provided reference images to understand the product's complete appearance - shape, colors, textures, labels, and details from multiple perspectives.
+CRITICAL: The product must appear EXACTLY as shown in the reference photos - synthesize all angles to create an accurate representation. Do NOT modify or reinterpret the product.`;
+        } else {
+            productRefText = `PRODUCT REFERENCE: I am providing a photo of the actual product.
+CRITICAL: The product must appear EXACTLY as shown - same colors, shape, labels, and details. Do NOT modify or reinterpret the product.`;
+        }
+
         prompt = `Create a ${qualityDesc} - a product infographic IMAGE with text overlays, icons, and visual elements.
 
-PRODUCT REFERENCE: I am providing a photo of the actual product.
-CRITICAL: The product must appear EXACTLY as shown - same colors, shape, labels, and details. Do NOT modify or reinterpret the product.
+${productRefText}
 
 BACKGROUND: ${styleDesc}
 
@@ -2402,7 +2636,11 @@ async function generateInfographic() {
 
         let messageContent;
 
-        if (state.uploadedImageBase64 || state.styleReferenceBase64) {
+        const hasProductImages = state.multiAngleMode
+            ? state.referenceImages.length > 0
+            : state.uploadedImageBase64;
+
+        if (hasProductImages || state.styleReferenceBase64) {
             messageContent = [
                 {
                     type: 'text',
@@ -2410,7 +2648,19 @@ async function generateInfographic() {
                 }
             ];
 
-            if (state.uploadedImageBase64) {
+            // Add product reference images
+            if (state.multiAngleMode && state.referenceImages.length > 0) {
+                // Multi-angle mode: add all reference images
+                state.referenceImages.forEach(img => {
+                    messageContent.push({
+                        type: 'image_url',
+                        image_url: {
+                            url: img.base64
+                        }
+                    });
+                });
+            } else if (state.uploadedImageBase64) {
+                // Single image mode
                 messageContent.push({
                     type: 'image_url',
                     image_url: {
@@ -2470,6 +2720,13 @@ async function generateInfographic() {
             showResult(imageUrl);
             showSuccess('Infographic generated successfully!');
 
+            // Show rating buttons
+            showRating(state.lastSeed, model, elements.infographicStyle?.value);
+
+            // Record cost
+            SharedCostEstimator.recordCost(model, 1, 'infographics', prompt.length);
+            updateCostEstimator();
+
             // Wait for copy to finish (it's already running in parallel)
             await copyPromise.catch(err => console.error('Copy generation error:', err));
         } else {
@@ -2499,6 +2756,13 @@ async function generateInfographic() {
             }
 
             showSuccess(`Generated ${successfulImages.length} of ${variationsCount} variations!`);
+
+            // Show rating buttons
+            showRating(state.lastSeed, model, elements.infographicStyle?.value);
+
+            // Record cost for successful generations only
+            SharedCostEstimator.recordCost(model, successfulImages.length, 'infographics', prompt.length);
+            updateCostEstimator();
 
             // Wait for copy to finish (it's already running in parallel)
             await copyPromise.catch(err => console.error('Copy generation error:', err));
@@ -3277,6 +3541,64 @@ function updateTemplateSelect() {
 }
 
 // ============================================
+// PRESET SELECTOR (SharedPresets Integration)
+// ============================================
+function initPresetSelector() {
+    const container = document.getElementById('presetSelectorContainer');
+    if (!container) return;
+
+    SharedPresets.renderSelector(
+        'infographics',
+        // onSelect callback
+        (preset) => {
+            if (preset && preset.settings) {
+                applySettings(preset.settings);
+            }
+        },
+        // onSave callback
+        () => getCurrentSettings(),
+        container
+    );
+}
+
+// ============================================
+// COST ESTIMATOR (SharedCostEstimator Integration)
+// ============================================
+function initCostEstimator() {
+    const container = document.getElementById('costEstimatorContainer');
+    if (!container) return;
+
+    // Render initial display
+    const modelId = elements.aiModel?.value || 'google/gemini-2.0-flash-exp:free';
+    const variations = state.variations || 1;
+    SharedCostEstimator.renderDisplay(modelId, variations, 500, container);
+
+    // Update when model changes
+    if (elements.aiModel) {
+        elements.aiModel.addEventListener('change', () => {
+            updateCostEstimator();
+        });
+    }
+
+    // Update when variations change
+    document.querySelectorAll('input[name="variations"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            state.variations = parseInt(radio.value) || 1;
+            updateCostEstimator();
+        });
+    });
+}
+
+function updateCostEstimator() {
+    const container = document.getElementById('costEstimatorContainer');
+    if (!container) return;
+
+    const modelId = elements.aiModel?.value || 'google/gemini-2.0-flash-exp:free';
+    const variations = state.variations || 1;
+    SharedCostEstimator.updateDisplay(container, modelId, variations, 500);
+}
+
+// ============================================
 // AI FEATURE EXTRACTION
 // ============================================
 async function analyzeProductImage() {
@@ -3851,20 +4173,34 @@ function setupEventListeners() {
         });
     }
 
-    // Download all button
+    // Download all button - now downloads as ZIP
     if (elements.downloadAllBtn) {
-        elements.downloadAllBtn.addEventListener('click', () => {
+        elements.downloadAllBtn.addEventListener('click', async () => {
             if (state.generatedImages && state.generatedImages.length > 1) {
-                state.generatedImages.forEach((img, index) => {
-                    setTimeout(() => {
-                        const link = document.createElement('a');
-                        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-                        link.download = `infographic_${timestamp}_${index + 1}.png`;
-                        link.href = img;
-                        link.click();
-                    }, index * 500); // Stagger downloads
-                });
-                SharedUI.toast(`Downloading ${state.generatedImages.length} images...`, 'info');
+                const title = elements.productTitle.value.trim() || 'infographic';
+                const metadata = {
+                    title: title,
+                    generated: new Date().toISOString(),
+                    seed: state.lastSeed,
+                    model: elements.model.value,
+                    style: elements.style.value,
+                    aspectRatio: elements.aspectRatio.value,
+                    variations: state.generatedImages.length
+                };
+                await SharedZip.downloadAsZip(state.generatedImages, title.replace(/\s+/g, '_'), metadata);
+            }
+        });
+    }
+
+    // Compare button - opens comparison slider modal
+    if (elements.compareBtn) {
+        elements.compareBtn.addEventListener('click', () => {
+            if (state.generatedImages && state.generatedImages.length >= 2) {
+                SharedComparison.openModal(
+                    state.generatedImages[0],
+                    state.generatedImages[1],
+                    { label1: 'Variation 1', label2: 'Variation 2' }
+                );
             }
         });
     }
@@ -3984,14 +4320,31 @@ function setupEventListeners() {
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
+        // Don't trigger shortcuts when typing in inputs
+        const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName);
+
         // Escape - close modals
         if (e.key === 'Escape') {
-            if (elements.lightbox.classList.contains('visible')) {
+            if (SharedKeyboard._modalVisible) {
+                SharedKeyboard.hideShortcutsModal();
+            } else if (elements.lightbox.classList.contains('visible')) {
                 closeLightbox();
-            }
-            if (elements.historyModal.classList.contains('visible')) {
+            } else if (elements.historyModal.classList.contains('visible')) {
                 closeHistoryModal();
+            } else if (elements.favoritesModal.classList.contains('visible')) {
+                closeFavoritesModal();
             }
+        }
+
+        // ? - show keyboard shortcuts (only when not typing)
+        if (e.key === '?' && !isTyping) {
+            e.preventDefault();
+            SharedKeyboard.showShortcutsModal([
+                { key: 'Ctrl+Enter', action: 'generate', description: 'Generate infographic' },
+                { key: 'Ctrl+D', action: 'download', description: 'Download current image' },
+                { key: 'Escape', action: 'close', description: 'Close modals' },
+                { key: '?', action: 'help', description: 'Show this help' }
+            ]);
         }
 
         // Ctrl/Cmd + Enter - generate
@@ -4018,6 +4371,31 @@ function setupEventListeners() {
             closeHistoryModal();
         }
     });
+
+    // Image info toggle
+    if (elements.imageInfoBtn && elements.imageInfoOverlay) {
+        elements.imageInfoBtn.addEventListener('click', () => {
+            const overlay = elements.imageInfoOverlay;
+            const isVisible = overlay.style.display !== 'none';
+
+            if (isVisible) {
+                overlay.style.display = 'none';
+                elements.imageInfoBtn.classList.remove('active');
+            } else {
+                // Update overlay content
+                const info = {
+                    seed: state.lastSeed,
+                    model: elements.model.value,
+                    dimensions: elements.aspectRatio.value || 'Auto',
+                    style: elements.style.value,
+                    variations: state.generatedImages?.length || 1
+                };
+                overlay.innerHTML = SharedImageInfo.createOverlay(info).innerHTML;
+                overlay.style.display = 'block';
+                elements.imageInfoBtn.classList.add('active');
+            }
+        });
+    }
 
     // Favorites event listeners
     elements.favoriteBtn.addEventListener('click', saveFavorite);
@@ -4270,6 +4648,403 @@ function setupEventListeners() {
     if (elements.generateCompBtn) {
         elements.generateCompBtn.addEventListener('click', generateComplementaryImages);
     }
+
+    // Batch mode toggle
+    if (elements.batchModeToggle) {
+        elements.batchModeToggle.addEventListener('click', toggleBatchMode);
+    }
+
+    // Batch upload handlers
+    if (elements.batchUploadArea) {
+        elements.batchUploadArea.addEventListener('click', () => {
+            elements.batchProductPhotos.click();
+        });
+
+        elements.batchUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            elements.batchUploadArea.classList.add('drag-over');
+        });
+
+        elements.batchUploadArea.addEventListener('dragleave', () => {
+            elements.batchUploadArea.classList.remove('drag-over');
+        });
+
+        elements.batchUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            elements.batchUploadArea.classList.remove('drag-over');
+            const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+            addFilesToBatch(files);
+        });
+    }
+
+    if (elements.batchProductPhotos) {
+        elements.batchProductPhotos.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            addFilesToBatch(files);
+            e.target.value = ''; // Reset for re-upload
+        });
+    }
+
+    // Batch controls
+    if (elements.clearBatchBtn) {
+        elements.clearBatchBtn.addEventListener('click', clearBatch);
+    }
+
+    if (elements.startBatchBtn) {
+        elements.startBatchBtn.addEventListener('click', startBatchProcessing);
+    }
+}
+
+// ============================================
+// BATCH PROCESSING
+// ============================================
+
+function toggleBatchMode() {
+    state.batchMode = !state.batchMode;
+
+    if (elements.batchModeToggle) {
+        elements.batchModeToggle.classList.toggle('active', state.batchMode);
+    }
+
+    if (elements.singleUploadContainer) {
+        elements.singleUploadContainer.style.display = state.batchMode ? 'none' : 'block';
+    }
+
+    if (elements.batchUploadContainer) {
+        elements.batchUploadContainer.style.display = state.batchMode ? 'block' : 'none';
+    }
+
+    // Update generate button text
+    if (elements.generateBtn) {
+        const btnText = elements.generateBtn.querySelector('.btn-text');
+        if (btnText) {
+            btnText.textContent = state.batchMode ? 'Generate (Single Mode)' : 'Generate Infographic';
+        }
+        elements.generateBtn.disabled = state.batchMode;
+    }
+}
+
+async function addFilesToBatch(files) {
+    for (const file of files) {
+        if (!file.type.startsWith('image/')) continue;
+        if (file.size > 10 * 1024 * 1024) {
+            showError(`${file.name} is too large (max 10MB)`);
+            continue;
+        }
+
+        const id = Date.now() + Math.random();
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            state.batchQueue.push({
+                id,
+                file,
+                name: file.name,
+                imageBase64: e.target.result,
+                status: 'pending',
+                result: null,
+                error: null
+            });
+            renderBatchQueue();
+            updateBatchControls();
+        };
+
+        reader.readAsDataURL(file);
+    }
+}
+
+function removeBatchItem(id) {
+    state.batchQueue = state.batchQueue.filter(item => item.id !== id);
+    renderBatchQueue();
+    updateBatchControls();
+}
+
+function clearBatch() {
+    if (state.batchProcessing) {
+        state.batchProcessing = false; // Stop processing
+    }
+    state.batchQueue = [];
+    state.batchProgress = { current: 0, total: 0 };
+    renderBatchQueue();
+    updateBatchControls();
+}
+
+function renderBatchQueue() {
+    if (!elements.batchQueue) return;
+
+    if (state.batchQueue.length === 0) {
+        elements.batchQueue.innerHTML = '';
+        return;
+    }
+
+    elements.batchQueue.innerHTML = state.batchQueue.map(item => `
+        <div class="batch-item ${item.status}" data-id="${item.id}">
+            <img src="${item.imageBase64}" alt="${item.name}">
+            <div class="batch-item-overlay">
+                ${item.status === 'processing' ? '<div class="batch-item-spinner"></div>' : ''}
+                ${item.status !== 'pending' ? `<span class="batch-item-status">${item.status}</span>` : ''}
+                ${item.status === 'completed' && item.result ? `
+                    <button class="btn-view-result" onclick="viewBatchResult('${item.id}')">View</button>
+                ` : ''}
+            </div>
+            ${item.status === 'pending' ? `
+                <button class="batch-item-remove" onclick="removeBatchItem(${item.id})">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            ` : ''}
+        </div>
+    `).join('');
+}
+
+function updateBatchControls() {
+    if (!elements.batchControls) return;
+
+    const hasItems = state.batchQueue.length > 0;
+    elements.batchControls.style.display = hasItems ? 'flex' : 'none';
+
+    const completed = state.batchQueue.filter(i => i.status === 'completed').length;
+    const total = state.batchQueue.length;
+
+    if (elements.batchStatus) {
+        elements.batchStatus.textContent = state.batchProcessing
+            ? `Processing ${state.batchProgress.current} / ${state.batchProgress.total}...`
+            : `${completed} / ${total} completed`;
+    }
+
+    if (elements.batchProgressFill) {
+        const progress = total > 0 ? (completed / total) * 100 : 0;
+        elements.batchProgressFill.style.width = `${progress}%`;
+    }
+
+    if (elements.startBatchBtn) {
+        const pending = state.batchQueue.filter(i => i.status === 'pending').length;
+        elements.startBatchBtn.disabled = pending === 0 || state.batchProcessing;
+        elements.startBatchBtn.textContent = state.batchProcessing ? 'Processing...' : `Process All (${pending})`;
+    }
+}
+
+async function startBatchProcessing() {
+    if (state.batchProcessing) return;
+    if (!state.apiKey) {
+        showError('Please enter your API key first');
+        return;
+    }
+
+    const pending = state.batchQueue.filter(i => i.status === 'pending');
+    if (pending.length === 0) return;
+
+    state.batchProcessing = true;
+    state.batchProgress = { current: 0, total: pending.length };
+    updateBatchControls();
+
+    for (const item of pending) {
+        if (!state.batchProcessing) break; // Allow cancellation
+
+        state.batchProgress.current++;
+        item.status = 'processing';
+        renderBatchQueue();
+        updateBatchControls();
+
+        try {
+            const result = await generateForBatchItem(item);
+            item.status = 'completed';
+            item.result = result;
+
+            // Add to history
+            const title = item.name.replace(/\.[^/.]+$/, '') || 'Batch Item';
+            addToHistory(result, title);
+        } catch (error) {
+            item.status = 'failed';
+            item.error = error.message;
+            console.error('Batch item failed:', error);
+        }
+
+        renderBatchQueue();
+        updateBatchControls();
+
+        // Small delay between requests to avoid rate limiting
+        if (state.batchProcessing && pending.indexOf(item) < pending.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+    }
+
+    state.batchProcessing = false;
+    updateBatchControls();
+
+    const completed = state.batchQueue.filter(i => i.status === 'completed').length;
+    const failed = state.batchQueue.filter(i => i.status === 'failed').length;
+
+    if (failed === 0) {
+        SharedUI.toast(`Batch complete! ${completed} images generated.`, 'success');
+    } else {
+        SharedUI.toast(`Batch complete: ${completed} succeeded, ${failed} failed.`, 'warning');
+    }
+}
+
+async function generateForBatchItem(item) {
+    // Build the prompt using current settings
+    const prompt = generatePrompt();
+
+    // Determine seed
+    const seed = elements.randomSeed?.checked
+        ? Math.floor(Math.random() * 999999999)
+        : parseInt(elements.seedInput?.value || '0') || Math.floor(Math.random() * 999999999);
+
+    // Build request body
+    const messages = [{
+        role: 'user',
+        content: [
+            { type: 'text', text: prompt },
+            {
+                type: 'image_url',
+                image_url: { url: item.imageBase64 }
+            }
+        ]
+    }];
+
+    // Add style reference if available
+    if (state.styleReferenceBase64) {
+        messages[0].content.push({
+            type: 'image_url',
+            image_url: { url: state.styleReferenceBase64 }
+        });
+    }
+
+    const model = elements.model.value;
+    const aspectRatio = elements.aspectRatio.value !== 'auto'
+        ? elements.aspectRatio.value
+        : undefined;
+
+    const requestBody = {
+        model,
+        messages,
+        seed,
+        modalities: ['image', 'text'],
+        image_generation: {
+            ...(aspectRatio && { aspect_ratio: aspectRatio })
+        }
+    };
+
+    // Add negative prompt if present
+    if (elements.negativePrompt?.value?.trim()) {
+        requestBody.image_generation.negative_prompt = elements.negativePrompt.value.trim();
+    }
+
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${state.apiKey}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': window.location.href,
+            'X-Title': 'NGRAPHICS - AI Product Infographics'
+        },
+        body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error?.message || `API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const imageUrl = SharedRequest.extractImageFromResponse(data);
+
+    if (!imageUrl) {
+        throw new Error('No image in response');
+    }
+
+    return imageUrl;
+}
+
+function viewBatchResult(id) {
+    const item = state.batchQueue.find(i => String(i.id) === String(id));
+    if (item?.result) {
+        SharedLightbox.open(elements.lightbox, elements.lightboxImage, item.result);
+    }
+}
+
+// Make batch functions globally accessible for inline onclick handlers
+window.removeBatchItem = removeBatchItem;
+window.viewBatchResult = viewBatchResult;
+
+// ============================================
+// QUICK START TEMPLATES
+// ============================================
+function initTemplateSelector() {
+    const container = elements.templateSelectorContainer;
+    if (!container) return;
+
+    SharedTemplates.render(container, 'infographics', applyTemplate, getCurrentSettings);
+}
+
+function applyTemplate(template) {
+    const settings = template.settings;
+
+    // Apply each setting
+    if (settings.infographicStyle && elements.infographicStyle) {
+        elements.infographicStyle.value = settings.infographicStyle;
+    }
+    if (settings.layoutTemplate && elements.layoutTemplate) {
+        elements.layoutTemplate.value = settings.layoutTemplate;
+        elements.layoutTemplate.dispatchEvent(new Event('change'));
+    }
+    if (settings.visualDensity && elements.visualDensity) {
+        elements.visualDensity.value = settings.visualDensity;
+        elements.visualDensity.dispatchEvent(new Event('input'));
+    }
+    if (settings.fontStyle && elements.fontStyle) {
+        elements.fontStyle.value = settings.fontStyle;
+    }
+    if (settings.iconStyle && elements.iconStyle) {
+        elements.iconStyle.value = settings.iconStyle;
+        elements.iconStyle.dispatchEvent(new Event('change'));
+    }
+    if (settings.colorHarmony && elements.colorHarmony) {
+        elements.colorHarmony.value = settings.colorHarmony;
+    }
+    if (settings.productFocus && elements.productFocus) {
+        elements.productFocus.value = settings.productFocus;
+    }
+}
+
+function getCurrentSettings() {
+    return {
+        infographicStyle: elements.infographicStyle?.value,
+        layoutTemplate: elements.layoutTemplate?.value,
+        visualDensity: elements.visualDensity?.value,
+        fontStyle: elements.fontStyle?.value,
+        iconStyle: elements.iconStyle?.value,
+        colorHarmony: elements.colorHarmony?.value,
+        productFocus: elements.productFocus?.value
+    };
+}
+
+// ============================================
+// OPTION EXAMPLES
+// ============================================
+function initOptionExamples() {
+    // Attach examples to select dropdowns
+    SharedExamples.attachToSelect(elements.layoutTemplate, 'layoutTemplate');
+    SharedExamples.attachToSelect(elements.infographicStyle, 'infographicStyle');
+    SharedExamples.attachToSelect(elements.iconStyle, 'iconStyle');
+    SharedExamples.attachToSelect(elements.colorHarmony, 'colorHarmony');
+    SharedExamples.attachToSelect(elements.productFocus, 'productFocus');
+}
+
+// ============================================
+// GENERATION RATING
+// ============================================
+function showRating(generationId, model, style) {
+    if (!elements.ratingContainer) return;
+
+    SharedRating.render(elements.ratingContainer, generationId, {
+        model: model,
+        style: style,
+        page: 'infographics'
+    });
 }
 
 // ============================================
@@ -4282,6 +5057,14 @@ function init() {
     initialized = true;
 
     console.log('NGRAPHICS: Initializing...');
+
+    // Render shared header
+    SharedHeader.render({
+        currentPage: 'infographics',
+        showApiStatus: true,
+        showLanguageToggle: true
+    });
+
     initElements();
     loadTheme();
     loadApiKey();
@@ -4297,6 +5080,21 @@ function init() {
     favorites.load();
     renderFavorites();
     loadTemplatesFromStorage();
+
+    // Initialize preset selector
+    initPresetSelector();
+
+    // Initialize cost estimator
+    initCostEstimator();
+
+    // Initialize tooltips
+    SharedTooltips.init();
+
+    // Initialize quick start templates
+    initTemplateSelector();
+
+    // Initialize option examples
+    initOptionExamples();
 
     // Update API status on load
     if (state.apiKey) {

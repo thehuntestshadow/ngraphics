@@ -18,71 +18,8 @@
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
 
-    <!-- Header -->
-    <header class="site-header">
-        <div class="header-content">
-            <div class="logo-group">
-                <a href="index.html" class="logo-link">
-                    <div class="logo-mark">
-                        <svg viewBox="0 0 40 40" fill="none">
-                            <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
-                            <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
-                        </svg>
-                    </div>
-                    <div class="logo-text">
-                        <span class="logo-title">NGRAPHICS</span>
-                        <span class="logo-subtitle">Model Studio</span>
-                    </div>
-                </a>
-            </div>
-            <div class="header-controls">
-                <a href="index.html" class="btn-back">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
-                    </svg>
-                    Infographics
-                </a>
-                <a href="bundle.html" class="docs-link" title="Bundle Studio - Product Bundle Images">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="7" height="7" rx="1"/>
-                        <rect x="14" y="3" width="7" height="7" rx="1"/>
-                        <rect x="3" y="14" width="7" height="7" rx="1"/>
-                        <rect x="14" y="14" width="7" height="7" rx="1"/>
-                    </svg>
-                    <span>Bundles</span>
-                </a>
-                <a href="docs.html" class="docs-link" title="Documentation">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="16" y1="13" x2="8" y2="13"/>
-                        <line x1="16" y1="17" x2="8" y2="17"/>
-                    </svg>
-                    <span>Docs</span>
-                </a>
-                <div class="api-status" id="apiStatus">
-                    <span class="status-dot"></span>
-                    <span class="status-text">Not Connected</span>
-                </div>
-                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
-                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                    </svg>
-                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="5"/>
-                        <line x1="12" y1="1" x2="12" y2="3"/>
-                        <line x1="12" y1="21" x2="12" y2="23"/>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                        <line x1="1" y1="12" x2="3" y2="12"/>
-                        <line x1="21" y1="12" x2="23" y2="12"/>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </header>
+    <!-- Header (rendered by SharedHeader) -->
+    <header class="site-header"></header>
 
     <!-- Main Application -->
     <main class="app-main">
@@ -108,6 +45,9 @@
                     <div class="message-icon">✓</div>
                     <div class="message-content">Generated successfully</div>
                 </div>
+
+                <!-- Preset Selector -->
+                <div id="presetSelectorContainer"></div>
 
                 <form id="modelForm" class="config-form">
                     <!-- Product Upload -->
@@ -611,7 +551,7 @@
 
                             <!-- Collage Show Face Toggle -->
                             <div class="option-group" id="collageFaceOption" style="display: none;">
-                                <label class="option-label">Show Face</label>
+                                <label class="option-label" data-tooltip="Show the model's face in collage mode, or focus only on the product.">Show Face</label>
                                 <div class="option-buttons">
                                     <button type="button" class="option-btn active" data-option="collageShowFace" data-value="false">Product Only</button>
                                     <button type="button" class="option-btn" data-option="collageShowFace" data-value="true">With Face</button>
@@ -788,6 +728,9 @@
                         </div>
                     </div>
 
+                    <!-- Cost Estimator -->
+                    <div id="costEstimatorContainer"></div>
+
                     <!-- Generate Button -->
                     <button type="submit" class="btn-generate" id="generateBtn">
                         <span class="btn-content">
@@ -818,7 +761,7 @@
                         </button>
                         <div class="settings-content">
                             <div class="api-key-group">
-                                <label class="option-label">OpenRouter API Key</label>
+                                <label class="option-label" data-tooltip="Your OpenRouter API key for AI image generation. Get one free at openrouter.ai">OpenRouter API Key</label>
                                 <div class="api-key-input">
                                     <input type="password" class="input-field" id="apiKey" placeholder="sk-or-...">
                                     <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
@@ -883,6 +826,14 @@
                                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                                 </svg>
                             </button>
+                            <button class="btn-image-info" id="imageInfoBtn" title="Show image info">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="16" x2="12" y2="12"/>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                                </svg>
+                            </button>
+                            <div class="image-info-overlay" id="imageInfoOverlay" style="display: none;"></div>
                         </div>
 
                         <!-- Multiple Results Grid -->
@@ -905,11 +856,19 @@
                                 </svg>
                                 Regenerate
                             </button>
+                            <button type="button" class="btn-secondary" id="compareBtn" style="display: none;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="2" x2="12" y2="22"/>
+                                    <rect x="2" y="4" width="8" height="16" rx="1"/>
+                                    <rect x="14" y="4" width="8" height="16" rx="1"/>
+                                </svg>
+                                Compare
+                            </button>
                         </div>
 
                         <!-- Feedback -->
                         <div class="feedback-section">
-                            <label class="option-label">Adjustments</label>
+                            <label class="option-label" data-tooltip="Describe changes you want to make. The AI will regenerate with your feedback applied.">Adjustments</label>
                             <textarea class="input-field textarea-field" id="feedbackTextarea" placeholder="e.g., Make the model smile more, adjust lighting to be warmer..." rows="2"></textarea>
                             <button type="button" class="btn-secondary" id="adjustBtn">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
