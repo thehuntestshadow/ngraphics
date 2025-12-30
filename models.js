@@ -58,7 +58,8 @@ const state = {
     styleReferenceBase64: null
 };
 
-// Favorites instance
+// Storage instances
+const imageStore = new ImageStore('model_studio_images');
 const favorites = new SharedFavorites('model_studio_favorites', 30);
 
 // ============================================
@@ -2101,23 +2102,23 @@ function updateCostEstimator() {
 // ============================================
 let initialized = false;
 
-function init() {
+async function init() {
     if (initialized) return;
     initialized = true;
 
-    console.log('Model Studio: Initializing...');
-
     // Render shared header
-    SharedHeader.render({
-        currentPage: 'models',
-        showApiStatus: true
-    });
+    SharedHeader.render({ currentPage: 'models' });
 
     initElements();
     SharedTheme.init();
     loadApiKey();
     setupImageUpload();
     setupEventListeners();
+
+    // Initialize stores
+    await imageStore.init();
+    favorites.setImageStore(imageStore);
+
     loadHistory();
     favorites.load();
     renderFavorites();

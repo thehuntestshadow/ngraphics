@@ -45,6 +45,7 @@ const state = {
 };
 
 // History and Favorites instances
+const imageStore = new ImageStore('bundle_images');
 const history = new SharedHistory('bundle_studio_history', 20);
 const favorites = new SharedFavorites('bundle_studio_favorites', 30);
 
@@ -1611,12 +1612,14 @@ function updateCostEstimator() {
 // ============================================
 // INITIALIZATION
 // ============================================
-function init() {
+let initialized = false;
+
+async function init() {
+    if (initialized) return;
+    initialized = true;
+
     // Render shared header
-    SharedHeader.render({
-        currentPage: 'bundles',
-        showApiStatus: true
-    });
+    SharedHeader.render({ currentPage: 'bundles' });
 
     initElements();
     SharedTheme.init();
@@ -1634,7 +1637,9 @@ function init() {
     updateGenerateButton();
 
     // Load history and favorites
+    await imageStore.init();
     history.setImageStore(imageStore);
+    favorites.setImageStore(imageStore);
     history.load();
     renderHistory();
     renderFavorites();
@@ -1646,3 +1651,7 @@ function init() {
 
 // Start when DOM is ready
 document.addEventListener('DOMContentLoaded', init);
+
+if (document.readyState !== 'loading') {
+    init();
+}

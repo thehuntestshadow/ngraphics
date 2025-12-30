@@ -76,7 +76,8 @@ const state = {
     batchProgress: { current: 0, total: 0 }
 };
 
-// Favorites instance
+// Storage instances
+const imageStore = new ImageStore('ngraphics_images');
 const favorites = new SharedFavorites('ngraphics_favorites', 30);
 
 // ============================================
@@ -5052,18 +5053,12 @@ function showRating(generationId, model, style) {
 // ============================================
 let initialized = false;
 
-function init() {
+async function init() {
     if (initialized) return;
     initialized = true;
 
-    console.log('NGRAPHICS: Initializing...');
-
     // Render shared header
-    SharedHeader.render({
-        currentPage: 'infographics',
-        showApiStatus: true,
-        showLanguageToggle: true
-    });
+    SharedHeader.render({ currentPage: 'infographics' });
 
     initElements();
     loadTheme();
@@ -5076,6 +5071,11 @@ function init() {
     setupBenefitsHandlers();
     setupEventListeners();
     updateLanguage('ro');
+
+    // Initialize stores
+    await imageStore.init();
+    favorites.setImageStore(imageStore);
+
     loadHistory();
     favorites.load();
     renderFavorites();
