@@ -225,21 +225,22 @@
 /* Dashboard Tabs */
 .dashboard-tabs {
     display: flex;
-    gap: 4px;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border-default);
+    gap: 6px;
+    margin-bottom: 28px;
+    padding: 4px;
+    background: var(--bg-deep);
+    border-radius: var(--radius-lg);
+    width: fit-content;
 }
 
 .tab-btn {
-    padding: 12px 24px;
-    font-size: 15px;
+    padding: 10px 20px;
+    font-size: 14px;
     font-weight: 500;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     background: transparent;
     border: none;
-    border-bottom: 2px solid transparent;
-    border-radius: 0;
+    border-radius: var(--radius-md);
     cursor: pointer;
     transition: all var(--duration-fast) var(--ease-out);
 }
@@ -250,8 +251,8 @@
 
 .tab-btn.active {
     color: var(--text-primary);
-    border-bottom-color: var(--text-primary);
-    font-weight: 600;
+    background: var(--bg-elevated);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* Cost Tracker Section */
