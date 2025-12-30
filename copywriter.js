@@ -116,7 +116,12 @@ const toneDescriptions = {
 // ============================================
 // INITIALIZATION
 // ============================================
+let initialized = false;
+
 async function init() {
+    if (initialized) return;
+    initialized = true;
+
     // Render header first
     SharedHeader.render({ currentPage: 'copywriter' });
 
@@ -1188,3 +1193,7 @@ window.deleteFavoriteItem = deleteFavoriteItem;
 // INIT
 // ============================================
 document.addEventListener('DOMContentLoaded', init);
+
+if (document.readyState !== 'loading') {
+    init();
+}

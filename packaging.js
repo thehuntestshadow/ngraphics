@@ -254,7 +254,12 @@ const favorites = new SharedFavorites('packaging_favorites', 50);
 // ============================================
 // INITIALIZATION
 // ============================================
+let initialized = false;
+
 async function init() {
+    if (initialized) return;
+    initialized = true;
+
     // Render header first
     SharedHeader.render({ currentPage: 'packaging' });
 
@@ -970,3 +975,7 @@ window.openLightbox = openLightbox;
 // INIT
 // ============================================
 document.addEventListener('DOMContentLoaded', init);
+
+if (document.readyState !== 'loading') {
+    init();
+}
