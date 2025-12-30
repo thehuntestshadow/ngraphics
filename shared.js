@@ -149,11 +149,9 @@ const SharedHeader = {
      * Render header into the page
      * @param {Object} options
      * @param {string} options.currentPage - Current page key (infographics, dashboard, models, bundles, lifestyle, copywriter, packaging, docs)
-     * @param {boolean} options.showApiStatus - Whether to show API status indicator
-     * @param {boolean} options.showLanguageToggle - Whether to show language toggle (EN/RO)
      */
     render(options = {}) {
-        const { currentPage = 'infographics', showApiStatus = false, showLanguageToggle = false } = options;
+        const { currentPage = 'infographics' } = options;
 
         const headerEl = document.querySelector('.site-header');
         if (!headerEl) return;
@@ -162,43 +160,16 @@ const SharedHeader = {
         const isHome = currentPage === 'infographics';
         const isDashboard = currentPage === 'dashboard';
 
-        // Navigation order: Dashboard, Infographics, Models, Bundles, Lifestyle, Copywriter, Packaging, Docs
-        const navOrder = ['dashboard', 'infographics', 'models', 'bundles', 'lifestyle', 'copywriter', 'packaging', 'docs'];
-
-        // For dashboard, only show docs link (nav is in the page itself)
-        // For other pages, show all nav links except current page
-        const filteredNav = isDashboard
-            ? ['docs']
-            : navOrder.filter(key => key !== currentPage);
-
-        // Build navigation links
-        const navLinks = filteredNav
-            .map(key => {
-                const page = this.pages[key];
-                return `
-                    <a href="${page.href}" class="docs-link" title="${page.label}">
-                        ${this.icons[key]}
-                        <span>${page.label}</span>
-                    </a>
-                `;
-            })
-            .join('');
-
-        // Language toggle (only for infographics)
-        const languageToggle = showLanguageToggle ? `
-            <div class="language-toggle">
-                <button class="lang-btn" data-lang="en">EN</button>
-                <button class="lang-btn active" data-lang="ro">RO</button>
-            </div>
-        ` : '';
-
-        // API status
-        const apiStatus = showApiStatus ? `
-            <div class="api-status" id="apiStatus">
-                <span class="status-dot"></span>
-                <span class="status-text">Not Connected</span>
-            </div>
-        ` : '';
+        // Minimal header: Dashboard shows Docs, all others show Dashboard
+        const navLink = isDashboard
+            ? `<a href="${this.pages.docs.href}" class="docs-link" title="${this.pages.docs.label}">
+                   ${this.icons.docs}
+                   <span>${this.pages.docs.label}</span>
+               </a>`
+            : `<a href="${this.pages.dashboard.href}" class="docs-link" title="${this.pages.dashboard.label}">
+                   ${this.icons.dashboard}
+                   <span>${this.pages.dashboard.label}</span>
+               </a>`;
 
         // Build header HTML
         headerEl.innerHTML = `
@@ -215,13 +186,11 @@ const SharedHeader = {
                     ${isHome ? '' : '</a>'}
                 </div>
                 <div class="header-controls">
-                    ${navLinks}
-                    ${languageToggle}
+                    ${navLink}
                     <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
                         ${this.icons.moon}
                         ${this.icons.sun}
                     </button>
-                    ${apiStatus}
                 </div>
             </div>
         `;
