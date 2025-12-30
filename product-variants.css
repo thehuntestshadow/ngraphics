@@ -1,0 +1,421 @@
+/* ============================================
+   PRODUCT VARIANTS - Styles
+   ============================================ */
+
+/* Section Label Icons - MUST be 16px */
+.panel-config .section-label .label-icon {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+}
+
+.panel-config .section-label .label-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* History/Favorites Header Icons - MUST be 14px */
+.history-header h3 svg,
+.favorites-header h3 svg,
+.favorites-title svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Variant Type Grid */
+.variant-type-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.variant-type-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.variant-type-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.variant-type-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+    color: var(--accent);
+}
+
+.variant-type-btn .variant-type-icon {
+    width: 28px;
+    height: 28px;
+}
+
+.variant-type-btn .variant-type-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.variant-type-btn span:last-child {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Color Mode Toggle */
+.color-mode-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.mode-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+}
+
+.mode-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-deep);
+}
+
+/* Preset Grid */
+.preset-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.preset-grid .preset-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    width: auto;
+    height: auto;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.preset-grid .preset-btn:hover {
+    border-color: var(--border-strong);
+    background: var(--bg-hover);
+}
+
+.preset-grid .preset-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+}
+
+.preset-grid .preset-colors {
+    display: flex;
+    gap: 4px;
+}
+
+.preset-grid .preset-colors span {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid var(--border-default);
+}
+
+.preset-grid .preset-name {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.preset-grid .preset-btn.active .preset-name {
+    color: var(--accent);
+}
+
+/* Selected Colors Preview */
+.selected-colors {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    flex-wrap: wrap;
+}
+
+.selected-colors-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.color-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.color-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-full);
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.color-chip-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid var(--border-default);
+}
+
+/* Custom Color Section */
+.custom-color-section .input-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
+
+/* Material & Pattern Groups */
+.material-group,
+.pattern-group {
+    margin-bottom: 16px;
+}
+
+.material-group:last-child,
+.pattern-group:last-child {
+    margin-bottom: 0;
+}
+
+.material-group-title,
+.pattern-group-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+}
+
+/* Checkbox Grid */
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.checkbox-item:hover {
+    border-color: var(--border-strong);
+    background: var(--bg-hover);
+}
+
+.checkbox-item:has(input:checked) {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+}
+
+.checkbox-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.checkbox-item span {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.checkbox-item:has(input:checked) span {
+    color: var(--accent);
+}
+
+/* Pattern Scale Section */
+.pattern-scale-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+/* Toggle Option */
+.toggle-option {
+    margin-top: 12px;
+}
+
+.toggle-option .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.toggle-option input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+}
+
+.toggle-option .checkbox-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Variant Grid (Results) */
+.variant-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.variant-card {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-default);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.variant-card:hover {
+    border-color: var(--accent);
+    transform: scale(1.02);
+}
+
+.variant-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.variant-label {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    padding: 4px 10px;
+    background: rgba(0, 0, 0, 0.75);
+    border-radius: var(--radius-sm);
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: white;
+}
+
+.variant-number {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.75);
+    border-radius: 50%;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+}
+
+.variant-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 6px;
+    opacity: 0;
+    transition: opacity var(--duration-fast);
+}
+
+.variant-card:hover .variant-actions {
+    opacity: 1;
+}
+
+.variant-actions button {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--duration-fast);
+}
+
+.variant-actions button:hover {
+    background: var(--accent);
+}
+
+.variant-actions button svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .preset-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .variant-type-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .preset-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .checkbox-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .variant-grid {
+        grid-template-columns: 1fr;
+    }
+}

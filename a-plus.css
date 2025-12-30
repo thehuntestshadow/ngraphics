@@ -1,0 +1,543 @@
+/* ============================================
+   A+ CONTENT STYLES
+   ============================================ */
+
+/* Section Label Icons */
+.panel-config .section-label .label-icon {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+}
+
+.panel-config .section-label .label-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* History/Favorites Header Icons - MUST be 14px */
+.history-header h3 svg,
+.favorites-header h3 svg,
+.favorites-title svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Module Type Tabs */
+.module-type-tabs {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+}
+
+.module-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.module-tab svg {
+    width: 20px;
+    height: 20px;
+}
+
+.module-tab span {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.module-tab:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+}
+
+.module-tab.active {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+    color: var(--accent);
+}
+
+/* Module Sections Hidden State */
+.module-section.hidden {
+    display: none;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+/* Option Buttons & Labels */
+.model-option {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.option-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.option-buttons {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.option-btn {
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.option-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+}
+
+.option-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-deep);
+}
+
+/* Comparison Products */
+.comparison-products {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.comparison-product {
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+}
+
+.comparison-product.main {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+}
+
+.comparison-product-image {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    background: var(--bg-elevated);
+}
+
+.comparison-product-placeholder {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+}
+
+.comparison-product-placeholder svg {
+    width: 24px;
+    height: 24px;
+}
+
+.comparison-product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.comparison-product-info input {
+    font-size: 0.875rem;
+}
+
+.comparison-product-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+}
+
+.btn-remove {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.btn-remove:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: var(--error);
+    color: var(--error);
+}
+
+.btn-remove svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Comparison Features */
+.comparison-features {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.comparison-feature {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+}
+
+.feature-values {
+    display: flex;
+    gap: 4px;
+}
+
+.feature-value {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.feature-value:hover {
+    border-color: var(--border-strong);
+}
+
+.feature-value.checked {
+    background: var(--success);
+    border-color: var(--success);
+    color: white;
+}
+
+.feature-value.unchecked {
+    background: var(--error);
+    border-color: var(--error);
+    color: white;
+}
+
+/* Grid Upload Slots */
+.grid-mode-toggle {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.grid-upload-slots {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.grid-slot {
+    position: relative;
+    aspect-ratio: 1;
+    background: var(--bg-surface);
+    border: 2px dashed var(--border-default);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.grid-slot:hover {
+    border-color: var(--accent);
+}
+
+.grid-slot.has-image {
+    border-style: solid;
+}
+
+.grid-slot-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--text-muted);
+}
+
+.grid-slot-placeholder svg {
+    width: 24px;
+    height: 24px;
+}
+
+.grid-slot-placeholder span {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.grid-slot-input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.grid-slot-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Style Grid */
+.style-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.style-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.style-btn:hover {
+    border-color: var(--border-strong);
+}
+
+.style-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+}
+
+.style-preview {
+    width: 100%;
+    height: 40px;
+    border-radius: var(--radius-sm);
+}
+
+.style-preview.clean {
+    background: linear-gradient(135deg, #ffffff, #f1f5f9);
+}
+
+.style-preview.modern {
+    background: linear-gradient(135deg, #1e293b, #334155);
+}
+
+.style-preview.bold {
+    background: linear-gradient(135deg, #dc2626, #f97316);
+}
+
+.style-preview.premium {
+    background: linear-gradient(135deg, #1a1a2e, #d4af37);
+}
+
+.style-btn span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.style-btn.active span {
+    color: var(--accent);
+}
+
+/* Custom Color Row */
+.custom-color-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.custom-color-row.hidden {
+    display: none;
+}
+
+.color-picker {
+    width: 48px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+/* Output Size Badge */
+.output-size {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--bg-elevated);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+}
+
+/* API Key Row */
+.api-key-row {
+    display: flex;
+    gap: 8px;
+}
+
+.api-key-row .input-field {
+    flex: 1;
+}
+
+/* Seed Row */
+.seed-row {
+    display: flex;
+    gap: 8px;
+}
+
+.seed-row .input-field {
+    flex: 1;
+}
+
+/* Add Button */
+.btn-add {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-add svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Result Images */
+.result-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+}
+
+.result-image-wrapper {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--bg-surface);
+}
+
+.result-image-wrapper.grid-view {
+    width: calc(50% - 6px);
+}
+
+.result-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    cursor: pointer;
+    transition: transform var(--duration-fast);
+}
+
+.result-image:hover {
+    transform: scale(1.02);
+}
+
+/* Result Actions */
+.result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+/* Feedback Section */
+.feedback-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.feedback-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.feedback-row .textarea-field {
+    flex: 1;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .module-type-tabs {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .style-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .module-type-tabs {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-upload-slots {
+        grid-template-columns: 1fr;
+    }
+
+    .comparison-product {
+        grid-template-columns: 50px 1fr auto;
+    }
+
+    .result-image-wrapper.grid-view {
+        width: 100%;
+    }
+}

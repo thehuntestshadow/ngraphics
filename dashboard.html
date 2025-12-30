@@ -19,8 +19,52 @@
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
 
-    <!-- Header (rendered by SharedHeader) -->
-    <header class="site-header"></header>
+    <!-- Header (pre-rendered to prevent flash, JS sets up theme toggle) -->
+    <header class="site-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <a href="index.html" class="logo-link">
+                    <div class="logo-mark">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">NGRAPHICS</span>
+                        <span class="logo-subtitle">Dashboard</span>
+                    </div>
+                </a>
+            </div>
+            <div class="header-controls">
+                <a href="docs.html" class="docs-link" title="Docs">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                    <span>Docs</span>
+                </a>
+                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
 
     <!-- Main Content -->
     <main class="dashboard-container">
@@ -136,6 +180,88 @@
                 <div class="studio-nav-content">
                     <span class="studio-nav-title">FAQ</span>
                     <span class="studio-nav-desc">Product Q&A generator</span>
+                </div>
+            </a>
+            <a href="background.html" class="studio-nav-card">
+                <div class="studio-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <line x1="3" y1="9" x2="21" y2="9"/>
+                        <line x1="9" y1="21" x2="9" y2="9"/>
+                    </svg>
+                </div>
+                <div class="studio-nav-content">
+                    <span class="studio-nav-title">Background</span>
+                    <span class="studio-nav-desc">Remove & replace backgrounds</span>
+                </div>
+            </a>
+            <a href="badge-generator.html" class="studio-nav-card">
+                <div class="studio-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                </div>
+                <div class="studio-nav-content">
+                    <span class="studio-nav-title">Badges</span>
+                    <span class="studio-nav-desc">Sale & trust badges</span>
+                </div>
+            </a>
+            <a href="feature-cards.html" class="studio-nav-card">
+                <div class="studio-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <polygon points="12 8 14 12 10 12 12 8"/>
+                        <line x1="8" y1="16" x2="16" y2="16"/>
+                    </svg>
+                </div>
+                <div class="studio-nav-content">
+                    <span class="studio-nav-title">Cards</span>
+                    <span class="studio-nav-desc">Feature highlight cards</span>
+                </div>
+            </a>
+            <a href="size-chart.html" class="studio-nav-card">
+                <div class="studio-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <line x1="3" y1="9" x2="21" y2="9"/>
+                        <line x1="3" y1="15" x2="21" y2="15"/>
+                        <line x1="9" y1="3" x2="9" y2="21"/>
+                    </svg>
+                </div>
+                <div class="studio-nav-content">
+                    <span class="studio-nav-title">Size Chart</span>
+                    <span class="studio-nav-desc">Generate size charts</span>
+                </div>
+            </a>
+            <a href="a-plus.html" class="studio-nav-card">
+                <div class="studio-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div class="studio-nav-content">
+                    <span class="studio-nav-title">A+ Content</span>
+                    <span class="studio-nav-desc">Amazon A+ modules</span>
+                </div>
+            </a>
+            <a href="product-variants.html" class="studio-nav-card">
+                <div class="studio-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="9" height="9" rx="1"/>
+                        <rect x="13" y="2" width="9" height="9" rx="1"/>
+                        <rect x="2" y="13" width="9" height="9" rx="1"/>
+                        <rect x="13" y="13" width="9" height="9" rx="1"/>
+                        <circle cx="6.5" cy="6.5" r="2" fill="currentColor"/>
+                        <circle cx="17.5" cy="6.5" r="2"/>
+                        <circle cx="6.5" cy="17.5" r="2"/>
+                        <circle cx="17.5" cy="17.5" r="2"/>
+                    </svg>
+                </div>
+                <div class="studio-nav-content">
+                    <span class="studio-nav-title">Variants</span>
+                    <span class="studio-nav-desc">Color & material variants</span>
                 </div>
             </a>
         </nav>

@@ -2,6 +2,26 @@
    PACKAGING MOCKUP - Styles
    ============================================ */
 
+/* Section Label Icons */
+.panel-config .section-label .label-icon {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+}
+
+.panel-config .section-label .label-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* History/Favorites Header Icons - MUST be 14px */
+.history-header h3 svg,
+.favorites-header h3 svg,
+.favorites-title svg {
+    width: 14px;
+    height: 14px;
+}
+
 /* Packaging Type Grid */
 .packaging-type-grid {
     display: grid;

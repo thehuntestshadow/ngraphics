@@ -323,9 +323,16 @@ Design system documentation for NGRAPHICS. Use this as reference for consistent 
 - Use inline SVGs with `stroke="currentColor"` for color inheritance
 - Default stroke-width: `2` (sometimes `1.5` for larger icons)
 - Standard sizes: `14px`, `16px`, `18px`, `20px`
-- Icons in buttons: `14-16px`
-- Icons in labels: `16px`
-- Placeholder icons: `48-64px`
+
+### Icon Size by Context
+| Context | Size | Example |
+|---------|------|---------|
+| Section label icons | `16px` | `.section-label .label-icon svg` |
+| History/Favorites header icons | `14px` | `.history-header h3 svg`, `.favorites-title svg` |
+| Option/scene buttons | `20px` | `.scene-btn svg`, `.option-btn svg` |
+| Small buttons | `14-16px` | `.btn-icon svg`, `.btn-text svg` |
+| Result placeholder icons | `48px` | `.placeholder-icon svg` |
+| Empty state icons | `64px` | `.empty-state-icon svg` |
 
 ---
 
@@ -362,6 +369,86 @@ Design system documentation for NGRAPHICS. Use this as reference for consistent 
 - Contains: result image, result info, feedback section
 - History and Favorites sections with grid layout
 - Grid: `repeat(auto-fill, minmax(100px, 1fr))`
+
+### History & Favorites Component
+
+Standardized component for all pages. See `UI_PATTERNS.md` for full HTML.
+
+| Element | Class | Styling |
+|---------|-------|---------|
+| History header | `.history-header` | Flex, space-between |
+| History title | `h3` with clock icon | Icon 14px, label "Recent" |
+| History count | `.history-count` | Accent badge style |
+| History grid | `.history-grid` | Auto-fill grid, 140px min |
+| Favorites header | `.favorites-header` | Flex, space-between |
+| Favorites title | `.favorites-title` | Icon 14px yellow, uppercase |
+| Favorites count | `.favorites-count` | Warning badge style |
+| Favorites grid | `.favorites-grid` | Auto-fill grid, 140px min |
+| Clear buttons | `.btn-text`, `.btn-text-danger` | Text-only buttons |
+
+**Key rules:**
+- History label is "Recent" (not "History")
+- Favorites icon is star (not heart)
+- Sections are stacked, not tabbed
+- Header icons are 14px (not 16px)
+- Favorites nested inside history-section
+
+### Generate Button Component
+
+| Element | Class | Notes |
+|---------|-------|-------|
+| Button | `.btn-generate` | Only this class, NOT `.btn .btn-primary` |
+| Content wrapper | `.btn-content` | Contains icon + text |
+| Icon | SVG inside `.btn-content` | Page-specific icon |
+| Glow effect | `.btn-glow` | MUST be after `.btn-content` |
+| Shortcut hint | `.shortcut-hint` | Below button, shows Ctrl+Enter |
+
+**Key rules:**
+- `.btn-content` wraps icon and text
+- `.btn-glow` comes AFTER `.btn-content` (not before)
+- Never use `.btn-loader` (deprecated)
+- Never add `.btn .btn-primary` classes
+
+### Advanced Options Component
+
+| Element | Class/ID | Notes |
+|---------|----------|-------|
+| Container | `.advanced-section` `#advancedSection` | Collapsible section |
+| Toggle | `.advanced-toggle` `#advancedToggle` | Button with slider icon |
+| Icon | `.toggle-icon` | 3-slider mixer icon |
+| Chevron | `.toggle-chevron` | Expands/collapses |
+| Content | `.advanced-content` | Contains option groups |
+| AI Model | `#aiModel` | Select dropdown |
+
+**Key rules:**
+- Uses 3-slider mixer icon (not gear)
+- Placed BEFORE generate button
+- Contains AI model select and variations
+
+### API Settings Component
+
+| Element | Class/ID | Notes |
+|---------|----------|-------|
+| Container | `.settings-section` `#settingsSection` | Collapsible section |
+| Toggle | `.settings-toggle` `#settingsToggle` | Button with gear icon |
+| Icon | Sun-ray gear | Simple rays, not complex teeth |
+| Chevron | `.toggle-chevron` | Expands/collapses |
+| Content | `.settings-content` | Contains API key group |
+| Input row | `.api-key-input` | NOT `.api-input-row` |
+| API input | `#apiKey` | Password type |
+| Eye toggle | `#toggleApiKey` | Show/hide button |
+| Save button | `#saveApiKey` | `.btn-secondary .btn-sm` |
+
+**Key rules:**
+- Uses sun-ray gear icon (simple)
+- Placed AFTER generate button
+- API input ID is `apiKey` (not `apiKeyInput`)
+
+### Section Order (Bottom of Config Panel)
+
+1. Advanced Options (`.advanced-section`)
+2. Generate Button (`.btn-generate`)
+3. API Settings (`.settings-section`)
 
 ### Modal
 ```html

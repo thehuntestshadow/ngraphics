@@ -88,7 +88,7 @@ function initElements() {
         // API Settings
         settingsSection: document.getElementById('settingsSection'),
         settingsToggle: document.getElementById('settingsToggle'),
-        apiKeyInput: document.getElementById('apiKeyInput'),
+        apiKey: document.getElementById('apiKey'),
         toggleApiKey: document.getElementById('toggleApiKey'),
         apiStatus: document.getElementById('apiStatus'),
         aiModel: document.getElementById('aiModel'),
@@ -430,7 +430,7 @@ async function makeGenerationRequest(prompt, seed) {
     }
 
     const requestBody = {
-        model: elements.aiModel?.value || 'google/gemini-2.0-flash-exp:free',
+        model: elements.aiModel?.value || 'google/gemini-3-pro-image-preview',
         messages: [{ role: 'user', content: messageContent }],
         modalities: ['image', 'text'],
         max_tokens: 4096
@@ -513,7 +513,7 @@ async function analyzeProductImage() {
                 'X-Title': 'NGRAPHICS Lifestyle Studio'
             },
             body: JSON.stringify({
-                model: 'google/gemini-2.0-flash-exp:free',
+                model: 'google/gemini-3-pro-image-preview',
                 messages: [{
                     role: 'user',
                     content: [
@@ -1145,8 +1145,8 @@ function setupEventListeners() {
     });
 
     // API key handling
-    elements.apiKeyInput?.addEventListener('change', () => {
-        const key = elements.apiKeyInput.value.trim();
+    elements.apiKey?.addEventListener('change', () => {
+        const key = elements.apiKey.value.trim();
         if (key) {
             state.apiKey = key;
             SharedAPI.saveKey(key);
@@ -1155,8 +1155,8 @@ function setupEventListeners() {
     });
 
     elements.toggleApiKey?.addEventListener('click', () => {
-        const type = elements.apiKeyInput.type === 'password' ? 'text' : 'password';
-        elements.apiKeyInput.type = type;
+        const type = elements.apiKey.type === 'password' ? 'text' : 'password';
+        elements.apiKey.type = type;
     });
 
     // Actions
@@ -1317,7 +1317,7 @@ function loadApiKey() {
     const savedKey = SharedAPI.getKey();
     if (savedKey) {
         state.apiKey = savedKey;
-        elements.apiKeyInput.value = savedKey;
+        elements.apiKey.value = savedKey;
         SharedUI.updateApiStatus(elements.apiStatus, true);
     }
 }
@@ -1334,17 +1334,13 @@ function init() {
     if (initialized) return;
     initialized = true;
 
-    // Render shared header
-    SharedHeader.render({
-        currentPage: 'lifestyle',
-        showApiStatus: true
-    });
-
+    // Header is pre-rendered in HTML to prevent flash
     // Initialize DOM cache
     initElements();
 
     // Initialize theme
     SharedTheme.init();
+    SharedTheme.setupToggle(document.getElementById('themeToggle'));
 
     // Load API key
     loadApiKey();
@@ -1394,7 +1390,7 @@ function init() {
     if (typeof SharedCostEstimator !== 'undefined' && elements.costEstimatorContainer) {
         const updateCostEstimator = () => {
             SharedCostEstimator.renderDisplay(
-                elements.aiModel?.value || 'google/gemini-2.0-flash-exp:free',
+                elements.aiModel?.value || 'google/gemini-3-pro-image-preview',
                 state.variations,
                 500,
                 elements.costEstimatorContainer

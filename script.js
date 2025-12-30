@@ -5057,11 +5057,11 @@ async function init() {
     if (initialized) return;
     initialized = true;
 
-    // Render shared header
-    SharedHeader.render({ currentPage: 'infographics' });
-
+    // Header is pre-rendered in HTML to prevent flash
+    // Just setup the theme toggle
     initElements();
     loadTheme();
+    SharedTheme.setupToggle(document.getElementById('themeToggle'));
     loadApiKey();
     setupApiKeyHandlers();
     setupImageUploadHandlers();

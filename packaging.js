@@ -36,7 +36,7 @@ const state = {
     // Advanced
     lighting: 'studio',
     background: 'white',
-    aiModel: 'google/gemini-2.0-flash-001',
+    aiModel: 'google/gemini-3-pro-image-preview',
     useRandomSeed: true,
     seed: null,
     negativePrompt: '',
@@ -260,10 +260,10 @@ async function init() {
     if (initialized) return;
     initialized = true;
 
-    // Render header first
-    SharedHeader.render({ currentPage: 'packaging' });
-
+    // Header is pre-rendered in HTML to prevent flash
     initElements();
+    SharedTheme.init();
+    SharedTheme.setupToggle(document.getElementById('themeToggle'));
 
     // Initialize stores
     await imageStore.init();

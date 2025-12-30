@@ -18,8 +18,52 @@
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
 
-    <!-- Header (rendered by SharedHeader) -->
-    <header class="site-header"></header>
+    <!-- Header (pre-rendered to prevent flash, JS sets up theme toggle) -->
+    <header class="site-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <a href="index.html" class="logo-link">
+                    <div class="logo-mark">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">NGRAPHICS</span>
+                        <span class="logo-subtitle">AI Copywriter</span>
+                    </div>
+                </a>
+            </div>
+            <div class="header-controls">
+                <a href="dashboard.html" class="docs-link" title="Dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="9" rx="1"/>
+                        <rect x="14" y="3" width="7" height="5" rx="1"/>
+                        <rect x="14" y="12" width="7" height="9" rx="1"/>
+                        <rect x="3" y="16" width="7" height="5" rx="1"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
 
     <!-- Main Application -->
     <main class="app-main">
@@ -711,9 +755,9 @@
     <footer class="site-footer">
         <div class="footer-content">
             <span>NGRAPHICS</span>
-            <span class="footer-divider">|</span>
+            <span class="footer-divider">•</span>
             <span>Powered by OpenRouter AI</span>
-            <span class="footer-divider">|</span>
+            <span class="footer-divider">•</span>
             <span class="footer-shortcut"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> Generate</span>
         </div>
     </footer>

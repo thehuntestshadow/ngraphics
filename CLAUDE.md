@@ -42,6 +42,11 @@ The application consists of multiple pages, each with its own JS file, sharing c
 | Size Visualizer | `size-visualizer.html`, `size-visualizer.js`, `size-visualizer.css` | Product scale visualization with reference objects |
 | FAQ Generator | `faq-generator.html`, `faq-generator.js`, `faq-generator.css` | Generate product Q&As with text and image output |
 | Background Studio | `background.html`, `background.js`, `background.css` | Remove and replace product backgrounds |
+| Badge Generator | `badge-generator.html`, `badge-generator.js`, `badge-generator.css` | Create sale and trust badges for products |
+| Feature Cards | `feature-cards.html`, `feature-cards.js`, `feature-cards.css` | Individual feature cards for product galleries |
+| Size Chart | `size-chart.html`, `size-chart.js`, `size-chart.css` | Generate size charts from product measurements |
+| A+ Content | `a-plus.html`, `a-plus.js`, `a-plus.css` | Amazon A+ Content (EBC) module generator |
+| Product Variants | `product-variants.html`, `product-variants.js`, `product-variants.css` | Generate color, material, and pattern variants from product photos |
 | Dashboard | `dashboard.html`, `dashboard.js`, `dashboard.css` | Analytics, storage management, quick access to recent work |
 | Documentation | `docs.html`, `docs.css` | User documentation |
 
@@ -61,6 +66,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `ROADMAP.md` - Feature ideas & plans
 - `UI_PATTERNS.md` - HTML/CSS patterns for consistent UI
 - `API_REFERENCE.md` - Code examples for shared infrastructure
+- `TESTING.md` - Testing guide (visual tests, performance, hooks)
 
 ## API Integration
 
@@ -288,6 +294,181 @@ Remove and replace product backgrounds for e-commerce ready images.
 
 ---
 
+## Badge Generator (`badge-generator.html` + `badge-generator.js`)
+
+Create sale badges (discounts, promotions) and trust badges (quality, certifications) for products.
+
+### Badge Categories
+- **Sale & Promo**: Discount %, Sale, New, Limited, Free Shipping, Best Seller
+- **Trust & Quality**: Certified, Organic, Eco-Friendly, Made in USA, Premium, Warranty
+
+### Badge Styles (6)
+- **Starburst**: Pointed rays radiating outward
+- **Ribbon**: Diagonal corner banner
+- **Circle**: Clean round badge
+- **Banner**: Horizontal strip with fold details
+- **Tag**: Pointed bottom price tag style
+- **Shield**: Trust/quality shield shape
+
+### Options
+- **Color**: 8 preset colors + custom picker
+- **Size**: Small (200px), Medium (400px), Large (600px)
+- **Background**: Transparent, White, or Black
+- **Variations**: 1, 2, or 4 images
+
+### Key Functions
+- `generatePrompt()`: Builds badge generation prompt
+- `generateBadge()`: Makes API call for badge image
+- `selectBadgePreset()`: Applies preset badge text and category
+
+---
+
+## Feature Cards (`feature-cards.html` + `feature-cards.js`)
+
+Create individual feature cards for product listing galleries (Amazon, Etsy image slots).
+
+### Card Types (5)
+- **Feature**: Icon + headline + description spotlight
+- **Spec**: Technical specifications with label/value pairs
+- **In Box**: Package contents list with checkmarks
+- **How-To**: Numbered step instructions
+- **Before/After**: Split comparison card
+
+### Visual Styles
+- Modern, Minimal, Bold, Elegant, Playful
+
+### Options
+- **Color**: 8 preset colors + custom picker
+- **Size**: Small (400px), Medium (600px), Large (800px)
+- **Background**: White, Light, Dark
+- **Product Image**: Optional product to incorporate
+- **Variations**: 1, 2, or 4 images
+
+### Key Functions
+- `generatePrompt()`: Builds card generation prompt based on type
+- `generateCard()`: Makes API call for card image
+- `validateContent()`: Ensures required fields are filled
+
+---
+
+## Size Chart Generator (`size-chart.html` + `size-chart.js`)
+
+Generate professional size charts from product measurements for apparel, footwear, and accessories.
+
+### Product Categories (6)
+- **Tops**: Shirts, blouses, jackets - Chest, Waist, Length measurements
+- **Bottoms**: Pants, shorts, skirts - Waist, Hips, Inseam, Length
+- **Dresses**: Dresses, jumpsuits - Bust, Waist, Hips, Length
+- **Shoes**: Footwear - US, UK, EU sizes with foot length
+- **Accessories**: Hats, rings, belts - Head circumference, finger size, belt length
+- **Kids**: Children's sizing - Age ranges with Height, Chest, Waist
+
+### Chart Styles (3)
+- **Table**: Classic size chart table format
+- **Visual Diagram**: Body silhouette with measurement labels
+- **International Comparison**: Multi-region size conversion (US, UK, EU, Asia)
+
+### Features
+- **Editable Table**: Add/remove rows and columns dynamically
+- **Data Presets**: US Standard (S/M/L/XL), US Numeric (0-14), International sizes
+- **Unit Toggle**: Inches, centimeters, or show both
+- **Brand Name**: Optional brand text on chart
+- **Fit Notes**: Add fit guidance (runs large, true to size, etc.)
+
+### Visual Styles
+- Clean, Modern, Classic, Bold, Minimal
+
+### Options
+- **Background**: White, Light Gray, Dark, Brand Color
+- **Aspect Ratio**: 1:1, 4:3, 16:9
+- **Variations**: 1, 2, or 4 images
+- **Seed Control**: For reproducible generations
+
+### Key Functions
+- `generatePrompt()`: Builds size chart prompt from category and data
+- `generateChart()`: Makes API call for chart image
+- `renderTable()`: Renders editable size table
+- `addColumn()`, `removeColumn()`, `addRow()`, `removeRow()`: Table management
+- `loadPreset()`: Loads category-specific or data presets
+
+---
+
+## A+ Content Generator (`a-plus.html` + `a-plus.js`)
+
+Generate Amazon A+ Content (Enhanced Brand Content) modules with professional layouts.
+
+### Module Types (5)
+- **Image with Text**: Hero product image with marketing headline and body copy (970x600px)
+- **Comparison Chart**: Feature comparison table for 2-5 products with checkmarks/values (970x300px)
+- **Four-Image Grid**: 2x2 grid layout showing product variants or angles (970x600px)
+- **Standard Text**: Text-only marketing section with headline and body (970x300px)
+- **Single Image**: Full-width lifestyle or product hero image (970x600px)
+
+### Features
+- **Module Switching**: Tabs to switch between module types
+- **Comparison Chart**: Add/remove products, feature rows with checkmarks (✓/✗) or text values
+- **Four-Grid Modes**: Upload 4 separate images OR generate 4 variants from 1 product
+- **Visual Styles**: Clean, Modern, Bold, Premium
+- **Color Schemes**: Match Product, White, Dark, Custom brand color
+
+### Comparison Chart
+- 2-5 products side by side
+- Dynamic feature rows
+- Toggle values: checkmark → X → custom text → checkmark
+- Optional winner highlight for first product
+
+### Key Functions
+- `switchModuleType(type)`: Switch between 5 module types
+- `generatePrompt()`: Builds module-specific prompt
+- `addComparisonProduct()`, `removeComparisonProduct()`: Manage comparison products
+- `addComparisonFeature()`, `toggleFeatureValue()`: Manage feature table
+- `switchGridMode(mode)`: Toggle between upload and generate grid modes
+
+### Output Dimensions
+All outputs follow Amazon A+ Content specifications at 970px width.
+
+---
+
+## Product Variants (`product-variants.html` + `product-variants.js`)
+
+Generate color, material, and pattern variations from a single product photo. Useful for pre-production mockups and showing unavailable variants.
+
+### Variant Types (3)
+- **Color**: Generate product in different colors (preset palettes or custom)
+- **Material**: Swap materials/finishes (leather, metal, fabric, etc.)
+- **Pattern**: Apply patterns to product (stripes, floral, geometric, etc.)
+
+### Color Options
+- **Preset Palettes**: Popular, Earth Tones, Pastels, Bold, Neutrals, Metallics
+- **Custom Colors**: Enter custom color names separated by commas
+
+### Material Options (grouped)
+- **Fabrics**: Leather, Suede, Velvet, Canvas, Denim, Silk, Wool, Linen
+- **Hard Materials**: Metal, Wood, Plastic, Rubber, Glass, Ceramic, Marble, Concrete
+- **Finishes**: Matte, Glossy, Satin, Chrome, Brushed Metal, Patent
+
+### Pattern Options (grouped)
+- **Geometric**: Stripes, Plaid, Checkered, Chevron, Polka Dots, Geometric
+- **Natural**: Floral, Tropical, Animal Print, Leopard, Marble, Wood Grain
+- **Abstract**: Abstract, Tie-Dye, Ombre, Watercolor, Splatter
+- **Textures**: Quilted, Embossed, Woven
+- **Pattern Scale**: Small, Medium, Large
+
+### Key Functions
+- `switchVariantType(type)`: Switch between color/material/pattern tabs
+- `generateColorPrompt()`, `generateMaterialPrompt()`, `generatePatternPrompt()`: Type-specific prompts
+- `selectColorPreset(preset)`: Apply color palette preset
+- `toggleMaterial(material)`, `togglePattern(pattern)`: Toggle checkbox selections
+- `showVariantResults(results)`: Display variant grid with labels
+
+### Options
+- **Variant Count**: 2, 4, 6, or 8 variants
+- **Preserve Lighting**: Maintain consistent lighting across variants
+- **Aspect Ratio**: 1:1, 4:5, 3:4, 16:9, 9:16
+- **Output Quality**: Standard, High, Ultra
+
+---
+
 ## Dashboard (`dashboard.html` + `dashboard.js`)
 
 Central hub for analytics, storage management, and quick access.
@@ -316,7 +497,7 @@ Each page has `generatePrompt()` that builds AI prompts by concatenating descrip
 - Hybrid storage: thumbnails in localStorage, full images in IndexedDB
 - History: view in modal, download, configurable limits (default 20)
 - Favorites: save with all settings/seed/reference images, supports multiple variants
-- Storage keys: `ngraphics_*`, `model_studio_*`, `bundle_studio_*`, `lifestyle_studio_*`, `copywriter_*`, `packaging_*`, `comparison_generator_*`, `size_visualizer_*`, `faq_generator_*`, `background_studio_*`
+- Storage keys: `ngraphics_*`, `model_studio_*`, `bundle_studio_*`, `lifestyle_studio_*`, `copywriter_*`, `packaging_*`, `comparison_generator_*`, `size_visualizer_*`, `faq_generator_*`, `background_studio_*`, `badge_generator_*`, `feature_cards_*`, `size_chart_*`, `aplus_generator_*`, `product_variants_*`
 
 ### Error Handling
 `showError()` displays user-friendly error messages. API errors caught and displayed appropriately.

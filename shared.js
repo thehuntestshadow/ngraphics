@@ -111,6 +111,40 @@ const SharedHeader = {
             <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
             <line x1="12" y1="22.08" x2="12" y2="12"/>
         </svg>`,
+        background: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <line x1="3" y1="9" x2="21" y2="9"/>
+            <line x1="9" y1="21" x2="9" y2="9"/>
+        </svg>`,
+        badges: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>`,
+        featureCards: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <polygon points="12 8 14 12 10 12 12 8"/>
+            <line x1="8" y1="16" x2="16" y2="16"/>
+        </svg>`,
+        sizeChart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <line x1="3" y1="9" x2="21" y2="9"/>
+            <line x1="3" y1="15" x2="21" y2="15"/>
+            <line x1="9" y1="3" x2="9" y2="21"/>
+        </svg>`,
+        aplus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+        </svg>`,
+        productVariants: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="9" height="9" rx="1"/>
+            <rect x="13" y="2" width="9" height="9" rx="1"/>
+            <rect x="2" y="13" width="9" height="9" rx="1"/>
+            <rect x="13" y="13" width="9" height="9" rx="1"/>
+            <circle cx="6.5" cy="6.5" r="2" fill="currentColor"/>
+            <circle cx="17.5" cy="6.5" r="2"/>
+            <circle cx="6.5" cy="17.5" r="2"/>
+            <circle cx="17.5" cy="17.5" r="2"/>
+        </svg>`,
         docs: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
             <polyline points="14 2 14 8 20 8"/>
@@ -142,16 +176,22 @@ const SharedHeader = {
         lifestyle: { href: 'lifestyle.html', label: 'Lifestyle', subtitle: 'Lifestyle Studio' },
         copywriter: { href: 'copywriter.html', label: 'Copywriter', subtitle: 'AI Copywriter' },
         packaging: { href: 'packaging.html', label: 'Packaging', subtitle: 'Packaging Mockup' },
+        background: { href: 'background.html', label: 'Background', subtitle: 'Background Studio' },
         comparison: { href: 'comparison.html', label: 'Compare', subtitle: 'Comparison Generator' },
         'size-visualizer': { href: 'size-visualizer.html', label: 'Size', subtitle: 'Size Visualizer' },
         'faq-generator': { href: 'faq-generator.html', label: 'FAQ', subtitle: 'FAQ Generator' },
+        'badge-generator': { href: 'badge-generator.html', label: 'Badges', subtitle: 'Badge Generator' },
+        'feature-cards': { href: 'feature-cards.html', label: 'Cards', subtitle: 'Feature Cards' },
+        'size-chart': { href: 'size-chart.html', label: 'Size Chart', subtitle: 'Size Chart Generator' },
+        'a-plus': { href: 'a-plus.html', label: 'A+', subtitle: 'A+ Content Generator' },
+        'product-variants': { href: 'product-variants.html', label: 'Variants', subtitle: 'Product Variants' },
         docs: { href: 'docs.html', label: 'Docs', subtitle: 'Documentation' }
     },
 
     /**
      * Render header into the page
      * @param {Object} options
-     * @param {string} options.currentPage - Current page key (infographics, dashboard, models, bundles, lifestyle, copywriter, packaging, docs)
+     * @param {string} options.currentPage - Current page key (infographics, dashboard, models, bundles, lifestyle, copywriter, packaging, background, comparison, size-visualizer, faq-generator, badge-generator, feature-cards, size-chart, a-plus, product-variants, docs)
      */
     render(options = {}) {
         const { currentPage = 'infographics' } = options;
@@ -669,6 +709,32 @@ class ImageStore {
             request.onsuccess = () => resolve(true);
             request.onerror = () => reject(request.error);
         });
+    }
+
+    async getAllKeys() {
+        await this.init();
+        return new Promise((resolve, reject) => {
+            const transaction = this.db.transaction([this.storeName], 'readonly');
+            const store = transaction.objectStore(this.storeName);
+            const request = store.getAllKeys();
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async deleteByIds(ids) {
+        if (!ids || ids.length === 0) return 0;
+        await this.init();
+        let deleted = 0;
+        for (const id of ids) {
+            try {
+                await this.delete(id);
+                deleted++;
+            } catch (e) {
+                console.warn(`Failed to delete ${id}:`, e);
+            }
+        }
+        return deleted;
     }
 }
 
@@ -2159,9 +2225,21 @@ const SharedConfirm = {
 const SharedDashboard = {
     // Storage keys for each studio
     STORAGE_KEYS: {
-        infographics: { history: 'infographics_history', favorites: 'ngraphics_favorites' },
+        infographics: { history: 'ngraphics_history', favorites: 'ngraphics_favorites' },
         modelStudio: { history: 'model_studio_history', favorites: 'model_studio_favorites' },
-        bundleStudio: { history: 'bundle_studio_history', favorites: 'bundle_studio_favorites' }
+        bundleStudio: { history: 'bundle_studio_history', favorites: 'bundle_studio_favorites' },
+        lifestyleStudio: { history: 'lifestyle_studio_history', favorites: 'lifestyle_studio_favorites' },
+        copywriter: { history: 'copywriter_history', favorites: 'copywriter_favorites' },
+        packaging: { history: 'packaging_history', favorites: 'packaging_favorites' },
+        comparison: { history: 'comparison_generator_history', favorites: 'comparison_generator_favorites' },
+        sizeVisualizer: { history: 'size_visualizer_history', favorites: 'size_visualizer_favorites' },
+        faqGenerator: { history: 'faq_generator_history', favorites: 'faq_generator_favorites' },
+        backgroundStudio: { history: 'background_studio_history', favorites: 'background_studio_favorites' },
+        badgeGenerator: { history: 'badge_generator_history', favorites: 'badge_generator_favorites' },
+        featureCards: { history: 'feature_cards_history', favorites: 'feature_cards_favorites' },
+        sizeChart: { history: 'size_chart_history', favorites: 'size_chart_favorites' },
+        aplus: { history: 'aplus_generator_history', favorites: 'aplus_generator_favorites' },
+        productVariants: { history: 'product_variants_history', favorites: 'product_variants_favorites' }
     },
 
     /**
@@ -2363,37 +2441,136 @@ const SharedDashboard = {
 
     /**
      * Clear items older than N days from a specific studio
+     * Returns { removed: number, indexedDbDeleted: number }
      */
-    clearOldItems(studioKey, days) {
+    async clearOldItems(studioKey, days, imageStore = null) {
         const keys = this.STORAGE_KEYS[studioKey];
-        if (!keys) return 0;
+        if (!keys) return { removed: 0, indexedDbDeleted: 0 };
 
         const cutoff = new Date();
         cutoff.setDate(cutoff.getDate() - days);
 
-        let removed = 0;
+        const removedIds = [];
 
-        // Clear old history
+        // Clear old history from localStorage
         const history = this._loadFromStorage(keys.history);
         const filteredHistory = history.filter(item => {
             const keep = new Date(item.timestamp) >= cutoff;
-            if (!keep) removed++;
+            if (!keep) removedIds.push(item.id);
             return keep;
         });
         localStorage.setItem(keys.history, JSON.stringify(filteredHistory));
 
-        return removed;
+        // Clean up IndexedDB entries for removed items
+        let indexedDbDeleted = 0;
+        if (imageStore && removedIds.length > 0) {
+            const idsToDelete = removedIds.map(id => `history_${id}`);
+            indexedDbDeleted = await imageStore.deleteByIds(idsToDelete);
+        }
+
+        return { removed: removedIds.length, indexedDbDeleted };
+    },
+
+    /**
+     * Auto-cleanup old entries across all studios (>30 days by default)
+     * Call this on app startup to keep storage clean
+     */
+    async autoCleanup(days = 30, imageStore = null) {
+        const lastCleanup = localStorage.getItem('ngraphics_last_cleanup');
+        const now = Date.now();
+
+        // Only run cleanup once per day
+        if (lastCleanup && (now - parseInt(lastCleanup)) < 24 * 60 * 60 * 1000) {
+            return { skipped: true, reason: 'Already cleaned today' };
+        }
+
+        let totalRemoved = 0;
+        let totalIndexedDb = 0;
+        const results = {};
+
+        for (const studioKey of Object.keys(this.STORAGE_KEYS)) {
+            const result = await this.clearOldItems(studioKey, days, imageStore);
+            results[studioKey] = result;
+            totalRemoved += result.removed;
+            totalIndexedDb += result.indexedDbDeleted;
+        }
+
+        // Clean orphaned IndexedDB entries (entries without matching localStorage refs)
+        if (imageStore) {
+            const orphaned = await this._cleanOrphanedIndexedDb(imageStore);
+            totalIndexedDb += orphaned;
+        }
+
+        localStorage.setItem('ngraphics_last_cleanup', now.toString());
+
+        if (totalRemoved > 0 || totalIndexedDb > 0) {
+            console.log(`[NGRAPHICS] Auto-cleanup: ${totalRemoved} old items, ${totalIndexedDb} IndexedDB entries`);
+        }
+
+        return { totalRemoved, totalIndexedDb, results };
+    },
+
+    /**
+     * Clean orphaned IndexedDB entries that have no matching localStorage reference
+     */
+    async _cleanOrphanedIndexedDb(imageStore) {
+        try {
+            const allKeys = await imageStore.getAllKeys();
+            const validIds = new Set();
+
+            // Collect all valid IDs from localStorage
+            for (const keys of Object.values(this.STORAGE_KEYS)) {
+                const history = this._loadFromStorage(keys.history);
+                const favorites = this._loadFromStorage(keys.favorites);
+
+                history.forEach(item => {
+                    validIds.add(`history_${item.id}`);
+                });
+                favorites.forEach(item => {
+                    validIds.add(`favorite_${item.id}`);
+                });
+            }
+
+            // Find orphaned keys
+            const orphanedKeys = allKeys.filter(key => !validIds.has(key));
+
+            if (orphanedKeys.length > 0) {
+                return await imageStore.deleteByIds(orphanedKeys);
+            }
+            return 0;
+        } catch (e) {
+            console.warn('Failed to clean orphaned IndexedDB entries:', e);
+            return 0;
+        }
     },
 
     /**
      * Get studio breakdown for charts
      */
     getStudioBreakdown(data) {
-        return [
-            { studio: 'Infographics', count: data.infographics?.history?.length || 0, color: '#6366f1' },
-            { studio: 'Model Studio', count: data.modelStudio?.history?.length || 0, color: '#22c55e' },
-            { studio: 'Bundle Studio', count: data.bundleStudio?.history?.length || 0, color: '#f59e0b' }
+        const studios = [
+            { key: 'infographics', name: 'Infographics', color: '#6366f1' },
+            { key: 'modelStudio', name: 'Model Studio', color: '#22c55e' },
+            { key: 'bundleStudio', name: 'Bundle Studio', color: '#f59e0b' },
+            { key: 'lifestyleStudio', name: 'Lifestyle', color: '#ec4899' },
+            { key: 'copywriter', name: 'Copywriter', color: '#8b5cf6' },
+            { key: 'packaging', name: 'Packaging', color: '#14b8a6' },
+            { key: 'comparison', name: 'Comparison', color: '#f97316' },
+            { key: 'sizeVisualizer', name: 'Size Viz', color: '#06b6d4' },
+            { key: 'faqGenerator', name: 'FAQ', color: '#84cc16' },
+            { key: 'backgroundStudio', name: 'Background', color: '#a855f7' },
+            { key: 'badgeGenerator', name: 'Badges', color: '#ef4444' },
+            { key: 'featureCards', name: 'Cards', color: '#0ea5e9' },
+            { key: 'sizeChart', name: 'Size Chart', color: '#78716c' },
+            { key: 'aplus', name: 'A+ Content', color: '#f59e0b' },
+            { key: 'productVariants', name: 'Variants', color: '#10b981' }
         ];
+
+        return studios.map(s => ({
+            studio: s.name,
+            count: data[s.key]?.history?.length || 0,
+            color: s.color
+        })).filter(s => s.count > 0);
     }
 };
 
@@ -4080,4 +4257,10 @@ if (typeof window !== 'undefined') {
     window.SharedTemplates = SharedTemplates;
     window.SharedExamples = SharedExamples;
     window.SharedRating = SharedRating;
+
+    // Auto-cleanup on load (runs once per day, cleans items >30 days old)
+    const globalImageStore = new ImageStore();
+    globalImageStore.init().then(() => {
+        SharedDashboard.autoCleanup(30, globalImageStore);
+    }).catch(() => {});
 }

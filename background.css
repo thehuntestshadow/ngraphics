@@ -1,0 +1,1411 @@
+/* ============================================
+   BACKGROUND STUDIO - Styles
+   ============================================ */
+
+/* Section Label Icons */
+.panel-config .section-label .label-icon {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+}
+
+.panel-config .section-label .label-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* History/Favorites Header Icons - MUST be 14px */
+.history-header h3 svg,
+.favorites-header h3 svg,
+.favorites-title svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Panel Description */
+.panel-description {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+    margin-bottom: 8px;
+}
+
+/* Image Preview */
+.panel-config .image-preview {
+    max-height: 200px;
+}
+
+.panel-config .image-preview img {
+    max-height: 200px;
+}
+
+/* ============================================
+   Background Type Grid
+   ============================================ */
+
+.bg-type-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.bg-type-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.bg-type-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.bg-type-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+    color: var(--accent);
+}
+
+.bg-type-btn span:last-child {
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+/* Background Type Icons */
+.bg-type-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bg-type-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Solid color icon - filled square */
+.bg-type-icon.solid-icon {
+    width: 24px;
+    height: 24px;
+    background: var(--text-secondary);
+    border-radius: 4px;
+}
+
+.bg-type-btn.active .bg-type-icon.solid-icon {
+    background: var(--accent);
+}
+
+/* Gradient icon - gradient fill */
+.bg-type-icon.gradient-icon {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(to bottom, var(--text-secondary), transparent);
+    border-radius: 4px;
+}
+
+.bg-type-btn.active .bg-type-icon.gradient-icon {
+    background: linear-gradient(to bottom, var(--accent), transparent);
+}
+
+/* Transparent icon - checkerboard */
+.bg-type-icon.transparent-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    background-image:
+        linear-gradient(45deg, var(--text-muted) 25%, transparent 25%),
+        linear-gradient(-45deg, var(--text-muted) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, var(--text-muted) 75%),
+        linear-gradient(-45deg, transparent 75%, var(--text-muted) 75%);
+    background-size: 8px 8px;
+    background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+}
+
+.bg-type-btn.active .bg-type-icon.transparent-icon {
+    background-image:
+        linear-gradient(45deg, var(--accent) 25%, transparent 25%),
+        linear-gradient(-45deg, var(--accent) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, var(--accent) 75%),
+        linear-gradient(-45deg, transparent 75%, var(--accent) 75%);
+    background-size: 8px 8px;
+    background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+}
+
+/* ============================================
+   Solid Color Options
+   ============================================ */
+
+.color-presets {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.color-preset {
+    width: 40px;
+    height: 40px;
+    padding: 4px;
+    background: var(--bg-surface);
+    border: 2px solid var(--border-default);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+    position: relative;
+}
+
+.color-preset:hover {
+    border-color: var(--border-strong);
+    transform: scale(1.05);
+}
+
+.color-preset.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+.color-swatch {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Custom color picker */
+.color-preset-custom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-surface);
+}
+
+.color-preset-custom input[type="color"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.custom-color-icon {
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.color-preset-custom:hover .custom-color-icon {
+    color: var(--text-primary);
+}
+
+/* Color info display */
+.color-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+}
+
+.color-info span {
+    color: var(--text-secondary);
+}
+
+.color-info code {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    background: var(--bg-elevated);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* ============================================
+   Gradient Options
+   ============================================ */
+
+.gradient-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.gradient-colors {
+    display: flex;
+    gap: 12px;
+}
+
+.gradient-color-picker {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.gradient-color-picker label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.gradient-color-picker input[type="color"] {
+    width: 100%;
+    height: 36px;
+    padding: 2px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.gradient-color-picker input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 2px;
+}
+
+.gradient-color-picker input[type="color"]::-webkit-color-swatch {
+    border-radius: 3px;
+    border: none;
+}
+
+.gradient-direction {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Gradient preview */
+.gradient-preview {
+    height: 40px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+    background: linear-gradient(to bottom, #FFFFFF, #F0F0F0);
+}
+
+/* Gradient presets */
+.gradient-presets {
+    display: flex;
+    gap: 8px;
+}
+
+.gradient-preset {
+    width: 36px;
+    height: 36px;
+    padding: 3px;
+    background: var(--bg-surface);
+    border: 2px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.gradient-preset:hover {
+    border-color: var(--border-strong);
+}
+
+.gradient-preset.active {
+    border-color: var(--accent);
+}
+
+.gradient-preset-preview {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 2px;
+}
+
+/* ============================================
+   AI Scene Options
+   ============================================ */
+
+.scene-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.scene-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.scene-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.scene-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+    color: var(--accent);
+}
+
+.scene-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.scene-btn span:last-child {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Custom scene input */
+.custom-scene-input {
+    margin-top: 12px;
+}
+
+.custom-scene-input .textarea-field {
+    font-size: 0.85rem;
+    padding: 10px 12px;
+}
+
+/* ============================================
+   Custom Background Upload
+   ============================================ */
+
+.custom-bg-upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--bg-surface);
+    border: 2px dashed var(--border-default);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+    position: relative;
+}
+
+.custom-bg-upload:hover {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+}
+
+.custom-bg-upload .upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+}
+
+.custom-bg-upload svg {
+    width: 32px;
+    height: 32px;
+}
+
+.custom-bg-upload span {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.custom-bg-upload .upload-input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Custom background preview */
+.custom-bg-preview {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-default);
+}
+
+.custom-bg-preview img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+}
+
+.preview-remove-sm {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.preview-remove-sm:hover {
+    background: var(--error);
+}
+
+/* Position selector */
+.position-selector {
+    margin-top: 12px;
+}
+
+/* ============================================
+   Shadow Options
+   ============================================ */
+
+.shadow-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.shadow-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.shadow-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.shadow-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+    color: var(--accent);
+}
+
+.shadow-btn span:last-child {
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+/* Shadow preview visuals */
+.shadow-preview {
+    width: 24px;
+    height: 16px;
+    position: relative;
+}
+
+.shadow-preview::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 10px;
+    background: var(--text-secondary);
+    border-radius: 2px;
+}
+
+.shadow-btn.active .shadow-preview::before {
+    background: var(--accent);
+}
+
+/* None - no shadow */
+.shadow-preview.none::after {
+    display: none;
+}
+
+/* Drop shadow */
+.shadow-preview.drop::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    filter: blur(2px);
+}
+
+/* Reflection */
+.shadow-preview.reflection::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%) scaleY(-0.3);
+    width: 16px;
+    height: 10px;
+    background: var(--text-muted);
+    border-radius: 2px;
+    opacity: 0.3;
+}
+
+/* Natural shadow */
+.shadow-preview.natural::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) skewX(-20deg);
+    width: 18px;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 50%;
+    filter: blur(2px);
+}
+
+/* Contact shadow */
+.shadow-preview.contact::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 2px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+}
+
+/* ============================================
+   Output Options
+   ============================================ */
+
+.output-options {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Model Option (reusing from lifestyle) */
+.model-option {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.option-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.option-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.option-btn {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.option-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+}
+
+.option-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-deep);
+}
+
+/* Slider field */
+.slider-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slider-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.slider-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent);
+    font-family: var(--font-mono);
+}
+
+.range-slider {
+    width: 100%;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--bg-elevated);
+    border-radius: 3px;
+    outline: none;
+}
+
+.range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform var(--duration-fast);
+}
+
+.range-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.range-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* ============================================
+   Advanced Section
+   ============================================ */
+
+.advanced-section {
+    margin-top: 16px;
+}
+
+.advanced-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+    box-sizing: border-box;
+}
+
+.advanced-toggle:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--bg-elevated);
+}
+
+.advanced-section.open .advanced-toggle {
+    color: var(--accent);
+    border-color: var(--accent);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-color: transparent;
+}
+
+.advanced-toggle .toggle-icon {
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
+}
+
+.advanced-toggle:hover .toggle-icon,
+.advanced-section.open .advanced-toggle .toggle-icon {
+    opacity: 1;
+}
+
+.advanced-toggle span {
+    flex: 1;
+    text-align: left;
+}
+
+.advanced-toggle .toggle-chevron {
+    width: 16px;
+    height: 16px;
+    transition: transform var(--duration-fast);
+    opacity: 0.6;
+}
+
+.advanced-toggle:hover .toggle-chevron {
+    opacity: 1;
+}
+
+.advanced-section.open .advanced-toggle .toggle-chevron {
+    transform: rotate(180deg);
+    opacity: 1;
+}
+
+.advanced-content {
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--accent);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.advanced-section.open .advanced-content {
+    display: flex;
+}
+
+.option-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Seed Controls */
+.seed-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.seed-controls .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.seed-controls input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+}
+
+/* Select and input fields */
+.select-sm,
+.input-sm {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+}
+
+/* ============================================
+   Settings Section (API)
+   ============================================ */
+
+.settings-section {
+    margin-top: 12px;
+}
+
+.settings-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+    box-sizing: border-box;
+}
+
+.settings-toggle svg:first-child {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+}
+
+.settings-toggle:hover {
+    color: var(--text-secondary);
+    border-color: var(--border-strong);
+}
+
+.settings-section.open .settings-toggle {
+    color: var(--text-secondary);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-color: transparent;
+}
+
+.settings-toggle span {
+    flex: 1;
+    text-align: left;
+}
+
+.settings-toggle .toggle-chevron {
+    width: 14px;
+    height: 14px;
+    transition: transform var(--duration-fast);
+    opacity: 0.5;
+}
+
+.settings-section.open .settings-toggle .toggle-chevron {
+    transform: rotate(180deg);
+}
+
+.settings-content {
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+    padding: 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.settings-section.open .settings-content {
+    display: flex;
+}
+
+/* API Key Input */
+.api-key-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.api-key-input {
+    display: flex;
+    gap: 6px;
+}
+
+.api-key-input .input-field {
+    flex: 1;
+    font-size: 0.8rem;
+    padding: 8px 10px;
+}
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.btn-icon:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+}
+
+.btn-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* API Status */
+.api-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-muted);
+}
+
+.api-status.connected .status-dot {
+    background: var(--success);
+}
+
+.api-status.error .status-dot {
+    background: var(--error);
+}
+
+.status-text {
+    color: var(--text-muted);
+}
+
+/* ============================================
+   Result Grid for Variations
+   ============================================ */
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.result-grid:empty {
+    display: none;
+}
+
+.result-grid-item {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-default);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.result-grid-item:hover {
+    border-color: var(--accent);
+    transform: scale(1.02);
+}
+
+.result-grid-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.result-grid-item .grid-item-actions {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: flex;
+    gap: 6px;
+    opacity: 0;
+    transition: opacity var(--duration-fast);
+}
+
+.result-grid-item:hover .grid-item-actions {
+    opacity: 1;
+}
+
+.result-grid-item .grid-item-actions button {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--duration-fast);
+}
+
+.result-grid-item .grid-item-actions button:hover {
+    background: var(--accent);
+}
+
+.result-grid-item .grid-item-actions button svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ============================================
+   Feedback Section
+   ============================================ */
+
+.feedback-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-subtle);
+    margin-top: 12px;
+}
+
+.feedback-section .textarea-field {
+    font-size: 0.8rem;
+    padding: 8px 10px;
+}
+
+.feedback-section .btn-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.feedback-section .btn-secondary svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* ============================================
+   Result Actions
+   ============================================ */
+
+.result-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.result-actions .btn-secondary {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 14px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.result-actions .btn-secondary:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+}
+
+.result-actions .btn-secondary svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* ============================================
+   Image Info Overlay
+   ============================================ */
+
+.image-info-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    color: white;
+    font-size: 0.8rem;
+    line-height: 1.6;
+}
+
+.image-info-overlay .info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.image-info-overlay .info-label {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.image-info-overlay .info-value {
+    font-family: var(--font-mono);
+}
+
+/* ============================================
+   Generate Button
+   ============================================ */
+
+.panel-config .btn-generate {
+    margin-top: 16px;
+    padding: 14px 20px;
+}
+
+.panel-config .btn-generate .btn-content svg {
+    width: 18px;
+    height: 18px;
+}
+
+.panel-config .shortcut-hint {
+    margin-top: 8px;
+}
+
+/* ============================================
+   History Section
+   ============================================ */
+
+.history-header .btn-text {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.history-header .btn-text:hover {
+    color: var(--error);
+    border-color: var(--error);
+}
+
+/* ============================================
+   Placeholder Features
+   ============================================ */
+
+.placeholder-features {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+}
+
+.placeholder-features li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.placeholder-features li::before {
+    content: '✓';
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 0.75rem;
+}
+
+/* ============================================
+   Favorites
+   ============================================ */
+
+.favorite-item-variants {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: var(--bg-deep);
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.favorite-variants {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.variant-thumb {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 2px solid var(--border-default);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+    opacity: 0.7;
+}
+
+.variant-thumb:hover {
+    opacity: 1;
+    border-color: var(--border-strong);
+}
+
+.variant-thumb.active {
+    opacity: 1;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+.variant-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ============================================
+   Lightbox
+   ============================================ */
+
+.lightbox {
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+}
+
+.lightbox img {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+}
+
+.lightbox-close {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.lightbox-close:hover {
+    background: var(--error);
+    border-color: var(--error);
+}
+
+.lightbox-close svg {
+    width: 18px;
+    height: 18px;
+}
+
+.lightbox-download {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-sm);
+    color: white;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.lightbox-download:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.lightbox-download svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 1200px) {
+    .bg-type-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .shadow-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .bg-type-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .shadow-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .scene-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .bg-type-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .shadow-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .scene-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .result-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .color-presets {
+        justify-content: center;
+    }
+
+    .gradient-colors {
+        flex-direction: column;
+    }
+
+    .result-actions {
+        flex-wrap: wrap;
+    }
+
+    .result-actions .btn-secondary {
+        flex: 1 1 45%;
+    }
+}

@@ -109,10 +109,10 @@ function initElements() {
         // API Settings
         settingsSection: document.getElementById('settingsSection'),
         settingsToggle: document.getElementById('settingsToggle'),
-        apiKeyInput: document.getElementById('apiKeyInput'),
+        apiKey: document.getElementById('apiKey'),
         toggleApiKey: document.getElementById('toggleApiKey'),
         saveKeyBtn: document.getElementById('saveKeyBtn'),
-        modelSelect: document.getElementById('modelSelect'),
+        aiModel: document.getElementById('aiModel'),
 
         // Comparison Type
         comparisonTypeTabs: document.getElementById('comparisonTypeTabs'),
@@ -940,7 +940,7 @@ async function generateComparison() {
     const prompt = generatePrompt();
     state.lastPrompt = prompt;
 
-    const model = elements.modelSelect.value;
+    const model = elements.aiModel.value;
 
     // Build message content with images
     const messageContent = [
@@ -1057,7 +1057,7 @@ async function generateWithAdjustment() {
     elements.favoriteBtn.classList.remove('active');
     updateLoadingStatus('Applying adjustments...');
 
-    const model = elements.modelSelect.value;
+    const model = elements.aiModel.value;
 
     const adjustmentPrompt = `Here is an image I generated previously, along with the original generation prompt. Please regenerate this image with the following adjustments:
 
@@ -1278,7 +1278,7 @@ function captureCurrentSettings() {
         aspectRatio: state.aspectRatio,
         variations: state.variations,
         negativePrompt: state.negativePrompt,
-        model: elements.modelSelect.value
+        model: elements.aiModel.value
     };
 }
 
@@ -1469,7 +1469,7 @@ function setupEventListeners() {
 
     // API Key
     elements.saveKeyBtn.addEventListener('click', () => {
-        const key = elements.apiKeyInput.value.trim();
+        const key = elements.apiKey.value.trim();
         if (key) {
             state.apiKey = key;
             SharedAPI.saveKey(key);
@@ -1478,7 +1478,7 @@ function setupEventListeners() {
         }
     });
 
-    elements.apiKeyInput.addEventListener('keydown', (e) => {
+    elements.apiKey.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             elements.saveKeyBtn.click();
@@ -1492,7 +1492,7 @@ function setupEventListeners() {
 
     // Toggle API key visibility
     elements.toggleApiKey.addEventListener('click', () => {
-        const input = elements.apiKeyInput;
+        const input = elements.apiKey;
         const isPassword = input.type === 'password';
         input.type = isPassword ? 'text' : 'password';
     });
@@ -1706,7 +1706,7 @@ function setupEventListeners() {
             } else {
                 const info = {
                     seed: state.lastSeed,
-                    model: elements.modelSelect?.value || 'gemini-2.0-flash-exp',
+                    model: elements.aiModel?.value || 'google/gemini-3-pro-image-preview',
                     dimensions: state.aspectRatio || '16:9',
                     style: state.visualStyle || 'Clean',
                     variations: state.generatedImages?.length || 1
@@ -1810,17 +1810,16 @@ async function init() {
     if (initialized) return;
     initialized = true;
 
-    // Render shared header
-    SharedHeader.render({ currentPage: 'comparison' });
-
+    // Header is pre-rendered in HTML to prevent flash
     initElements();
     SharedTheme.init();
+    SharedTheme.setupToggle(document.getElementById('themeToggle'));
 
     // Load API key
     const savedKey = SharedAPI.getKey();
     if (savedKey) {
         state.apiKey = savedKey;
-        elements.apiKeyInput.value = savedKey;
+        elements.apiKey.value = savedKey;
     }
 
     setupEventListeners();

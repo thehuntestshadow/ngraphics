@@ -21,6 +21,7 @@
     border-radius: var(--radius-lg);
     text-decoration: none;
     transition: all var(--duration-fast) var(--ease-out);
+    min-height: 120px; /* Prevents layout shift during font/content load */
 }
 
 .studio-nav-card:hover {
@@ -151,6 +152,7 @@
     text-align: center;
     transition: all var(--duration-fast) var(--ease-out);
     min-width: 0; /* Prevent grid blowout */
+    min-height: 140px; /* Prevents layout shift during content load */
     overflow: hidden;
 }
 

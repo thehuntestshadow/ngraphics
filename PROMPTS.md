@@ -302,6 +302,208 @@ Keep the same overall composition and style, but apply the requested adjustments
 
 ---
 
+---
+
+## Lifestyle Studio Prompt Pattern
+
+### Purpose
+Generate pure product photography in lifestyle environments - no text overlays or infographic elements.
+
+### Opening Structure
+```
+Create a [quality level] lifestyle photograph showing the product in a real-world setting.
+
+PRODUCT REFERENCE: I am providing a photo of the actual product.
+CRITICAL: The product must appear EXACTLY as shown - same colors, shape, labels, and details.
+Do NOT add any text, labels, icons, or infographic elements to the image.
+
+SCENE: [scene description]
+MOOD: [mood description]
+TIME OF DAY: [lighting description]
+```
+
+### Scene Descriptions
+- **Living room**: "cozy living room with comfortable sofa, soft textiles, warm ambient lighting"
+- **Kitchen**: "modern kitchen with clean countertops, natural light from window"
+- **Outdoor**: "outdoor setting with natural elements, trees or garden visible"
+- **Café**: "stylish café or coffee shop with warm wood tones and ambient lighting"
+- **Beach**: "beach setting with sand, ocean, natural daylight"
+
+### Mood Descriptors
+- **Cozy**: "warm, inviting, comfortable atmosphere with soft textures"
+- **Minimal**: "clean, uncluttered, plenty of negative space, modern aesthetic"
+- **Luxurious**: "high-end, premium feel, rich materials, elegant styling"
+- **Energetic**: "vibrant, dynamic, bright colors, active feeling"
+
+### Time of Day
+- **Morning**: "soft morning light, gentle shadows, fresh feeling"
+- **Golden hour**: "warm golden sunlight, long soft shadows, romantic atmosphere"
+- **Midday**: "bright even lighting, minimal shadows, clean look"
+
+---
+
+## Packaging Mockup Prompt Pattern
+
+### Purpose
+Visualize products in professional packaging designs.
+
+### Opening Structure
+```
+Create a [quality level] product packaging mockup.
+
+PRODUCT REFERENCE: I am providing a photo of the actual product.
+The product should be shown [inside/on/with] professional [packaging type] packaging.
+
+PACKAGING TYPE: [box/bottle/bag/pouch/jar/tube/can/label]
+MATERIAL: [material description]
+```
+
+### Packaging Type Descriptions
+- **Box**: "clean product box with [material], professional printing, crisp edges"
+- **Bottle**: "[shape] bottle in [material], clean label application"
+- **Bag**: "premium [paper/fabric] bag with handles, branded appearance"
+- **Pouch**: "stand-up pouch with matte/glossy finish, resealable top"
+
+### Scene Options
+- **Studio**: "clean white/gradient studio backdrop, professional product photography"
+- **Unboxing**: "unboxing scene with tissue paper, gift presentation feeling"
+- **Retail shelf**: "retail store shelf setting, surrounded by complementary products"
+- **Flat lay**: "top-down flat lay arrangement with props and decorative elements"
+
+---
+
+## Comparison Generator Prompt Pattern
+
+### Purpose
+Create side-by-side and before/after comparison images.
+
+### Opening Structure
+```
+Create a [quality level] product comparison image.
+
+COMPARISON TYPE: [before-after / vs-competitor / feature-table / size-lineup]
+
+CRITICAL: Show products EXACTLY as provided - same colors, details, proportions.
+```
+
+### Layout Descriptions
+- **Split**: "50/50 vertical split composition, clear dividing line"
+- **Slider**: "comparison slider style with draggable divider appearance"
+- **Grid**: "clean grid layout with equal spacing, labels for each product"
+- **Table**: "comparison table format with features as rows, products as columns"
+
+### Comparison Types
+- **Before/After**: "transformation comparison showing [before state] vs [after state]"
+- **Vs Competitor**: "side-by-side comparison with checkmarks for winning features"
+- **Feature Table**: "tabular comparison highlighting [feature list] for each product"
+- **Size Lineup**: "size variants displayed in sequence (small to large)"
+
+---
+
+## Size Visualizer Prompt Pattern
+
+### Purpose
+Show product scale with reference objects for size context.
+
+### Opening Structure
+```
+Create a [quality level] size reference image showing the product alongside a familiar object for scale.
+
+PRODUCT REFERENCE: I am providing a photo of the actual product.
+REFERENCE OBJECT: [reference object]
+PRODUCT DIMENSIONS: [width] x [height] x [depth] [units]
+```
+
+### Reference Object Descriptions
+- **Hand**: "adult human hand (approximately 18-20cm length) for natural scale reference"
+- **Smartphone**: "standard smartphone (approximately 15cm x 7cm) for tech context"
+- **Coin**: "common coin (approximately 2.5cm diameter) for small item scale"
+- **Ruler**: "measuring ruler with visible markings for precise scale"
+- **Credit card**: "standard credit card (8.5cm x 5.4cm) for familiar reference"
+
+### Display Mode Descriptions
+- **Side-by-side**: "product placed next to reference object on clean surface"
+- **In hand**: "product held naturally in human hand"
+- **Technical**: "blueprint-style technical drawing with dimension callouts and measurement lines"
+- **Context scene**: "product shown in [context] environment for real-world scale"
+
+---
+
+## FAQ Generator Prompt Pattern
+
+### Purpose
+Generate visual FAQ infographics from text Q&As.
+
+### Opening Structure (for image generation)
+```
+Create a [quality level] FAQ infographic image.
+
+PRODUCT: [product name/description]
+STYLE: [infographic / Q&A card / top 5]
+
+Display the following questions and answers in an engaging visual format:
+[FAQ content]
+```
+
+### Image Type Descriptions
+- **Infographic**: "full infographic layout with multiple Q&As, icons, visual hierarchy"
+- **Q&A Card**: "single question spotlight card with prominent answer, clean design"
+- **Top 5**: "numbered list format showing top 5 questions in engaging layout"
+
+### Text Generation Structure
+```
+Generate [count] frequently asked questions and answers for this product.
+
+PRODUCT: [product description from image analysis]
+CATEGORIES: [selected categories: general, technical, shipping, usage, comparison, warranty]
+TONE: [professional / friendly / casual / technical]
+LANGUAGE: [English / Romanian]
+
+Return as JSON array with format:
+[{"category": "...", "question": "...", "answer": "..."}]
+```
+
+---
+
+## Copywriter Prompt Pattern
+
+### Purpose
+Generate comprehensive marketing copy from product images.
+
+### Analysis Prompt
+```
+Analyze this product image and extract:
+1. Product title (SEO-optimized, ~80 characters)
+2. Product category
+3. Key features (5-7 bullet points)
+4. Benefits (3-5 customer value propositions)
+
+Return as JSON:
+{"productTitle": "...", "productCategory": "...", "features": [...], "benefits": [...]}
+```
+
+### Copy Generation Structure
+```
+Generate comprehensive marketing copy for this product.
+
+PRODUCT: [product title]
+CATEGORY: [product category]
+KEY FEATURES: [feature list]
+BENEFITS: [benefit list]
+TONE: [professional / casual / enthusiastic / luxury]
+LANGUAGE: [English / Romanian]
+
+Generate the following sections:
+1. E-commerce: productTitle, shortDescription, longDescription, bulletFeatures, benefitsList
+2. SEO: metaTitle (<60 chars), metaDescription (<160 chars), focusKeywords, altText
+3. Social: instagramCaption (with hashtags), facebookPost, twitterPost (<280 chars)
+4. Extras: taglines (3), emailSubjects (3)
+
+Return as structured JSON.
+```
+
+---
+
 ## Tips for Better Results
 
 1. **Be specific** - "warm golden hour lighting" beats "nice lighting"
@@ -312,3 +514,5 @@ Keep the same overall composition and style, but apply the requested adjustments
 6. **Control density** - Match visual complexity to use case
 7. **Include aspect ratio** - Models handle this better with explicit instruction
 8. **Use negative prompts** - Filter out common issues proactively
+9. **Match tone to brand** - Luxury products need different language than casual items
+10. **Include dimensions** - For size-related prompts, actual measurements help accuracy

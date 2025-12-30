@@ -50,8 +50,52 @@ Every page starts with this structure:
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
 
-    <!-- Header (rendered by SharedHeader) -->
-    <header class="site-header"></header>
+    <!-- Header (pre-rendered to prevent flash, JS sets up theme toggle) -->
+    <header class="site-header">
+        <div class="header-content">
+            <a href="index.html" class="logo-link">
+                <div class="logo-group">
+                    <div class="logo-mark">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">NGRAPHICS</span>
+                        <span class="logo-subtitle">Page Name Studio</span>
+                    </div>
+                </div>
+            </a>
+            <div class="header-controls">
+                <a href="dashboard.html" class="docs-link" title="Dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="9" rx="1"/>
+                        <rect x="14" y="3" width="7" height="5" rx="1"/>
+                        <rect x="14" y="12" width="7" height="9" rx="1"/>
+                        <rect x="3" y="16" width="7" height="5" rx="1"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
 
     <!-- Main Application -->
     <main class="app-main">
@@ -78,6 +122,16 @@ Every page starts with this structure:
 </body>
 </html>
 ```
+
+**Note:** Headers are pre-rendered in HTML to prevent layout shift and logo flash. JavaScript only sets up the theme toggle:
+
+```javascript
+// In page JS initialization
+SharedTheme.init();
+SharedTheme.setupToggle(document.getElementById('themeToggle'));
+```
+
+For the **home page (index.html)**, omit the `<a href="index.html" class="logo-link">` wrapper around the logo group since you're already on the home page.
 
 ---
 
@@ -218,7 +272,9 @@ document.querySelectorAll('.option-btn[data-option="variations"]').forEach(btn =
 
 ## Generate Button
 
-**CORRECT structure with `btn-glow`:**
+The generate button **MUST** follow this exact structure for consistent styling and loading states.
+
+### Required Structure
 
 ```html
 <button type="submit" class="btn-generate" id="generateBtn">
@@ -235,23 +291,62 @@ document.querySelectorAll('.option-btn[data-option="variations"]').forEach(btn =
 </div>
 ```
 
-**Icon examples by page:**
-- Infographics: Lightning bolt
-- Model Studio: Person with plus
-- Bundle Studio: Four squares
-- Lifestyle Studio: House
+### Required Elements
 
-**WRONG - do not use:**
+| Element | Class | Required | Notes |
+|---------|-------|----------|-------|
+| Button | `.btn-generate` | ✅ | Only this class, NOT `.btn .btn-primary` |
+| Content wrapper | `.btn-content` | ✅ | Wraps icon and text |
+| Icon | SVG inside `.btn-content` | ✅ | Page-specific, before text |
+| Text | Plain text | ✅ | "Generate [Page Name]" |
+| Glow effect | `.btn-glow` | ✅ | MUST be after `.btn-content` |
+| Shortcut hint | `.shortcut-hint` | ✅ | Below button |
+
+### Icon by Page
+
+| Page | Icon | Path |
+|------|------|------|
+| Infographics | Lightning bolt | `<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>` |
+| Model Studio | Person | `<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>` |
+| Bundle Studio | Four squares | `<rect x="3" y="3" width="7" height="7"/>...` |
+| Lifestyle | House | `<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>` |
+| Background | Grid | `<rect x="3" y="3" width="18" height="18"/>...` |
+| Packaging | Box 3D | `<path d="M21 16V8a2 2 0 00-1-1.73l-7-4..."/>` |
+
+### WRONG Patterns (Do NOT use)
+
 ```html
+<!-- WRONG: Using .btn .btn-primary classes -->
+<button class="btn btn-primary btn-generate">
+
+<!-- WRONG: btn-glow BEFORE btn-content -->
+<button class="btn-generate">
+    <span class="btn-glow"></span>
+    <svg>...</svg>
+    Generate
+</button>
+
+<!-- WRONG: No btn-content wrapper -->
+<button class="btn-generate">
+    <svg>...</svg>
+    Generate
+    <span class="btn-glow"></span>
+</button>
+
 <!-- WRONG: btn-loader instead of btn-glow -->
 <span class="btn-loader"></span>
+
+<!-- WRONG: btn-icon class on SVG -->
+<svg class="btn-icon">...</svg>
 ```
 
 ---
 
 ## API Settings Toggle
 
-Uses simple sun-ray gear icon:
+Collapsible section for API key and model selection. Uses simple sun-ray gear icon.
+
+### Required Structure
 
 ```html
 <div class="settings-section" id="settingsSection">
@@ -266,25 +361,87 @@ Uses simple sun-ray gear icon:
         </svg>
     </button>
     <div class="settings-content">
-        <!-- API key input, model select, etc. -->
+        <div class="api-key-group">
+            <label class="option-label">OpenRouter API Key</label>
+            <div class="api-key-input">
+                <input type="password" class="input-field" id="apiKey" placeholder="sk-or-...">
+                <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </button>
+                <button type="button" class="btn-secondary btn-sm" id="saveApiKey">Save</button>
+            </div>
+        </div>
     </div>
 </div>
 ```
 
-**WRONG - complex gear icon:**
+### Required Elements
+
+| Element | Class/ID | Required | Notes |
+|---------|----------|----------|-------|
+| Container | `.settings-section` `#settingsSection` | ✅ | Wraps toggle and content |
+| Toggle button | `.settings-toggle` `#settingsToggle` | ✅ | Collapsible trigger |
+| Gear icon | Sun-ray gear SVG | ✅ | Simple rays, not complex gear teeth |
+| Label | `<span>API Settings</span>` | ✅ | Text label |
+| Chevron | `.toggle-chevron` | ✅ | Down arrow, rotates when open |
+| Content | `.settings-content` | ✅ | Collapsed by default |
+| API key group | `.api-key-group` | ✅ | Contains label and input row |
+| Input row | `.api-key-input` | ✅ | Contains input, eye button, save button |
+| API input | `#apiKey` | ✅ | Password type, placeholder "sk-or-..." |
+| Toggle visibility | `#toggleApiKey` | ✅ | Eye icon button |
+| Save button | `#saveApiKey` | ✅ | `.btn-secondary .btn-sm` |
+
+### Icons
+
 ```html
-<!-- WRONG: Complex gear path - too large and detailed -->
-<svg viewBox="0 0 24 24">
+<!-- Sun-ray gear icon (CORRECT) -->
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
     <circle cx="12" cy="12" r="3"/>
-    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06..."/>  <!-- TOO COMPLEX -->
+    <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
 </svg>
+
+<!-- Eye icon for show/hide -->
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+    <circle cx="12" cy="12" r="3"/>
+</svg>
+
+<!-- Chevron down -->
+<svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <polyline points="6 9 12 15 18 9"/>
+</svg>
+```
+
+### WRONG Patterns (Do NOT use)
+
+```html
+<!-- WRONG: Complex gear icon with teeth -->
+<svg viewBox="0 0 24 24">
+    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06..."/>
+</svg>
+
+<!-- WRONG: Inline API section without toggle -->
+<div class="api-section">
+    <input type="password" id="apiKeyInput">
+</div>
+
+<!-- WRONG: Different input ID -->
+<input id="apiKeyInput">  <!-- Should be id="apiKey" -->
+
+<!-- WRONG: Different container classes -->
+<div class="api-input-row">  <!-- Should be .api-key-input -->
 ```
 
 ---
 
 ## Advanced Options Toggle
 
-Uses slider/mixer icon:
+Collapsible section for advanced generation settings. Uses slider/mixer icon. **Placed BEFORE the Generate button.**
+
+### Required Structure
 
 ```html
 <div class="advanced-section" id="advancedSection">
@@ -306,16 +463,145 @@ Uses slider/mixer icon:
         </svg>
     </button>
     <div class="advanced-content">
-        <!-- Advanced option groups -->
+        <!-- AI Model Selection -->
+        <div class="option-group">
+            <label class="option-label">AI Model</label>
+            <select class="select-field select-sm" id="aiModel">
+                <option value="google/gemini-3-pro-image-preview" selected>Gemini 3 Pro (Best)</option>
+                <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
+            </select>
+        </div>
+
+        <!-- Variations -->
+        <div class="option-group">
+            <label class="option-label">Variations</label>
+            <div class="option-buttons" id="variationsOptions">
+                <button type="button" class="option-btn active" data-value="1">1</button>
+                <button type="button" class="option-btn" data-value="2">2</button>
+                <button type="button" class="option-btn" data-value="4">4</button>
+            </div>
+        </div>
+
+        <!-- Seed -->
+        <div class="option-group">
+            <label class="option-label">Seed (optional)</label>
+            <div class="seed-row">
+                <input type="number" class="input-field input-sm" id="seedInput" placeholder="Random">
+                <button type="button" class="btn-icon" id="randomSeed" title="Randomize">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="1 4 1 10 7 10"/>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Negative Prompt -->
+        <div class="option-group">
+            <label class="option-label">Negative Prompt</label>
+            <textarea class="textarea-field textarea-sm" id="negativePrompt"
+                placeholder="Elements to avoid..." rows="2"></textarea>
+        </div>
     </div>
 </div>
 ```
 
+### Required Elements
+
+| Element | Class/ID | Required | Notes |
+|---------|----------|----------|-------|
+| Container | `.advanced-section` `#advancedSection` | ✅ | Wraps toggle and content |
+| Toggle button | `.advanced-toggle` `#advancedToggle` | ✅ | Collapsible trigger |
+| Slider icon | `.toggle-icon` SVG | ✅ | 3-slider mixer icon |
+| Label | `<span>Advanced Options</span>` | ✅ | Text label |
+| Chevron | `.toggle-chevron` | ✅ | Down arrow, rotates when open |
+| Content | `.advanced-content` | ✅ | Collapsed by default |
+| Option groups | `.option-group` | ✅ | Each contains label and control |
+| AI Model | `#aiModel` | ✅ | Select dropdown |
+| Variations | `#variationsOptions` | Optional | Button group |
+| Seed | `#seedInput` | Optional | Number input with randomize button |
+| Negative prompt | `#negativePrompt` | Optional | Textarea |
+
+### Slider Icon (3-slider mixer)
+
+```html
+<svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <line x1="4" y1="21" x2="4" y2="14"/>
+    <line x1="4" y1="10" x2="4" y2="3"/>
+    <line x1="12" y1="21" x2="12" y2="12"/>
+    <line x1="12" y1="8" x2="12" y2="3"/>
+    <line x1="20" y1="21" x2="20" y2="16"/>
+    <line x1="20" y1="12" x2="20" y2="3"/>
+    <circle cx="4" cy="12" r="2"/>
+    <circle cx="12" cy="10" r="2"/>
+    <circle cx="20" cy="14" r="2"/>
+</svg>
+```
+
+### Section Order (Bottom of Config Panel)
+
+The correct order for sections at the bottom of the config panel:
+
+1. **Advanced Options** (`.advanced-section`)
+2. **Generate Button** (`.btn-generate`)
+3. **API Settings** (`.settings-section`)
+
+```html
+<!-- 1. Advanced Options -->
+<div class="advanced-section" id="advancedSection">...</div>
+
+<!-- 2. Generate Button -->
+<button type="submit" class="btn-generate" id="generateBtn">...</button>
+<div class="shortcut-hint">...</div>
+
+<!-- 3. API Settings -->
+<div class="settings-section" id="settingsSection">...</div>
+```
+
 ---
 
-## History Section
+## History & Favorites Sections
 
-**CORRECT structure (stacked, not tabbed):**
+History and Favorites sections **MUST** follow this exact pattern for consistency. These sections are stacked (not tabbed) and nested.
+
+### Required Elements
+
+| Element | Class | Required | Notes |
+|---------|-------|----------|-------|
+| History container | `.history-section` | ✅ | Wraps everything |
+| History header | `.history-header` | ✅ | Contains title and clear button |
+| History icon | Clock SVG inside `h3` | ✅ | 14px size |
+| History label | "Recent" text | ✅ | Not "History" |
+| History count | `.history-count` | ✅ | Shows item count |
+| Clear button | `.btn-text` | ✅ | Text: "Clear" |
+| History grid | `.history-grid` | ✅ | Contains items |
+| Empty state | `.empty-state` | ✅ | Shown when empty |
+| Favorites container | `.favorites-section` | ✅ | Nested inside history |
+| Favorites header | `.favorites-header` | ✅ | Contains title group and clear button |
+| Favorites title group | `.favorites-title-group` | ✅ | Wraps title and count |
+| Favorites icon | Star SVG inside `.favorites-title` | ✅ | 14px size, yellow color |
+| Favorites label | "Favorites" text | ✅ | — |
+| Favorites count | `.favorites-count` | ✅ | Shows item count |
+| Clear button | `.btn-text-danger` | ✅ | Text: "Clear All" |
+| Favorites grid | `.favorites-grid` | ✅ | Contains items |
+| Empty state | `.empty-state` | ✅ | Shown when empty |
+
+### Icons
+
+```html
+<!-- History Icon (clock) -->
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="10"/>
+    <polyline points="12 6 12 12 16 14"/>
+</svg>
+
+<!-- Favorites Icon (star) - ALWAYS use star, not heart -->
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+</svg>
+```
+
+### History Section HTML
 
 ```html
 <div class="history-section" id="historySection">
@@ -340,21 +626,17 @@ Uses slider/mixer icon:
             </svg>
         </div>
         <p class="empty-state-title">No images yet</p>
-        <p class="empty-state-text">Generated photos will appear here</p>
+        <p class="empty-state-text">Generated images will appear here</p>
     </div>
 
-    <!-- Favorites Section (nested inside, NOT separate tabs) -->
+    <!-- Favorites Section (MUST be nested inside history-section) -->
     <div class="favorites-section" id="favoritesSection">
-        <!-- ... -->
+        <!-- ... see below ... -->
     </div>
 </div>
 ```
 
----
-
-## Favorites Section
-
-**CORRECT structure (nested inside history section):**
+### Favorites Section HTML
 
 ```html
 <div class="favorites-section" id="favoritesSection">
@@ -368,7 +650,7 @@ Uses slider/mixer icon:
             </h3>
             <span class="favorites-count" id="favoritesCount">0</span>
         </div>
-        <button class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
+        <button type="button" class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
     </div>
     <div class="favorites-grid" id="favoritesGrid"></div>
     <div class="empty-state" id="favoritesEmpty">
@@ -383,13 +665,47 @@ Uses slider/mixer icon:
 </div>
 ```
 
-**WRONG - tabs instead of stacked:**
+### Required CSS (page-specific)
+
+Every page CSS file MUST include these icon size rules:
+
+```css
+/* History/Favorites Header Icons - MUST be 14px */
+.history-header h3 svg,
+.favorites-header h3 svg,
+.favorites-title svg {
+    width: 14px;
+    height: 14px;
+}
+```
+
+### WRONG Patterns (Do NOT use)
+
 ```html
-<!-- WRONG: Using tabs for history/favorites -->
+<!-- WRONG: Tabs instead of stacked -->
 <div class="history-tabs">
-    <button class="history-tab active" data-tab="history">History</button>
-    <button class="history-tab" data-tab="favorites">Favorites</button>
+    <button class="history-tab active">History</button>
+    <button class="history-tab">Favorites</button>
 </div>
+
+<!-- WRONG: Missing header structure -->
+<div class="history-section">
+    <div class="history-grid"></div>  <!-- No header! -->
+</div>
+
+<!-- WRONG: Using section-header-row instead of history-header -->
+<div class="section-header-row">
+    <h3 class="section-subtitle">History</h3>
+</div>
+
+<!-- WRONG: Using heart icon for favorites -->
+<svg><!-- heart icon --></svg>
+
+<!-- WRONG: Using "History" label instead of "Recent" -->
+<h3>History</h3>
+
+<!-- WRONG: Using icon button for clear instead of text -->
+<button class="btn-icon-sm"><svg><!-- trash --></svg></button>
 ```
 
 ---
@@ -607,11 +923,47 @@ function initElements() {
 
 Before finishing a new page, verify:
 
-- [ ] `btn-glow` used (not `btn-loader`) in generate button
-- [ ] Settings toggle uses simple sun-ray gear icon
+**Header:**
+- [ ] Header is pre-rendered in HTML (NOT empty for JS to populate)
+- [ ] Contains full logo SVG, title, subtitle
+- [ ] Has `<a href="index.html" class="logo-link">` wrapper (except on index.html)
+- [ ] Dashboard link in header controls
+- [ ] Theme toggle button with `#themeToggle` ID
+- [ ] JS only calls `SharedTheme.init()` and `SharedTheme.setupToggle()` (NOT `SharedHeader.render()`)
+
+**Generate Button:**
+- [ ] Uses `.btn-generate` class only (NOT `.btn .btn-primary`)
+- [ ] Has `.btn-content` wrapper containing SVG icon + text
+- [ ] Has `.btn-glow` span AFTER `.btn-content` (not before, not `btn-loader`)
+- [ ] Has `.shortcut-hint` below button with Ctrl+Enter
+
+**Advanced Options:**
+- [ ] Uses `.advanced-section` with `.advanced-toggle` button
+- [ ] Uses 3-slider mixer icon (`.toggle-icon`)
+- [ ] Has `.toggle-chevron` for expand indicator
+- [ ] Contains AI Model select with `#aiModel`
+- [ ] Placed BEFORE generate button
+
+**API Settings:**
+- [ ] Uses `.settings-section` with `.settings-toggle` button
+- [ ] Uses sun-ray gear icon (simple, not complex gear teeth)
+- [ ] Has `.toggle-chevron` for expand indicator
+- [ ] Uses `.api-key-input` container with input `#apiKey`
+- [ ] Has eye toggle button `#toggleApiKey` and save button `#saveApiKey`
+- [ ] Placed AFTER generate button
+
+**History/Favorites:**
+- [ ] History and Favorites are stacked (not tabbed)
+- [ ] History/Favorites header icons are `14px` (not 16px)
+- [ ] History uses `.history-header` with clock icon and "Recent" label
+- [ ] Favorites uses `.favorites-header` with star icon (not heart)
+- [ ] Favorites nested inside `.history-section`
+- [ ] Both use `.empty-state` pattern for empty state
+- [ ] History uses `.btn-text` "Clear", Favorites uses `.btn-text-danger` "Clear All"
+
+**Other:**
 - [ ] Scene icons are `1rem` (not larger)
 - [ ] Scene labels are `0.7rem`
-- [ ] History and Favorites are stacked (not tabbed)
 - [ ] All element IDs match JavaScript references
 - [ ] Count badges present on History and Favorites headers
 - [ ] Empty states have icon, title, and text

@@ -120,11 +120,11 @@ function initElements() {
         // API Settings
         settingsSection: document.getElementById('settingsSection'),
         settingsToggle: document.getElementById('settingsToggle'),
-        apiKeyInput: document.getElementById('apiKeyInput'),
+        apiKey: document.getElementById('apiKey'),
         toggleApiKey: document.getElementById('toggleApiKey'),
         saveKeyBtn: document.getElementById('saveKeyBtn'),
         apiStatus: document.getElementById('apiStatus'),
-        modelSelect: document.getElementById('modelSelect'),
+        aiModel: document.getElementById('aiModel'),
 
         // Products
         productGrid: document.getElementById('productGrid'),
@@ -594,7 +594,7 @@ async function generateBundle() {
     const prompt = generatePrompt();
     state.lastPrompt = prompt;
 
-    const model = elements.modelSelect.value;
+    const model = elements.aiModel.value;
 
     // Build message content with all product images
     const messageContent = [
@@ -701,7 +701,7 @@ async function generateWithAdjustment() {
     elements.favoriteBtn.classList.remove('active');
     updateLoadingStatus('Applying adjustments...');
 
-    const model = elements.modelSelect.value;
+    const model = elements.aiModel.value;
 
     // Build adjustment prompt
     const adjustmentPrompt = `Here is an image I generated previously, along with the original generation prompt. Please regenerate this image with the following adjustments:
@@ -940,7 +940,7 @@ function captureCurrentSettings() {
         aspectRatio: state.aspectRatio,
         variations: state.variations,
         negativePrompt: state.negativePrompt,
-        model: elements.modelSelect.value
+        model: elements.aiModel.value
     };
 }
 
@@ -1136,7 +1136,7 @@ function setupEventListeners() {
 
     // API Key
     elements.saveKeyBtn.addEventListener('click', () => {
-        const key = elements.apiKeyInput.value.trim();
+        const key = elements.apiKey.value.trim();
         if (key) {
             state.apiKey = key;
             SharedAPI.saveKey(key);
@@ -1146,7 +1146,7 @@ function setupEventListeners() {
         }
     });
 
-    elements.apiKeyInput.addEventListener('keydown', (e) => {
+    elements.apiKey.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             elements.saveKeyBtn.click();
@@ -1160,7 +1160,7 @@ function setupEventListeners() {
 
     // Toggle API key visibility
     elements.toggleApiKey.addEventListener('click', () => {
-        const input = elements.apiKeyInput;
+        const input = elements.apiKey;
         const isPassword = input.type === 'password';
         input.type = isPassword ? 'text' : 'password';
     });
@@ -1385,7 +1385,7 @@ function setupEventListeners() {
             } else {
                 const info = {
                     seed: state.lastSeed,
-                    model: elements.modelSelect?.value || 'gemini-2.0-flash-exp',
+                    model: elements.aiModel?.value || 'google/gemini-3-pro-image-preview',
                     dimensions: state.aspectRatio || '1:1',
                     style: state.visualStyle || 'Commercial',
                     variations: state.generatedImages?.length || 1
@@ -1503,7 +1503,7 @@ function updateConditionalRows() {
 // ============================================
 function getCurrentSettings() {
     return {
-        model: elements.modelSelect?.value,
+        model: elements.aiModel?.value,
         layout: state.layout,
         container: state.container,
         customContainer: state.customContainer,
@@ -1537,7 +1537,7 @@ function applySettings(settings) {
     if (settings.variations) state.variations = settings.variations;
 
     // Update form elements
-    if (settings.model && elements.modelSelect) elements.modelSelect.value = settings.model;
+    if (settings.model && elements.aiModel) elements.aiModel.value = settings.model;
     if (settings.layout && elements.layoutSelect) elements.layoutSelect.value = settings.layout;
     if (settings.container && elements.containerSelect) elements.containerSelect.value = settings.container;
     if (settings.background && elements.backgroundSelect) elements.backgroundSelect.value = settings.background;
@@ -1582,13 +1582,13 @@ function initCostEstimator() {
     const container = document.getElementById('costEstimatorContainer');
     if (!container) return;
 
-    const modelId = elements.modelSelect?.value || 'google/gemini-2.0-flash-exp:free';
+    const modelId = elements.aiModel?.value || 'google/gemini-3-pro-image-preview';
     const variations = state.variations || 1;
     SharedCostEstimator.renderDisplay(modelId, variations, 500, container);
 
     // Update when model changes
-    if (elements.modelSelect) {
-        elements.modelSelect.addEventListener('change', updateCostEstimator);
+    if (elements.aiModel) {
+        elements.aiModel.addEventListener('change', updateCostEstimator);
     }
 
     // Update when variations change
@@ -1604,7 +1604,7 @@ function updateCostEstimator() {
     const container = document.getElementById('costEstimatorContainer');
     if (!container) return;
 
-    const modelId = elements.modelSelect?.value || 'google/gemini-2.0-flash-exp:free';
+    const modelId = elements.aiModel?.value || 'google/gemini-3-pro-image-preview';
     const variations = state.variations || 1;
     SharedCostEstimator.updateDisplay(container, modelId, variations, 500);
 }
@@ -1618,17 +1618,16 @@ async function init() {
     if (initialized) return;
     initialized = true;
 
-    // Render shared header
-    SharedHeader.render({ currentPage: 'bundles' });
-
+    // Header is pre-rendered in HTML to prevent flash
     initElements();
     SharedTheme.init();
+    SharedTheme.setupToggle(document.getElementById('themeToggle'));
 
     // Load API key
     const savedKey = SharedAPI.getKey();
     if (savedKey) {
         state.apiKey = savedKey;
-        elements.apiKeyInput.value = savedKey;
+        elements.apiKey.value = savedKey;
         SharedUI.updateApiStatus(elements.apiStatus, true);
     }
 

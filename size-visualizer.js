@@ -42,7 +42,7 @@ const state = {
 
     // Advanced
     multiAngle: 'single',
-    aiModel: 'google/gemini-2.0-flash-exp:free',
+    aiModel: 'google/gemini-3-pro-image-preview',
     seed: '',
     negativePrompt: '',
     variations: 1,
@@ -413,7 +413,7 @@ async function makeGenerationRequest(prompt, seed) {
     ];
 
     const requestBody = {
-        model: state.aiModel || 'google/gemini-2.0-flash-exp:free',
+        model: state.aiModel || 'google/gemini-3-pro-image-preview',
         messages: [{ role: 'user', content: messageContent }],
         modalities: ['image', 'text'],
         max_tokens: 4096
@@ -1198,17 +1198,13 @@ function init() {
     if (initialized) return;
     initialized = true;
 
-    // Render shared header
-    SharedHeader.render({
-        currentPage: 'size-visualizer',
-        showApiStatus: true
-    });
-
+    // Header is pre-rendered in HTML to prevent flash
     // Initialize DOM cache
     initElements();
 
     // Initialize theme
     SharedTheme.init();
+    SharedTheme.setupToggle(document.getElementById('themeToggle'));
 
     // Load API key
     loadApiKey();

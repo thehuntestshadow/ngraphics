@@ -2070,7 +2070,7 @@ function initCostEstimator() {
     const container = document.getElementById('costEstimatorContainer');
     if (!container) return;
 
-    const modelId = elements.aiModel?.value || 'google/gemini-2.0-flash-exp:free';
+    const modelId = elements.aiModel?.value || 'google/gemini-3-pro-image-preview';
     const variations = state.variations || 1;
     SharedCostEstimator.renderDisplay(modelId, variations, 500, container);
 
@@ -2092,7 +2092,7 @@ function updateCostEstimator() {
     const container = document.getElementById('costEstimatorContainer');
     if (!container) return;
 
-    const modelId = elements.aiModel?.value || 'google/gemini-2.0-flash-exp:free';
+    const modelId = elements.aiModel?.value || 'google/gemini-3-pro-image-preview';
     const variations = state.variations || 1;
     SharedCostEstimator.updateDisplay(container, modelId, variations, 500);
 }
@@ -2106,11 +2106,10 @@ async function init() {
     if (initialized) return;
     initialized = true;
 
-    // Render shared header
-    SharedHeader.render({ currentPage: 'models' });
-
+    // Header is pre-rendered in HTML to prevent flash
     initElements();
     SharedTheme.init();
+    SharedTheme.setupToggle(document.getElementById('themeToggle'));
     loadApiKey();
     setupImageUpload();
     setupEventListeners();

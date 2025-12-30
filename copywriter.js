@@ -122,10 +122,10 @@ async function init() {
     if (initialized) return;
     initialized = true;
 
-    // Render header first
-    SharedHeader.render({ currentPage: 'copywriter' });
-
+    // Header is pre-rendered in HTML to prevent flash
     initElements();
+    SharedTheme.init();
+    SharedTheme.setupToggle(document.getElementById('themeToggle'));
 
     // Initialize stores
     await imageStore.init();

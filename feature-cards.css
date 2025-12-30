@@ -1,0 +1,366 @@
+/* ============================================
+   FEATURE CARDS STYLES
+   ============================================ */
+
+/* Section Label Icons */
+.panel-config .section-label .label-icon {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+}
+
+.panel-config .section-label .label-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* History/Favorites Header Icons - MUST be 14px */
+.history-header h3 svg,
+.favorites-header h3 svg,
+.favorites-title svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Card Type Grid */
+.card-type-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+}
+
+.card-type-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.card-type-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.card-type-btn span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.card-type-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+}
+
+.card-type-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+    color: var(--accent);
+}
+
+/* Card Options Hidden State */
+.card-options.hidden {
+    display: none;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+/* Spec List */
+.spec-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.spec-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 8px;
+    align-items: center;
+}
+
+.spec-row .input-field {
+    font-size: 0.875rem;
+}
+
+.spec-row .btn-remove {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.spec-row .btn-remove:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: var(--error);
+    color: var(--error);
+}
+
+/* Inbox List */
+.inbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.inbox-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+}
+
+/* How-To List */
+.howto-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.howto-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 8px;
+    align-items: center;
+}
+
+.step-number {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: var(--bg-deep);
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* Add Button */
+.btn-add {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-add svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Color Grid */
+.color-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.color-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.color-btn:hover {
+    transform: scale(1.1);
+}
+
+.color-btn.active {
+    border-color: var(--text-primary);
+    box-shadow: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--accent);
+}
+
+.color-btn-custom {
+    background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
+}
+
+.color-btn-custom input[type="color"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Options Row */
+.options-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.model-option {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.option-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.option-buttons {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.option-btn {
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.option-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+}
+
+.option-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-deep);
+}
+
+/* API Key Row */
+.api-key-row {
+    display: flex;
+    gap: 8px;
+}
+
+.api-key-row .input-field {
+    flex: 1;
+}
+
+/* Seed Row */
+.seed-row {
+    display: flex;
+    gap: 8px;
+}
+
+.seed-row .input-field {
+    flex: 1;
+}
+
+/* Result Images */
+.result-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+}
+
+.result-image-wrapper {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--bg-surface);
+    /* Checkered background for transparency */
+    background-image:
+        linear-gradient(45deg, var(--bg-elevated) 25%, transparent 25%),
+        linear-gradient(-45deg, var(--bg-elevated) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, var(--bg-elevated) 75%),
+        linear-gradient(-45deg, transparent 75%, var(--bg-elevated) 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+.result-image-wrapper.grid-view {
+    width: calc(50% - 6px);
+}
+
+.result-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    cursor: pointer;
+    transition: transform var(--duration-fast);
+}
+
+.result-image:hover {
+    transform: scale(1.02);
+}
+
+/* Result Actions */
+.result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .card-type-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .card-type-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .options-row {
+        grid-template-columns: 1fr;
+    }
+
+    .spec-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+    .spec-row .btn-remove {
+        justify-self: end;
+    }
+
+    .result-image-wrapper.grid-view {
+        width: 100%;
+    }
+}

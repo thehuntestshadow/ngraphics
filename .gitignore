@@ -8,8 +8,9 @@ Thumbs.db
 *.swp
 *.swo
 
-# Claude Code local settings
-.claude/
+# Claude Code - ignore local settings, keep shared config
+.claude/settings.local.json
+.playwright-mcp/
 
 # Dependencies (if ever added)
 node_modules/

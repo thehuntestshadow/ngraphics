@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A+ Content - NGRAPHICS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="a-plus.css">
+</head>
+<body>
+    <!-- Noise overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Gradient orbs for atmosphere -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <!-- Header (pre-rendered to prevent flash, JS sets up theme toggle) -->
+    <header class="site-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <a href="index.html" class="logo-link">
+                    <div class="logo-mark">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">NGRAPHICS</span>
+                        <span class="logo-subtitle">A+ Content Generator</span>
+                    </div>
+                </a>
+            </div>
+            <div class="header-controls">
+                <a href="dashboard.html" class="docs-link" title="Dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="9" rx="1"/>
+                        <rect x="14" y="3" width="7" height="5" rx="1"/>
+                        <rect x="14" y="12" width="7" height="9" rx="1"/>
+                        <rect x="3" y="16" width="7" height="5" rx="1"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Application -->
+    <main class="app-main">
+        <div class="app-grid">
+
+            <!-- Left Panel: Configuration -->
+            <section class="panel panel-config">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="title-number">01</span>
+                        A+ Content
+                    </h2>
+                </div>
+
+                <!-- Error/Success Messages -->
+                <div class="message message-error" id="errorMessage">
+                    <div class="message-icon">!</div>
+                    <div class="message-content">
+                        <span class="error-text"></span>
+                    </div>
+                </div>
+                <div class="message message-success" id="successMessage">
+                    <div class="message-icon">✓</div>
+                    <div class="message-content">Generated successfully</div>
+                </div>
+
+                <form id="aplusForm" class="config-form">
+                    <!-- Module Type Tabs -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Choose the A+ Content module type. Each module has specific Amazon-compliant dimensions.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <line x1="9" y1="3" x2="9" y2="21"/>
+                                </svg>
+                            </span>
+                            Module Type
+                        </div>
+                        <div class="module-type-tabs" id="moduleTypeTabs">
+                            <button type="button" class="module-tab active" data-type="image-text">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <line x1="9" y1="3" x2="9" y2="21"/>
+                                </svg>
+                                <span>Image + Text</span>
+                            </button>
+                            <button type="button" class="module-tab" data-type="comparison">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <line x1="3" y1="9" x2="21" y2="9"/>
+                                    <line x1="3" y1="15" x2="21" y2="15"/>
+                                    <line x1="9" y1="3" x2="9" y2="21"/>
+                                </svg>
+                                <span>Comparison</span>
+                            </button>
+                            <button type="button" class="module-tab" data-type="four-grid">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                                </svg>
+                                <span>4-Grid</span>
+                            </button>
+                            <button type="button" class="module-tab" data-type="standard-text">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="3" y1="6" x2="21" y2="6"/>
+                                    <line x1="3" y1="12" x2="21" y2="12"/>
+                                    <line x1="3" y1="18" x2="15" y2="18"/>
+                                </svg>
+                                <span>Text Only</span>
+                            </button>
+                            <button type="button" class="module-tab" data-type="single-image">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                                <span>Single Image</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Product Image -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Upload your main product image.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </span>
+                            Product Image
+                        </div>
+                        <div class="upload-zone" id="uploadArea">
+                            <div class="upload-content">
+                                <div class="upload-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                        <polyline points="17,8 12,3 7,8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                </div>
+                                <p class="upload-text">Drop image or click to upload</p>
+                                <p class="upload-formats">PNG, JPG, WebP • Max 10MB</p>
+                            </div>
+                            <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp">
+                        </div>
+                        <div class="image-preview" id="imagePreview" style="display: none;">
+                            <img id="previewImg" alt="Preview" class="preview-img">
+                            <button type="button" class="preview-remove" id="removeImage">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="form-group" style="margin-top: 12px;">
+                            <label class="input-label">Product Name</label>
+                            <input type="text" id="productName" class="input-field" placeholder="e.g., Premium Wireless Headphones">
+                        </div>
+                    </div>
+
+                    <!-- Image + Text Options -->
+                    <div class="config-section module-section" id="imageTextSection">
+                        <div class="section-label" data-tooltip="Configure the text overlay for your image.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="17" y1="10" x2="3" y2="10"/>
+                                    <line x1="21" y1="6" x2="3" y2="6"/>
+                                    <line x1="21" y1="14" x2="3" y2="14"/>
+                                    <line x1="17" y1="18" x2="3" y2="18"/>
+                                </svg>
+                            </span>
+                            Text Content
+                        </div>
+                        <div class="form-group">
+                            <label class="input-label">Headline</label>
+                            <input type="text" id="headline" class="input-field" placeholder="e.g., Crystal Clear Audio">
+                        </div>
+                        <div class="form-group">
+                            <label class="input-label">Body Text</label>
+                            <textarea id="bodyText" class="input-field textarea-field" rows="3" placeholder="Describe your product benefits..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="option-label">Text Position</label>
+                            <div class="option-buttons">
+                                <button type="button" class="option-btn" data-option="textPosition" data-value="left">Left</button>
+                                <button type="button" class="option-btn active" data-option="textPosition" data-value="right">Right</button>
+                                <button type="button" class="option-btn" data-option="textPosition" data-value="overlay">Overlay</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Options -->
+                    <div class="config-section module-section hidden" id="comparisonSection">
+                        <div class="section-label" data-tooltip="Add products to compare in a feature table.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <line x1="3" y1="9" x2="21" y2="9"/>
+                                </svg>
+                            </span>
+                            Comparison Products
+                        </div>
+                        <div class="comparison-products" id="comparisonProducts"></div>
+                        <button type="button" class="btn-secondary btn-add" id="addProductBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Add Product
+                        </button>
+
+                        <div class="section-label" style="margin-top: 16px;" data-tooltip="Add features to compare across products.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="9 11 12 14 22 4"/>
+                                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                                </svg>
+                            </span>
+                            Features
+                        </div>
+                        <div class="comparison-features" id="comparisonFeatures"></div>
+                        <button type="button" class="btn-secondary btn-add" id="addFeatureBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Add Feature
+                        </button>
+                    </div>
+
+                    <!-- Four-Grid Options -->
+                    <div class="config-section module-section hidden" id="fourGridSection">
+                        <div class="section-label" data-tooltip="Upload 4 images for a 2x2 grid layout.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                                </svg>
+                            </span>
+                            Grid Images
+                        </div>
+                        <div class="grid-mode-toggle">
+                            <button type="button" class="option-btn active" data-option="gridMode" data-value="upload">Upload 4</button>
+                            <button type="button" class="option-btn" data-option="gridMode" data-value="generate">Generate 4</button>
+                        </div>
+                        <div class="grid-upload-slots" id="gridUploadSlots">
+                            <div class="grid-slot" data-index="0">
+                                <div class="grid-slot-placeholder">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                        <polyline points="17,8 12,3 7,8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                    <span>Image 1</span>
+                                </div>
+                                <input type="file" class="grid-slot-input" accept="image/*">
+                            </div>
+                            <div class="grid-slot" data-index="1">
+                                <div class="grid-slot-placeholder">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                        <polyline points="17,8 12,3 7,8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                    <span>Image 2</span>
+                                </div>
+                                <input type="file" class="grid-slot-input" accept="image/*">
+                            </div>
+                            <div class="grid-slot" data-index="2">
+                                <div class="grid-slot-placeholder">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                        <polyline points="17,8 12,3 7,8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                    <span>Image 3</span>
+                                </div>
+                                <input type="file" class="grid-slot-input" accept="image/*">
+                            </div>
+                            <div class="grid-slot" data-index="3">
+                                <div class="grid-slot-placeholder">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                        <polyline points="17,8 12,3 7,8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                    <span>Image 4</span>
+                                </div>
+                                <input type="file" class="grid-slot-input" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Standard Text Options -->
+                    <div class="config-section module-section hidden" id="standardTextSection">
+                        <div class="section-label" data-tooltip="Text-only marketing content.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="3" y1="6" x2="21" y2="6"/>
+                                    <line x1="3" y1="12" x2="21" y2="12"/>
+                                    <line x1="3" y1="18" x2="15" y2="18"/>
+                                </svg>
+                            </span>
+                            Text Content
+                        </div>
+                        <div class="form-group">
+                            <label class="input-label">Headline</label>
+                            <input type="text" id="textHeadline" class="input-field" placeholder="e.g., Why Choose Us">
+                        </div>
+                        <div class="form-group">
+                            <label class="input-label">Body</label>
+                            <textarea id="textBody" class="input-field textarea-field" rows="4" placeholder="Your marketing copy..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="option-label">Alignment</label>
+                            <div class="option-buttons">
+                                <button type="button" class="option-btn active" data-option="textAlign" data-value="left">Left</button>
+                                <button type="button" class="option-btn" data-option="textAlign" data-value="center">Center</button>
+                                <button type="button" class="option-btn" data-option="textAlign" data-value="right">Right</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Single Image Options -->
+                    <div class="config-section module-section hidden" id="singleImageSection">
+                        <div class="section-label" data-tooltip="Full-width product or lifestyle image.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </span>
+                            Image Mode
+                        </div>
+                        <div class="option-buttons">
+                            <button type="button" class="option-btn active" data-option="imageMode" data-value="hero">Hero Shot</button>
+                            <button type="button" class="option-btn" data-option="imageMode" data-value="lifestyle">Lifestyle</button>
+                            <button type="button" class="option-btn" data-option="imageMode" data-value="product-focus">Product Focus</button>
+                        </div>
+                    </div>
+
+                    <!-- Visual Style -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Choose the visual style for your A+ content.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="13.5" cy="6.5" r="2.5"/>
+                                    <circle cx="17.5" cy="10.5" r="2.5"/>
+                                    <circle cx="8.5" cy="7.5" r="2.5"/>
+                                    <circle cx="6.5" cy="12.5" r="2.5"/>
+                                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                                </svg>
+                            </span>
+                            Visual Style
+                        </div>
+                        <div class="style-grid" id="styleGrid">
+                            <button type="button" class="style-btn active" data-value="clean">
+                                <div class="style-preview clean"></div>
+                                <span>Clean</span>
+                            </button>
+                            <button type="button" class="style-btn" data-value="modern">
+                                <div class="style-preview modern"></div>
+                                <span>Modern</span>
+                            </button>
+                            <button type="button" class="style-btn" data-value="bold">
+                                <div class="style-preview bold"></div>
+                                <span>Bold</span>
+                            </button>
+                            <button type="button" class="style-btn" data-value="premium">
+                                <div class="style-preview premium"></div>
+                                <span>Premium</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Color Scheme -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Choose the color scheme for your content.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/>
+                                </svg>
+                            </span>
+                            Color Scheme
+                        </div>
+                        <div class="option-buttons">
+                            <button type="button" class="option-btn active" data-option="colorScheme" data-value="match">Match Product</button>
+                            <button type="button" class="option-btn" data-option="colorScheme" data-value="white">White</button>
+                            <button type="button" class="option-btn" data-option="colorScheme" data-value="dark">Dark</button>
+                            <button type="button" class="option-btn" data-option="colorScheme" data-value="custom">Custom</button>
+                        </div>
+                        <div class="custom-color-row hidden" id="customColorRow">
+                            <input type="color" id="customColor" class="color-picker" value="#3b82f6">
+                            <input type="text" id="customColorText" class="input-field" placeholder="#3b82f6">
+                        </div>
+                    </div>
+
+                    <!-- Output Options -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Configure output variations.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <line x1="3" y1="9" x2="21" y2="9"/>
+                                    <line x1="9" y1="21" x2="9" y2="9"/>
+                                </svg>
+                            </span>
+                            Output
+                        </div>
+                        <div class="model-option">
+                            <label class="option-label">Variations</label>
+                            <div class="option-buttons">
+                                <button type="button" class="option-btn active" data-option="variations" data-value="1">1</button>
+                                <button type="button" class="option-btn" data-option="variations" data-value="2">2</button>
+                                <button type="button" class="option-btn" data-option="variations" data-value="4">4</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Section -->
+                    <div class="settings-section" id="settingsSection">
+                        <button type="button" class="settings-toggle" id="settingsToggle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                            </svg>
+                            <span>API Settings</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="settings-content">
+                            <div class="form-group">
+                                <label class="input-label">API Key</label>
+                                <div class="api-key-row">
+                                    <input type="password" id="apiKey" class="input-field" placeholder="Enter OpenRouter API key">
+                                    <button type="button" class="btn-icon" id="toggleApiKey" title="Show/hide key">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="api-status" id="apiStatus">
+                                    <span class="status-dot"></span>
+                                    <span class="status-text">Not connected</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="input-label">AI Model</label>
+                                <select id="aiModel" class="input-field select-field">
+                                    <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
+                                    <option value="google/gemini-exp-1206:free">Gemini Exp 1206 (Free)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Section -->
+                    <div class="advanced-section" id="advancedSection">
+                        <button type="button" class="advanced-toggle" id="advancedToggle">
+                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="4" y1="21" x2="4" y2="14"/>
+                                <line x1="4" y1="10" x2="4" y2="3"/>
+                                <line x1="12" y1="21" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12" y2="3"/>
+                                <line x1="20" y1="21" x2="20" y2="16"/>
+                                <line x1="20" y1="12" x2="20" y2="3"/>
+                                <circle cx="4" cy="12" r="2"/>
+                                <circle cx="12" cy="10" r="2"/>
+                                <circle cx="20" cy="14" r="2"/>
+                            </svg>
+                            <span>Advanced Options</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="advanced-content">
+                            <div class="form-group">
+                                <label class="input-label">Seed</label>
+                                <div class="seed-row">
+                                    <input type="number" id="seedInput" class="input-field" placeholder="Random">
+                                    <button type="button" class="btn-icon" id="randomSeedBtn" title="Generate random seed">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 2v6h-6"/>
+                                            <path d="M3 12a9 9 0 0115-6.7L21 8"/>
+                                            <path d="M3 22v-6h6"/>
+                                            <path d="M21 12a9 9 0 01-15 6.7L3 16"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="input-label">Negative Prompt</label>
+                                <textarea id="negativePrompt" class="input-field textarea-field" rows="2" placeholder="Things to avoid..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button type="submit" class="btn-generate" id="generateBtn">
+                        <span class="btn-content">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                            Generate A+ Content
+                        </span>
+                        <span class="btn-glow"></span>
+                    </button>
+                    <div class="shortcut-hint">
+                        <kbd>Ctrl</kbd><span>+</span><kbd>Enter</kbd>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Right Panel: Output -->
+            <section class="panel panel-output">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="title-number">02</span>
+                        Output
+                    </h2>
+                    <span class="output-size">970px width</span>
+                </div>
+
+                <div class="output-container">
+                    <!-- Placeholder -->
+                    <div class="output-placeholder" id="resultPlaceholder">
+                        <div class="placeholder-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <h3 class="placeholder-title">A+ Content Generator</h3>
+                        <p class="placeholder-text">Create Amazon-compliant Enhanced Brand Content</p>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div class="output-loading" id="resultLoading" style="display: none;">
+                        <div class="loading-spinner"></div>
+                        <p class="loading-text" id="loadingStatus">Generating A+ content...</p>
+                    </div>
+
+                    <!-- Result Display -->
+                    <div class="output-result" id="resultContainer" style="display: none;">
+                        <div class="result-images" id="resultImages"></div>
+                        <div class="result-actions" id="resultActions">
+                            <button type="button" class="btn-secondary" id="downloadBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Download
+                            </button>
+                            <button type="button" class="btn-secondary" id="downloadZipBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                                </svg>
+                                ZIP All
+                            </button>
+                            <button type="button" class="btn-secondary" id="copyPromptBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                </svg>
+                                Copy Prompt
+                            </button>
+                            <button type="button" class="btn-secondary" id="favoriteBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Feedback Section -->
+                        <div class="feedback-section" id="feedbackSection">
+                            <label class="input-label">Adjust Result</label>
+                            <div class="feedback-row">
+                                <textarea id="feedbackInput" class="input-field textarea-field" rows="2" placeholder="e.g., Make the text larger, use warmer colors..."></textarea>
+                                <button type="button" class="btn-secondary" id="adjustBtn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 20h9"/>
+                                        <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                                    </svg>
+                                    Adjust
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Section -->
+                <div class="history-section" id="historySection">
+                    <div class="history-header">
+                        <h3>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            Recent
+                            <span class="history-count" id="historyCount">0</span>
+                        </h3>
+                        <button type="button" class="btn-text" id="clearHistoryBtn">Clear</button>
+                    </div>
+                    <div class="history-grid" id="historyGrid"></div>
+                    <div class="empty-state" id="historyEmpty">
+                        <div class="empty-state-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <p class="empty-state-title">No content yet</p>
+                        <p class="empty-state-text">Generated A+ content will appear here</p>
+                    </div>
+
+                    <!-- Favorites Section -->
+                    <div class="favorites-section" id="favoritesSection">
+                        <div class="favorites-header">
+                            <div class="favorites-title-group">
+                                <h3 class="favorites-title">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                    Favorites
+                                </h3>
+                                <span class="favorites-count" id="favoritesCount">0</span>
+                            </div>
+                            <button type="button" class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
+                        </div>
+                        <div class="favorites-grid" id="favoritesGrid"></div>
+                        <div class="empty-state" id="favoritesEmpty">
+                            <div class="empty-state-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </div>
+                            <p class="empty-state-title">No favorites yet</p>
+                            <p class="empty-state-text">Click the star to save content</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+        <img id="lightboxImage" alt="Full size image">
+        <button class="lightbox-download" id="lightboxDownload">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download
+        </button>
+        <button class="lightbox-favorite" id="lightboxFavorite">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Favorites Modal -->
+    <div class="modal favorites-modal" id="favoritesModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Favorite</h3>
+                <button class="modal-close" id="closeFavoritesModal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="favorite-preview-container">
+                    <img src="" alt="Favorite preview" id="favoritePreviewImg">
+                </div>
+                <div class="favorite-details">
+                    <div class="favorite-meta">
+                        <div class="favorite-meta-item">
+                            <span>Module:</span>
+                            <span id="favoriteModule"></span>
+                        </div>
+                        <div class="favorite-meta-item">
+                            <span>Style:</span>
+                            <span id="favoriteStyle"></span>
+                        </div>
+                        <div class="favorite-meta-item">
+                            <span>Seed:</span>
+                            <code id="favoriteSeed"></code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="loadFavoriteBtn">Load Settings</button>
+                <button class="btn btn-secondary" id="downloadFavoriteBtn">Download</button>
+                <button class="btn btn-danger" id="deleteFavoriteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div class="modal shortcuts-modal" id="shortcutsModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Keyboard Shortcuts</h3>
+                <button class="modal-close" id="closeShortcutsModal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="shortcuts-list">
+                    <div class="shortcut-item">
+                        <span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>Enter</kbd></span>
+                        <span class="shortcut-desc">Generate</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>D</kbd></span>
+                        <span class="shortcut-desc">Download</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span class="shortcut-keys"><kbd>Esc</kbd></span>
+                        <span class="shortcut-desc">Close modal</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span class="shortcut-keys"><kbd>?</kbd></span>
+                        <span class="shortcut-desc">Show shortcuts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <span>NGRAPHICS</span>
+            <span class="footer-divider">•</span>
+            <span>Powered by OpenRouter AI</span>
+            <span class="footer-divider">•</span>
+            <span class="footer-shortcut"><kbd>Ctrl</kbd>+<kbd>D</kbd> Download</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="shared.js"></script>
+    <script src="a-plus.js"></script>
+</body>
+</html>

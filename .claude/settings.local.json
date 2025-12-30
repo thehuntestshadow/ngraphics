@@ -10,6 +10,8 @@
       "Skill(new-studio)",
       "Skill(audit)",
       "Skill(update-docs)",
+      "Skill(visual-test)",
+      "Skill(perf)",
       "Bash(grep:*)",
       "Bash(wc:*)",
       "Bash( comm -23 /tmp/models_js_ids.txt /tmp/models_html_ids.txt)",
@@ -21,7 +23,17 @@
       "Bash(git push)",
       "Bash(gh repo create:*)",
       "Bash(gh auth status:*)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(cat:*)",
+      "Bash(git worktree add:*)",
+      "Bash(git merge:*)",
+      "Bash(git worktree:*)",
+      "Bash(git worktree remove:*)",
+      "Bash(claude mcp add:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_close",
+      "Bash(chmod:*)"
     ]
   }
 }

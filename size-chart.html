@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Size Chart Generator - NGRAPHICS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="size-chart.css">
+</head>
+<body>
+    <!-- Noise overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Gradient orbs for atmosphere -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <!-- Header (pre-rendered to prevent flash, JS sets up theme toggle) -->
+    <header class="site-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <a href="index.html" class="logo-link">
+                    <div class="logo-mark">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">NGRAPHICS</span>
+                        <span class="logo-subtitle">Size Chart Generator</span>
+                    </div>
+                </a>
+            </div>
+            <div class="header-controls">
+                <a href="dashboard.html" class="docs-link" title="Dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="9" rx="1"/>
+                        <rect x="14" y="3" width="7" height="5" rx="1"/>
+                        <rect x="14" y="12" width="7" height="9" rx="1"/>
+                        <rect x="3" y="16" width="7" height="5" rx="1"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Application -->
+    <main class="app-main">
+        <div class="app-grid">
+            <!-- Left Panel: Configuration -->
+            <section class="panel panel-config">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="title-number">01</span>
+                        Chart Setup
+                    </h2>
+                </div>
+                <div class="config-form">
+                    <!-- Product Category -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Select the product category to get appropriate size presets.">Product Category</div>
+                        <div class="category-grid" id="categoryGrid">
+                            <button class="category-btn active" data-category="tops">
+                                <span class="category-icon">👕</span>
+                                <span>Tops</span>
+                            </button>
+                            <button class="category-btn" data-category="bottoms">
+                                <span class="category-icon">👖</span>
+                                <span>Bottoms</span>
+                            </button>
+                            <button class="category-btn" data-category="dresses">
+                                <span class="category-icon">👗</span>
+                                <span>Dresses</span>
+                            </button>
+                            <button class="category-btn" data-category="shoes">
+                                <span class="category-icon">👟</span>
+                                <span>Shoes</span>
+                            </button>
+                            <button class="category-btn" data-category="accessories">
+                                <span class="category-icon">🎒</span>
+                                <span>Accessories</span>
+                            </button>
+                            <button class="category-btn" data-category="kids">
+                                <span class="category-icon">🧒</span>
+                                <span>Kids</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Chart Style -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Choose how the size chart should be displayed.">Chart Style</div>
+                        <div class="option-row" id="chartStyleGrid">
+                            <button class="style-btn active" data-style="table">Table</button>
+                            <button class="style-btn" data-style="visual">Visual</button>
+                            <button class="style-btn" data-style="comparison">Intl Compare</button>
+                        </div>
+                    </div>
+
+                    <!-- Chart Title -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="The title displayed at the top of your size chart.">Chart Title</div>
+                        <input type="text" id="chartTitle" class="input-field" placeholder="Size Guide" value="Size Guide">
+                    </div>
+
+                    <!-- Size Data -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Enter your size data. Each row is a size, each column is a measurement.">Size Data</div>
+
+                        <!-- Quick Presets -->
+                        <div class="preset-row" id="presetButtons">
+                            <button class="preset-btn" data-preset="us-standard">US Standard</button>
+                            <button class="preset-btn" data-preset="us-numeric">US Numeric</button>
+                            <button class="preset-btn" data-preset="international">International</button>
+                        </div>
+
+                        <!-- Size Table Editor -->
+                        <div class="size-table-container" id="sizeTableEditor">
+                            <div class="table-toolbar">
+                                <button class="btn-small" id="addColumnBtn">+ Column</button>
+                                <button class="btn-small" id="addRowBtn">+ Row</button>
+                            </div>
+                            <div class="table-wrapper">
+                                <table class="size-table" id="sizeTable">
+                                    <thead>
+                                        <tr id="tableHeader">
+                                            <!-- Rendered by JS -->
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody">
+                                        <!-- Rendered by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Unit Toggle -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Choose the measurement unit for your size chart.">Measurement Unit</div>
+                        <div class="option-row">
+                            <button class="unit-btn active" data-unit="inches">Inches</button>
+                            <button class="unit-btn" data-unit="cm">CM</button>
+                            <button class="unit-btn" data-unit="both">Both</button>
+                        </div>
+                    </div>
+
+                    <!-- Visual Style -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Choose the visual design style for your size chart.">Visual Style</div>
+                        <div class="option-row" id="visualStyleOptions">
+                            <button class="vstyle-btn active" data-vstyle="clean">Clean</button>
+                            <button class="vstyle-btn" data-vstyle="modern">Modern</button>
+                            <button class="vstyle-btn" data-vstyle="bold">Bold</button>
+                            <button class="vstyle-btn" data-vstyle="minimal">Minimal</button>
+                        </div>
+                    </div>
+
+                    <!-- Color Scheme -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Select the primary color for your size chart design.">Color Scheme</div>
+                        <div class="color-picker-row" id="colorGrid">
+                            <button class="color-btn active" data-color="#1e293b" style="background: #1e293b" title="Dark"></button>
+                            <button class="color-btn" data-color="#6366f1" style="background: #6366f1" title="Indigo"></button>
+                            <button class="color-btn" data-color="#22c55e" style="background: #22c55e" title="Green"></button>
+                            <button class="color-btn" data-color="#f59e0b" style="background: #f59e0b" title="Amber"></button>
+                            <button class="color-btn" data-color="#ef4444" style="background: #ef4444" title="Red"></button>
+                            <button class="color-btn" data-color="#ec4899" style="background: #ec4899" title="Pink"></button>
+                            <button class="color-btn" data-color="#06b6d4" style="background: #06b6d4" title="Cyan"></button>
+                            <div class="color-btn color-btn-custom">
+                                <input type="color" id="customColor" value="#6366f1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Output Options -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Configure the output size and background.">Output Options</div>
+                        <div class="output-grid">
+                            <div class="output-group">
+                                <span class="output-label">Size</span>
+                                <div class="option-row compact">
+                                    <button class="option-btn" data-size="small">Small</button>
+                                    <button class="option-btn active" data-size="medium">Medium</button>
+                                    <button class="option-btn" data-size="large">Large</button>
+                                </div>
+                            </div>
+                            <div class="output-group">
+                                <span class="output-label">Background</span>
+                                <div class="option-row compact">
+                                    <button class="option-btn active" data-bg="white">White</button>
+                                    <button class="option-btn" data-bg="light">Light</button>
+                                    <button class="option-btn" data-bg="dark">Dark</button>
+                                </div>
+                            </div>
+                            <div class="output-group">
+                                <span class="output-label">Variations</span>
+                                <div class="option-row compact">
+                                    <button class="option-btn active" data-variations="1">1</button>
+                                    <button class="option-btn" data-variations="2">2</button>
+                                    <button class="option-btn" data-variations="4">4</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Options Toggle -->
+                    <div class="config-section">
+                        <button class="advanced-toggle" id="advancedToggle">
+                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="4" y1="21" x2="4" y2="14"></line>
+                                <line x1="4" y1="10" x2="4" y2="3"></line>
+                                <line x1="12" y1="21" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12" y2="3"></line>
+                                <line x1="20" y1="21" x2="20" y2="16"></line>
+                                <line x1="20" y1="12" x2="20" y2="3"></line>
+                                <line x1="1" y1="14" x2="7" y2="14"></line>
+                                <line x1="9" y1="8" x2="15" y2="8"></line>
+                                <line x1="17" y1="16" x2="23" y2="16"></line>
+                            </svg>
+                            Advanced Options
+                            <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Advanced Options Section -->
+                    <div class="advanced-section hidden" id="advancedSection">
+                        <!-- Include Instructions -->
+                        <div class="config-section">
+                            <label class="checkbox-row">
+                                <input type="checkbox" id="includeInstructions" checked>
+                                <span class="checkbox-label">Include "How to Measure" tips</span>
+                            </label>
+                        </div>
+
+                        <!-- Brand Logo -->
+                        <div class="config-section">
+                            <div class="section-label" data-tooltip="Upload your brand logo to include on the size chart.">Brand Logo (Optional)</div>
+                            <div class="logo-upload-area" id="logoUploadArea">
+                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                <span id="logoUploadText">Click to upload logo</span>
+                                <input type="file" id="logoInput" accept="image/*" class="hidden">
+                            </div>
+                            <button class="btn-text hidden" id="removeLogo">Remove logo</button>
+                        </div>
+
+                        <!-- Seed -->
+                        <div class="config-section">
+                            <div class="section-label" data-tooltip="Use a specific seed for reproducible results.">Seed</div>
+                            <div class="seed-row">
+                                <input type="number" id="seedInput" class="input-field" placeholder="Random">
+                                <button class="btn-icon" id="randomSeedBtn" title="Generate random seed">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 2v6h-6M3 12a9 9 0 0115-6.7L21 8M3 22v-6h6M21 12a9 9 0 01-15 6.7L3 16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button type="submit" class="btn-generate" id="generateBtn">
+                        <span class="btn-content">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                            Generate Size Chart
+                        </span>
+                        <span class="btn-glow"></span>
+                    </button>
+                    <div class="shortcut-hint">
+                        <kbd>Ctrl</kbd><span>+</span><kbd>Enter</kbd>
+                    </div>
+
+                    <!-- API Settings -->
+                    <div class="settings-section" id="settingsSection">
+                        <button type="button" class="settings-toggle" id="settingsToggle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                            </svg>
+                            <span>API Settings</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="settings-content">
+                            <div class="api-key-group">
+                                <label class="option-label">OpenRouter API Key</label>
+                                <div class="api-key-input">
+                                    <input type="password" class="input-field" id="apiKey" placeholder="sk-or-...">
+                                    <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </button>
+                                    <button type="button" class="btn-secondary btn-sm" id="saveApiKey">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: Result -->
+            <section class="panel panel-output">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="title-number">02</span>
+                        Result
+                    </h2>
+                </div>
+                <div class="panel-body">
+                    <div class="result-area" id="resultArea">
+                        <div class="result-placeholder" id="resultPlaceholder">
+                            <div class="placeholder-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <line x1="3" y1="9" x2="21" y2="9"/>
+                                    <line x1="9" y1="21" x2="9" y2="9"/>
+                                </svg>
+                            </div>
+                            <h3 class="placeholder-title">Size Chart Generator</h3>
+                            <p class="placeholder-text">Create professional size charts for product listings</p>
+                        </div>
+                        <div class="result-loading hidden" id="resultLoading">
+                            <div class="loading-spinner"></div>
+                            <p class="loading-text" id="loadingStatus">Generating your size chart...</p>
+                        </div>
+                        <div class="result-images hidden" id="resultImages"></div>
+                    </div>
+
+                    <!-- Result Actions -->
+                    <div class="result-actions hidden" id="resultActions">
+                        <button class="btn btn-secondary" id="downloadBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Download
+                        </button>
+                        <button class="btn btn-secondary hidden" id="downloadZipBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                            </svg>
+                            ZIP
+                        </button>
+                        <button class="btn btn-secondary" id="favoriteBtn" title="Save to favorites">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
+                        <button class="btn btn-secondary" id="copyPromptBtn" title="Copy prompt">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- History Section -->
+                    <div class="history-section" id="historySection">
+                        <div class="history-header">
+                            <h3>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                Recent
+                                <span class="history-count" id="historyCount">0</span>
+                            </h3>
+                            <button type="button" class="btn-text" id="clearHistoryBtn">Clear</button>
+                        </div>
+                        <div class="history-grid" id="historyGrid"></div>
+                        <div class="empty-state" id="historyEmpty">
+                            <div class="empty-state-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </div>
+                            <p class="empty-state-title">No charts yet</p>
+                            <p class="empty-state-text">Generated size charts will appear here</p>
+                        </div>
+
+                        <!-- Favorites Section -->
+                        <div class="favorites-section" id="favoritesSection">
+                            <div class="favorites-header">
+                                <div class="favorites-title-group">
+                                    <h3 class="favorites-title">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                        </svg>
+                                        Favorites
+                                    </h3>
+                                    <span class="favorites-count" id="favoritesCount">0</span>
+                                </div>
+                                <button type="button" class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
+                            </div>
+                            <div class="favorites-grid" id="favoritesGrid"></div>
+                            <div class="empty-state" id="favoritesEmpty">
+                                <div class="empty-state-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                </div>
+                                <p class="empty-state-title">No favorites yet</p>
+                                <p class="empty-state-text">Click the star on charts to save them</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Lightbox -->
+    <div class="lightbox hidden" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose">&times;</button>
+        <div class="lightbox-content">
+            <img id="lightboxImage" alt="Full size preview">
+        </div>
+        <div class="lightbox-actions">
+            <button class="btn btn-secondary" id="lightboxDownload">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download
+            </button>
+            <button class="btn btn-secondary" id="lightboxFavorite">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                Favorite
+            </button>
+        </div>
+    </div>
+
+    <!-- Favorites Modal -->
+    <div class="modal" id="favoritesModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>All Favorites</h3>
+                <button class="modal-close" id="closeFavoritesModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="favorites-modal-grid" id="favoritesModalGrid">
+                    <div class="favorites-empty">No favorites saved yet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <span class="keyboard-hint"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> Generate</span>
+            <span class="keyboard-hint"><kbd>Ctrl</kbd>+<kbd>D</kbd> Download</span>
+        </div>
+    </footer>
+
+    <script src="shared.js"></script>
+    <script src="size-chart.js"></script>
+</body>
+</html>

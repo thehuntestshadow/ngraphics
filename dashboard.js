@@ -65,14 +65,11 @@ function initElements() {
 }
 
 async function init() {
-    // Render shared header
-    SharedHeader.render({
-        currentPage: 'dashboard',
-        showApiStatus: false
-    });
-
+    // Header is pre-rendered in HTML to prevent flash
+    // Just setup the theme toggle
     initElements();
     SharedTheme.init();
+    SharedTheme.setupToggle(document.getElementById('themeToggle'));
 
     // Load data
     await loadData();

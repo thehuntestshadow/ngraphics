@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Variants - NGRAPHICS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="product-variants.css">
+</head>
+<body>
+    <!-- Noise overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Gradient orbs for atmosphere -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <!-- Header (pre-rendered to prevent flash, JS sets up theme toggle) -->
+    <header class="site-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <a href="index.html" class="logo-link">
+                    <div class="logo-mark">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">NGRAPHICS</span>
+                        <span class="logo-subtitle">Product Variants</span>
+                    </div>
+                </a>
+            </div>
+            <div class="header-controls">
+                <a href="dashboard.html" class="docs-link" title="Dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="9" rx="1"/>
+                        <rect x="14" y="3" width="7" height="5" rx="1"/>
+                        <rect x="14" y="12" width="7" height="9" rx="1"/>
+                        <rect x="3" y="16" width="7" height="5" rx="1"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Application -->
+    <main class="app-main">
+        <div class="app-grid">
+
+            <!-- Left Panel: Configuration -->
+            <section class="panel panel-config">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="title-number">01</span>
+                        Product Variants
+                    </h2>
+                    <p class="panel-description">Generate color, material, and pattern variations</p>
+                </div>
+
+                <!-- Error/Success Messages -->
+                <div class="message message-error" id="errorMessage">
+                    <div class="message-icon">!</div>
+                    <div class="message-content">
+                        <span class="error-text"></span>
+                    </div>
+                </div>
+                <div class="message message-success" id="successMessage">
+                    <div class="message-icon">✓</div>
+                    <div class="message-content">Generated successfully</div>
+                </div>
+
+                <form id="variantsForm" class="config-form">
+                    <!-- Product Upload -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Upload the product image to generate variations from">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </span>
+                            Product Image
+                        </div>
+                        <div class="upload-zone" id="uploadArea">
+                            <div class="upload-content">
+                                <div class="upload-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                        <polyline points="17,8 12,3 7,8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                </div>
+                                <p class="upload-text">Drop image or click to upload</p>
+                                <p class="upload-formats">PNG, JPG, WebP</p>
+                            </div>
+                            <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp">
+                        </div>
+                        <div class="image-preview" id="imagePreview" style="display: none;">
+                            <img id="previewImg" alt="Preview" class="preview-img">
+                            <button type="button" class="preview-remove" id="removeImage">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Variant Type Selection -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Choose what type of variations to generate">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="2" width="9" height="9" rx="1"/>
+                                    <rect x="13" y="2" width="9" height="9" rx="1"/>
+                                    <rect x="2" y="13" width="9" height="9" rx="1"/>
+                                    <rect x="13" y="13" width="9" height="9" rx="1"/>
+                                </svg>
+                            </span>
+                            Variant Type
+                        </div>
+                        <div class="variant-type-grid">
+                            <button type="button" class="variant-type-btn active" data-type="color">
+                                <span class="variant-type-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <circle cx="12" cy="12" r="4" fill="currentColor"/>
+                                    </svg>
+                                </span>
+                                <span>Color</span>
+                            </button>
+                            <button type="button" class="variant-type-btn" data-type="material">
+                                <span class="variant-type-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+                                        <line x1="7" y1="7" x2="7.01" y2="7"/>
+                                    </svg>
+                                </span>
+                                <span>Material</span>
+                            </button>
+                            <button type="button" class="variant-type-btn" data-type="pattern">
+                                <span class="variant-type-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="7" height="7"/>
+                                        <rect x="14" y="3" width="7" height="7"/>
+                                        <rect x="14" y="14" width="7" height="7"/>
+                                        <rect x="3" y="14" width="7" height="7"/>
+                                    </svg>
+                                </span>
+                                <span>Pattern</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Color Options -->
+                    <div class="config-section variant-options" id="colorOptions">
+                        <div class="section-label" data-tooltip="Select a color palette or enter custom colors">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                </svg>
+                            </span>
+                            Color Palette
+                        </div>
+                        <div class="color-mode-toggle">
+                            <button type="button" class="mode-btn active" data-mode="preset">Presets</button>
+                            <button type="button" class="mode-btn" data-mode="custom">Custom</button>
+                        </div>
+
+                        <!-- Preset Colors -->
+                        <div class="color-preset-section" id="colorPresetSection">
+                            <div class="preset-grid">
+                                <button type="button" class="preset-btn active" data-preset="popular">
+                                    <span class="preset-colors">
+                                        <span style="background:#000"></span>
+                                        <span style="background:#fff"></span>
+                                        <span style="background:#1e3a5f"></span>
+                                        <span style="background:#722f37"></span>
+                                    </span>
+                                    <span class="preset-name">Popular</span>
+                                </button>
+                                <button type="button" class="preset-btn" data-preset="earth-tones">
+                                    <span class="preset-colors">
+                                        <span style="background:#c35831"></span>
+                                        <span style="background:#556b2f"></span>
+                                        <span style="background:#8b4513"></span>
+                                        <span style="background:#c4a35a"></span>
+                                    </span>
+                                    <span class="preset-name">Earth Tones</span>
+                                </button>
+                                <button type="button" class="preset-btn" data-preset="pastels">
+                                    <span class="preset-colors">
+                                        <span style="background:#ffd1dc"></span>
+                                        <span style="background:#aec6cf"></span>
+                                        <span style="background:#b39eb5"></span>
+                                        <span style="background:#98fb98"></span>
+                                    </span>
+                                    <span class="preset-name">Pastels</span>
+                                </button>
+                                <button type="button" class="preset-btn" data-preset="bold">
+                                    <span class="preset-colors">
+                                        <span style="background:#ff2400"></span>
+                                        <span style="background:#0080ff"></span>
+                                        <span style="background:#ff69b4"></span>
+                                        <span style="background:#32cd32"></span>
+                                    </span>
+                                    <span class="preset-name">Bold</span>
+                                </button>
+                                <button type="button" class="preset-btn" data-preset="neutrals">
+                                    <span class="preset-colors">
+                                        <span style="background:#fff"></span>
+                                        <span style="background:#f5f5dc"></span>
+                                        <span style="background:#808080"></span>
+                                        <span style="background:#36454f"></span>
+                                    </span>
+                                    <span class="preset-name">Neutrals</span>
+                                </button>
+                                <button type="button" class="preset-btn" data-preset="metallics">
+                                    <span class="preset-colors">
+                                        <span style="background:#c0c0c0"></span>
+                                        <span style="background:#ffd700"></span>
+                                        <span style="background:#b76e79"></span>
+                                        <span style="background:#b87333"></span>
+                                    </span>
+                                    <span class="preset-name">Metallics</span>
+                                </button>
+                            </div>
+                            <div class="selected-colors" id="selectedColorsPreview">
+                                <span class="selected-colors-label">Selected:</span>
+                                <div class="color-chips" id="colorChips"></div>
+                            </div>
+                        </div>
+
+                        <!-- Custom Colors -->
+                        <div class="custom-color-section" id="customColorSection" style="display: none;">
+                            <textarea class="input-field textarea-field" id="customColorsInput" rows="3"
+                                      placeholder="Enter colors separated by commas (e.g., Navy Blue, Burgundy, Forest Green, Cream)"></textarea>
+                            <p class="input-hint">Enter 2-8 color names</p>
+                        </div>
+                    </div>
+
+                    <!-- Material Options -->
+                    <div class="config-section variant-options" id="materialOptions" style="display: none;">
+                        <div class="section-label" data-tooltip="Select target materials to swap to">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+                                    <line x1="7" y1="7" x2="7.01" y2="7"/>
+                                </svg>
+                            </span>
+                            Target Materials
+                            <span class="label-hint">Select 2-8</span>
+                        </div>
+
+                        <div class="material-group">
+                            <h4 class="material-group-title">Fabrics</h4>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item"><input type="checkbox" value="leather"><span>Leather</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="suede"><span>Suede</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="velvet"><span>Velvet</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="canvas"><span>Canvas</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="denim"><span>Denim</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="silk"><span>Silk</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="wool"><span>Wool</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="linen"><span>Linen</span></label>
+                            </div>
+                        </div>
+
+                        <div class="material-group">
+                            <h4 class="material-group-title">Hard Materials</h4>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item"><input type="checkbox" value="metal"><span>Metal</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="wood"><span>Wood</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="plastic"><span>Plastic</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="rubber"><span>Rubber</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="glass"><span>Glass</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="ceramic"><span>Ceramic</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="marble"><span>Marble</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="concrete"><span>Concrete</span></label>
+                            </div>
+                        </div>
+
+                        <div class="material-group">
+                            <h4 class="material-group-title">Finishes</h4>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item"><input type="checkbox" value="matte"><span>Matte</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="glossy"><span>Glossy</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="satin"><span>Satin</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="chrome"><span>Chrome</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="brushed-metal"><span>Brushed</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="patent"><span>Patent</span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pattern Options -->
+                    <div class="config-section variant-options" id="patternOptions" style="display: none;">
+                        <div class="section-label" data-tooltip="Select patterns to apply to your product">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7"/>
+                                    <rect x="14" y="3" width="7" height="7"/>
+                                    <rect x="14" y="14" width="7" height="7"/>
+                                    <rect x="3" y="14" width="7" height="7"/>
+                                </svg>
+                            </span>
+                            Target Patterns
+                            <span class="label-hint">Select 2-8</span>
+                        </div>
+
+                        <div class="pattern-group">
+                            <h4 class="pattern-group-title">Geometric</h4>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item"><input type="checkbox" value="stripes"><span>Stripes</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="plaid"><span>Plaid</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="checkered"><span>Checkered</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="chevron"><span>Chevron</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="polka-dots"><span>Polka Dots</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="geometric"><span>Geometric</span></label>
+                            </div>
+                        </div>
+
+                        <div class="pattern-group">
+                            <h4 class="pattern-group-title">Natural</h4>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item"><input type="checkbox" value="floral"><span>Floral</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="tropical"><span>Tropical</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="animal-print"><span>Animal Print</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="leopard"><span>Leopard</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="marble"><span>Marble</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="wood-grain"><span>Wood Grain</span></label>
+                            </div>
+                        </div>
+
+                        <div class="pattern-group">
+                            <h4 class="pattern-group-title">Abstract</h4>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item"><input type="checkbox" value="abstract"><span>Abstract</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="tie-dye"><span>Tie-Dye</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="ombre"><span>Ombre</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="watercolor"><span>Watercolor</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="splatter"><span>Splatter</span></label>
+                            </div>
+                        </div>
+
+                        <div class="pattern-group">
+                            <h4 class="pattern-group-title">Textures</h4>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item"><input type="checkbox" value="quilted"><span>Quilted</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="embossed"><span>Embossed</span></label>
+                                <label class="checkbox-item"><input type="checkbox" value="woven"><span>Woven</span></label>
+                            </div>
+                        </div>
+
+                        <div class="pattern-scale-section">
+                            <label class="option-label">Pattern Scale</label>
+                            <div class="option-buttons">
+                                <button type="button" class="option-btn" data-option="patternScale" data-value="small">Small</button>
+                                <button type="button" class="option-btn active" data-option="patternScale" data-value="medium">Medium</button>
+                                <button type="button" class="option-btn" data-option="patternScale" data-value="large">Large</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Variant Count -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Number of variants to generate">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7"/>
+                                    <rect x="14" y="3" width="7" height="7"/>
+                                    <rect x="14" y="14" width="7" height="7"/>
+                                    <rect x="3" y="14" width="7" height="7"/>
+                                </svg>
+                            </span>
+                            Variant Count
+                        </div>
+                        <div class="option-buttons">
+                            <button type="button" class="option-btn" data-option="variantCount" data-value="2">2</button>
+                            <button type="button" class="option-btn active" data-option="variantCount" data-value="4">4</button>
+                            <button type="button" class="option-btn" data-option="variantCount" data-value="6">6</button>
+                            <button type="button" class="option-btn" data-option="variantCount" data-value="8">8</button>
+                        </div>
+                    </div>
+
+                    <!-- Output Settings -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Configure output settings">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                </svg>
+                            </span>
+                            Output
+                        </div>
+                        <div class="output-options">
+                            <div class="model-option">
+                                <label class="option-label">Aspect Ratio</label>
+                                <div class="option-buttons">
+                                    <button type="button" class="option-btn active" data-option="aspectRatio" data-value="1:1">1:1</button>
+                                    <button type="button" class="option-btn" data-option="aspectRatio" data-value="4:5">4:5</button>
+                                    <button type="button" class="option-btn" data-option="aspectRatio" data-value="3:4">3:4</button>
+                                    <button type="button" class="option-btn" data-option="aspectRatio" data-value="16:9">16:9</button>
+                                </div>
+                            </div>
+                            <div class="toggle-option">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="preserveLighting" checked>
+                                    <span class="checkbox-text">Preserve consistent lighting</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Options -->
+                    <div class="advanced-section" id="advancedSection">
+                        <button type="button" class="advanced-toggle" id="advancedToggle">
+                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="4" y1="21" x2="4" y2="14"/>
+                                <line x1="4" y1="10" x2="4" y2="3"/>
+                                <line x1="12" y1="21" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12" y2="3"/>
+                                <line x1="20" y1="21" x2="20" y2="16"/>
+                                <line x1="20" y1="12" x2="20" y2="3"/>
+                                <circle cx="4" cy="12" r="2"/>
+                                <circle cx="12" cy="10" r="2"/>
+                                <circle cx="20" cy="14" r="2"/>
+                            </svg>
+                            <span>Advanced Options</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="advanced-content">
+                            <!-- Quality -->
+                            <div class="option-group">
+                                <label class="option-label">Quality</label>
+                                <select class="select-field select-sm" id="outputQuality">
+                                    <option value="standard">Standard</option>
+                                    <option value="high" selected>High</option>
+                                    <option value="ultra">Ultra</option>
+                                </select>
+                            </div>
+
+                            <!-- Seed -->
+                            <div class="option-group">
+                                <label class="option-label">Seed (optional)</label>
+                                <input type="number" class="input-field input-sm" id="seedInput" placeholder="Random">
+                            </div>
+
+                            <!-- Negative Prompt -->
+                            <div class="option-group">
+                                <label class="option-label">Negative Prompt</label>
+                                <textarea class="input-field textarea-field" id="negativePrompt" rows="2"
+                                          placeholder="Things to avoid (e.g., different shapes, inconsistent sizes)"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button type="submit" class="btn-generate" id="generateBtn">
+                        <span class="btn-content">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="2" width="9" height="9" rx="1"/>
+                                <rect x="13" y="2" width="9" height="9" rx="1"/>
+                                <rect x="2" y="13" width="9" height="9" rx="1"/>
+                                <rect x="13" y="13" width="9" height="9" rx="1"/>
+                            </svg>
+                            Generate Variants
+                        </span>
+                        <span class="btn-glow"></span>
+                    </button>
+                    <div class="shortcut-hint"><kbd>Ctrl</kbd><span>+</span><kbd>Enter</kbd></div>
+
+                    <!-- API Settings -->
+                    <div class="settings-section" id="settingsSection">
+                        <button type="button" class="settings-toggle" id="settingsToggle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                            </svg>
+                            <span>API Settings</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="settings-content">
+                            <div class="api-key-group">
+                                <label class="option-label">OpenRouter API Key</label>
+                                <div class="api-key-input">
+                                    <input type="password" class="input-field" id="apiKey" placeholder="sk-or-...">
+                                    <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="api-status" id="apiStatus">
+                                    <span class="status-dot"></span>
+                                    <span class="status-text">Not connected</span>
+                                </div>
+                            </div>
+                            <div class="option-group">
+                                <label class="option-label">AI Model</label>
+                                <select class="select-field" id="aiModel">
+                                    <option value="google/gemini-3-pro-image-preview" selected>Gemini 3 Pro (Best)</option>
+                                    <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
+                                    <option value="openai/gpt-4o">GPT-4o</option>
+                                    <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Right Panel: Output -->
+            <section class="panel panel-output">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="title-number">02</span>
+                        Output
+                    </h2>
+                </div>
+
+                <div class="output-container" id="outputContainer">
+                    <!-- Placeholder -->
+                    <div class="output-placeholder" id="resultPlaceholder">
+                        <div class="placeholder-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="2" y="2" width="9" height="9" rx="1"/>
+                                <rect x="13" y="2" width="9" height="9" rx="1"/>
+                                <rect x="2" y="13" width="9" height="9" rx="1"/>
+                                <rect x="13" y="13" width="9" height="9" rx="1"/>
+                            </svg>
+                        </div>
+                        <h3>Product Variants</h3>
+                        <p>Generate color, material, and pattern variations</p>
+                        <ul class="placeholder-features">
+                            <li>Color variants from preset palettes or custom</li>
+                            <li>Material swaps (leather, suede, metal, wood)</li>
+                            <li>Pattern application (stripes, floral, geometric)</li>
+                            <li>Consistent lighting across all variants</li>
+                        </ul>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div class="output-loading" id="loadingContainer">
+                        <div class="loading-spinner"></div>
+                        <p class="loading-text" id="loadingStatus">Generating variants...</p>
+                        <p class="loading-subtext" id="loadingSubtext">This may take 30-60 seconds</p>
+                    </div>
+
+                    <!-- Result Display -->
+                    <div class="result-display" id="resultDisplay" style="display: none;">
+                        <div class="variant-grid" id="variantGrid"></div>
+                        <div class="result-actions">
+                            <button type="button" class="btn-secondary" id="downloadAllBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Download All (ZIP)
+                            </button>
+                            <button type="button" class="btn-secondary" id="favoriteBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                Favorite
+                            </button>
+                            <button type="button" class="btn-secondary" id="copyPromptBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                </svg>
+                                Copy Prompt
+                            </button>
+                        </div>
+
+                        <!-- Feedback Section -->
+                        <div class="feedback-section">
+                            <textarea class="textarea-field" id="feedbackTextarea" rows="2"
+                                      placeholder="Describe adjustments (e.g., make colors more vibrant, smoother material texture)"></textarea>
+                            <button type="button" class="btn-secondary" id="adjustBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                                Adjust
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History -->
+                <div class="history-section" id="historySection">
+                    <div class="history-header">
+                        <h3>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            Recent
+                            <span class="history-count" id="historyCount">0</span>
+                        </h3>
+                        <button type="button" class="btn-text" id="clearHistoryBtn">Clear</button>
+                    </div>
+                    <div class="history-grid" id="historyGrid"></div>
+                    <div class="empty-state" id="historyEmpty">
+                        <div class="empty-state-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="2" y="2" width="9" height="9" rx="1"/>
+                                <rect x="13" y="2" width="9" height="9" rx="1"/>
+                                <rect x="2" y="13" width="9" height="9" rx="1"/>
+                                <rect x="13" y="13" width="9" height="9" rx="1"/>
+                            </svg>
+                        </div>
+                        <p class="empty-state-title">No variants yet</p>
+                        <p class="empty-state-text">Generated variants will appear here</p>
+                    </div>
+
+                    <!-- Favorites Section -->
+                    <div class="favorites-section" id="favoritesSection">
+                        <div class="favorites-header">
+                            <div class="favorites-title-group">
+                                <h3 class="favorites-title">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                    Favorites
+                                </h3>
+                                <span class="favorites-count" id="favoritesCount">0</span>
+                            </div>
+                            <button class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
+                        </div>
+                        <div class="favorites-grid" id="favoritesGrid"></div>
+                        <div class="empty-state" id="favoritesEmpty">
+                            <div class="empty-state-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </div>
+                            <p class="empty-state-title">No favorites yet</p>
+                            <p class="empty-state-text">Click the star to save</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+        <img id="lightboxImage" alt="Full size image">
+        <button class="lightbox-download" id="lightboxDownload">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download
+        </button>
+    </div>
+
+    <!-- Favorites Modal -->
+    <div class="modal favorites-modal" id="favoritesModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Favorite</h3>
+                <button class="modal-close" id="closeFavoritesModal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="favorite-preview-container">
+                    <img src="" alt="Favorite preview" id="favoritePreviewImg">
+                    <div class="favorite-variants" id="favoriteVariants" style="display: none;"></div>
+                </div>
+                <div class="favorite-details">
+                    <div class="favorite-name-row">
+                        <input type="text" class="favorite-name-input" id="favoriteNameInput" placeholder="Favorite name...">
+                    </div>
+                    <div class="favorite-meta">
+                        <div class="favorite-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12,6 12,12 16,14"/>
+                            </svg>
+                            <span id="favoriteDate"></span>
+                        </div>
+                        <div class="favorite-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                            </svg>
+                            <span>Seed:</span>
+                            <code class="favorite-seed-value" id="favoriteSeedValue"></code>
+                            <button class="btn-copy-seed" id="copyFavoriteSeed">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-load" id="loadFavoriteBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                        <polyline points="17,8 12,3 7,8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Load Settings
+                </button>
+                <button class="btn btn-secondary" id="downloadFavoriteBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Download
+                </button>
+                <button class="btn btn-danger" id="deleteFavoriteBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"/>
+                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <span>NGRAPHICS</span>
+            <span class="footer-divider">•</span>
+            <span>Powered by OpenRouter AI</span>
+            <span class="footer-divider">•</span>
+            <span class="footer-shortcut"><kbd>Ctrl</kbd>+<kbd>D</kbd> Download</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="core.js"></script>
+    <script src="shared.js"></script>
+    <script src="api.js"></script>
+    <script src="components.js"></script>
+    <script src="workers.js"></script>
+    <script src="product-variants.js"></script>
+</body>
+</html>
