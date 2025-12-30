@@ -14,7 +14,10 @@
       "Grep",
       "Bash(node -c:*)",
       "Bash(node -e:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(git push)",
+      "Bash(gh repo create:*)",
+      "Bash(gh auth status:*)"
     ]
   }
 }

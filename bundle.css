@@ -289,6 +289,55 @@
     to { transform: rotate(360deg); }
 }
 
+/* Product Quantity Selector */
+.product-slot-quantity {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: none;
+    align-items: center;
+    gap: 2px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 2px;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.product-slot.filled .product-slot-quantity {
+    display: flex;
+}
+
+.product-slot-quantity button {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all var(--duration-fast);
+}
+
+.product-slot-quantity button:hover {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+}
+
+.product-slot-quantity .qty-value {
+    min-width: 20px;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
 /* Product Count Badge */
 .product-count {
     font-size: 0.75rem;

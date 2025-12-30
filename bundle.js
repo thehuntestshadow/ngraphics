@@ -286,6 +286,7 @@ function addProduct(file, slotIndex) {
             thumbnail,
             name: '',
             description: '',
+            quantity: 1,
             analyzed: false
         };
 
@@ -341,27 +342,46 @@ function removeProduct(productId) {
     updateProductCount();
 }
 
+function updateProductQuantity(productId, delta) {
+    const product = state.products.find(p => p.id === productId);
+    if (!product) return;
+
+    const newQuantity = Math.max(1, Math.min(12, (product.quantity || 1) + delta));
+    product.quantity = newQuantity;
+
+    // Update the display
+    const slot = elements.productGrid.querySelector(`[data-product-id="${productId}"]`);
+    if (slot) {
+        const qtyValue = slot.querySelector('.qty-value');
+        if (qtyValue) qtyValue.textContent = newQuantity;
+    }
+}
+
 function renderProductSlot(slotIndex, product) {
     const slot = elements.productGrid.querySelectorAll('.product-slot')[slotIndex];
     const img = slot.querySelector('.product-slot-image');
     const nameEl = slot.querySelector('.product-slot-name');
+    const qtyValue = slot.querySelector('.qty-value');
 
     slot.classList.remove('analyzing');
     slot.classList.add('filled');
     slot.dataset.productId = product.id;
     img.src = product.thumbnail || product.imageBase64;
     nameEl.textContent = product.name || 'Product';
+    if (qtyValue) qtyValue.textContent = product.quantity || 1;
 }
 
 function clearProductSlot(slotIndex) {
     const slot = elements.productGrid.querySelectorAll('.product-slot')[slotIndex];
     const img = slot.querySelector('.product-slot-image');
     const nameEl = slot.querySelector('.product-slot-name');
+    const qtyValue = slot.querySelector('.qty-value');
 
     slot.classList.remove('filled', 'analyzing');
     delete slot.dataset.productId;
     img.src = '';
     nameEl.textContent = '';
+    if (qtyValue) qtyValue.textContent = '1';
 }
 
 async function analyzeProduct(productId) {
@@ -453,17 +473,28 @@ function saveProductEdit() {
 // ============================================
 function generatePrompt() {
     const productCount = state.products.length;
+    const totalUnits = state.products.reduce((sum, p) => sum + (p.quantity || 1), 0);
+    const hasMultipleQuantities = state.products.some(p => (p.quantity || 1) > 1);
+
     const productDescriptions = state.products
-        .map((p, i) => `${i + 1}. ${p.name}${p.description ? ': ' + p.description : ''}`)
+        .map((p, i) => {
+            const qty = p.quantity || 1;
+            const qtyText = qty > 1 ? ` (×${qty} units)` : '';
+            return `${i + 1}. ${p.name}${qtyText}${p.description ? ': ' + p.description : ''}`;
+        })
         .join('\n');
 
     // Get quality level (default to 'high' if not set)
     const qualityLevel = state.qualityLevel || 'high';
     const qualityDesc = qualityDescriptions[qualityLevel] || qualityDescriptions.high;
 
+    const bundleDesc = hasMultipleQuantities
+        ? `${totalUnits} total units (${productCount} unique products)`
+        : `${productCount} items`;
+
     let prompt = `Create a ${qualityDesc.toLowerCase()}
 
-TASK: Generate a product bundle image showing ${productCount} items arranged together as a cohesive set.
+TASK: Generate a product bundle image showing ${bundleDesc} arranged together as a cohesive set.${hasMultipleQuantities ? ' Some products appear multiple times as indicated.' : ''}
 
 CRITICAL: I am providing reference images of the actual products. Each product must appear EXACTLY as shown - same colors, labels, packaging, and details. Do NOT modify, reinterpret, or stylize any product.
 
@@ -1167,6 +1198,25 @@ function setupEventListeners() {
             const slot = btn.closest('.product-slot');
             const productId = parseInt(slot.dataset.productId, 10);
             if (productId) removeProduct(productId);
+        });
+    });
+
+    // Quantity controls
+    elements.productGrid.querySelectorAll('.qty-decrease').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const slot = btn.closest('.product-slot');
+            const productId = parseInt(slot.dataset.productId, 10);
+            if (productId) updateProductQuantity(productId, -1);
+        });
+    });
+
+    elements.productGrid.querySelectorAll('.qty-increase').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const slot = btn.closest('.product-slot');
+            const productId = parseInt(slot.dataset.productId, 10);
+            if (productId) updateProductQuantity(productId, 1);
         });
     });
 

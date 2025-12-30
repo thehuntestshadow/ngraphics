@@ -4,6 +4,16 @@ Feature ideas and future plans for NGRAPHICS. Not commitments, just possibilitie
 
 ---
 
+## Vision
+
+**For** e-commerce sellers, marketers, and small brands
+**Who** need professional product visuals but lack design resources or budget
+**NGRAPHICS** is an AI-powered studio that generates marketing-ready images in seconds
+**Unlike** hiring photographers or learning complex design tools
+**We** let anyone create infographics, model photos, and bundle shots with just a product image and a few clicks
+
+---
+
 ## Current State
 
 ### Completed Pages
