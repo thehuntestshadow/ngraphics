@@ -23,6 +23,9 @@ The application consists of multiple pages, each with its own JS file, sharing c
 | Infographics | `index.html`, `script.js` | Generate product infographics with features/callouts |
 | Model Studio | `models.html`, `models.js`, `models.css` | Generate AI model photos wearing/holding products |
 | Bundle Studio | `bundle.html`, `bundle.js`, `bundle.css` | Create bundle/kit images from multiple products |
+| Lifestyle Studio | `lifestyle.html`, `lifestyle.js`, `lifestyle.css` | Product photography in lifestyle environments (no overlays) |
+| Copywriter | `copywriter.html`, `copywriter.js`, `copywriter.css` | AI-powered marketing copy generator from product images |
+| Packaging Mockup | `packaging.html`, `packaging.js`, `packaging.css` | Product packaging visualization (boxes, bottles, bags, etc.) |
 | Dashboard | `dashboard.html`, `dashboard.js`, `dashboard.css` | Analytics, storage management, quick access to recent work |
 | Documentation | `docs.html`, `docs.css` | User documentation |
 
@@ -40,6 +43,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `DESIGN.md` - **Design system** (colors, spacing, components, patterns) - consult for UI/UX consistency
 - `PROMPTS.md` - **Prompt engineering patterns** - how to write effective AI image generation prompts
 - `ROADMAP.md` - **Feature ideas & plans** - future directions and parking lot for ideas
+- `UI_PATTERNS.md` - **HTML/CSS patterns** - copy-paste reference for consistent UI across pages (buttons, sections, icons)
 
 ## API Integration
 
@@ -178,6 +182,11 @@ Generate AI model photos with products (person wearing/holding product).
 **Product Enhancement:**
 - Focus: Auto, Texture, Shine, Color Accuracy, Detail, In Context
 
+**Style Reference:**
+- Upload reference image to match visual style
+- Style Influence Slider: 10-100% control
+- Saved with favorites for consistent branding
+
 **Generation Settings:**
 - Seed control for reproducible generations
 - Negative prompts to specify what to avoid
@@ -186,6 +195,12 @@ Generate AI model photos with products (person wearing/holding product).
 - Generate multi-angle product collages (2, 3, 4, or 6 angles)
 - Face toggle: Show model face or product-only focus
 - Variations: 1, 2, or 4 images
+
+### Smart Features
+- **Copy Prompt**: Copy the generated prompt to clipboard
+- **Compare Slider**: Side-by-side comparison of generated variations
+- **Image Info Overlay**: View seed, model, style details on hover
+- **Dynamic Loading Status**: Contextual progress messages during generation
 
 ### Favorites
 - Save generations with all settings and seed for style reuse
@@ -244,10 +259,189 @@ Create professional bundle/kit images from multiple individual product photos.
 - Seed control for reproducible results
 - Negative prompts
 
+### Smart Features
+- **Copy Prompt**: Copy the generated prompt to clipboard
+- **Dynamic Loading Status**: Contextual progress messages during generation
+
 ### Favorites & History
 - Save bundle with all settings, product references, and seed
 - Load favorite to restore settings, upload new products, regenerate
 - History and favorites displayed in right panel with grid view
+
+---
+
+## Lifestyle Studio (`lifestyle.html` + `lifestyle.js` + `lifestyle.css`)
+
+Pure product photography in lifestyle environments - no infographic overlays.
+
+### Structure
+- `state` object: Scene, mood, time of day, lighting, camera settings
+- `elements` object: Cached DOM references
+- Description maps: Scene, mood, time, lighting, style descriptions for prompts
+
+### Key Differences from Infographics "In Context"
+- **Output**: Pure photography (no text, icons, or callouts)
+- **Controls**: Rich scene, mood, lighting, and seasonal options
+- **Use Case**: Catalog/lookbook imagery vs marketing graphics
+
+### Scene Types (10 options)
+- Living Room, Kitchen, Bedroom, Office, Outdoor
+- Café, Beach, Gym, Garden, Urban
+
+### Mood Options (8)
+- Cozy, Energetic, Calm, Luxurious, Minimal, Vibrant, Romantic, Fresh
+
+### Time of Day (5)
+- Morning, Midday, Golden Hour, Evening, Night
+
+### Advanced Options
+- **Season**: Auto, Spring, Summer, Fall, Winter, Holiday
+- **Lighting**: Natural, Warm, Cool, Dramatic, Soft, Bright, Backlit
+- **Shot Type**: Wide, Medium, Close-up, Detail
+- **Camera Angle**: Eye Level, Low, High, Overhead
+- **Style**: Lifestyle, Editorial, Commercial, Candid, Artistic
+- **Aspect Ratio**: 1:1, 4:5, 3:4, 2:3, 16:9, 9:16
+- **Quality**: Standard, High, Ultra
+- **Depth of Field**: Auto, Shallow, Medium, Deep
+- **Color Grading**: Auto, Warm, Cool, Vibrant, Muted
+- **Style Reference**: Upload reference image to match visual style (10-100% influence)
+- **Seed & Negative Prompt**: For reproducibility and control
+- **Variations**: 1, 2, or 4 images
+
+### Smart Features
+- **Auto-Analyze**: AI suggests best scene, mood, and time based on product
+- **Compare Slider**: Side-by-side comparison of generated variations
+- **Image Info Overlay**: View seed, model, scene, mood details on hover
+- **Dynamic Loading Status**: Contextual progress messages during generation
+- **Copy Prompt**: Copy the generated prompt to clipboard
+
+### Favorites & History
+- Storage keys: `lifestyle_studio_history`, `lifestyle_studio_favorites`
+- Save generations with all settings and seed for style reuse
+- Load favorite settings, upload new product, regenerate in same style
+
+---
+
+## Copywriter (`copywriter.html` + `copywriter.js` + `copywriter.css`)
+
+AI-powered marketing copy generator that creates comprehensive SEO-optimized content from product images.
+
+### Structure
+- `state` object: Product images, features, benefits, tone, language, generated copy
+- `elements` object: Cached DOM references
+- `toneDescriptions`: Maps tone values to detailed prompt descriptions
+
+### Key Functions
+- `analyzeProductImages()`: AI analysis to auto-fill product title, features, and benefits
+- `buildCopyPrompt()`: Constructs comprehensive marketing copy generation prompt
+- `generateCopy()`: Generates all marketing copy via `api.generateText()`
+- `copyField()`, `copySection()`, `copyEverything()`: Copy functionality for individual fields or all content
+
+### Features
+- **Multi-image Upload**: Up to 4 product images with thumbnail previews
+- **Auto-Analysis**: AI automatically extracts product title, category, features, and benefits
+- **Feature Management**: Add/remove features, star primary features for emphasis
+- **Benefits Section**: Separate from features - customer value propositions
+- **Tone Selection**: Professional, Casual, Enthusiastic, or Luxury tone options
+- **Bilingual**: English and Romanian with proper diacritics support
+
+### Generated Content Structure
+
+**E-commerce Tab:**
+- Product Title (SEO-optimized, ~80 chars)
+- Short Description (1-2 sentences, ~50 words)
+- Long Description (100-200 words)
+- Feature Bullets (5-7 items)
+- Benefits List (3-5 items)
+
+**SEO Tab:**
+- Meta Title (<60 chars with character count)
+- Meta Description (<160 chars with character count)
+- Focus Keywords (5-10 tags)
+- Alt Text (~125 chars)
+
+**Social Media Tab:**
+- Instagram caption (with emojis/hashtags if enabled)
+- Facebook post (conversational with CTA)
+- Twitter/X post (<280 chars with character count)
+
+**Extras Tab:**
+- 3 Tagline options
+- 3 Email subject line options
+
+### Copy Options
+- Individual field copy buttons
+- "Copy All [Section]" for each tab
+- "Copy Everything" for all content formatted as text
+
+### History & Favorites
+- Storage keys: `copywriter_history`, `copywriter_favorites`
+- Save generations with all settings
+- Load favorites to restore settings and regenerate
+
+---
+
+## Packaging Mockup (`packaging.html` + `packaging.js` + `packaging.css`)
+
+Visualize products in professional packaging designs - boxes, bottles, bags, and more.
+
+### Structure
+- `state` object: Packaging type, materials, scene, branding options
+- `elements` object: Cached DOM references
+- Description maps: Detailed prompt text for each packaging option
+
+### Key Functions
+- `generatePrompt()`: Builds packaging mockup prompt from all settings
+- `generateMockup()`: Makes API call for packaging visualization
+- `generateWithAdjustment()`: Regenerate with user feedback
+- `analyzeProduct()`: Auto-detect product name from image
+
+### Packaging Types
+| Type | Description |
+|------|-------------|
+| Box | Product boxes, shipping boxes, gift boxes, mailer boxes |
+| Bottle | Cylinder, square, dropper, pump, spray bottles |
+| Bag | Shopping bags, gift bags |
+| Pouch | Stand-up pouches |
+| Jar | Glass/plastic jars with lids |
+| Tube | Cosmetic tubes |
+| Can | Tin cans |
+| Label | Product labels only |
+
+### Box Options
+- **Type**: Product box, shipping, gift, display, mailer, sleeve
+- **Material**: Cardboard, kraft, glossy, matte, textured, luxury rigid
+
+### Bottle Options
+- **Shape**: Cylinder, square, dropper, pump, spray, wine-style
+- **Material**: Clear/amber/frosted glass, clear/opaque plastic, metal
+
+### Scene Settings
+- **Studio**: Clean professional backdrop
+- **Retail Shelf**: Store shelf with other products
+- **Unboxing**: Unboxing scene with tissue paper
+- **Lifestyle**: Home/office environment
+- **Gift**: Gift-giving scene with ribbon
+- **Flat Lay**: Top-down arrangement with props
+
+### View Angles
+- Front, 3/4 View, Side, Top Down, Isometric
+
+### Branding Options
+- **Color Scheme**: Match product, minimal white, kraft, black, pastels, vibrant, custom
+- **Design Style**: Modern, luxury, organic, playful, vintage, tech
+
+### Advanced Options
+- Lighting: Studio, natural, soft, dramatic, bright
+- Background: White, gradient, surface, contextual, transparent
+- Seed control for reproducibility
+- Negative prompts
+- 1, 2, or 4 variations
+
+### History & Favorites
+- Storage keys: `packaging_history`, `packaging_favorites`
+- Save mockups with all settings and seed
+- Load favorites to restore settings and regenerate with new products
 
 ---
 
@@ -299,7 +493,7 @@ All pages support saving generations as favorites for style reuse:
 - Supports multiple variants: when generating 2-4 variations, all are saved together
 - Load favorite to restore settings, then upload new product to regenerate in same style
 - Storage: Thumbnails in localStorage, full images in IndexedDB (hybrid approach)
-- Storage keys: `ngraphics_favorites` (Infographics), `model_studio_favorites` (Model Studio), `bundle_studio_favorites` (Bundle Studio)
+- Storage keys: `ngraphics_favorites` (Infographics), `model_studio_favorites` (Model Studio), `bundle_studio_favorites` (Bundle Studio), `lifestyle_studio_favorites` (Lifestyle Studio), `copywriter_favorites` (Copywriter), `packaging_favorites` (Packaging Mockup)
 
 ---
 
@@ -336,7 +530,7 @@ Common functionality used across all pages.
 
 - **SharedTheme**: `init()`, `apply(theme)`, `toggle()`, `setupToggle(buttonEl)` - Theme management across all pages
 - **SharedHeader**: `render(options)` - Renders consistent header across all pages
-  - Options: `currentPage` (infographics|dashboard|models|bundles|docs), `showApiStatus`, `showLanguageToggle`
+  - Options: `currentPage` (infographics|dashboard|models|bundles|lifestyle|docs), `showApiStatus`, `showLanguageToggle`
   - Centralizes all nav icons and page configurations
   - Auto-excludes current page from navigation links
 - **SharedDashboard**: Cross-studio data aggregation for dashboard

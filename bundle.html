@@ -52,7 +52,7 @@
                 <form id="bundleForm" class="config-form">
                     <!-- Products Upload -->
                     <div class="config-section">
-                        <div class="section-label">
+                        <div class="section-label" data-tooltip="Upload 2-6 product images to include in the bundle. Drag to reorder.">
                             <span class="label-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="3" width="7" height="7"/>
@@ -94,9 +94,9 @@
                                     </div>
                                 </div>
                                 <div class="product-slot-quantity" data-tooltip="Number of units to show in the bundle">
-                                    <button type="button" class="qty-decrease" title="Decrease">−</button>
+                                    <button type="button" class="qty-decrease">−</button>
                                     <span class="qty-value">1</span>
-                                    <button type="button" class="qty-increase" title="Increase">+</button>
+                                    <button type="button" class="qty-increase">+</button>
                                 </div>
                                 <div class="product-slot-loading">
                                     <div class="spinner-small"></div>
@@ -131,9 +131,9 @@
                                     </div>
                                 </div>
                                 <div class="product-slot-quantity" data-tooltip="Number of units to show in the bundle">
-                                    <button type="button" class="qty-decrease" title="Decrease">−</button>
+                                    <button type="button" class="qty-decrease">−</button>
                                     <span class="qty-value">1</span>
-                                    <button type="button" class="qty-increase" title="Increase">+</button>
+                                    <button type="button" class="qty-increase">+</button>
                                 </div>
                                 <div class="product-slot-loading">
                                     <div class="spinner-small"></div>
@@ -168,9 +168,9 @@
                                     </div>
                                 </div>
                                 <div class="product-slot-quantity" data-tooltip="Number of units to show in the bundle">
-                                    <button type="button" class="qty-decrease" title="Decrease">−</button>
+                                    <button type="button" class="qty-decrease">−</button>
                                     <span class="qty-value">1</span>
-                                    <button type="button" class="qty-increase" title="Increase">+</button>
+                                    <button type="button" class="qty-increase">+</button>
                                 </div>
                                 <div class="product-slot-loading">
                                     <div class="spinner-small"></div>
@@ -205,9 +205,9 @@
                                     </div>
                                 </div>
                                 <div class="product-slot-quantity" data-tooltip="Number of units to show in the bundle">
-                                    <button type="button" class="qty-decrease" title="Decrease">−</button>
+                                    <button type="button" class="qty-decrease">−</button>
                                     <span class="qty-value">1</span>
-                                    <button type="button" class="qty-increase" title="Increase">+</button>
+                                    <button type="button" class="qty-increase">+</button>
                                 </div>
                                 <div class="product-slot-loading">
                                     <div class="spinner-small"></div>
@@ -242,9 +242,9 @@
                                     </div>
                                 </div>
                                 <div class="product-slot-quantity" data-tooltip="Number of units to show in the bundle">
-                                    <button type="button" class="qty-decrease" title="Decrease">−</button>
+                                    <button type="button" class="qty-decrease">−</button>
                                     <span class="qty-value">1</span>
-                                    <button type="button" class="qty-increase" title="Increase">+</button>
+                                    <button type="button" class="qty-increase">+</button>
                                 </div>
                                 <div class="product-slot-loading">
                                     <div class="spinner-small"></div>
@@ -279,9 +279,9 @@
                                     </div>
                                 </div>
                                 <div class="product-slot-quantity" data-tooltip="Number of units to show in the bundle">
-                                    <button type="button" class="qty-decrease" title="Decrease">−</button>
+                                    <button type="button" class="qty-decrease">−</button>
                                     <span class="qty-value">1</span>
-                                    <button type="button" class="qty-increase" title="Increase">+</button>
+                                    <button type="button" class="qty-increase">+</button>
                                 </div>
                                 <div class="product-slot-loading">
                                     <div class="spinner-small"></div>
@@ -293,7 +293,7 @@
 
                     <!-- Layout Style -->
                     <div class="config-section">
-                        <div class="section-label">
+                        <div class="section-label" data-tooltip="How products are arranged in the image. Flat Lay is top-down, Hero highlights one product.">
                             <span class="label-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -381,7 +381,7 @@
 
                     <!-- Presentation -->
                     <div class="config-section">
-                        <div class="section-label">
+                        <div class="section-label" data-tooltip="Optional packaging or container for the products.">
                             <span class="label-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
@@ -409,7 +409,7 @@
 
                     <!-- Background -->
                     <div class="config-section">
-                        <div class="section-label">
+                        <div class="section-label" data-tooltip="Background style and surface the products sit on.">
                             <span class="label-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -622,12 +622,12 @@
                 </form>
             </section>
 
-            <!-- Right Panel: Result -->
-            <section class="panel panel-result">
+            <!-- Right Panel: Output -->
+            <section class="panel panel-output">
                 <div class="panel-header">
                     <h2 class="panel-title">
                         <span class="title-number">02</span>
-                        Result
+                        Output
                     </h2>
                     <div class="result-actions" id="resultActions" style="display: none;">
                         <button class="btn-action" id="favoriteBtn" title="Save to favorites">
@@ -640,6 +640,12 @@
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                                 <polyline points="7 10 12 15 17 10"/>
                                 <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </button>
+                        <button class="btn-action" id="copyPromptBtn" title="Copy prompt">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
                             </svg>
                         </button>
                         <button class="btn-action" id="compareBtn" title="Compare variations" style="display: none;">
@@ -845,5 +851,16 @@
     <script src="components.js"></script>
     <script src="workers.js"></script>
     <script src="bundle.js"></script>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <span>NGRAPHICS</span>
+            <span class="footer-divider">•</span>
+            <span>Powered by OpenRouter AI</span>
+            <span class="footer-divider">•</span>
+            <span class="footer-shortcut"><kbd>Ctrl</kbd>+<kbd>D</kbd> Download</span>
+        </div>
+    </footer>
 </body>
 </html>

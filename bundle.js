@@ -179,6 +179,7 @@ function initElements() {
         copySeedBtn: document.getElementById('copySeedBtn'),
         favoriteBtn: document.getElementById('favoriteBtn'),
         downloadBtn: document.getElementById('downloadBtn'),
+        copyPromptBtn: document.getElementById('copyPromptBtn'),
         compareBtn: document.getElementById('compareBtn'),
         imageInfoBtn: document.getElementById('imageInfoBtn'),
         imageInfoOverlay: document.getElementById('imageInfoOverlay'),
@@ -1338,6 +1339,28 @@ function setupEventListeners() {
         }
     });
 
+    // Copy Prompt
+    if (elements.copyPromptBtn) {
+        elements.copyPromptBtn.addEventListener('click', () => {
+            if (state.lastPrompt) {
+                navigator.clipboard.writeText(state.lastPrompt).then(() => {
+                    const btn = elements.copyPromptBtn;
+                    const originalHTML = btn.innerHTML;
+                    btn.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    `;
+                    btn.title = 'Copied!';
+                    setTimeout(() => {
+                        btn.innerHTML = originalHTML;
+                        btn.title = 'Copy prompt';
+                    }, 2000);
+                });
+            }
+        });
+    }
+
     // Compare button
     if (elements.compareBtn) {
         elements.compareBtn.addEventListener('click', () => {
@@ -1597,7 +1620,6 @@ function init() {
 
     initElements();
     SharedTheme.init();
-    SharedTooltips.init();
 
     // Load API key
     const savedKey = SharedAPI.getKey();

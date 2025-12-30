@@ -53,7 +53,9 @@ const state = {
     // Favorites
     selectedFavorite: null,
     selectedFavoriteImages: null,
-    lastSeed: null
+    lastSeed: null,
+    // Style reference
+    styleReferenceBase64: null
 };
 
 // Favorites instance
@@ -140,6 +142,7 @@ function initElements() {
         resultImage: document.getElementById('resultImage'),
         resultGrid: document.getElementById('resultGrid'),
         downloadBtn: document.getElementById('downloadBtn'),
+        copyPromptBtn: document.getElementById('copyPromptBtn'),
         regenerateBtn: document.getElementById('regenerateBtn'),
         compareBtn: document.getElementById('compareBtn'),
         feedbackTextarea: document.getElementById('feedbackTextarea'),
@@ -176,6 +179,16 @@ function initElements() {
         lightboxImage: document.getElementById('lightboxImage'),
         lightboxClose: document.getElementById('lightboxClose'),
         lightboxDownload: document.getElementById('lightboxDownload'),
+
+        // Style Reference
+        styleUploadArea: document.getElementById('styleUploadArea'),
+        styleReference: document.getElementById('styleReference'),
+        stylePreviewContainer: document.getElementById('stylePreviewContainer'),
+        stylePreviewImg: document.getElementById('stylePreviewImg'),
+        removeStyleRef: document.getElementById('removeStyleRef'),
+        styleStrengthSlider: document.getElementById('styleStrengthSlider'),
+        styleStrength: document.getElementById('styleStrength'),
+        styleStrengthValue: document.getElementById('styleStrengthValue'),
 
         // API Status
         apiStatus: document.getElementById('apiStatus')
@@ -803,6 +816,17 @@ I am providing a reference image of the actual product. CRITICAL requirements:
 ${negativePromptText}`;
     }
 
+    // Add style reference if provided
+    if (state.styleReferenceBase64) {
+        const styleStrength = parseInt(elements.styleStrength?.value || 70);
+        const strengthText = styleStrength < 40 ? 'subtle inspiration from' :
+                            styleStrength < 70 ? 'moderately match' :
+                            'strongly match';
+        prompt += `\n\nSTYLE REFERENCE:
+I am providing a style reference image. Please ${strengthText} the visual style, color palette, lighting style, and overall mood of the reference image.
+Style influence: ${styleStrength}%`;
+    }
+
     return prompt;
 }
 
@@ -840,11 +864,16 @@ async function generateModelPhoto() {
         updateLoadingStatus('Connecting to AI...');
 
         let messageContent;
-        if (state.uploadedImageBase64) {
+        if (state.uploadedImageBase64 || state.styleReferenceBase64) {
             messageContent = [
-                { type: 'text', text: prompt },
-                { type: 'image_url', image_url: { url: state.uploadedImageBase64 } }
+                { type: 'text', text: prompt }
             ];
+            if (state.uploadedImageBase64) {
+                messageContent.push({ type: 'image_url', image_url: { url: state.uploadedImageBase64 } });
+            }
+            if (state.styleReferenceBase64) {
+                messageContent.push({ type: 'image_url', image_url: { url: state.styleReferenceBase64 } });
+            }
         } else {
             messageContent = prompt;
         }
@@ -1175,6 +1204,7 @@ async function saveFavorite() {
             seed: state.lastSeed,
             prompt: state.lastPrompt,
             productImageBase64: state.uploadedImageBase64,
+            styleReferenceBase64: state.styleReferenceBase64,
             settings
         });
 
@@ -1434,6 +1464,17 @@ function loadFavorite() {
         }
     }
 
+    // Restore style reference if available
+    if (fav.styleReferenceBase64) {
+        state.styleReferenceBase64 = fav.styleReferenceBase64;
+        elements.stylePreviewImg.src = fav.styleReferenceBase64;
+        elements.styleUploadArea.style.display = 'none';
+        elements.stylePreviewContainer.style.display = 'inline-block';
+        if (elements.styleStrengthSlider) {
+            elements.styleStrengthSlider.style.display = 'block';
+        }
+    }
+
     // Restore seed
     if (fav.seed) {
         state.lastSeed = fav.seed;
@@ -1521,6 +1562,28 @@ function downloadImage() {
 function downloadFromLightbox() {
     if (!elements.lightboxImage.src) return;
     SharedDownload.downloadImage(elements.lightboxImage.src, 'model-photo');
+}
+
+// ============================================
+// STYLE REFERENCE
+// ============================================
+function handleStyleReferenceUpload(file) {
+    if (!file.type.startsWith('image/')) {
+        showError('Please upload an image file');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        state.styleReferenceBase64 = e.target.result;
+        elements.stylePreviewImg.src = e.target.result;
+        elements.styleUploadArea.style.display = 'none';
+        elements.stylePreviewContainer.style.display = 'inline-block';
+        if (elements.styleStrengthSlider) {
+            elements.styleStrengthSlider.style.display = 'block';
+        }
+    };
+    reader.readAsDataURL(file);
 }
 
 // ============================================
@@ -1704,6 +1767,27 @@ function setupEventListeners() {
     // Download
     elements.downloadBtn?.addEventListener('click', downloadImage);
 
+    // Copy Prompt
+    elements.copyPromptBtn?.addEventListener('click', () => {
+        if (state.lastPrompt) {
+            navigator.clipboard.writeText(state.lastPrompt).then(() => {
+                const btn = elements.copyPromptBtn;
+                btn.classList.add('copied');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Copied!
+                `;
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = originalHTML;
+                }, 2000);
+            });
+        }
+    });
+
     // Regenerate
     elements.regenerateBtn?.addEventListener('click', generateModelPhoto);
 
@@ -1759,6 +1843,33 @@ function setupEventListeners() {
     });
 
     elements.lightboxDownload?.addEventListener('click', downloadFromLightbox);
+
+    // Style Reference upload
+    elements.styleUploadArea?.addEventListener('click', () => {
+        elements.styleReference?.click();
+    });
+
+    elements.styleReference?.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleStyleReferenceUpload(e.target.files[0]);
+        }
+    });
+
+    elements.removeStyleRef?.addEventListener('click', () => {
+        state.styleReferenceBase64 = null;
+        elements.styleReference.value = '';
+        elements.styleUploadArea.style.display = 'block';
+        elements.stylePreviewContainer.style.display = 'none';
+        if (elements.styleStrengthSlider) {
+            elements.styleStrengthSlider.style.display = 'none';
+        }
+    });
+
+    elements.styleStrength?.addEventListener('input', (e) => {
+        if (elements.styleStrengthValue) {
+            elements.styleStrengthValue.textContent = `${e.target.value}%`;
+        }
+    });
 
     // Image info toggle
     const imageInfoBtn = document.getElementById('imageInfoBtn');
@@ -2004,7 +2115,6 @@ function init() {
 
     initElements();
     SharedTheme.init();
-    SharedTooltips.init();
     loadApiKey();
     setupImageUpload();
     setupEventListeners();

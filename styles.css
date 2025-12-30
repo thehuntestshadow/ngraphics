@@ -1456,45 +1456,83 @@ kbd {
 }
 
 .advanced-toggle {
-    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px;
-    font-family: var(--font-display);
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--text-secondary);
-    background: var(--bg-surface);
-    border: none;
     cursor: pointer;
     transition: all var(--duration-fast);
+    box-sizing: border-box;
 }
 
 .advanced-toggle:hover {
-    color: var(--text-primary);
-    background: var(--bg-hover);
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--bg-elevated);
 }
 
-.toggle-icon {
+.advanced-section.open .advanced-toggle {
+    color: var(--accent);
+    border-color: var(--accent);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-color: transparent;
+}
+
+.advanced-toggle .toggle-icon {
     width: 18px;
     height: 18px;
-    transition: transform var(--duration-normal) var(--ease-out);
+    opacity: 0.7;
+    flex-shrink: 0;
 }
 
-.advanced-section.open .toggle-icon {
+.advanced-toggle:hover .toggle-icon,
+.advanced-section.open .advanced-toggle .toggle-icon {
+    opacity: 1;
+}
+
+.advanced-toggle span {
+    flex: 1;
+    text-align: left;
+}
+
+.advanced-toggle .toggle-chevron {
+    width: 16px;
+    height: 16px;
+    transition: transform var(--duration-fast);
+    opacity: 0.6;
+    flex-shrink: 0;
+}
+
+.advanced-toggle:hover .toggle-chevron {
+    opacity: 1;
+}
+
+.advanced-section.open .advanced-toggle .toggle-chevron {
     transform: rotate(180deg);
+    opacity: 1;
 }
 
 .advanced-content {
     display: none;
+    flex-direction: column;
+    gap: 12px;
     padding: 16px;
-    background: var(--bg-elevated);
-    border-top: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+    border: 1px solid var(--accent);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
 }
 
 .advanced-section.open .advanced-content {
-    display: block;
+    display: flex;
 }
 
 /* Nested advanced section */

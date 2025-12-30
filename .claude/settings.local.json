@@ -7,6 +7,9 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Skill(frontend-design)",
+      "Skill(new-studio)",
+      "Skill(audit)",
+      "Skill(update-docs)",
       "Bash(grep:*)",
       "Bash(wc:*)",
       "Bash( comm -23 /tmp/models_js_ids.txt /tmp/models_html_ids.txt)",
@@ -17,7 +20,8 @@
       "Bash(ls:*)",
       "Bash(git push)",
       "Bash(gh repo create:*)",
-      "Bash(gh auth status:*)"
+      "Bash(gh auth status:*)",
+      "Bash(done)"
     ]
   }
 }

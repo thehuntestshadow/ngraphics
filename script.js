@@ -5087,9 +5087,6 @@ function init() {
     // Initialize cost estimator
     initCostEstimator();
 
-    // Initialize tooltips
-    SharedTooltips.init();
-
     // Initialize quick start templates
     initTemplateSelector();
 

@@ -83,6 +83,26 @@
                             <li><a href="#model-shots">Shot Types & Scenes</a></li>
                             <li><a href="#model-quality">Quality Enhancements</a></li>
                             <li><a href="#model-collage">Collage Mode</a></li>
+                            <li><a href="#model-style-ref">Style Reference</a></li>
+                        </ul>
+                    </div>
+                    <div class="nav-section">
+                        <h3 class="nav-title">Bundle Studio</h3>
+                        <ul class="nav-list">
+                            <li><a href="#bundle-studio">Overview</a></li>
+                            <li><a href="#bundle-products">Adding Products</a></li>
+                            <li><a href="#bundle-layouts">Layout Styles</a></li>
+                            <li><a href="#bundle-presentation">Presentation Options</a></li>
+                        </ul>
+                    </div>
+                    <div class="nav-section">
+                        <h3 class="nav-title">Lifestyle Studio</h3>
+                        <ul class="nav-list">
+                            <li><a href="#lifestyle-studio">Overview</a></li>
+                            <li><a href="#lifestyle-scenes">Scene Selection</a></li>
+                            <li><a href="#lifestyle-atmosphere">Mood & Atmosphere</a></li>
+                            <li><a href="#lifestyle-advanced">Advanced Options</a></li>
+                            <li><a href="#lifestyle-style-ref">Style Reference</a></li>
                         </ul>
                     </div>
                     <div class="nav-section">
@@ -1319,10 +1339,366 @@
                     </div>
                 </section>
 
+                <!-- Model Studio Style Reference -->
+                <section id="model-style-ref" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">29</span>
+                        <h1>Style Reference (Model Studio)</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Upload a reference image to match its visual style, color palette, and mood in your generated model photos.</p>
+
+                        <h2>How to Use</h2>
+                        <ol class="numbered-list">
+                            <li>In Advanced Options, find "Style Reference"</li>
+                            <li>Click to upload a reference image (JPEG, PNG, WebP)</li>
+                            <li>Adjust the Style Influence slider (10-100%)</li>
+                            <li>Generate your model photo</li>
+                        </ol>
+
+                        <h2>Style Influence Levels</h2>
+                        <table class="docs-table">
+                            <thead>
+                                <tr><th>Level</th><th>Effect</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>10-40% (Subtle)</strong></td><td>Light inspiration from the reference style</td></tr>
+                                <tr><td><strong>40-70% (Moderate)</strong></td><td>Balanced blend of reference and prompt</td></tr>
+                                <tr><td><strong>70-100% (Strong)</strong></td><td>Closely match the reference aesthetic</td></tr>
+                            </tbody>
+                        </table>
+
+                        <h2>What Gets Matched</h2>
+                        <ul class="bullet-list">
+                            <li>Color palette and tones</li>
+                            <li>Lighting style and mood</li>
+                            <li>Overall composition feel</li>
+                            <li>Visual aesthetic and grading</li>
+                        </ul>
+
+                        <div class="callout callout-tip">
+                            <div class="callout-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </div>
+                            <div class="callout-content">
+                                <h4>Pro Tip</h4>
+                                <p>Save favorites with style references to maintain consistent branding across your product line. The style reference is preserved and reloaded with your favorite settings.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Bundle Studio Overview -->
+                <section id="bundle-studio" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">30</span>
+                        <h1>Bundle Studio</h1>
+                    </div>
+                    <div class="section-body">
+                        <p class="lead">Bundle Studio creates professional product bundle and kit images from multiple individual product photos.</p>
+
+                        <h2>Quick Start</h2>
+                        <ol class="numbered-list">
+                            <li>Navigate to Bundle Studio from the header</li>
+                            <li>Upload 2-6 product images</li>
+                            <li>Choose a layout style</li>
+                            <li>Select presentation options</li>
+                            <li>Generate your bundle image</li>
+                        </ol>
+
+                        <h2>Use Cases</h2>
+                        <ul class="bullet-list">
+                            <li><strong>Product Kits:</strong> Skincare routines, starter kits</li>
+                            <li><strong>Gift Sets:</strong> Holiday bundles, subscription boxes</li>
+                            <li><strong>Collection Showcases:</strong> Product line overviews</li>
+                            <li><strong>Comparison Shots:</strong> Product variants side-by-side</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Bundle Products -->
+                <section id="bundle-products" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">31</span>
+                        <h1>Adding Products</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Upload and manage the products in your bundle.</p>
+
+                        <h2>Product Slots</h2>
+                        <ul class="bullet-list">
+                            <li>Minimum: 2 products</li>
+                            <li>Maximum: 6 products</li>
+                            <li>Click "Add Product" to add more slots</li>
+                            <li>Click the X to remove a product</li>
+                        </ul>
+
+                        <h2>Auto-Analysis</h2>
+                        <p>When you upload a product image, AI automatically:</p>
+                        <ul class="bullet-list">
+                            <li>Identifies the product type</li>
+                            <li>Generates a description</li>
+                            <li>You can edit these details manually</li>
+                        </ul>
+
+                        <h2>Product Order</h2>
+                        <p>Drag products to reorder them. Order matters for:</p>
+                        <ul class="bullet-list">
+                            <li><strong>Hero Layout:</strong> First product is the main focus</li>
+                            <li><strong>Numbered Layout:</strong> Products are numbered in order</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Bundle Layouts -->
+                <section id="bundle-layouts" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">32</span>
+                        <h1>Layout Styles</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Choose how your products are arranged in the bundle image.</p>
+
+                        <table class="docs-table">
+                            <thead>
+                                <tr><th>Layout</th><th>Description</th><th>Best For</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Flat Lay</strong></td><td>Top-down view, artfully scattered</td><td>Social media, lifestyle</td></tr>
+                                <tr><td><strong>Grouped</strong></td><td>Products clustered naturally</td><td>Gift sets, kits</td></tr>
+                                <tr><td><strong>Grid</strong></td><td>Clean rows and columns</td><td>E-commerce, catalogs</td></tr>
+                                <tr><td><strong>Hero</strong></td><td>One large, others smaller</td><td>Feature highlights</td></tr>
+                                <tr><td><strong>Unboxing</strong></td><td>Products in/around container</td><td>Subscription boxes</td></tr>
+                                <tr><td><strong>Numbered</strong></td><td>Products with sequence numbers</td><td>Step-by-step routines</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Bundle Presentation -->
+                <section id="bundle-presentation" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">33</span>
+                        <h1>Presentation Options</h1>
+                    </div>
+                    <div class="section-body">
+                        <h2>Container Options</h2>
+                        <ul class="bullet-list">
+                            <li><strong>None:</strong> Products arranged without container</li>
+                            <li><strong>Gift Box:</strong> Elegant gift packaging</li>
+                            <li><strong>Shipping Box:</strong> Unboxing experience</li>
+                            <li><strong>Pouch/Bag:</strong> Travel or sample bags</li>
+                            <li><strong>Tray:</strong> Display tray presentation</li>
+                            <li><strong>Basket:</strong> Rustic gift basket</li>
+                        </ul>
+
+                        <h2>Background Options</h2>
+                        <ul class="bullet-list">
+                            <li><strong>White/Clean:</strong> Pure white studio look</li>
+                            <li><strong>Soft Gradient:</strong> Subtle color transitions</li>
+                            <li><strong>Surface/Texture:</strong> Marble, wood, linen, concrete</li>
+                            <li><strong>Lifestyle Scene:</strong> Environmental context</li>
+                        </ul>
+
+                        <h2>Advanced Options</h2>
+                        <ul class="bullet-list">
+                            <li><strong>Bundle Title:</strong> Optional text overlay</li>
+                            <li><strong>Show Labels:</strong> Display product names</li>
+                            <li><strong>Show Numbering:</strong> Add sequence numbers</li>
+                            <li><strong>Visual Style:</strong> Commercial, Editorial, Lifestyle, Minimal, Luxury</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Lifestyle Studio Overview -->
+                <section id="lifestyle-studio" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">34</span>
+                        <h1>Lifestyle Studio</h1>
+                    </div>
+                    <div class="section-body">
+                        <p class="lead">Lifestyle Studio creates pure product photography in lifestyle environments - no infographic overlays, just catalog-quality imagery.</p>
+
+                        <h2>Quick Start</h2>
+                        <ol class="numbered-list">
+                            <li>Navigate to Lifestyle Studio from the header</li>
+                            <li>Upload your product photo</li>
+                            <li>Select a scene environment</li>
+                            <li>Choose mood and time of day</li>
+                            <li>Generate your lifestyle photo</li>
+                        </ol>
+
+                        <h2>Difference from Infographics "In Context"</h2>
+                        <table class="docs-table">
+                            <thead>
+                                <tr><th>Aspect</th><th>Infographics In Context</th><th>Lifestyle Studio</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Output</strong></td><td>Marketing graphic with callouts</td><td>Pure photography, no overlays</td></tr>
+                                <tr><td><strong>Controls</strong></td><td>Minimal context input</td><td>Rich scene, mood, lighting controls</td></tr>
+                                <tr><td><strong>Use Case</strong></td><td>Product feature showcase</td><td>Catalog/lookbook imagery</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Lifestyle Scenes -->
+                <section id="lifestyle-scenes" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">35</span>
+                        <h1>Scene Selection</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Choose from 10 carefully crafted scene environments:</p>
+
+                        <table class="docs-table">
+                            <thead>
+                                <tr><th>Scene</th><th>Description</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Living Room</strong></td><td>Cozy space with sofa, natural light, decor</td></tr>
+                                <tr><td><strong>Kitchen</strong></td><td>Modern kitchen with countertops, appliances</td></tr>
+                                <tr><td><strong>Bedroom</strong></td><td>Peaceful setting with bed, soft textiles</td></tr>
+                                <tr><td><strong>Office</strong></td><td>Professional workspace with clean lines</td></tr>
+                                <tr><td><strong>Outdoor</strong></td><td>Natural setting with greenery, fresh air</td></tr>
+                                <tr><td><strong>Café</strong></td><td>Coffee shop ambiance, social atmosphere</td></tr>
+                                <tr><td><strong>Beach</strong></td><td>Sandy beach, ocean, vacation vibes</td></tr>
+                                <tr><td><strong>Gym</strong></td><td>Fitness environment, energetic</td></tr>
+                                <tr><td><strong>Garden</strong></td><td>Backyard with flowers, tranquil</td></tr>
+                                <tr><td><strong>Urban</strong></td><td>City street, modern architecture</td></tr>
+                            </tbody>
+                        </table>
+
+                        <h2>Scene Details</h2>
+                        <p>Optionally add specific details to customize your scene:</p>
+                        <ul class="bullet-list">
+                            <li>"Near a window with plants"</li>
+                            <li>"On a wooden coffee table"</li>
+                            <li>"Next to a cup of coffee"</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Lifestyle Atmosphere -->
+                <section id="lifestyle-atmosphere" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">36</span>
+                        <h1>Mood & Atmosphere</h1>
+                    </div>
+                    <div class="section-body">
+                        <h2>Mood Options</h2>
+                        <table class="docs-table">
+                            <thead>
+                                <tr><th>Mood</th><th>Feel</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Cozy</strong></td><td>Warm, intimate, inviting</td></tr>
+                                <tr><td><strong>Energetic</strong></td><td>Dynamic, vibrant, active</td></tr>
+                                <tr><td><strong>Calm</strong></td><td>Peaceful, serene, zen</td></tr>
+                                <tr><td><strong>Luxurious</strong></td><td>Upscale, sophisticated</td></tr>
+                                <tr><td><strong>Minimal</strong></td><td>Clean, simple, modern</td></tr>
+                                <tr><td><strong>Vibrant</strong></td><td>Colorful, eye-catching</td></tr>
+                                <tr><td><strong>Romantic</strong></td><td>Soft, dreamy, warm tones</td></tr>
+                                <tr><td><strong>Fresh</strong></td><td>Clean, airy, bright</td></tr>
+                            </tbody>
+                        </table>
+
+                        <h2>Time of Day</h2>
+                        <table class="docs-table">
+                            <thead>
+                                <tr><th>Time</th><th>Lighting</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Morning</strong></td><td>Soft morning light, gentle warmth</td></tr>
+                                <tr><td><strong>Midday</strong></td><td>Bright natural light, clear</td></tr>
+                                <tr><td><strong>Golden Hour</strong></td><td>Warm golden sunlight, magical glow</td></tr>
+                                <tr><td><strong>Evening</strong></td><td>Warm ambient lighting, relaxed</td></tr>
+                                <tr><td><strong>Night</strong></td><td>Moody lighting, cozy ambiance</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Lifestyle Advanced -->
+                <section id="lifestyle-advanced" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">37</span>
+                        <h1>Advanced Options</h1>
+                    </div>
+                    <div class="section-body">
+                        <h2>Season & Theme</h2>
+                        <p>Add seasonal context: Auto, Spring, Summer, Fall, Winter, Holiday</p>
+
+                        <h2>Photography Controls</h2>
+                        <ul class="bullet-list">
+                            <li><strong>Lighting Style:</strong> Natural, Warm, Cool, Dramatic, Soft</li>
+                            <li><strong>Shot Type:</strong> Wide, Medium, Close-up, Detail</li>
+                            <li><strong>Camera Angle:</strong> Eye Level, Low, High</li>
+                            <li><strong>Photo Style:</strong> Lifestyle, Editorial, Commercial, Artistic</li>
+                        </ul>
+
+                        <h2>Quality Settings</h2>
+                        <ul class="bullet-list">
+                            <li><strong>Quality Level:</strong> Standard, High, Ultra</li>
+                            <li><strong>Depth of Field:</strong> Auto, Shallow, Medium, Deep</li>
+                            <li><strong>Color Grading:</strong> Auto, Warm, Cool, Vibrant, Muted</li>
+                        </ul>
+
+                        <h2>Auto-Analyze</h2>
+                        <p>When you upload a product, AI automatically suggests:</p>
+                        <ul class="bullet-list">
+                            <li>Best matching scene for your product</li>
+                            <li>Recommended mood setting</li>
+                            <li>Optimal time of day</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Lifestyle Style Reference -->
+                <section id="lifestyle-style-ref" class="docs-section">
+                    <div class="section-header">
+                        <span class="section-number">38</span>
+                        <h1>Style Reference (Lifestyle)</h1>
+                    </div>
+                    <div class="section-body">
+                        <p>Upload a reference image to match its visual aesthetic in your lifestyle photos.</p>
+
+                        <h2>How to Use</h2>
+                        <ol class="numbered-list">
+                            <li>In Advanced Options, find "Style Reference"</li>
+                            <li>Upload your reference image</li>
+                            <li>Adjust Style Influence (10-100%)</li>
+                            <li>Generate with your scene and mood settings</li>
+                        </ol>
+
+                        <h2>Best Practices</h2>
+                        <ul class="bullet-list">
+                            <li>Use professional photography as references</li>
+                            <li>Match reference style to your target platform</li>
+                            <li>Combine with mood settings for fine control</li>
+                            <li>Save favorites to maintain brand consistency</li>
+                        </ul>
+
+                        <div class="callout callout-tip">
+                            <div class="callout-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                            </div>
+                            <div class="callout-content">
+                                <h4>Pro Tip</h4>
+                                <p>Use your brand's existing photography as a style reference to ensure new AI-generated images match your established visual identity.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- General Tips -->
                 <section id="tips-general" class="docs-section">
                     <div class="section-header">
-                        <span class="section-number">29</span>
+                        <span class="section-number">39</span>
                         <h1>General Tips</h1>
                     </div>
                     <div class="section-body">
@@ -1358,7 +1734,7 @@
                 <!-- Writing Effective Prompts -->
                 <section id="tips-prompts" class="docs-section">
                     <div class="section-header">
-                        <span class="section-number">30</span>
+                        <span class="section-number">40</span>
                         <h1>Writing Effective Features</h1>
                     </div>
                     <div class="section-body">
@@ -1405,7 +1781,7 @@
                 <!-- Image Quality Tips -->
                 <section id="tips-images" class="docs-section">
                     <div class="section-header">
-                        <span class="section-number">31</span>
+                        <span class="section-number">41</span>
                         <h1>Image Quality Tips</h1>
                     </div>
                     <div class="section-body">
@@ -1440,7 +1816,7 @@
                 <!-- Platform-Specific Tips -->
                 <section id="tips-platforms" class="docs-section">
                     <div class="section-header">
-                        <span class="section-number">32</span>
+                        <span class="section-number">42</span>
                         <h1>Platform-Specific Tips</h1>
                     </div>
                     <div class="section-body">
@@ -1481,7 +1857,7 @@
                 <!-- Troubleshooting -->
                 <section id="troubleshooting" class="docs-section">
                     <div class="section-header">
-                        <span class="section-number">33</span>
+                        <span class="section-number">43</span>
                         <h1>Troubleshooting</h1>
                     </div>
                     <div class="section-body">

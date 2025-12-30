@@ -1,0 +1,317 @@
+/* ============================================
+   PACKAGING MOCKUP - Styles
+   ============================================ */
+
+/* Packaging Type Grid */
+.packaging-type-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.packaging-type-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.packaging-type-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.packaging-type-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+    color: var(--accent);
+}
+
+.packaging-type-btn .type-icon {
+    width: 28px;
+    height: 28px;
+}
+
+.packaging-type-btn .type-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.packaging-type-btn span {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Scene Grid */
+.scene-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.scene-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 10px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.scene-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.scene-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+    color: var(--accent);
+}
+
+.scene-btn .scene-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.scene-btn span:last-child {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Option Grid */
+.option-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.option-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.option-group-full {
+    grid-column: 1 / -1;
+}
+
+/* Option Buttons */
+.option-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.option-btn {
+    padding: 8px 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.option-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+}
+
+.option-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-deep);
+}
+
+/* Branding Options */
+.branding-options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Color Input */
+.color-input {
+    width: 100%;
+    height: 40px;
+    padding: 4px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+}
+
+.color-input::-webkit-color-swatch-wrapper {
+    padding: 2px;
+}
+
+.color-input::-webkit-color-swatch {
+    border-radius: var(--radius-sm);
+    border: none;
+}
+
+/* Seed Controls */
+.seed-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.seed-controls .checkbox-label {
+    flex-shrink: 0;
+}
+
+.seed-controls .input-field {
+    flex: 1;
+}
+
+/* Result Grid for variations */
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.result-grid:empty {
+    display: none;
+}
+
+.result-grid-item {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-default);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.result-grid-item:hover {
+    border-color: var(--accent);
+    transform: scale(1.02);
+}
+
+.result-grid-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.result-grid-item .grid-item-actions {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: flex;
+    gap: 6px;
+    opacity: 0;
+    transition: opacity var(--duration-fast);
+}
+
+.result-grid-item:hover .grid-item-actions {
+    opacity: 1;
+}
+
+.result-grid-item .grid-item-actions button {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--duration-fast);
+}
+
+.result-grid-item .grid-item-actions button:hover {
+    background: var(--accent);
+}
+
+.result-grid-item .grid-item-actions button svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Feedback Section */
+.feedback-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.feedback-section .btn-secondary {
+    align-self: flex-start;
+}
+
+/* Image Info Overlay */
+.image-info-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    color: white;
+    font-size: 0.8rem;
+    line-height: 1.6;
+}
+
+.image-info-overlay .info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.image-info-overlay .info-label {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.image-info-overlay .info-value {
+    font-family: var(--font-mono);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .packaging-type-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .packaging-type-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .scene-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .option-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .result-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -98,6 +98,19 @@ const SharedHeader = {
             <rect x="3" y="14" width="7" height="7" rx="1"/>
             <rect x="14" y="14" width="7" height="7" rx="1"/>
         </svg>`,
+        lifestyle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>`,
+        copywriter: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>`,
+        packaging: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+            <line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>`,
         docs: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
             <polyline points="14 2 14 8 20 8"/>
@@ -126,13 +139,16 @@ const SharedHeader = {
         dashboard: { href: 'dashboard.html', label: 'Dashboard', subtitle: 'Dashboard' },
         models: { href: 'models.html', label: 'Models', subtitle: 'Model Studio' },
         bundles: { href: 'bundle.html', label: 'Bundles', subtitle: 'Bundle Studio' },
+        lifestyle: { href: 'lifestyle.html', label: 'Lifestyle', subtitle: 'Lifestyle Studio' },
+        copywriter: { href: 'copywriter.html', label: 'Copywriter', subtitle: 'AI Copywriter' },
+        packaging: { href: 'packaging.html', label: 'Packaging', subtitle: 'Packaging Mockup' },
         docs: { href: 'docs.html', label: 'Docs', subtitle: 'Documentation' }
     },
 
     /**
      * Render header into the page
      * @param {Object} options
-     * @param {string} options.currentPage - Current page key (infographics, dashboard, models, bundles, docs)
+     * @param {string} options.currentPage - Current page key (infographics, dashboard, models, bundles, lifestyle, copywriter, packaging, docs)
      * @param {boolean} options.showApiStatus - Whether to show API status indicator
      * @param {boolean} options.showLanguageToggle - Whether to show language toggle (EN/RO)
      */
@@ -145,8 +161,8 @@ const SharedHeader = {
         const currentConfig = this.pages[currentPage] || this.pages.infographics;
         const isHome = currentPage === 'infographics';
 
-        // Navigation order: Dashboard, Infographics, Models, Bundles, Docs
-        const navOrder = ['dashboard', 'infographics', 'models', 'bundles', 'docs'];
+        // Navigation order: Dashboard, Infographics, Models, Bundles, Lifestyle, Copywriter, Packaging, Docs
+        const navOrder = ['dashboard', 'infographics', 'models', 'bundles', 'lifestyle', 'copywriter', 'packaging', 'docs'];
 
         // Build navigation links (exclude current page)
         const navLinks = navOrder

@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lifestyle Studio - NGRAPHICS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="lifestyle.css">
+</head>
+<body>
+    <!-- Noise overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Gradient orbs for atmosphere -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <!-- Header (rendered by SharedHeader) -->
+    <header class="site-header"></header>
+
+    <!-- Main Application -->
+    <main class="app-main">
+        <div class="app-grid">
+
+            <!-- Left Panel: Configuration -->
+            <section class="panel panel-config">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="title-number">01</span>
+                        Lifestyle Studio
+                    </h2>
+                    <p class="panel-description">Product photography in lifestyle environments</p>
+                </div>
+
+                <!-- Error/Success Messages -->
+                <div class="message message-error" id="errorMessage">
+                    <div class="message-icon">!</div>
+                    <div class="message-content">
+                        <span class="error-text"></span>
+                    </div>
+                </div>
+                <div class="message message-success" id="successMessage">
+                    <div class="message-icon">✓</div>
+                    <div class="message-content">Generated successfully</div>
+                </div>
+
+                <!-- Preset Selector -->
+                <div id="presetSelectorContainer"></div>
+
+                <form id="lifestyleForm" class="config-form">
+                    <!-- Product Upload -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Upload the product image to place in a lifestyle scene.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </span>
+                            Product Image
+                        </div>
+                        <div class="upload-zone" id="uploadArea">
+                            <div class="upload-content">
+                                <div class="upload-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                        <polyline points="17,8 12,3 7,8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                </div>
+                                <p class="upload-text">Drop image or click to upload</p>
+                                <p class="upload-formats">PNG, JPG, WebP • Max 10MB</p>
+                            </div>
+                            <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp">
+                        </div>
+                        <div class="image-preview" id="imagePreview" style="display: none;">
+                            <img id="previewImg" alt="Preview" class="preview-img">
+                            <button type="button" class="preview-remove" id="removeImage">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Scene Selection -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Environment where the product will be photographed. Each scene has its own atmosphere.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                                    <polyline points="9 22 9 12 15 12 15 22"/>
+                                </svg>
+                            </span>
+                            Scene
+                        </div>
+                        <div class="scene-grid">
+                            <button type="button" class="scene-btn active" data-scene="living-room">
+                                <span class="scene-icon">🛋️</span>
+                                <span>Living Room</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="kitchen">
+                                <span class="scene-icon">🍳</span>
+                                <span>Kitchen</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="bedroom">
+                                <span class="scene-icon">🛏️</span>
+                                <span>Bedroom</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="office">
+                                <span class="scene-icon">🏢</span>
+                                <span>Office</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="outdoor">
+                                <span class="scene-icon">🌳</span>
+                                <span>Outdoor</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="cafe">
+                                <span class="scene-icon">☕</span>
+                                <span>Café</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="beach">
+                                <span class="scene-icon">🏖️</span>
+                                <span>Beach</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="gym">
+                                <span class="scene-icon">🏋️</span>
+                                <span>Gym</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="garden">
+                                <span class="scene-icon">🌷</span>
+                                <span>Garden</span>
+                            </button>
+                            <button type="button" class="scene-btn" data-scene="urban">
+                                <span class="scene-icon">🌆</span>
+                                <span>Urban</span>
+                            </button>
+                        </div>
+
+                        <!-- Scene Details (optional) -->
+                        <div class="scene-details-section">
+                            <input type="text" class="input-field" id="sceneDetails"
+                                   placeholder="Optional: Describe specific details (e.g., marble countertop, cozy armchair)">
+                            <p class="scene-details-hint">Add custom details to personalize the scene</p>
+                        </div>
+                    </div>
+
+                    <!-- Mood & Atmosphere -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Overall feeling of the photo. Cozy is warm and inviting, Minimal is clean, Luxurious is upscale.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="5"/>
+                                    <line x1="12" y1="1" x2="12" y2="3"/>
+                                    <line x1="12" y1="21" x2="12" y2="23"/>
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                    <line x1="1" y1="12" x2="3" y2="12"/>
+                                    <line x1="21" y1="12" x2="23" y2="12"/>
+                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                                </svg>
+                            </span>
+                            Mood
+                        </div>
+                        <div class="mood-grid">
+                            <button type="button" class="mood-btn active" data-mood="cozy">Cozy</button>
+                            <button type="button" class="mood-btn" data-mood="energetic">Energetic</button>
+                            <button type="button" class="mood-btn" data-mood="calm">Calm</button>
+                            <button type="button" class="mood-btn" data-mood="luxurious">Luxurious</button>
+                            <button type="button" class="mood-btn" data-mood="minimal">Minimal</button>
+                            <button type="button" class="mood-btn" data-mood="vibrant">Vibrant</button>
+                            <button type="button" class="mood-btn" data-mood="romantic">Romantic</button>
+                            <button type="button" class="mood-btn" data-mood="fresh">Fresh</button>
+                        </div>
+                    </div>
+
+                    <!-- Time of Day -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Lighting based on time. Golden Hour gives warm tones, Morning is soft, Night is moody.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </span>
+                            Time of Day
+                        </div>
+                        <div class="time-grid">
+                            <button type="button" class="time-btn" data-time="morning">Morning</button>
+                            <button type="button" class="time-btn" data-time="midday">Midday</button>
+                            <button type="button" class="time-btn active" data-time="golden-hour">Golden Hour</button>
+                            <button type="button" class="time-btn" data-time="evening">Evening</button>
+                            <button type="button" class="time-btn" data-time="night">Night</button>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Options -->
+                    <div class="advanced-section" id="advancedSection">
+                        <button type="button" class="advanced-toggle" id="advancedToggle">
+                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="4" y1="21" x2="4" y2="14"/>
+                                <line x1="4" y1="10" x2="4" y2="3"/>
+                                <line x1="12" y1="21" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12" y2="3"/>
+                                <line x1="20" y1="21" x2="20" y2="16"/>
+                                <line x1="20" y1="12" x2="20" y2="3"/>
+                                <circle cx="4" cy="12" r="2"/>
+                                <circle cx="12" cy="10" r="2"/>
+                                <circle cx="20" cy="14" r="2"/>
+                            </svg>
+                            <span>Advanced Options</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="advanced-content">
+                            <!-- Season -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Seasonal theme. Auto matches the scene, Holiday adds festive elements.">Season</label>
+                                <select class="select-field select-sm" id="season">
+                                    <option value="auto" selected>Auto</option>
+                                    <option value="spring">Spring</option>
+                                    <option value="summer">Summer</option>
+                                    <option value="fall">Fall</option>
+                                    <option value="winter">Winter</option>
+                                    <option value="holiday">Holiday</option>
+                                </select>
+                            </div>
+
+                            <!-- Lighting -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Light source and mood. Natural is realistic, Dramatic creates shadows, Backlit silhouettes.">Lighting</label>
+                                <select class="select-field select-sm" id="lighting">
+                                    <option value="natural" selected>Natural</option>
+                                    <option value="warm">Warm</option>
+                                    <option value="cool">Cool</option>
+                                    <option value="dramatic">Dramatic</option>
+                                    <option value="soft">Soft</option>
+                                    <option value="bright">Bright</option>
+                                    <option value="backlit">Backlit</option>
+                                </select>
+                            </div>
+
+                            <!-- Shot Type -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="How much of the scene to show. Wide shows environment, Close-up focuses on product.">Shot Type</label>
+                                <select class="select-field select-sm" id="shotType">
+                                    <option value="wide">Wide</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="closeup">Close-up</option>
+                                    <option value="detail">Detail</option>
+                                </select>
+                            </div>
+
+                            <!-- Camera Angle -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Camera perspective. Overhead is top-down, Low angle adds drama.">Camera Angle</label>
+                                <select class="select-field select-sm" id="cameraAngle">
+                                    <option value="eye-level" selected>Eye Level</option>
+                                    <option value="low">Low Angle</option>
+                                    <option value="high">High Angle</option>
+                                    <option value="overhead">Overhead</option>
+                                </select>
+                            </div>
+
+                            <!-- Photography Style -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Overall aesthetic. Lifestyle is natural, Editorial is magazine-style, Commercial is product-focused.">Style</label>
+                                <select class="select-field select-sm" id="photoStyle">
+                                    <option value="lifestyle" selected>Lifestyle</option>
+                                    <option value="editorial">Editorial</option>
+                                    <option value="commercial">Commercial</option>
+                                    <option value="candid">Candid</option>
+                                    <option value="artistic">Artistic</option>
+                                </select>
+                            </div>
+
+                            <!-- Aspect Ratio -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Image dimensions. 4:5 for Instagram, 9:16 for stories, 1:1 for square.">Aspect Ratio</label>
+                                <select class="select-field select-sm" id="aspectRatio">
+                                    <option value="1:1">1:1 Square</option>
+                                    <option value="4:5" selected>4:5 Portrait</option>
+                                    <option value="3:4">3:4</option>
+                                    <option value="2:3">2:3</option>
+                                    <option value="16:9">16:9 Wide</option>
+                                    <option value="9:16">9:16 Story</option>
+                                </select>
+                            </div>
+
+                            <div class="quality-divider"><span>Quality</span></div>
+
+                            <!-- Quality Level -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Image quality and detail level. Higher settings produce more refined results.">Quality Level</label>
+                                <select class="select-field select-sm" id="qualityLevel">
+                                    <option value="standard">Standard</option>
+                                    <option value="high" selected>High</option>
+                                    <option value="ultra">Ultra</option>
+                                </select>
+                            </div>
+
+                            <!-- Depth of Field -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Background blur. Shallow creates bokeh effect, Deep keeps everything sharp.">Depth of Field</label>
+                                <select class="select-field select-sm" id="depthOfField">
+                                    <option value="auto" selected>Auto</option>
+                                    <option value="shallow">Shallow (Bokeh)</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="deep">Deep</option>
+                                </select>
+                            </div>
+
+                            <!-- Color Grading -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Color treatment. Warm adds golden tones, Cool is blue-tinted, Vibrant is saturated.">Color Grading</label>
+                                <select class="select-field select-sm" id="colorGrading">
+                                    <option value="auto" selected>Auto</option>
+                                    <option value="warm">Warm</option>
+                                    <option value="cool">Cool</option>
+                                    <option value="vibrant">Vibrant</option>
+                                    <option value="muted">Muted</option>
+                                </select>
+                            </div>
+
+                            <div class="quality-divider"><span>Generation</span></div>
+
+                            <!-- Seed -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Fixed number for reproducible results. Same seed with same settings creates similar images.">Seed (optional)</label>
+                                <input type="number" class="input-field input-sm" id="seedInput" placeholder="Random">
+                                <p class="option-hint">Use same seed to reproduce similar results</p>
+                            </div>
+
+                            <!-- Style Reference -->
+                            <div class="option-group option-group-full">
+                                <label class="option-label" data-tooltip="Upload an image as visual inspiration for style, colors, and composition.">Style Reference</label>
+                                <div class="style-ref-container">
+                                    <div class="style-upload-zone" id="styleUploadArea">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                                            <path d="M21 15l-5-5L5 21"/>
+                                        </svg>
+                                        <span>Upload style reference</span>
+                                        <input type="file" class="upload-input" id="styleReference" accept="image/png,image/jpeg,image/jpg,image/webp">
+                                    </div>
+                                    <div class="style-preview-wrap" id="stylePreviewContainer" style="display: none;">
+                                        <img src="" alt="Style Reference" id="stylePreviewImg">
+                                        <button type="button" class="preview-remove-sm" id="removeStyleRef">×</button>
+                                    </div>
+                                </div>
+                                <div class="slider-field" id="styleStrengthSlider" style="display: none; margin-top: 12px;">
+                                    <div class="slider-header">
+                                        <span class="slider-label" data-tooltip="How closely to follow the reference style.">Style Influence</span>
+                                        <span class="slider-value" id="styleStrengthValue">70%</span>
+                                    </div>
+                                    <input type="range" class="range-slider" id="styleStrength" min="10" max="100" value="70">
+                                    <div class="slider-marks">
+                                        <span>Subtle</span>
+                                        <span>Strong</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Negative Prompt -->
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Elements to exclude from the generated image.">Negative Prompt</label>
+                                <textarea class="input-field textarea-field" id="negativePrompt" rows="2"
+                                          placeholder="Things to avoid (e.g., text, logos, watermarks)"></textarea>
+                            </div>
+
+                            <!-- Variations -->
+                            <div class="model-option">
+                                <label class="option-label" data-tooltip="Number of different images to generate at once.">Variations</label>
+                                <div class="option-buttons">
+                                    <button type="button" class="option-btn active" data-option="variations" data-value="1">1</button>
+                                    <button type="button" class="option-btn" data-option="variations" data-value="2">2</button>
+                                    <button type="button" class="option-btn" data-option="variations" data-value="4">4</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- API Settings (Collapsible) -->
+                    <div class="settings-section" id="settingsSection">
+                        <button type="button" class="settings-toggle" id="settingsToggle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                            </svg>
+                            <span>API Settings</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="settings-content">
+                            <div class="api-key-group">
+                                <label class="option-label" data-tooltip="Your OpenRouter API key for AI image generation. Get one free at openrouter.ai">OpenRouter API Key</label>
+                                <div class="api-key-input">
+                                    <input type="password" class="input-field" id="apiKeyInput" placeholder="sk-or-...">
+                                    <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="api-status" id="apiStatus">
+                                    <span class="status-dot"></span>
+                                    <span class="status-text">Not connected</span>
+                                </div>
+                            </div>
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="AI model for generation. Gemini is best for product photos, GPT-4o for creative imagery.">AI Model</label>
+                                <select class="select-field" id="aiModel">
+                                    <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
+                                    <option value="google/gemini-exp-1206:free">Gemini Exp 1206 (Free)</option>
+                                    <option value="openai/gpt-4o">GPT-4o</option>
+                                    <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cost Estimator -->
+                    <div id="costEstimatorContainer"></div>
+
+                    <!-- Generate Button -->
+                    <button type="submit" class="btn-generate" id="generateBtn">
+                        <span class="btn-content">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                                <polyline points="9 22 9 12 15 12 15 22"/>
+                            </svg>
+                            Generate Lifestyle Photo
+                        </span>
+                        <span class="btn-glow"></span>
+                    </button>
+                    <p class="shortcut-hint">Ctrl+Enter to generate</p>
+                </form>
+            </section>
+
+            <!-- Right Panel: Output -->
+            <section class="panel panel-output">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="title-number">02</span>
+                        Output
+                    </h2>
+                </div>
+
+                <div class="output-container" id="outputContainer">
+                    <!-- Placeholder -->
+                    <div class="output-placeholder" id="resultPlaceholder">
+                        <div class="placeholder-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                                <polyline points="9 22 9 12 15 12 15 22"/>
+                            </svg>
+                        </div>
+                        <h3>Lifestyle Photography</h3>
+                        <p>Pure product photos in lifestyle contexts</p>
+                        <ul class="placeholder-features">
+                            <li>10 scene types (living room, kitchen, outdoor...)</li>
+                            <li>Mood & atmosphere control</li>
+                            <li>Time of day lighting</li>
+                            <li>No overlays - pure photography</li>
+                        </ul>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div class="output-loading" id="loadingContainer">
+                        <div class="loading-spinner"></div>
+                        <p class="loading-text" id="loadingStatus">Creating lifestyle photo...</p>
+                        <p class="loading-subtext" id="loadingSubtext">This may take 10-30 seconds</p>
+                    </div>
+
+                    <!-- Result Display -->
+                    <div class="result-display" id="resultDisplay" style="display: none;">
+                        <div class="result-image-container">
+                            <img id="resultImage" alt="Generated lifestyle photo" class="result-image">
+                            <button class="btn-image-info" id="imageInfoBtn" title="Show image info">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="16" x2="12" y2="12"/>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                                </svg>
+                            </button>
+                            <div class="image-info-overlay" id="imageInfoOverlay" style="display: none;"></div>
+                        </div>
+                        <div class="result-grid" id="resultGrid" style="display: none;"></div>
+                        <div class="result-actions">
+                            <button type="button" class="btn-secondary" id="downloadBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Download
+                            </button>
+                            <button type="button" class="btn-secondary" id="favoriteBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                                </svg>
+                                Favorite
+                            </button>
+                            <button type="button" class="btn-secondary" id="copyPromptBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                </svg>
+                                Copy Prompt
+                            </button>
+                            <button type="button" class="btn-secondary" id="compareBtn" style="display: none;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="2" x2="12" y2="22"/>
+                                    <rect x="2" y="4" width="8" height="16" rx="1"/>
+                                    <rect x="14" y="4" width="8" height="16" rx="1"/>
+                                </svg>
+                                Compare
+                            </button>
+                        </div>
+
+                        <!-- Feedback Section -->
+                        <div class="feedback-section">
+                            <textarea class="textarea-field" id="feedbackTextarea" rows="2"
+                                      placeholder="Describe adjustments (e.g., warmer lighting, more plants in background)"></textarea>
+                            <button type="button" class="btn-secondary" id="adjustBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                                Adjust Photo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History -->
+                <div class="history-section" id="historySection">
+                    <div class="history-header">
+                        <h3>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            Recent
+                            <span class="history-count" id="historyCount">0</span>
+                        </h3>
+                        <button type="button" class="btn-text" id="clearHistoryBtn">Clear</button>
+                    </div>
+                    <div class="history-grid" id="historyGrid"></div>
+                    <div class="empty-state" id="historyEmpty">
+                        <div class="empty-state-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                                <polyline points="9 22 9 12 15 12 15 22"/>
+                            </svg>
+                        </div>
+                        <p class="empty-state-title">No images yet</p>
+                        <p class="empty-state-text">Generated photos will appear here</p>
+                    </div>
+
+                    <!-- Favorites Section -->
+                    <div class="favorites-section" id="favoritesSection">
+                        <div class="favorites-header">
+                            <div class="favorites-title-group">
+                                <h3 class="favorites-title">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                    Favorites
+                                </h3>
+                                <span class="favorites-count" id="favoritesCount">0</span>
+                            </div>
+                            <button class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
+                        </div>
+                        <div class="favorites-grid" id="favoritesGrid"></div>
+                        <div class="empty-state" id="favoritesEmpty">
+                            <div class="empty-state-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </div>
+                            <p class="empty-state-title">No favorites yet</p>
+                            <p class="empty-state-text">Click the star on generated images to save them</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+        <img id="lightboxImage" alt="Full size image">
+        <button class="lightbox-download" id="lightboxDownload">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download
+        </button>
+    </div>
+
+    <!-- Favorites Modal -->
+    <div class="modal favorites-modal" id="favoritesModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Favorite</h3>
+                <button class="modal-close" id="closeFavoritesModal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="favorite-preview-container">
+                    <img src="" alt="Favorite preview" id="favoritePreviewImg">
+                    <div class="favorite-variants" id="favoriteVariants" style="display: none;"></div>
+                </div>
+                <div class="favorite-details">
+                    <div class="favorite-name-row">
+                        <input type="text" class="favorite-name-input" id="favoriteNameInput" placeholder="Favorite name...">
+                    </div>
+                    <div class="favorite-meta">
+                        <div class="favorite-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12,6 12,12 16,14"/>
+                            </svg>
+                            <span id="favoriteDate"></span>
+                        </div>
+                        <div class="favorite-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                            </svg>
+                            <span>Seed:</span>
+                            <code class="favorite-seed-value" id="favoriteSeedValue"></code>
+                            <button class="btn-copy-seed" id="copyFavoriteSeed">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-load" id="loadFavoriteBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                        <polyline points="17,8 12,3 7,8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Load Settings
+                </button>
+                <button class="btn btn-secondary" id="downloadFavoriteBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Download
+                </button>
+                <button class="btn btn-danger" id="deleteFavoriteBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"/>
+                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <span>NGRAPHICS</span>
+            <span class="footer-divider">•</span>
+            <span>Powered by OpenRouter AI</span>
+            <span class="footer-divider">•</span>
+            <span class="footer-shortcut"><kbd>Ctrl</kbd>+<kbd>D</kbd> Download</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="core.js"></script>
+    <script src="shared.js"></script>
+    <script src="api.js"></script>
+    <script src="components.js"></script>
+    <script src="workers.js"></script>
+    <script src="lifestyle.js"></script>
+</body>
+</html>
