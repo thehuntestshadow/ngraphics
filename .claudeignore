@@ -1,0 +1,46 @@
+# Claude Code ignore file
+# Exclude large/binary files from analysis
+
+# Generated assets (if stored locally)
+generated/
+outputs/
+*.generated.*
+
+# Large binary files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.ico
+*.svg
+*.woff
+*.woff2
+*.ttf
+*.eot
+
+# Dependencies (if added)
+node_modules/
+vendor/
+bower_components/
+
+# Build outputs
+dist/
+build/
+.cache/
+
+# IDE/Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
