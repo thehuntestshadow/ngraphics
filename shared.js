@@ -669,8 +669,6 @@ class ImageStore {
     }
 }
 
-// Global image store instance
-const imageStore = new ImageStore();
 
 // ============================================
 // FAVORITES MANAGEMENT
@@ -680,7 +678,7 @@ class SharedFavorites {
         this.storageKey = storageKey;
         this.maxItems = maxItems;
         this.items = [];
-        this.imageStore = imageStore;
+        this.imageStore = null;
     }
 
     load() {
