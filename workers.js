@@ -345,13 +345,15 @@ class ServiceWorkerManager {
 const imageWorker = new ImageWorkerManager();
 const serviceWorkerManager = new ServiceWorkerManager();
 
-// Auto-register service worker on load
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+// Auto-register service worker on load (skip on file:// protocol)
+if (location.protocol !== 'file:') {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            serviceWorkerManager.register();
+        });
+    } else {
         serviceWorkerManager.register();
-    });
-} else {
-    serviceWorkerManager.register();
+    }
 }
 
 // ============================================
