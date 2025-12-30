@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ Generator - NGRAPHICS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="faq-generator.css">
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <header class="site-header"></header>
+
+    <main class="app-main">
+        <div class="app-grid app-grid-4">
+            <!-- Panel 1: Config -->
+            <section class="panel panel-config">
+                <div class="panel-header">
+                    <h2 class="panel-title"><span class="title-number">01</span>FAQ Generator</h2>
+                </div>
+
+                <div class="message message-error" id="errorMessage">
+                    <div class="message-icon">!</div>
+                    <div class="message-content"><span class="error-text"></span></div>
+                </div>
+                <div class="message message-success" id="successMessage">
+                    <div class="message-icon">&#10003;</div>
+                    <div class="message-content">Generated successfully</div>
+                </div>
+
+                <form id="faqGeneratorForm" class="config-form">
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></span>
+                            Product Image
+                        </div>
+                        <div class="upload-zone" id="uploadArea">
+                            <div class="upload-content">
+                                <div class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+                                <p class="upload-text">Drop image or click to upload</p>
+                                <p class="upload-formats">PNG, JPG, WebP - Max 10MB</p>
+                            </div>
+                            <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp">
+                        </div>
+                        <div class="image-preview" id="imagePreview" style="display: none;">
+                            <img id="previewImg" alt="Preview" class="preview-img">
+                            <button type="button" class="preview-remove" id="removeImage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                        </div>
+                    </div>
+
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+                            Product Name
+                        </div>
+                        <input type="text" class="input-field" id="productName" placeholder="e.g., Wireless Bluetooth Earbuds">
+                    </div>
+
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg></span>
+                            Product Description
+                        </div>
+                        <textarea class="input-field textarea-field" id="productDescription" placeholder="Brief description of your product, key features, target audience..." rows="3"></textarea>
+                    </div>
+
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+                            FAQ Categories
+                        </div>
+                        <div class="category-grid">
+                            <label class="category-option"><input type="checkbox" name="category" value="general" checked><span class="category-card"><span class="category-icon">&#128172;</span><span class="category-name">General</span></span></label>
+                            <label class="category-option"><input type="checkbox" name="category" value="technical" checked><span class="category-card"><span class="category-icon">&#9881;</span><span class="category-name">Technical</span></span></label>
+                            <label class="category-option"><input type="checkbox" name="category" value="shipping"><span class="category-card"><span class="category-icon">&#128230;</span><span class="category-name">Shipping</span></span></label>
+                            <label class="category-option"><input type="checkbox" name="category" value="usage" checked><span class="category-card"><span class="category-icon">&#128161;</span><span class="category-name">Usage</span></span></label>
+                            <label class="category-option"><input type="checkbox" name="category" value="comparison"><span class="category-card"><span class="category-icon">&#9878;</span><span class="category-name">Comparison</span></span></label>
+                            <label class="category-option"><input type="checkbox" name="category" value="warranty"><span class="category-card"><span class="category-icon">&#128737;</span><span class="category-name">Warranty</span></span></label>
+                        </div>
+                    </div>
+
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span>
+                            Tone
+                        </div>
+                        <div class="tone-grid">
+                            <button type="button" class="tone-btn active" data-tone="professional">Professional</button>
+                            <button type="button" class="tone-btn" data-tone="friendly">Friendly</button>
+                            <button type="button" class="tone-btn" data-tone="casual">Casual</button>
+                            <button type="button" class="tone-btn" data-tone="technical">Technical</button>
+                        </div>
+                    </div>
+
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg></span>
+                            Number of Q&As per Category
+                        </div>
+                        <div class="qa-count-options">
+                            <button type="button" class="option-btn" data-option="qaCount" data-value="3">3</button>
+                            <button type="button" class="option-btn active" data-option="qaCount" data-value="5">5</button>
+                            <button type="button" class="option-btn" data-option="qaCount" data-value="7">7</button>
+                            <button type="button" class="option-btn" data-option="qaCount" data-value="10">10</button>
+                        </div>
+                    </div>
+
+                    <div class="config-section">
+                        <div class="section-label">
+                            <span class="label-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+                            Language
+                        </div>
+                        <div class="language-toggle">
+                            <button type="button" class="lang-btn active" data-lang="en">English</button>
+                            <button type="button" class="lang-btn" data-lang="ro">Română</button>
+                        </div>
+                    </div>
+
+                    <div class="advanced-section" id="advancedSection">
+                        <button type="button" class="advanced-toggle" id="advancedToggle">
+                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><circle cx="4" cy="12" r="2"/><circle cx="12" cy="10" r="2"/><circle cx="20" cy="14" r="2"/></svg>
+                            <span>Advanced Options</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="advanced-content">
+                            <div class="option-group">
+                                <label class="option-label">AI Model</label>
+                                <select class="select-field select-sm" id="aiModel">
+                                    <option value="google/gemini-2.0-flash-exp:free" selected>Gemini 2.0 Flash (Free)</option>
+                                    <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash</option>
+                                    <option value="openai/gpt-4o">GPT-4o</option>
+                                    <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+                                </select>
+                            </div>
+                            <div class="option-group">
+                                <label class="option-label">Include Schema.org JSON-LD</label>
+                                <label class="toggle-option"><input type="checkbox" id="includeSchema" checked><span class="toggle-label">Generate SEO-ready FAQ schema markup</span></label>
+                            </div>
+                            <div class="option-group option-group-full">
+                                <label class="option-label">Custom Instructions</label>
+                                <textarea class="input-field textarea-field" id="customInstructions" placeholder="e.g., Focus on eco-friendly aspects, mention warranty details..." rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-generate" id="generateBtn">
+                        <span class="btn-content">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            Generate FAQs
+                        </span>
+                        <span class="btn-glow"></span>
+                    </button>
+                    <div class="shortcut-hint"><kbd>Ctrl</kbd><span>+</span><kbd>Enter</kbd></div>
+
+                    <div class="settings-section" id="settingsSection">
+                        <button type="button" class="settings-toggle" id="settingsToggle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+                            <span>API Settings</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="settings-content">
+                            <div class="api-key-group">
+                                <label class="option-label">OpenRouter API Key</label>
+                                <div class="api-key-input">
+                                    <input type="password" class="input-field" id="apiKey" placeholder="sk-or-...">
+                                    <button type="button" class="btn-icon" id="toggleApiKey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                                    <button type="button" class="btn-secondary btn-sm" id="saveApiKey">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Panel 2: FAQ Output -->
+            <section class="panel panel-faq-output">
+                <div class="panel-header">
+                    <h2 class="panel-title"><span class="title-number">02</span>FAQ Content</h2>
+                    <div class="panel-actions">
+                        <button type="button" class="btn-icon-sm" id="copyAllFaqsBtn" title="Copy all FAQs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+                        <button type="button" class="btn-icon-sm" id="copySchemaBtn" title="Copy Schema.org JSON-LD"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></button>
+                    </div>
+                </div>
+                <div class="faq-output-container">
+                    <div class="output-placeholder" id="faqPlaceholder">
+                        <div class="placeholder-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                        <h3>FAQ Generator</h3>
+                        <p>Generate product Q&As with SEO schema</p>
+                        <ul class="placeholder-features">
+                            <li>Multiple FAQ categories</li>
+                            <li>Schema.org JSON-LD markup</li>
+                            <li>Copy individual or all Q&As</li>
+                        </ul>
+                    </div>
+                    <div class="output-loading" id="faqLoading">
+                        <div class="loader"><div class="loader-ring"></div><div class="loader-ring"></div><div class="loader-ring"></div></div>
+                        <p class="loading-text">Generating FAQs...</p>
+                        <p class="loading-status" id="faqLoadingStatus">Analyzing product...</p>
+                    </div>
+                    <div class="faq-results" id="faqResults">
+                        <div class="faq-tabs">
+                            <button type="button" class="faq-tab active" data-tab="all">All</button>
+                        </div>
+                        <div class="faq-list" id="faqList"></div>
+                        <div class="faq-actions">
+                            <button type="button" class="btn-secondary" id="copySelectedBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy Selected</button>
+                            <button type="button" class="btn-secondary" id="exportMarkdownBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export MD</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Panel 3: Image Output -->
+            <section class="panel panel-image-output">
+                <div class="panel-header">
+                    <h2 class="panel-title"><span class="title-number">03</span>FAQ Image</h2>
+                </div>
+                <div class="image-output-container">
+                    <div class="output-placeholder" id="imagePlaceholder">
+                        <div class="placeholder-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+                        <h3>FAQ Infographic</h3>
+                        <p>Generate visual FAQ images</p>
+                    </div>
+                    <div class="output-loading" id="imageLoading">
+                        <div class="loader"><div class="loader-ring"></div><div class="loader-ring"></div><div class="loader-ring"></div></div>
+                        <p class="loading-text">Creating image...</p>
+                        <p class="loading-status" id="imageLoadingStatus">Designing layout...</p>
+                    </div>
+                    <div class="image-result" id="imageResult">
+                        <div class="result-image-wrap">
+                            <img id="resultImage" class="result-image" alt="Generated FAQ image">
+                            <button class="btn-favorite" id="favoriteBtn" title="Save to favorites"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        </div>
+                        <div class="image-type-selector">
+                            <button type="button" class="image-type-btn active" data-type="infographic">Infographic</button>
+                            <button type="button" class="image-type-btn" data-type="qa-card">Q&A Card</button>
+                            <button type="button" class="image-type-btn" data-type="top5">Top 5</button>
+                        </div>
+                        <div class="image-actions">
+                            <button type="button" class="btn-secondary" id="downloadImageBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button>
+                            <button type="button" class="btn-secondary" id="regenerateImageBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>Regenerate</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Panel 4: History/Favorites -->
+            <section class="panel panel-history">
+                <div class="panel-header">
+                    <h2 class="panel-title"><span class="title-number">04</span>History</h2>
+                </div>
+                <div class="history-section" id="historySection">
+                    <div class="history-header">
+                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Recent<span class="history-count" id="historyCount">0</span></h3>
+                        <button type="button" class="btn-text" id="clearHistoryBtn">Clear</button>
+                    </div>
+                    <div class="history-grid" id="historyGrid"></div>
+                    <div class="empty-state" id="historyEmpty">
+                        <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                        <p class="empty-state-title">No FAQs yet</p>
+                        <p class="empty-state-text">Generated FAQs will appear here</p>
+                    </div>
+                </div>
+                <div class="favorites-section" id="favoritesSection">
+                    <div class="favorites-header">
+                        <div class="favorites-title-group"><h3 class="favorites-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Favorites</h3><span class="favorites-count" id="favoritesCount">0</span></div>
+                        <button class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
+                    </div>
+                    <div class="favorites-grid" id="favoritesGrid"></div>
+                    <div class="empty-state" id="favoritesEmpty">
+                        <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                        <p class="empty-state-title">No favorites yet</p>
+                        <p class="empty-state-text">Click the star to save FAQs</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        <img id="lightboxImage" alt="Full size image">
+        <button class="lightbox-download" id="lightboxDownload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button>
+    </div>
+
+    <div class="modal favorites-modal" id="favoritesModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header"><h3 class="modal-title">Favorite</h3><button class="modal-close" id="closeFavoritesModal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+            <div class="modal-body">
+                <div class="favorite-preview-container"><img src="" alt="Favorite preview" id="favoritePreviewImg"></div>
+                <div class="favorite-details">
+                    <div class="favorite-name-row"><input type="text" class="favorite-name-input" id="favoriteNameInput" placeholder="Favorite name..."></div>
+                    <div class="favorite-meta">
+                        <div class="favorite-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg><span id="favoriteDate"></span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-load" id="loadFavoriteBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Load Settings</button>
+                <button class="btn btn-secondary" id="downloadFavoriteBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button>
+                <button class="btn btn-danger" id="deleteFavoriteBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="core.js"></script>
+    <script src="shared.js"></script>
+    <script src="api.js"></script>
+    <script src="components.js"></script>
+    <script src="workers.js"></script>
+    <script src="faq-generator.js"></script>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <span>NGRAPHICS</span>
+            <span class="footer-divider">-</span>
+            <span>Powered by OpenRouter AI</span>
+            <span class="footer-divider">-</span>
+            <span class="footer-shortcut"><kbd>Ctrl</kbd>+<kbd>D</kbd> Download</span>
+        </div>
+    </footer>
+</body>
+</html>
