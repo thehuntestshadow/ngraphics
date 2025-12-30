@@ -225,33 +225,33 @@
 /* Dashboard Tabs */
 .dashboard-tabs {
     display: flex;
-    gap: 8px;
+    gap: 4px;
     margin-bottom: 24px;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--border-default);
 }
 
 .tab-btn {
-    padding: 10px 20px;
-    font-size: 14px;
+    padding: 12px 24px;
+    font-size: 15px;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--text-muted);
     background: transparent;
-    border: 1px solid transparent;
-    border-radius: var(--radius-md);
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
     cursor: pointer;
     transition: all var(--duration-fast) var(--ease-out);
 }
 
 .tab-btn:hover {
     color: var(--text-primary);
-    background: var(--bg-subtle);
 }
 
 .tab-btn.active {
-    color: white;
-    background: var(--accent);
-    border-color: var(--accent);
+    color: var(--text-primary);
+    border-bottom-color: var(--text-primary);
+    font-weight: 600;
 }
 
 /* Cost Tracker Section */
