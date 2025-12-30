@@ -681,6 +681,10 @@ class SharedFavorites {
         this.imageStore = null;
     }
 
+    setImageStore(store) {
+        this.imageStore = store;
+    }
+
     load() {
         try {
             const saved = localStorage.getItem(this.storageKey);
