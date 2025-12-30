@@ -255,6 +255,9 @@ const favorites = new SharedFavorites('packaging_favorites', 50);
 // INITIALIZATION
 // ============================================
 async function init() {
+    // Render header first
+    SharedHeader.render({ currentPage: 'packaging' });
+
     initElements();
 
     // Initialize stores
@@ -274,13 +277,6 @@ async function init() {
         elements.apiKey.value = state.apiKey;
         api.apiKey = state.apiKey;
     }
-
-    // Render header
-    SharedHeader.render({
-        currentPage: 'packaging',
-        showApiStatus: true,
-        showLanguageToggle: false
-    });
 
     // Setup keyboard shortcuts
     SharedKeyboard.setup({

@@ -117,6 +117,9 @@ const toneDescriptions = {
 // INITIALIZATION
 // ============================================
 async function init() {
+    // Render header first
+    SharedHeader.render({ currentPage: 'copywriter' });
+
     initElements();
 
     // Initialize stores
@@ -136,13 +139,6 @@ async function init() {
         elements.apiKey.value = state.apiKey;
         api.apiKey = state.apiKey;
     }
-
-    // Render header
-    SharedHeader.render({
-        currentPage: 'copywriter',
-        showApiStatus: true,
-        showLanguageToggle: true
-    });
 
     // Setup keyboard shortcuts
     SharedKeyboard.setup({
