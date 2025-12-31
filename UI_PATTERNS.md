@@ -249,7 +249,7 @@ For button groups (variations, gender, etc.):
 ```html
 <div class="model-option">
     <label class="option-label">Variations</label>
-    <div class="option-buttons">
+    <div class="option-buttons" role="group" aria-label="Variations">
         <button type="button" class="option-btn active" data-option="variations" data-value="1">1</button>
         <button type="button" class="option-btn" data-option="variations" data-value="2">2</button>
         <button type="button" class="option-btn" data-option="variations" data-value="4">4</button>
@@ -475,7 +475,7 @@ Collapsible section for advanced generation settings. Uses slider/mixer icon. **
         <!-- Variations -->
         <div class="option-group">
             <label class="option-label">Variations</label>
-            <div class="option-buttons" id="variationsOptions">
+            <div class="option-buttons" id="variationsOptions" role="group" aria-label="Variations">
                 <button type="button" class="option-btn active" data-value="1">1</button>
                 <button type="button" class="option-btn" data-value="2">2</button>
                 <button type="button" class="option-btn" data-value="4">4</button>
@@ -995,4 +995,4 @@ Place the footer after all scripts, before `</body>`.
 
 ---
 
-*Last updated: Dec 2024*
+*Last updated: Dec 2025*

@@ -632,7 +632,7 @@ function renderHistory() {
 
     elements.historyGrid.innerHTML = items.map(item => `
         <div class="history-item" data-id="${item.id}">
-            <img src="${item.thumbnail}" alt="${item.title || 'Size Chart'}">
+            <img src="${item.thumbnail}" alt="${item.title || 'Size Chart'}" loading="lazy">
             <div class="history-item-overlay">
                 <span class="history-item-text">${item.title || 'Size Chart'}</span>
             </div>
@@ -660,7 +660,7 @@ function renderFavorites() {
 
     elements.favoritesGrid.innerHTML = items.slice(0, 6).map(item => `
         <div class="favorite-item" data-id="${item.id}">
-            <img src="${item.thumbnail}" alt="${item.name || 'Favorite'}">
+            <img src="${item.thumbnail}" alt="${item.name || 'Favorite'}" loading="lazy">
             <div class="favorite-item-overlay">
                 <span class="favorite-item-name">${item.name || 'Favorite'}</span>
             </div>
@@ -826,96 +826,128 @@ function setupEventListeners() {
     };
 
     // Seed
-    elements.randomSeedBtn.onclick = () => {
-        elements.seedInput.value = Math.floor(Math.random() * 999999);
-        state.seed = parseInt(elements.seedInput.value);
-    };
-    elements.seedInput.oninput = () => {
-        state.seed = elements.seedInput.value ? parseInt(elements.seedInput.value) : null;
-    };
+    if (elements.randomSeedBtn) {
+        elements.randomSeedBtn.onclick = () => {
+            if (elements.seedInput) {
+                elements.seedInput.value = Math.floor(Math.random() * 999999);
+                state.seed = parseInt(elements.seedInput.value);
+            }
+        };
+    }
+    if (elements.seedInput) {
+        elements.seedInput.oninput = () => {
+            state.seed = elements.seedInput.value ? parseInt(elements.seedInput.value) : null;
+        };
+    }
 
     // Model
-    elements.aiModel.onchange = () => state.model = elements.aiModel.value;
+    if (elements.aiModel) {
+        elements.aiModel.onchange = () => state.model = elements.aiModel.value;
+    }
 
     // Settings toggle
-    elements.settingsToggle.onclick = () => {
-        elements.settingsSection.classList.toggle('active');
-    };
+    if (elements.settingsToggle && elements.settingsSection) {
+        elements.settingsToggle.onclick = () => {
+            elements.settingsSection.classList.toggle('active');
+        };
+    }
 
     // API key
-    elements.apiKey.oninput = updateApiStatus;
-    elements.toggleApiKey.onclick = () => {
-        elements.apiKey.type = elements.apiKey.type === 'password' ? 'text' : 'password';
-    };
-    elements.saveApiKey.onclick = () => {
-        updateApiStatus();
-        SharedUI.showSuccess('API key saved');
-    };
+    if (elements.apiKey) elements.apiKey.oninput = updateApiStatus;
+    if (elements.toggleApiKey && elements.apiKey) {
+        elements.toggleApiKey.onclick = () => {
+            elements.apiKey.type = elements.apiKey.type === 'password' ? 'text' : 'password';
+        };
+    }
+    if (elements.saveApiKey) {
+        elements.saveApiKey.onclick = () => {
+            updateApiStatus();
+            SharedUI.showSuccess('API key saved');
+        };
+    }
 
     // Generate
-    elements.generateBtn.onclick = generateChart;
+    if (elements.generateBtn) elements.generateBtn.onclick = generateChart;
 
     // Result actions
-    elements.downloadBtn.onclick = () => {
-        if (state.generatedImages.length > 0) {
-            SharedDownload.downloadImage(state.generatedImages[0].imageUrl, 'size-chart');
-        }
-    };
+    if (elements.downloadBtn) {
+        elements.downloadBtn.onclick = () => {
+            if (state.generatedImages.length > 0) {
+                SharedDownload.downloadImage(state.generatedImages[0].imageUrl, 'size-chart');
+            }
+        };
+    }
 
-    elements.downloadZipBtn.onclick = async () => {
-        if (state.generatedImages.length > 0) {
-            await SharedZip.downloadAsZip(
-                state.generatedImages.map(r => r.imageUrl),
-                'size-charts',
-                { prompt: state.lastPrompt, settings: { category: state.category } }
-            );
-        }
-    };
+    if (elements.downloadZipBtn) {
+        elements.downloadZipBtn.onclick = async () => {
+            if (state.generatedImages.length > 0) {
+                await SharedZip.downloadAsZip(
+                    state.generatedImages.map(r => r.imageUrl),
+                    'size-charts',
+                    { prompt: state.lastPrompt, settings: { category: state.category } }
+                );
+            }
+        };
+    }
 
-    elements.copyPromptBtn.onclick = () => {
-        if (state.lastPrompt) {
-            SharedClipboard.copy(state.lastPrompt);
-            SharedUI.showSuccess('Prompt copied to clipboard');
-        }
-    };
+    if (elements.copyPromptBtn) {
+        elements.copyPromptBtn.onclick = () => {
+            if (state.lastPrompt) {
+                SharedClipboard.copy(state.lastPrompt);
+                SharedUI.showSuccess('Prompt copied to clipboard');
+            }
+        };
+    }
 
-    elements.favoriteBtn.onclick = addToFavorites;
+    if (elements.favoriteBtn) elements.favoriteBtn.onclick = addToFavorites;
 
     // History
-    elements.clearHistoryBtn.onclick = async () => {
-        if (await SharedConfirm.show('Clear all history?')) {
-            await history.clear();
-            renderHistory();
-        }
-    };
+    if (elements.clearHistoryBtn) {
+        elements.clearHistoryBtn.onclick = async () => {
+            if (await SharedConfirm.show('Clear all history?')) {
+                await history.clear();
+                renderHistory();
+            }
+        };
+    }
 
     // Favorites modal
-    elements.viewFavoritesBtn.onclick = () => {
-        renderFavoritesModal();
-        elements.favoritesModal.classList.add('visible');
-    };
-    elements.closeFavoritesModal.onclick = () => elements.favoritesModal.classList.remove('visible');
-    elements.favoritesModal.querySelector('.modal-backdrop')?.addEventListener('click', () => {
-        elements.favoritesModal.classList.remove('visible');
-    });
+    if (elements.viewFavoritesBtn && elements.favoritesModal) {
+        elements.viewFavoritesBtn.onclick = () => {
+            renderFavoritesModal();
+            elements.favoritesModal.classList.add('visible');
+        };
+    }
+    if (elements.closeFavoritesModal && elements.favoritesModal) {
+        elements.closeFavoritesModal.onclick = () => elements.favoritesModal.classList.remove('visible');
+    }
+    if (elements.favoritesModal) {
+        elements.favoritesModal.querySelector('.modal-backdrop')?.addEventListener('click', () => {
+            elements.favoritesModal.classList.remove('visible');
+        });
+    }
 
     // Lightbox
-    elements.lightboxClose.onclick = closeLightbox;
-    elements.lightbox.onclick = (e) => {
-        if (e.target === elements.lightbox) closeLightbox();
-    };
-    elements.lightboxDownload.onclick = () => {
-        SharedDownload.downloadImage(elements.lightboxImage.src, 'size-chart');
-    };
-    elements.lightboxFavorite.onclick = addToFavorites;
+    if (elements.lightboxClose) elements.lightboxClose.onclick = closeLightbox;
+    if (elements.lightbox) {
+        elements.lightbox.onclick = (e) => {
+            if (e.target === elements.lightbox) closeLightbox();
+        };
+    }
+    if (elements.lightboxDownload && elements.lightboxImage) {
+        elements.lightboxDownload.onclick = () => {
+            SharedDownload.downloadImage(elements.lightboxImage.src, 'size-chart');
+        };
+    }
+    if (elements.lightboxFavorite) elements.lightboxFavorite.onclick = addToFavorites;
 
     // Keyboard shortcuts
     SharedKeyboard.setup({
         generate: generateChart,
-        download: () => elements.downloadBtn.click(),
+        download: () => elements.downloadBtn?.click(),
         escape: () => {
             closeLightbox();
-            elements.favoritesModal.classList.remove('visible');
+            if (elements.favoritesModal) elements.favoritesModal.classList.remove('visible');
         }
     });
 }

@@ -601,7 +601,7 @@ function renderHistory() {
 
     elements.historyGrid.innerHTML = items.map(item => `
         <div class="history-item" data-id="${item.id}">
-            <img src="${item.thumbnail || item.imageUrl}" alt="History item">
+            <img src="${item.thumbnail || item.imageUrl}" alt="History item" loading="lazy">
             ${item.imageUrls && item.imageUrls.length > 1 ? `<span class="history-item-variants">${item.imageUrls.length}</span>` : ''}
         </div>
     `).join('');
@@ -664,7 +664,7 @@ function renderFavorites() {
 
     elements.favoritesGrid.innerHTML = items.map(item => `
         <div class="favorite-item" data-id="${item.id}">
-            <img src="${item.thumbnail || item.imageUrl}" alt="${item.name || 'Favorite'}">
+            <img src="${item.thumbnail || item.imageUrl}" alt="${item.name || 'Favorite'}" loading="lazy">
             ${item.imageUrls && item.imageUrls.length > 1 ? `<span class="favorite-item-variants">${item.imageUrls.length}</span>` : ''}
             <div class="favorite-item-overlay">
                 <button class="favorite-load-btn" title="Load settings">
@@ -693,7 +693,7 @@ function renderFavorites() {
 
         item.querySelector('.favorite-delete-btn')?.addEventListener('click', async (e) => {
             e.stopPropagation();
-            if (confirm('Delete this favorite?')) {
+            if (await SharedUI.confirm('Delete this favorite?', { title: 'Delete Favorite', confirmText: 'Delete', icon: 'danger' })) {
                 await favorites.remove(id);
                 renderFavorites();
                 showSuccess('Favorite deleted');
@@ -1077,7 +1077,7 @@ function setupEventListeners() {
 
     // Clear history
     elements.clearHistoryBtn?.addEventListener('click', async () => {
-        if (confirm('Clear all history?')) {
+        if (await SharedUI.confirm('Clear all history? This cannot be undone.', { title: 'Clear History', confirmText: 'Clear', icon: 'warning' })) {
             await history.clear();
             state.history = [];
             renderHistory();
@@ -1087,7 +1087,7 @@ function setupEventListeners() {
 
     // Clear favorites
     elements.clearFavoritesBtn?.addEventListener('click', async () => {
-        if (confirm('Clear all favorites?')) {
+        if (await SharedUI.confirm('Clear all favorites? This cannot be undone.', { title: 'Clear Favorites', confirmText: 'Clear All', icon: 'warning' })) {
             await favorites.clear();
             renderFavorites();
             showSuccess('Favorites cleared');

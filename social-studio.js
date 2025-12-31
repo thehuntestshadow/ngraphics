@@ -859,7 +859,7 @@ function setupEventListeners() {
 
     // History
     elements.clearHistory?.addEventListener('click', async () => {
-        if (confirm('Clear all history?')) {
+        if (await SharedUI.confirm('Clear all history? This cannot be undone.', { title: 'Clear History', confirmText: 'Clear', icon: 'warning' })) {
             await history.clear();
             renderHistory();
         }
@@ -867,7 +867,7 @@ function setupEventListeners() {
 
     // Favorites
     elements.clearFavorites?.addEventListener('click', async () => {
-        if (confirm('Clear all favorites?')) {
+        if (await SharedUI.confirm('Clear all favorites? This cannot be undone.', { title: 'Clear Favorites', confirmText: 'Clear All', icon: 'warning' })) {
             await favorites.clear();
             renderFavorites();
         }

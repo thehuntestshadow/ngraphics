@@ -159,8 +159,8 @@
                             </span>
                             Product Image
                         </div>
-                        <div class="upload-zone" id="uploadArea">
-                            <div class="upload-content">
+                        <div class="upload-zone" id="productUploadArea">
+                            <div class="upload-content" id="productPlaceholder">
                                 <div class="upload-icon">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                         <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
@@ -171,11 +171,11 @@
                                 <p class="upload-text">Drop image or click to upload</p>
                                 <p class="upload-formats">PNG, JPG, WebP • Max 10MB</p>
                             </div>
-                            <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp">
+                            <input type="file" class="upload-input" id="productFileInput" accept="image/png,image/jpeg,image/jpg,image/webp">
                         </div>
-                        <div class="image-preview" id="imagePreview" style="display: none;">
-                            <img id="previewImg" alt="Preview" class="preview-img">
-                            <button type="button" class="preview-remove" id="removeImage">
+                        <div class="image-preview hidden" id="productPreview">
+                            <img id="productPreviewImg" alt="Preview" class="preview-img">
+                            <button type="button" class="preview-remove" id="removeProductBtn">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <line x1="18" y1="6" x2="6" y2="18"/>
                                     <line x1="6" y1="6" x2="18" y2="18"/>
@@ -211,7 +211,7 @@
                         </div>
                         <div class="form-group">
                             <label class="option-label">Text Position</label>
-                            <div class="option-buttons">
+                            <div class="option-buttons" role="group" aria-label="Text Position">
                                 <button type="button" class="option-btn" data-option="textPosition" data-value="left">Left</button>
                                 <button type="button" class="option-btn active" data-option="textPosition" data-value="right">Right</button>
                                 <button type="button" class="option-btn" data-option="textPosition" data-value="overlay">Overlay</button>
@@ -345,7 +345,7 @@
                         </div>
                         <div class="form-group">
                             <label class="option-label">Alignment</label>
-                            <div class="option-buttons">
+                            <div class="option-buttons" role="group" aria-label="Alignment">
                                 <button type="button" class="option-btn active" data-option="textAlign" data-value="left">Left</button>
                                 <button type="button" class="option-btn" data-option="textAlign" data-value="center">Center</button>
                                 <button type="button" class="option-btn" data-option="textAlign" data-value="right">Right</button>
@@ -365,7 +365,7 @@
                             </span>
                             Image Mode
                         </div>
-                        <div class="option-buttons">
+                        <div class="option-buttons" role="group" aria-label="Image Mode">
                             <button type="button" class="option-btn active" data-option="imageMode" data-value="hero">Hero Shot</button>
                             <button type="button" class="option-btn" data-option="imageMode" data-value="lifestyle">Lifestyle</button>
                             <button type="button" class="option-btn" data-option="imageMode" data-value="product-focus">Product Focus</button>
@@ -416,7 +416,7 @@
                             </span>
                             Color Scheme
                         </div>
-                        <div class="option-buttons">
+                        <div class="option-buttons" role="group" aria-label="Color Scheme">
                             <button type="button" class="option-btn active" data-option="colorScheme" data-value="match">Match Product</button>
                             <button type="button" class="option-btn" data-option="colorScheme" data-value="white">White</button>
                             <button type="button" class="option-btn" data-option="colorScheme" data-value="dark">Dark</button>
@@ -442,7 +442,7 @@
                         </div>
                         <div class="model-option">
                             <label class="option-label">Variations</label>
-                            <div class="option-buttons">
+                            <div class="option-buttons" role="group" aria-label="Variations">
                                 <button type="button" class="option-btn active" data-option="variations" data-value="1">1</button>
                                 <button type="button" class="option-btn" data-option="variations" data-value="2">2</button>
                                 <button type="button" class="option-btn" data-option="variations" data-value="4">4</button>

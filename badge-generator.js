@@ -419,7 +419,7 @@ function renderHistory() {
         const el = document.createElement('div');
         el.className = 'history-item';
         el.innerHTML = `
-            <img src="${item.thumbnail}" alt="${item.metadata?.badgeText || 'Badge'}">
+            <img src="${item.thumbnail}" alt="${item.metadata?.badgeText || 'Badge'}" loading="lazy">
             <div class="history-item-overlay">
                 <span class="history-item-text">${item.metadata?.badgeText || ''}</span>
             </div>
@@ -473,7 +473,7 @@ function renderFavorites() {
         const el = document.createElement('div');
         el.className = 'favorite-item';
         el.innerHTML = `
-            <img src="${item.thumbnail}" alt="${item.name || item.settings?.badgeText || 'Badge'}">
+            <img src="${item.thumbnail}" alt="${item.name || item.settings?.badgeText || 'Badge'}" loading="lazy">
             <div class="favorite-item-overlay">
                 <span class="favorite-item-name">${item.name || item.settings?.badgeText || ''}</span>
             </div>
@@ -754,14 +754,14 @@ function setupEventListeners() {
 
     // History & Favorites
     elements.clearHistoryBtn.addEventListener('click', async () => {
-        if (confirm('Clear all history?')) {
+        if (await SharedUI.confirm('Clear all history? This cannot be undone.', { title: 'Clear History', confirmText: 'Clear', icon: 'warning' })) {
             await history.clear();
             renderHistory();
         }
     });
 
     elements.clearFavoritesBtn.addEventListener('click', async () => {
-        if (confirm('Clear all favorites?')) {
+        if (await SharedUI.confirm('Clear all favorites? This cannot be undone.', { title: 'Clear Favorites', confirmText: 'Clear All', icon: 'warning' })) {
             await favorites.clear();
             renderFavorites();
         }

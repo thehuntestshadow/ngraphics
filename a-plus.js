@@ -132,67 +132,48 @@ function initElements() {
 
         // Image with Text
         headline: document.getElementById('headline'),
-        headlineCount: document.getElementById('headlineCount'),
         bodyText: document.getElementById('bodyText'),
-        bodyTextCount: document.getElementById('bodyTextCount'),
-        textPositionOptions: document.getElementById('textPositionOptions'),
 
         // Comparison
         comparisonProducts: document.getElementById('comparisonProducts'),
-        addComparisonProductBtn: document.getElementById('addComparisonProductBtn'),
+        addComparisonProductBtn: document.getElementById('addProductBtn'),
         comparisonFeatures: document.getElementById('comparisonFeatures'),
-        addComparisonFeatureBtn: document.getElementById('addComparisonFeatureBtn'),
-        highlightWinner: document.getElementById('highlightWinner'),
+        addComparisonFeatureBtn: document.getElementById('addFeatureBtn'),
 
         // Four-Grid
-        gridModeOptions: document.getElementById('gridModeOptions'),
-        gridUploadMode: document.getElementById('gridUploadMode'),
-        gridGenerateMode: document.getElementById('gridGenerateMode'),
         gridUploadSlots: document.getElementById('gridUploadSlots'),
-        gridCaption: document.getElementById('gridCaption'),
 
         // Standard Text
         textHeadline: document.getElementById('textHeadline'),
-        textHeadlineCount: document.getElementById('textHeadlineCount'),
         textBody: document.getElementById('textBody'),
-        textBodyCount: document.getElementById('textBodyCount'),
-        textAlignmentOptions: document.getElementById('textAlignmentOptions'),
-
-        // Single Image
-        singleImageModeOptions: document.getElementById('singleImageModeOptions'),
 
         // Visual Style
-        visualStyleOptions: document.getElementById('visualStyleOptions'),
-        colorSchemeOptions: document.getElementById('colorSchemeOptions'),
-        customColorGroup: document.getElementById('customColorGroup'),
-        customColorPicker: document.getElementById('customColorPicker'),
+        visualStyleOptions: document.getElementById('styleGrid'),
+        customColorGroup: document.getElementById('customColorRow'),
+        customColorPicker: document.getElementById('customColorText'),
         customColor: document.getElementById('customColor'),
 
         // Advanced
         advancedToggle: document.getElementById('advancedToggle'),
-        advancedContent: document.getElementById('advancedContent'),
-        variationsOptions: document.getElementById('variationsOptions'),
-        useRandomSeed: document.getElementById('useRandomSeed'),
-        seedGroup: document.getElementById('seedGroup'),
-        seed: document.getElementById('seed'),
+        advancedContent: document.getElementById('advancedSection'),
+        seed: document.getElementById('seedInput'),
         negativePrompt: document.getElementById('negativePrompt'),
 
         // API
-        apiToggle: document.getElementById('apiToggle'),
-        apiContent: document.getElementById('apiContent'),
+        apiToggle: document.getElementById('settingsToggle'),
+        apiContent: document.getElementById('settingsSection'),
         apiKey: document.getElementById('apiKey'),
         aiModel: document.getElementById('aiModel'),
 
         // Generate
         generateBtn: document.getElementById('generateBtn'),
-        generateHelper: document.getElementById('generateHelper'),
 
         // Results
         resultContainer: document.getElementById('resultContainer'),
         resultPlaceholder: document.getElementById('resultPlaceholder'),
         resultImages: document.getElementById('resultImages'),
         resultLoading: document.getElementById('resultLoading'),
-        loadingText: document.getElementById('loadingText'),
+        loadingText: document.getElementById('loadingStatus'),
         resultActions: document.getElementById('resultActions'),
         downloadBtn: document.getElementById('downloadBtn'),
         downloadZipBtn: document.getElementById('downloadZipBtn'),
@@ -206,6 +187,7 @@ function initElements() {
         historyGrid: document.getElementById('historyGrid'),
         clearHistoryBtn: document.getElementById('clearHistoryBtn'),
         favoritesGrid: document.getElementById('favoritesGrid'),
+        clearFavoritesBtn: document.getElementById('clearFavoritesBtn'),
 
         // Lightbox
         lightbox: document.getElementById('lightbox'),
@@ -214,10 +196,8 @@ function initElements() {
 
         // Favorites Modal
         favoritesModal: document.getElementById('favoritesModal'),
-        favoritesModalBackdrop: document.getElementById('favoritesModalBackdrop'),
         closeFavoritesModal: document.getElementById('closeFavoritesModal'),
-        favoriteModalTitle: document.getElementById('favoriteModalTitle'),
-        favoritePreview: document.getElementById('favoritePreview'),
+        favoritePreview: document.getElementById('favoritePreviewImg'),
         favoriteModule: document.getElementById('favoriteModule'),
         favoriteStyle: document.getElementById('favoriteStyle'),
         favoriteSeed: document.getElementById('favoriteSeed'),
@@ -240,33 +220,35 @@ function switchModuleType(type) {
     state.moduleType = type;
 
     // Update tabs
-    elements.moduleTypeTabs.querySelectorAll('.module-type-tab').forEach(tab => {
-        tab.classList.toggle('active', tab.dataset.type === type);
-    });
+    if (elements.moduleTypeTabs) {
+        elements.moduleTypeTabs.querySelectorAll('.module-type-tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.type === type);
+        });
+    }
 
     // Hide all module sections
-    elements.imageTextSection.classList.add('hidden');
-    elements.comparisonSection.classList.add('hidden');
-    elements.fourGridSection.classList.add('hidden');
-    elements.standardTextSection.classList.add('hidden');
-    elements.singleImageSection.classList.add('hidden');
+    if (elements.imageTextSection) elements.imageTextSection.classList.add('hidden');
+    if (elements.comparisonSection) elements.comparisonSection.classList.add('hidden');
+    if (elements.fourGridSection) elements.fourGridSection.classList.add('hidden');
+    if (elements.standardTextSection) elements.standardTextSection.classList.add('hidden');
+    if (elements.singleImageSection) elements.singleImageSection.classList.add('hidden');
 
     // Show relevant section
     switch (type) {
         case 'image-text':
-            elements.imageTextSection.classList.remove('hidden');
+            if (elements.imageTextSection) elements.imageTextSection.classList.remove('hidden');
             break;
         case 'comparison':
-            elements.comparisonSection.classList.remove('hidden');
+            if (elements.comparisonSection) elements.comparisonSection.classList.remove('hidden');
             break;
         case 'four-grid':
-            elements.fourGridSection.classList.remove('hidden');
+            if (elements.fourGridSection) elements.fourGridSection.classList.remove('hidden');
             break;
         case 'standard-text':
-            elements.standardTextSection.classList.remove('hidden');
+            if (elements.standardTextSection) elements.standardTextSection.classList.remove('hidden');
             break;
         case 'single-image':
-            elements.singleImageSection.classList.remove('hidden');
+            if (elements.singleImageSection) elements.singleImageSection.classList.remove('hidden');
             break;
     }
 
@@ -323,6 +305,8 @@ function removeComparisonProduct(id) {
 }
 
 function renderComparisonProducts() {
+    if (!elements.comparisonProducts) return;
+
     if (state.comparisonProducts.length === 0) {
         elements.comparisonProducts.innerHTML = '<p class="comparison-empty">Add products to compare</p>';
         return;
@@ -411,6 +395,8 @@ function removeComparisonFeature(id) {
 }
 
 function renderComparisonFeatures() {
+    if (!elements.comparisonFeatures) return;
+
     if (state.comparisonProducts.length === 0) {
         elements.comparisonFeatures.innerHTML = '';
         return;
@@ -533,26 +519,31 @@ function toggleFeatureValue(featureId, productIndex, btn) {
 function switchGridMode(mode) {
     state.gridMode = mode;
 
-    elements.gridModeOptions.querySelectorAll('.option-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.value === mode);
-    });
+    if (elements.gridModeOptions) {
+        elements.gridModeOptions.querySelectorAll('.option-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.value === mode);
+        });
+    }
 
     if (mode === 'upload') {
-        elements.gridUploadMode.classList.remove('hidden');
-        elements.gridGenerateMode.classList.add('hidden');
+        if (elements.gridUploadMode) elements.gridUploadMode.classList.remove('hidden');
+        if (elements.gridGenerateMode) elements.gridGenerateMode.classList.add('hidden');
     } else {
-        elements.gridUploadMode.classList.add('hidden');
-        elements.gridGenerateMode.classList.remove('hidden');
+        if (elements.gridUploadMode) elements.gridUploadMode.classList.add('hidden');
+        if (elements.gridGenerateMode) elements.gridGenerateMode.classList.remove('hidden');
     }
 
     updateGenerateButton();
 }
 
 function setupGridSlots() {
+    if (!elements.gridUploadSlots) return;
+
     const slots = elements.gridUploadSlots.querySelectorAll('.grid-slot');
 
     slots.forEach((slot, index) => {
         const fileInput = slot.querySelector('.grid-file-input');
+        if (!fileInput) return;
 
         slot.addEventListener('click', (e) => {
             if (e.target.classList.contains('btn-remove-grid')) return;
@@ -1073,18 +1064,20 @@ function getModuleRequirementText() {
 
 function updateGenerateButton() {
     const canGenerate = hasRequiredInputs() && !state.isGenerating;
-    elements.generateBtn.disabled = !canGenerate;
-    elements.generateHelper.textContent = getModuleRequirementText();
+    if (elements.generateBtn) elements.generateBtn.disabled = !canGenerate;
+    if (elements.generateHelper) elements.generateHelper.textContent = getModuleRequirementText();
 }
 
 // ============================================
 // DISPLAY
 // ============================================
 function displayResults(results) {
-    elements.resultPlaceholder.classList.add('hidden');
-    elements.resultImages.classList.remove('hidden');
-    elements.resultActions.classList.remove('hidden');
-    elements.feedbackSection.classList.remove('hidden');
+    if (elements.resultPlaceholder) elements.resultPlaceholder.classList.add('hidden');
+    if (elements.resultImages) elements.resultImages.classList.remove('hidden');
+    if (elements.resultActions) elements.resultActions.classList.remove('hidden');
+    if (elements.feedbackSection) elements.feedbackSection.classList.remove('hidden');
+
+    if (!elements.resultImages) return;
 
     // Set grid class based on count
     elements.resultImages.className = 'result-images';
@@ -1110,34 +1103,34 @@ function displayResults(results) {
     });
 
     // Show/hide download buttons
-    elements.downloadBtn.style.display = results.length === 1 ? '' : 'none';
-    elements.downloadZipBtn.style.display = results.length > 1 ? '' : 'none';
+    if (elements.downloadBtn) elements.downloadBtn.style.display = results.length === 1 ? '' : 'none';
+    if (elements.downloadZipBtn) elements.downloadZipBtn.style.display = results.length > 1 ? '' : 'none';
 }
 
 function showLoading() {
-    elements.resultPlaceholder.classList.add('hidden');
-    elements.resultImages.classList.add('hidden');
-    elements.resultLoading.classList.remove('hidden');
-    elements.resultActions.classList.add('hidden');
-    elements.feedbackSection.classList.add('hidden');
+    if (elements.resultPlaceholder) elements.resultPlaceholder.classList.add('hidden');
+    if (elements.resultImages) elements.resultImages.classList.add('hidden');
+    if (elements.resultLoading) elements.resultLoading.classList.remove('hidden');
+    if (elements.resultActions) elements.resultActions.classList.add('hidden');
+    if (elements.feedbackSection) elements.feedbackSection.classList.add('hidden');
 }
 
 function hideLoading() {
-    elements.resultLoading.classList.add('hidden');
+    if (elements.resultLoading) elements.resultLoading.classList.add('hidden');
 }
 
 function updateLoadingStatus(text) {
-    elements.loadingText.textContent = text;
+    if (elements.loadingText) elements.loadingText.textContent = text;
 }
 
 function openLightbox(imageUrl) {
-    elements.lightboxImage.src = imageUrl;
-    elements.lightbox.classList.remove('hidden');
+    if (elements.lightboxImage) elements.lightboxImage.src = imageUrl;
+    if (elements.lightbox) elements.lightbox.classList.remove('hidden');
 }
 
 function closeLightbox() {
-    elements.lightbox.classList.add('hidden');
-    elements.lightboxImage.src = '';
+    if (elements.lightbox) elements.lightbox.classList.add('hidden');
+    if (elements.lightboxImage) elements.lightboxImage.src = '';
 }
 
 // ============================================
@@ -1159,6 +1152,8 @@ async function saveToHistory(imageUrl) {
 }
 
 function renderHistory() {
+    if (!elements.historyGrid) return;
+
     const items = history.getAll();
 
     if (items.length === 0) {
@@ -1168,7 +1163,7 @@ function renderHistory() {
 
     elements.historyGrid.innerHTML = items.slice(0, 9).map(item => `
         <div class="history-item" data-id="${item.id}">
-            <img src="${item.thumbnail || item.imageUrl}" alt="${item.productName || 'A+ Content'}">
+            <img src="${item.thumbnail || item.imageUrl}" alt="${item.productName || 'A+ Content'}" loading="lazy">
         </div>
     `).join('');
 
@@ -1228,6 +1223,8 @@ function captureCurrentSettings() {
 }
 
 function renderFavorites() {
+    if (!elements.favoritesGrid) return;
+
     const items = favorites.getAll();
 
     if (items.length === 0) {
@@ -1237,7 +1234,7 @@ function renderFavorites() {
 
     elements.favoritesGrid.innerHTML = items.slice(0, 9).map(item => `
         <div class="favorite-item" data-id="${item.id}">
-            <img src="${item.thumbnail}" alt="${item.name}">
+            <img src="${item.thumbnail}" alt="${item.name}" loading="lazy">
         </div>
     `).join('');
 
@@ -1255,21 +1252,23 @@ async function openFavoritesModal(id) {
     state.selectedFavorite = favorite;
     state.selectedFavoriteImages = await favorites.getImages(id);
 
-    elements.favoriteModalTitle.textContent = favorite.name;
-    elements.favoriteModule.textContent = favorite.moduleType || 'Unknown';
-    elements.favoriteStyle.textContent = favorite.settings?.visualStyle || 'Unknown';
-    elements.favoriteSeed.textContent = favorite.seed || 'Random';
+    if (elements.favoriteModalTitle) elements.favoriteModalTitle.textContent = favorite.name;
+    if (elements.favoriteModule) elements.favoriteModule.textContent = favorite.moduleType || 'Unknown';
+    if (elements.favoriteStyle) elements.favoriteStyle.textContent = favorite.settings?.visualStyle || 'Unknown';
+    if (elements.favoriteSeed) elements.favoriteSeed.textContent = favorite.seed || 'Random';
 
     const images = state.selectedFavoriteImages || [favorite.thumbnail];
-    elements.favoritePreview.innerHTML = images.map(img =>
-        `<img src="${img}" alt="Favorite preview">`
-    ).join('');
+    if (elements.favoritePreview) {
+        elements.favoritePreview.innerHTML = images.map(img =>
+            `<img src="${img}" alt="Favorite preview">`
+        ).join('');
+    }
 
-    elements.favoritesModal.classList.remove('hidden');
+    if (elements.favoritesModal) elements.favoritesModal.classList.remove('hidden');
 }
 
 function closeFavoritesModal() {
-    elements.favoritesModal.classList.add('hidden');
+    if (elements.favoritesModal) elements.favoritesModal.classList.add('hidden');
     state.selectedFavorite = null;
     state.selectedFavoriteImages = null;
 }
@@ -1286,14 +1285,14 @@ function loadFavoriteSettings() {
     // Update UI
     switchModuleType(settings.moduleType || 'image-text');
 
-    elements.productName.value = settings.productName || '';
-    elements.headline.value = settings.headline || '';
-    elements.bodyText.value = settings.bodyText || '';
-    elements.textHeadline.value = settings.textHeadline || '';
-    elements.textBody.value = settings.textBody || '';
-    elements.gridCaption.value = settings.gridCaption || '';
-    elements.negativePrompt.value = settings.negativePrompt || '';
-    elements.highlightWinner.checked = settings.highlightWinner !== false;
+    if (elements.productName) elements.productName.value = settings.productName || '';
+    if (elements.headline) elements.headline.value = settings.headline || '';
+    if (elements.bodyText) elements.bodyText.value = settings.bodyText || '';
+    if (elements.textHeadline) elements.textHeadline.value = settings.textHeadline || '';
+    if (elements.textBody) elements.textBody.value = settings.textBody || '';
+    if (elements.gridCaption) elements.gridCaption.value = settings.gridCaption || '';
+    if (elements.negativePrompt) elements.negativePrompt.value = settings.negativePrompt || '';
+    if (elements.highlightWinner) elements.highlightWinner.checked = settings.highlightWinner !== false;
 
     // Update option buttons
     updateOptionButtons(elements.textPositionOptions, settings.textPosition || 'right');
@@ -1302,21 +1301,25 @@ function loadFavoriteSettings() {
     updateOptionButtons(elements.variationsOptions, String(settings.variations || 1));
 
     // Update style options
-    elements.visualStyleOptions.querySelectorAll('.style-option').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.value === settings.visualStyle);
-    });
+    if (elements.visualStyleOptions) {
+        elements.visualStyleOptions.querySelectorAll('.style-option').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.value === settings.visualStyle);
+        });
+    }
     updateOptionButtons(elements.colorSchemeOptions, settings.colorScheme || 'match');
 
     if (settings.colorScheme === 'custom') {
-        elements.customColorGroup.classList.remove('hidden');
-        elements.customColor.value = settings.customColor || '#6366f1';
-        elements.customColorPicker.value = settings.customColor || '#6366f1';
+        if (elements.customColorGroup) elements.customColorGroup.classList.remove('hidden');
+        if (elements.customColor) elements.customColor.value = settings.customColor || '#6366f1';
+        if (elements.customColorPicker) elements.customColorPicker.value = settings.customColor || '#6366f1';
     }
 
     // Update single image mode
-    elements.singleImageModeOptions.querySelectorAll('.option-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.value === settings.singleImageMode);
-    });
+    if (elements.singleImageModeOptions) {
+        elements.singleImageModeOptions.querySelectorAll('.option-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.value === settings.singleImageMode);
+        });
+    }
 
     // Grid mode
     switchGridMode(settings.gridMode || 'upload');
@@ -1355,6 +1358,7 @@ async function createThumbnail(base64, maxSize) {
 }
 
 function updateOptionButtons(container, value) {
+    if (!container) return;
     container.querySelectorAll('.option-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.value === value);
     });
@@ -1371,225 +1375,286 @@ function updateCharCount(input, countEl, max) {
 // ============================================
 function setupEventListeners() {
     // Module type tabs
-    elements.moduleTypeTabs.querySelectorAll('.module-type-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            switchModuleType(tab.dataset.type);
+    if (elements.moduleTypeTabs) {
+        elements.moduleTypeTabs.querySelectorAll('.module-type-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchModuleType(tab.dataset.type);
+            });
         });
-    });
+    }
 
     // Product upload
-    SharedUpload.setup(elements.productUploadArea, elements.productFileInput, {
-        onLoad: async (base64) => {
-            state.productImage = base64;
-            state.productThumbnail = await createThumbnail(base64, 150);
-            elements.productPlaceholder.classList.add('hidden');
-            elements.productPreview.classList.remove('hidden');
-            elements.productPreviewImg.src = state.productThumbnail;
+    if (elements.productUploadArea && elements.productFileInput) {
+        SharedUpload.setup(elements.productUploadArea, elements.productFileInput, {
+            onLoad: async (base64) => {
+                state.productImage = base64;
+                state.productThumbnail = await createThumbnail(base64, 150);
+                if (elements.productPlaceholder) elements.productPlaceholder.classList.add('hidden');
+                if (elements.productPreview) elements.productPreview.classList.remove('hidden');
+                if (elements.productPreviewImg) elements.productPreviewImg.src = state.productThumbnail;
 
-            // Auto-populate first comparison product
-            if (state.comparisonProducts.length > 0 && state.comparisonProducts[0].isMain) {
-                state.comparisonProducts[0].image = base64;
-                state.comparisonProducts[0].thumbnail = state.productThumbnail;
-                renderComparisonProducts();
+                // Auto-populate first comparison product
+                if (state.comparisonProducts.length > 0 && state.comparisonProducts[0].isMain) {
+                    state.comparisonProducts[0].image = base64;
+                    state.comparisonProducts[0].thumbnail = state.productThumbnail;
+                    renderComparisonProducts();
+                }
+
+                updateGenerateButton();
             }
+        });
+    }
 
+    if (elements.removeProductBtn) {
+        elements.removeProductBtn.addEventListener('click', () => {
+            state.productImage = null;
+            state.productThumbnail = null;
+            if (elements.productPlaceholder) elements.productPlaceholder.classList.remove('hidden');
+            if (elements.productPreview) elements.productPreview.classList.add('hidden');
+            if (elements.productPreviewImg) elements.productPreviewImg.src = '';
             updateGenerateButton();
-        }
-    });
+        });
+    }
 
-    elements.removeProductBtn.addEventListener('click', () => {
-        state.productImage = null;
-        state.productThumbnail = null;
-        elements.productPlaceholder.classList.remove('hidden');
-        elements.productPreview.classList.add('hidden');
-        elements.productPreviewImg.src = '';
-        updateGenerateButton();
-    });
-
-    elements.productName.addEventListener('input', (e) => {
-        state.productName = e.target.value;
-    });
+    if (elements.productName) {
+        elements.productName.addEventListener('input', (e) => {
+            state.productName = e.target.value;
+        });
+    }
 
     // Image with Text
-    elements.headline.addEventListener('input', (e) => {
-        state.headline = e.target.value;
-        updateCharCount(e.target, elements.headlineCount, 90);
-        updateGenerateButton();
-    });
+    if (elements.headline) {
+        elements.headline.addEventListener('input', (e) => {
+            state.headline = e.target.value;
+            updateGenerateButton();
+        });
+    }
 
-    elements.bodyText.addEventListener('input', (e) => {
-        state.bodyText = e.target.value;
-        updateCharCount(e.target, elements.bodyTextCount, 1000);
-    });
+    if (elements.bodyText) {
+        elements.bodyText.addEventListener('input', (e) => {
+            state.bodyText = e.target.value;
+        });
+    }
 
-    elements.textPositionOptions.querySelectorAll('.option-btn').forEach(btn => {
+    // Text position options (from HTML data attributes)
+    document.querySelectorAll('#imageTextSection .option-btn[data-value]').forEach(btn => {
         btn.addEventListener('click', () => {
             state.textPosition = btn.dataset.value;
-            updateOptionButtons(elements.textPositionOptions, btn.dataset.value);
-        });
-    });
-
-    // Comparison
-    elements.addComparisonProductBtn.addEventListener('click', addComparisonProduct);
-    elements.addComparisonFeatureBtn.addEventListener('click', () => addComparisonFeature());
-    elements.highlightWinner.addEventListener('change', (e) => {
-        state.highlightWinner = e.target.checked;
-    });
-
-    // Four-Grid
-    elements.gridModeOptions.querySelectorAll('.option-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            switchGridMode(btn.dataset.value);
-        });
-    });
-    setupGridSlots();
-    elements.gridCaption.addEventListener('input', (e) => {
-        state.gridCaption = e.target.value;
-    });
-
-    // Standard Text
-    elements.textHeadline.addEventListener('input', (e) => {
-        state.textHeadline = e.target.value;
-        updateCharCount(e.target, elements.textHeadlineCount, 150);
-        updateGenerateButton();
-    });
-
-    elements.textBody.addEventListener('input', (e) => {
-        state.textBody = e.target.value;
-        updateCharCount(e.target, elements.textBodyCount, 2000);
-        updateGenerateButton();
-    });
-
-    elements.textAlignmentOptions.querySelectorAll('.option-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            state.textAlignment = btn.dataset.value;
-            updateOptionButtons(elements.textAlignmentOptions, btn.dataset.value);
-        });
-    });
-
-    // Single Image
-    elements.singleImageModeOptions.querySelectorAll('.option-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            state.singleImageMode = btn.dataset.value;
-            updateOptionButtons(elements.singleImageModeOptions, btn.dataset.value);
-        });
-    });
-
-    // Visual Style
-    elements.visualStyleOptions.querySelectorAll('.style-option').forEach(btn => {
-        btn.addEventListener('click', () => {
-            state.visualStyle = btn.dataset.value;
-            elements.visualStyleOptions.querySelectorAll('.style-option').forEach(b => {
-                b.classList.toggle('active', b === btn);
+            document.querySelectorAll('#imageTextSection .option-btn[data-value]').forEach(b => {
+                b.classList.toggle('active', b.dataset.value === btn.dataset.value);
             });
         });
     });
 
-    elements.colorSchemeOptions.querySelectorAll('.option-btn').forEach(btn => {
+    // Comparison
+    if (elements.addComparisonProductBtn) {
+        elements.addComparisonProductBtn.addEventListener('click', addComparisonProduct);
+    }
+    if (elements.addComparisonFeatureBtn) {
+        elements.addComparisonFeatureBtn.addEventListener('click', () => addComparisonFeature());
+    }
+
+    // Four-Grid
+    setupGridSlots();
+
+    // Standard Text
+    if (elements.textHeadline) {
+        elements.textHeadline.addEventListener('input', (e) => {
+            state.textHeadline = e.target.value;
+            updateGenerateButton();
+        });
+    }
+
+    if (elements.textBody) {
+        elements.textBody.addEventListener('input', (e) => {
+            state.textBody = e.target.value;
+            updateGenerateButton();
+        });
+    }
+
+    // Single Image mode options
+    document.querySelectorAll('#singleImageSection .option-btn[data-value]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            state.singleImageMode = btn.dataset.value;
+            document.querySelectorAll('#singleImageSection .option-btn[data-value]').forEach(b => {
+                b.classList.toggle('active', b.dataset.value === btn.dataset.value);
+            });
+        });
+    });
+
+    // Visual Style
+    if (elements.visualStyleOptions) {
+        elements.visualStyleOptions.querySelectorAll('.style-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.visualStyle = btn.dataset.value;
+                elements.visualStyleOptions.querySelectorAll('.style-option').forEach(b => {
+                    b.classList.toggle('active', b === btn);
+                });
+            });
+        });
+    }
+
+    // Color scheme options
+    document.querySelectorAll('.color-scheme-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             state.colorScheme = btn.dataset.value;
-            updateOptionButtons(elements.colorSchemeOptions, btn.dataset.value);
-            elements.customColorGroup.classList.toggle('hidden', btn.dataset.value !== 'custom');
+            document.querySelectorAll('.color-scheme-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.value === btn.dataset.value);
+            });
+            if (elements.customColorGroup) {
+                elements.customColorGroup.classList.toggle('hidden', btn.dataset.value !== 'custom');
+            }
         });
     });
 
-    elements.customColorPicker.addEventListener('input', (e) => {
-        state.customColor = e.target.value;
-        elements.customColor.value = e.target.value;
-    });
+    if (elements.customColorPicker) {
+        elements.customColorPicker.addEventListener('input', (e) => {
+            state.customColor = e.target.value;
+            if (elements.customColor) elements.customColor.value = e.target.value;
+        });
+    }
 
-    elements.customColor.addEventListener('input', (e) => {
-        state.customColor = e.target.value;
-        elements.customColorPicker.value = e.target.value;
-    });
+    if (elements.customColor) {
+        elements.customColor.addEventListener('input', (e) => {
+            state.customColor = e.target.value;
+            if (elements.customColorPicker) elements.customColorPicker.value = e.target.value;
+        });
+    }
 
     // Advanced options
-    SharedCollapsible.setup(elements.advancedToggle, elements.advancedContent);
+    if (elements.advancedToggle && elements.advancedContent) {
+        SharedCollapsible.setup(elements.advancedToggle, elements.advancedContent);
+    }
 
-    elements.variationsOptions.querySelectorAll('.option-btn').forEach(btn => {
+    // Variations options
+    document.querySelectorAll('.variations-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             state.variations = parseInt(btn.dataset.value);
-            updateOptionButtons(elements.variationsOptions, btn.dataset.value);
+            document.querySelectorAll('.variations-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.value === btn.dataset.value);
+            });
         });
     });
 
-    elements.useRandomSeed.addEventListener('change', (e) => {
-        state.useRandomSeed = e.target.checked;
-        elements.seedGroup.classList.toggle('hidden', e.target.checked);
-    });
+    if (elements.seed) {
+        elements.seed.addEventListener('input', (e) => {
+            state.seed = parseInt(e.target.value) || null;
+        });
+    }
 
-    elements.seed.addEventListener('input', (e) => {
-        state.seed = parseInt(e.target.value) || null;
-    });
-
-    elements.negativePrompt.addEventListener('input', (e) => {
-        state.negativePrompt = e.target.value;
-    });
+    if (elements.negativePrompt) {
+        elements.negativePrompt.addEventListener('input', (e) => {
+            state.negativePrompt = e.target.value;
+        });
+    }
 
     // API settings
-    SharedCollapsible.setup(elements.apiToggle, elements.apiContent);
+    if (elements.apiToggle && elements.apiContent) {
+        SharedCollapsible.setup(elements.apiToggle, elements.apiContent);
+    }
 
-    elements.apiKey.addEventListener('input', (e) => {
-        state.apiKey = e.target.value;
-        SharedAPI.save(e.target.value);
-        updateGenerateButton();
-    });
+    if (elements.apiKey) {
+        elements.apiKey.addEventListener('input', (e) => {
+            state.apiKey = e.target.value;
+            SharedAPI.save(e.target.value);
+            updateGenerateButton();
+        });
+    }
 
-    elements.aiModel.addEventListener('change', (e) => {
-        state.model = e.target.value;
-    });
+    if (elements.aiModel) {
+        elements.aiModel.addEventListener('change', (e) => {
+            state.model = e.target.value;
+        });
+    }
 
     // Generate
-    elements.generateBtn.addEventListener('click', generateContent);
-    elements.adjustBtn.addEventListener('click', generateWithAdjustment);
+    if (elements.generateBtn) {
+        elements.generateBtn.addEventListener('click', generateContent);
+    }
+    if (elements.adjustBtn) {
+        elements.adjustBtn.addEventListener('click', generateWithAdjustment);
+    }
 
     // Result actions
-    elements.downloadBtn.addEventListener('click', () => {
-        if (state.generatedImages.length > 0) {
-            SharedDownload.downloadImage(state.generatedImages[0].imageUrl, 'aplus-content');
-        }
-    });
+    if (elements.downloadBtn) {
+        elements.downloadBtn.addEventListener('click', () => {
+            if (state.generatedImages.length > 0) {
+                SharedDownload.downloadImage(state.generatedImages[0].imageUrl, 'aplus-content');
+            }
+        });
+    }
 
-    elements.downloadZipBtn.addEventListener('click', async () => {
-        if (state.generatedImages.length > 1) {
-            const images = state.generatedImages.map(r => r.imageUrl);
-            await SharedDownload.downloadZip(images, 'aplus-content');
-        }
-    });
+    if (elements.downloadZipBtn) {
+        elements.downloadZipBtn.addEventListener('click', async () => {
+            if (state.generatedImages.length > 1) {
+                const images = state.generatedImages.map(r => r.imageUrl);
+                await SharedDownload.downloadZip(images, 'aplus-content');
+            }
+        });
+    }
 
-    elements.favoriteBtn.addEventListener('click', saveFavorite);
+    if (elements.favoriteBtn) {
+        elements.favoriteBtn.addEventListener('click', saveFavorite);
+    }
 
-    elements.copyPromptBtn.addEventListener('click', () => {
-        if (state.lastPrompt) {
-            navigator.clipboard.writeText(state.lastPrompt);
-            SharedUI.showSuccess('Prompt copied to clipboard');
-        }
-    });
+    if (elements.copyPromptBtn) {
+        elements.copyPromptBtn.addEventListener('click', () => {
+            if (state.lastPrompt) {
+                navigator.clipboard.writeText(state.lastPrompt);
+                SharedUI.showSuccess('Prompt copied to clipboard');
+            }
+        });
+    }
 
     // History & Favorites
-    elements.clearHistoryBtn.addEventListener('click', async () => {
-        if (confirm('Clear all history?')) {
-            await history.clear();
-            renderHistory();
-        }
-    });
+    if (elements.clearHistoryBtn) {
+        elements.clearHistoryBtn.addEventListener('click', async () => {
+            if (await SharedUI.confirm('Clear all history? This cannot be undone.', { title: 'Clear History', confirmText: 'Clear', icon: 'warning' })) {
+                await history.clear();
+                renderHistory();
+            }
+        });
+    }
+
+    if (elements.clearFavoritesBtn) {
+        elements.clearFavoritesBtn.addEventListener('click', async () => {
+            if (await SharedUI.confirm('Clear all favorites? This cannot be undone.', { title: 'Clear Favorites', confirmText: 'Clear All', icon: 'warning' })) {
+                await favorites.clear();
+                renderFavorites();
+            }
+        });
+    }
 
     // Favorites modal
-    elements.closeFavoritesModal.addEventListener('click', closeFavoritesModal);
-    elements.favoritesModalBackdrop.addEventListener('click', closeFavoritesModal);
-    elements.loadFavoriteBtn.addEventListener('click', loadFavoriteSettings);
-    elements.deleteFavoriteBtn.addEventListener('click', deleteFavorite);
+    if (elements.closeFavoritesModal) {
+        elements.closeFavoritesModal.addEventListener('click', closeFavoritesModal);
+    }
+    if (elements.favoritesModal) {
+        elements.favoritesModal.addEventListener('click', (e) => {
+            if (e.target === elements.favoritesModal) closeFavoritesModal();
+        });
+    }
+    if (elements.loadFavoriteBtn) {
+        elements.loadFavoriteBtn.addEventListener('click', loadFavoriteSettings);
+    }
+    if (elements.deleteFavoriteBtn) {
+        elements.deleteFavoriteBtn.addEventListener('click', deleteFavorite);
+    }
 
     // Lightbox
-    elements.lightboxClose.addEventListener('click', closeLightbox);
-    elements.lightbox.addEventListener('click', (e) => {
-        if (e.target === elements.lightbox) closeLightbox();
-    });
+    if (elements.lightboxClose) {
+        elements.lightboxClose.addEventListener('click', closeLightbox);
+    }
+    if (elements.lightbox) {
+        elements.lightbox.addEventListener('click', (e) => {
+            if (e.target === elements.lightbox) closeLightbox();
+        });
+    }
 
     // Keyboard shortcuts
     SharedKeyboard.setup({
         onGenerate: () => {
-            if (!elements.generateBtn.disabled) generateContent();
+            if (elements.generateBtn && !elements.generateBtn.disabled) generateContent();
         },
         onDownload: () => {
             if (state.generatedImages.length > 0) {
@@ -1597,8 +1662,8 @@ function setupEventListeners() {
             }
         },
         onEscape: () => {
-            if (!elements.lightbox.classList.contains('hidden')) closeLightbox();
-            if (!elements.favoritesModal.classList.contains('hidden')) closeFavoritesModal();
+            if (elements.lightbox && !elements.lightbox.classList.contains('hidden')) closeLightbox();
+            if (elements.favoritesModal && !elements.favoritesModal.classList.contains('hidden')) closeFavoritesModal();
         }
     });
 }
@@ -1627,7 +1692,7 @@ async function init() {
     const savedKey = SharedAPI.getKey();
     if (savedKey) {
         state.apiKey = savedKey;
-        elements.apiKey.value = savedKey;
+        if (elements.apiKey) elements.apiKey.value = savedKey;
     }
 
     // Setup event listeners

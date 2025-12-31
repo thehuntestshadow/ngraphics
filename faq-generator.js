@@ -757,7 +757,7 @@ function renderFavorites() {
 
         item.querySelector('.favorite-delete-btn')?.addEventListener('click', async (e) => {
             e.stopPropagation();
-            if (confirm('Delete this favorite?')) {
+            if (await SharedUI.confirm('Delete this favorite?', { title: 'Delete Favorite', confirmText: 'Delete', icon: 'danger' })) {
                 await favorites.remove(id);
                 renderFavorites();
                 showSuccess('Favorite deleted');
@@ -984,7 +984,7 @@ function setupEventListeners() {
 
     // Clear history
     elements.clearHistoryBtn?.addEventListener('click', async () => {
-        if (confirm('Clear all history?')) {
+        if (await SharedUI.confirm('Clear all history? This cannot be undone.', { title: 'Clear History', confirmText: 'Clear', icon: 'warning' })) {
             await history.clear();
             renderHistory();
             showSuccess('History cleared');
@@ -993,7 +993,7 @@ function setupEventListeners() {
 
     // Clear favorites
     elements.clearFavoritesBtn?.addEventListener('click', async () => {
-        if (confirm('Clear all favorites?')) {
+        if (await SharedUI.confirm('Clear all favorites? This cannot be undone.', { title: 'Clear Favorites', confirmText: 'Clear All', icon: 'warning' })) {
             await favorites.clear();
             renderFavorites();
             showSuccess('Favorites cleared');

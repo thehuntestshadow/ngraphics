@@ -2241,7 +2241,9 @@ const SharedDashboard = {
         aplus: { history: 'aplus_generator_history', favorites: 'aplus_generator_favorites' },
         productVariants: { history: 'product_variants_history', favorites: 'product_variants_favorites' },
         socialStudio: { history: 'social_studio_history', favorites: 'social_studio_favorites' },
-        exportCenter: { history: 'export_center_history', favorites: 'export_center_favorites' }
+        exportCenter: { history: 'export_center_history', favorites: 'export_center_favorites' },
+        adCreative: { history: 'ad_creative_history', favorites: 'ad_creative_favorites' },
+        modelVideo: { history: 'model_video_history', favorites: 'model_video_favorites' }
     },
 
     /**

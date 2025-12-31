@@ -595,7 +595,7 @@ function renderHistory() {
 
     elements.historyGrid.innerHTML = items.map(item => `
         <div class="history-item" data-id="${item.id}">
-            <img src="${item.thumbnail}" alt="${item.title || 'Card'}">
+            <img src="${item.thumbnail}" alt="${item.title || 'Card'}" loading="lazy">
             <div class="history-item-overlay">
                 <span class="history-item-text">${item.title || 'Card'}</span>
             </div>
@@ -623,7 +623,7 @@ function renderFavorites() {
 
     elements.favoritesGrid.innerHTML = items.slice(0, 6).map(item => `
         <div class="favorite-item" data-id="${item.id}">
-            <img src="${item.thumbnail}" alt="${item.name || 'Favorite'}">
+            <img src="${item.thumbnail}" alt="${item.name || 'Favorite'}" loading="lazy">
             <div class="favorite-item-overlay">
                 <span class="favorite-item-name">${item.name || 'Favorite'}</span>
             </div>

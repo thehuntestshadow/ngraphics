@@ -580,7 +580,7 @@ function addToHistory() {
 }
 
 function renderHistory() {
-    const items = history.getImages();
+    const items = history.getAll();
     elements.historyCount.textContent = items.length;
 
     if (items.length === 0) {
@@ -591,7 +591,7 @@ function renderHistory() {
     elements.historyEmpty.style.display = 'none';
     elements.historyGrid.innerHTML = items.map(item => `
         <div class="history-item" data-id="${item.id}">
-            <img src="${item.thumbnail}" alt="Export">
+            <img src="${item.thumbnail}" alt="Export" loading="lazy">
             <div class="history-item-overlay">
                 <span class="history-tool">${item.tool}</span>
                 <span class="history-count">${item.count} image${item.count > 1 ? 's' : ''}</span>
