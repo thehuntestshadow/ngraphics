@@ -48,7 +48,11 @@
       "mcp__memory-keeper__context_session_list",
       "Bash(claude mcp list:*)",
       "Bash(claude mcp remove:*)",
-      "mcp__memory-keeper__context_save"
+      "mcp__memory-keeper__context_save",
+      "mcp__playwright__browser_wait_for",
+      "Bash(git stash pop:*)",
+      "Bash(git stash drop:*)",
+      "mcp__playwright__browser_resize"
     ]
   }
 }
