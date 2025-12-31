@@ -611,14 +611,9 @@ function updateColor(color) {
 }
 
 function updateApiStatus() {
-    const apiKey = elements.apiKey.value.trim();
+    const apiKey = elements.apiKey?.value?.trim();
     if (apiKey) {
         localStorage.setItem('openrouter_api_key', apiKey);
-        elements.apiStatus.classList.add('connected');
-        elements.apiStatus.querySelector('.status-text').textContent = 'Connected';
-    } else {
-        elements.apiStatus.classList.remove('connected');
-        elements.apiStatus.querySelector('.status-text').textContent = 'Not connected';
     }
 }
 

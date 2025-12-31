@@ -483,7 +483,7 @@ function initElements() {
 // ============================================
 // LANGUAGE HANDLING
 // ============================================
-const translations = {
+const pageTranslations = {
     en: {
         titleHint: '(in English)',
         charHint: 'Star = primary',
@@ -513,7 +513,7 @@ function updateLanguage(lang) {
         opt.classList.toggle('active', opt.dataset.lang === lang);
     });
 
-    const t = translations[lang];
+    const t = pageTranslations[lang];
     elements.titleHint.textContent = t.titleHint;
     elements.charHint.textContent = t.charHint;
     elements.productTitle.placeholder = t.titlePlaceholder;
