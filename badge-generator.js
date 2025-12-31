@@ -840,6 +840,12 @@ async function init() {
     // Header is pre-rendered in HTML to prevent flash
     SharedTheme.init();
     SharedTheme.setupToggle(document.getElementById('themeToggle'));
+    // Initialize account menu (Supabase auth)
+    const accountContainer = document.getElementById('accountContainer');
+    if (accountContainer && typeof AccountMenu !== 'undefined') {
+        new AccountMenu(accountContainer);
+    }
+
 
     // Render initial state
     elements.badgeText.value = state.badgeText;

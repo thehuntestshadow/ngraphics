@@ -940,6 +940,12 @@ async function init() {
     // Setup theme
     SharedTheme.init();
     SharedTheme.setupToggle(document.getElementById('themeToggle'));
+    // Initialize account menu (Supabase auth)
+    const accountContainer = document.getElementById('accountContainer');
+    if (accountContainer && typeof AccountMenu !== 'undefined') {
+        new AccountMenu(accountContainer);
+    }
+
 
     // Render history and favorites
     await renderHistory();

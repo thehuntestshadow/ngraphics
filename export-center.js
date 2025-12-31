@@ -804,6 +804,12 @@ async function init() {
     SharedTheme.init();
     SharedTheme.setupToggle();
 
+    // Initialize account menu (Supabase auth)
+    const accountContainer = document.getElementById('accountContainer');
+    if (accountContainer && typeof AccountMenu !== 'undefined') {
+        new AccountMenu(accountContainer);
+    }
+
     // Render history
     renderHistory();
 }

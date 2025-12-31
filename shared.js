@@ -430,6 +430,33 @@ class SharedHistory {
         this.maxItems = maxItems;
         this.items = [];
         this.imageStore = null; // Will be set after ImageStore is created
+        this.studioName = this._deriveStudioName(storageKey);
+    }
+
+    // Derive studio name from storage key for cloud sync
+    _deriveStudioName(key) {
+        const keyMap = {
+            'ngraphics_history': 'infographics',
+            'model_studio_history': 'modelStudio',
+            'bundle_studio_history': 'bundleStudio',
+            'lifestyle_studio_history': 'lifestyleStudio',
+            'copywriter_history': 'copywriter',
+            'packaging_history': 'packaging',
+            'comparison_generator_history': 'comparison',
+            'size_visualizer_history': 'sizeVisualizer',
+            'faq_generator_history': 'faqGenerator',
+            'background_studio_history': 'backgroundStudio',
+            'badge_generator_history': 'badgeGenerator',
+            'feature_cards_history': 'featureCards',
+            'size_chart_history': 'sizeChart',
+            'aplus_generator_history': 'aplus',
+            'product_variants_history': 'productVariants',
+            'social_studio_history': 'socialStudio',
+            'export_center_history': 'exportCenter',
+            'ad_creative_history': 'adCreative',
+            'model_video_history': 'modelVideo'
+        };
+        return keyMap[key] || 'unknown';
     }
 
     // Set the image store (called after imageStore is available)
@@ -508,6 +535,17 @@ class SharedHistory {
         }
 
         this.save();
+
+        // Cloud sync (non-blocking)
+        if (typeof cloudSync !== 'undefined' && cloudSync.canSync) {
+            cloudSync.uploadHistoryItem(this.studioName, item, {
+                imageUrl: primaryImage,
+                imageUrls: imageUrls,
+                thumbnail,
+                productImageBase64: metadata.productImageBase64 || null
+            });
+        }
+
         return item;
     }
 
@@ -748,6 +786,33 @@ class SharedFavorites {
         this.maxItems = maxItems;
         this.items = [];
         this.imageStore = null;
+        this.studioName = this._deriveStudioName(storageKey);
+    }
+
+    // Derive studio name from storage key for cloud sync
+    _deriveStudioName(key) {
+        const keyMap = {
+            'ngraphics_favorites': 'infographics',
+            'model_studio_favorites': 'modelStudio',
+            'bundle_studio_favorites': 'bundleStudio',
+            'lifestyle_studio_favorites': 'lifestyleStudio',
+            'copywriter_favorites': 'copywriter',
+            'packaging_favorites': 'packaging',
+            'comparison_generator_favorites': 'comparison',
+            'size_visualizer_favorites': 'sizeVisualizer',
+            'faq_generator_favorites': 'faqGenerator',
+            'background_studio_favorites': 'backgroundStudio',
+            'badge_generator_favorites': 'badgeGenerator',
+            'feature_cards_favorites': 'featureCards',
+            'size_chart_favorites': 'sizeChart',
+            'aplus_generator_favorites': 'aplus',
+            'product_variants_favorites': 'productVariants',
+            'social_studio_favorites': 'socialStudio',
+            'export_center_favorites': 'exportCenter',
+            'ad_creative_favorites': 'adCreative',
+            'model_video_favorites': 'modelVideo'
+        };
+        return keyMap[key] || 'unknown';
     }
 
     setImageStore(store) {
@@ -825,6 +890,16 @@ class SharedFavorites {
         }
 
         this.save();
+
+        // Cloud sync (non-blocking)
+        if (typeof cloudSync !== 'undefined' && cloudSync.canSync) {
+            cloudSync.uploadFavoriteItem(this.studioName, item, {
+                imageUrl: images.imageUrl,
+                imageUrls: images.imageUrls,
+                thumbnail: item.thumbnail
+            });
+        }
+
         return item;
     }
 

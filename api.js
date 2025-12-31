@@ -71,18 +71,36 @@ class APIClient {
         this.onRequestStart = options.onRequestStart || null;
         this.onRequestEnd = options.onRequestEnd || null;
         this.onError = options.onError || null;
+
+        // Cloud API key cache
+        this._cloudApiKey = null;
+        this._cloudApiKeyLoaded = false;
     }
 
     // ========================================
     // API KEY MANAGEMENT
     // ========================================
+
+    /**
+     * Get API key - checks cloud key first if authenticated, falls back to localStorage
+     */
     get apiKey() {
+        // If cloud key is loaded and available, use it
+        if (this._cloudApiKey) {
+            return this._cloudApiKey;
+        }
+        // Fall back to localStorage
         return localStorage.getItem('openrouter_api_key') || '';
     }
 
+    /**
+     * Set API key in localStorage (and optionally sync to cloud)
+     */
     set apiKey(key) {
         if (key) {
             localStorage.setItem('openrouter_api_key', key);
+            // Sync to cloud if authenticated (non-blocking)
+            this._syncApiKeyToCloud(key);
         } else {
             localStorage.removeItem('openrouter_api_key');
         }
@@ -90,6 +108,51 @@ class APIClient {
 
     hasApiKey() {
         return !!this.apiKey;
+    }
+
+    /**
+     * Load API key from cloud (call after user signs in)
+     * @returns {Promise<string|null>} The cloud API key or null
+     */
+    async loadCloudApiKey() {
+        if (typeof ngSupabase === 'undefined' || !ngSupabase.isAuthenticated) {
+            return null;
+        }
+
+        try {
+            this._cloudApiKey = await ngSupabase.getApiKey('openrouter');
+            this._cloudApiKeyLoaded = true;
+            console.log('[API] Cloud API key loaded:', this._cloudApiKey ? 'yes' : 'no');
+            return this._cloudApiKey;
+        } catch (error) {
+            console.warn('[API] Failed to load cloud API key:', error.message);
+            return null;
+        }
+    }
+
+    /**
+     * Sync local API key to cloud storage (non-blocking)
+     */
+    async _syncApiKeyToCloud(key) {
+        if (typeof ngSupabase === 'undefined' || !ngSupabase.isAuthenticated) {
+            return;
+        }
+
+        try {
+            await ngSupabase.saveApiKey('openrouter', key);
+            this._cloudApiKey = key;
+            console.log('[API] API key synced to cloud');
+        } catch (error) {
+            console.warn('[API] Failed to sync API key to cloud:', error.message);
+        }
+    }
+
+    /**
+     * Clear cloud API key cache (call on sign out)
+     */
+    clearCloudApiKey() {
+        this._cloudApiKey = null;
+        this._cloudApiKeyLoaded = false;
     }
 
     // ========================================

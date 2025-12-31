@@ -997,6 +997,12 @@ async function init() {
     // Header is pre-rendered in HTML to prevent flash
     SharedTheme.init();
     SharedTheme.setupToggle(document.getElementById('themeToggle'));
+    // Initialize account menu (Supabase auth)
+    const accountContainer = document.getElementById('accountContainer');
+    if (accountContainer && typeof AccountMenu !== 'undefined') {
+        new AccountMenu(accountContainer);
+    }
+
 
     // Load API key
     const savedKey = localStorage.getItem('openrouter_api_key');

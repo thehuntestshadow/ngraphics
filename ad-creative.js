@@ -1,6 +1,6 @@
 /**
- * Social Studio - NGRAPHICS
- * Create social media graphics for all platforms
+ * Ad Creative - NGRAPHICS
+ * Create banner ads for Google, Facebook, Amazon & Instagram
  */
 
 // ============================================
@@ -17,32 +17,30 @@ const state = {
     lastPrompt: null,
     lastSeed: null,
 
-    // Format
-    format: 'post',
-    platform: 'instagram',
-    aspectRatio: '1:1',
+    // Platform & Size
+    platform: 'google',
+    adSize: '300x250',
 
-    // Carousel
-    slideCount: 4,
-    slideContent: 'features',
-
-    // Content
+    // Ad Content
     headline: '',
-    bodyText: '',
-    ctaText: '',
+    description: '',
+    ctaText: 'Shop Now',
+    includePrice: false,
+    price: '',
+    includeBadge: false,
+    badgeType: 'sale',
 
     // Style
     style: 'modern',
     colorScheme: 'auto',
     customColor: '#6366f1',
+    textPosition: 'bottom',
 
     // Advanced
     aiModel: 'google/gemini-2.0-flash-exp:free',
     seed: '',
     variations: 1,
-    includeLogo: false,
-    includePrice: false,
-    includeBadge: true,
+    quality: 'standard',
 
     // UI
     selectedFavorite: null
@@ -57,17 +55,12 @@ let elements = {};
 function initElements() {
     elements = {
         // Form
-        socialForm: document.getElementById('socialForm'),
+        adForm: document.getElementById('adForm'),
 
-        // Format
-        formatTabs: document.getElementById('formatTabs'),
-        platformSection: document.getElementById('platformSection'),
-        platformGrid: document.getElementById('platformGrid'),
-        aspectSection: document.getElementById('aspectSection'),
-        aspectGrid: document.getElementById('aspectGrid'),
-
-        // Carousel
-        carouselSection: document.getElementById('carouselSection'),
+        // Platform & Size
+        platformTabs: document.getElementById('platformTabs'),
+        sizeGrid: document.getElementById('sizeGrid'),
+        sizeIndicator: document.getElementById('sizeIndicator'),
 
         // Upload
         uploadArea: document.getElementById('uploadArea'),
@@ -78,8 +71,15 @@ function initElements() {
 
         // Content
         headline: document.getElementById('headline'),
-        bodyText: document.getElementById('bodyText'),
-        ctaText: document.getElementById('ctaText'),
+        headlineCount: document.getElementById('headlineCount'),
+        description: document.getElementById('description'),
+        descCount: document.getElementById('descCount'),
+        ctaSelect: document.getElementById('ctaSelect'),
+        includePrice: document.getElementById('includePrice'),
+        priceGroup: document.getElementById('priceGroup'),
+        priceValue: document.getElementById('priceValue'),
+        includeBadge: document.getElementById('includeBadge'),
+        badgeType: document.getElementById('badgeType'),
 
         // Advanced
         advancedToggle: document.getElementById('advancedToggle'),
@@ -87,9 +87,6 @@ function initElements() {
         aiModel: document.getElementById('aiModel'),
         seedInput: document.getElementById('seedInput'),
         randomizeSeed: document.getElementById('randomizeSeed'),
-        includeLogo: document.getElementById('includeLogo'),
-        includePrice: document.getElementById('includePrice'),
-        includeBadge: document.getElementById('includeBadge'),
 
         // API Settings
         settingsToggle: document.getElementById('settingsToggle'),
@@ -151,67 +148,62 @@ function initElements() {
 // STORAGE
 // ============================================
 
-const history = new SharedHistory('social_studio_history', 20);
-const favorites = new SharedFavorites('social_studio_favorites', 50);
+const history = new SharedHistory('ad_creative_history', 20);
+const favorites = new SharedFavorites('ad_creative_favorites', 50);
+
+// ============================================
+// PLATFORM CONFIGS
+// ============================================
+
+const platformConfigs = {
+    google: {
+        name: 'Google Display',
+        sizes: [
+            { id: '300x250', name: 'Medium Rectangle', width: 300, height: 250, popular: true },
+            { id: '728x90', name: 'Leaderboard', width: 728, height: 90 },
+            { id: '160x600', name: 'Wide Skyscraper', width: 160, height: 600 },
+            { id: '300x600', name: 'Half Page', width: 300, height: 600 },
+            { id: '320x50', name: 'Mobile Banner', width: 320, height: 50 },
+            { id: '336x280', name: 'Large Rectangle', width: 336, height: 280 }
+        ]
+    },
+    facebook: {
+        name: 'Facebook/Meta',
+        sizes: [
+            { id: '1200x628', name: 'Link Ad', width: 1200, height: 628, popular: true },
+            { id: '1080x1080', name: 'Feed Square', width: 1080, height: 1080 },
+            { id: '1080x1920', name: 'Story Ad', width: 1080, height: 1920 },
+            { id: '1200x1200', name: 'Carousel', width: 1200, height: 1200 }
+        ]
+    },
+    amazon: {
+        name: 'Amazon',
+        sizes: [
+            { id: '1200x628', name: 'Headline Search', width: 1200, height: 628, popular: true },
+            { id: '970x250', name: 'Billboard', width: 970, height: 250 },
+            { id: '300x250', name: 'Product Display', width: 300, height: 250 },
+            { id: '160x600', name: 'Skyscraper', width: 160, height: 600 }
+        ]
+    },
+    instagram: {
+        name: 'Instagram',
+        sizes: [
+            { id: '1080x1080', name: 'Feed Post', width: 1080, height: 1080, popular: true },
+            { id: '1080x1350', name: 'Portrait', width: 1080, height: 1350 },
+            { id: '1080x1920', name: 'Story/Reel', width: 1080, height: 1920 },
+            { id: '1080x566', name: 'Landscape', width: 1080, height: 566 }
+        ]
+    }
+};
 
 // ============================================
 // DESCRIPTION MAPS
 // ============================================
 
-const formatDescriptions = {
-    'post': 'Standard social media post for feeds',
-    'story': 'Vertical format for Stories and Reels (9:16)',
-    'carousel': 'Multi-slide carousel post with swipeable content',
-    'pinterest': 'Tall vertical format optimized for Pinterest (2:3)',
-    'thumbnail': 'Video thumbnail for YouTube, TikTok, or covers'
-};
-
-const platformConfigs = {
-    'post': {
-        platforms: [
-            { id: 'instagram', name: 'Instagram', dimensions: '1080×1080' },
-            { id: 'facebook', name: 'Facebook', dimensions: '1200×1200' },
-            { id: 'twitter', name: 'Twitter/X', dimensions: '1200×675' },
-            { id: 'linkedin', name: 'LinkedIn', dimensions: '1200×627' }
-        ],
-        defaultAspect: '1:1'
-    },
-    'story': {
-        platforms: [
-            { id: 'instagram', name: 'Instagram', dimensions: '1080×1920' },
-            { id: 'facebook', name: 'Facebook', dimensions: '1080×1920' },
-            { id: 'tiktok', name: 'TikTok', dimensions: '1080×1920' },
-            { id: 'youtube', name: 'YouTube Shorts', dimensions: '1080×1920' }
-        ],
-        defaultAspect: '9:16'
-    },
-    'carousel': {
-        platforms: [
-            { id: 'instagram', name: 'Instagram', dimensions: '1080×1080' },
-            { id: 'linkedin', name: 'LinkedIn', dimensions: '1080×1080' }
-        ],
-        defaultAspect: '1:1'
-    },
-    'pinterest': {
-        platforms: [
-            { id: 'pinterest', name: 'Pinterest', dimensions: '1000×1500' }
-        ],
-        defaultAspect: '2:3'
-    },
-    'thumbnail': {
-        platforms: [
-            { id: 'youtube', name: 'YouTube', dimensions: '1280×720' },
-            { id: 'tiktok', name: 'TikTok', dimensions: '1080×1920' },
-            { id: 'vimeo', name: 'Vimeo', dimensions: '1280×720' }
-        ],
-        defaultAspect: '16:9'
-    }
-};
-
 const styleDescriptions = {
     'modern': 'Clean, contemporary design with bold typography, geometric shapes, and gradient accents',
-    'minimal': 'Simple, understated design with plenty of white space, thin fonts, and subtle details',
     'bold': 'Eye-catching design with large text, vibrant colors, and strong visual impact',
+    'minimal': 'Simple, understated design with plenty of white space, thin fonts, and subtle details',
     'elegant': 'Sophisticated design with serif fonts, muted colors, and refined aesthetics',
     'playful': 'Fun, energetic design with bright colors, rounded shapes, and dynamic elements',
     'dark': 'Dark theme design with dramatic lighting, high contrast, and moody atmosphere'
@@ -226,12 +218,24 @@ const colorDescriptions = {
     'mono': 'Monochromatic dark grays and blacks'
 };
 
-const aspectDimensions = {
-    '1:1': { width: 1080, height: 1080 },
-    '4:5': { width: 1080, height: 1350 },
-    '16:9': { width: 1280, height: 720 },
-    '9:16': { width: 1080, height: 1920 },
-    '2:3': { width: 1000, height: 1500 }
+const positionDescriptions = {
+    'top-left': 'top-left corner',
+    'top': 'top center',
+    'top-right': 'top-right corner',
+    'left': 'left side, vertically centered',
+    'center': 'center of the image',
+    'right': 'right side, vertically centered',
+    'bottom-left': 'bottom-left corner',
+    'bottom': 'bottom center',
+    'bottom-right': 'bottom-right corner'
+};
+
+const badgeDescriptions = {
+    'sale': 'SALE',
+    'new': 'NEW',
+    'limited': 'LIMITED TIME',
+    'bestseller': 'BEST SELLER',
+    'freeship': 'FREE SHIPPING'
 };
 
 // ============================================
@@ -239,83 +243,92 @@ const aspectDimensions = {
 // ============================================
 
 function generatePrompt() {
-    const format = state.format;
-    const style = state.style;
-    const colorScheme = state.colorScheme;
-    const aspectRatio = state.aspectRatio;
-    const dimensions = aspectDimensions[aspectRatio] || aspectDimensions['1:1'];
+    const config = platformConfigs[state.platform];
+    const sizeInfo = config.sizes.find(s => s.id === state.adSize);
+    const width = sizeInfo?.width || 300;
+    const height = sizeInfo?.height || 250;
+    const sizeName = sizeInfo?.name || 'Banner';
 
-    let prompt = `Create a professional social media graphic for ${formatDescriptions[format]}.
+    let prompt = `Create a professional advertising banner for ${config.name}.
 
-DESIGN STYLE: ${styleDescriptions[style]}
+DIMENSIONS: ${width}x${height} pixels (${sizeName})
 
-COLOR SCHEME: ${colorScheme === 'custom' ? `Custom brand color: ${state.customColor}` : colorDescriptions[colorScheme] || 'Auto-extract from product'}
+DESIGN STYLE: ${styleDescriptions[state.style]}
 
-DIMENSIONS: ${dimensions.width}×${dimensions.height}px (${aspectRatio} aspect ratio)
+COLOR SCHEME: ${state.colorScheme === 'custom' ? `Custom brand color: ${state.customColor}` : colorDescriptions[state.colorScheme] || 'Auto-extract from product'}
 
-LAYOUT REQUIREMENTS:
-- Feature the product prominently as the hero element
-- ${state.style === 'minimal' ? 'Use generous white space and subtle design elements' : 'Create visual hierarchy with supporting graphics and elements'}
-- Ensure text is readable and well-positioned
-- Follow ${state.platform} platform best practices and safe zones`;
+TEXT POSITION: Place all text content in the ${positionDescriptions[state.textPosition]} of the ad`;
 
+    // Ad content
     if (state.headline) {
-        prompt += `\n\nHEADLINE TEXT: "${state.headline}"
-- Display prominently, use bold/impactful typography
-- Position for maximum visibility`;
+        prompt += `
+
+HEADLINE: "${state.headline}"
+- Display prominently with bold, impactful typography
+- Must be clearly readable at the ad's actual display size`;
     }
 
-    if (state.bodyText) {
-        prompt += `\n\nBODY TEXT: "${state.bodyText}"
+    if (state.description) {
+        prompt += `
+
+DESCRIPTION: "${state.description}"
 - Secondary text, smaller than headline
-- Position below or near the headline`;
+- Support the headline message`;
     }
 
-    if (state.ctaText) {
-        prompt += `\n\nCALL-TO-ACTION: "${state.ctaText}"
-- Style as a button or highlighted text
-- Make it stand out and clickable-looking`;
+    prompt += `
+
+CALL-TO-ACTION BUTTON: "${state.ctaText}"
+- Style as a prominent, clickable-looking button
+- Make it stand out from the background
+- Position it clearly visible, near the text content`;
+
+    // Optional elements
+    if (state.includePrice && state.price) {
+        prompt += `
+
+PRICE DISPLAY: "$${state.price}"
+- Show the price prominently
+- Style it to catch attention (large text, contrasting color, or price tag design)`;
     }
 
-    // Format-specific instructions
-    if (format === 'carousel') {
-        prompt += `\n\nCARUSEL SPECIFICATIONS:
-- This is slide 1 of a ${state.slideCount}-slide carousel
-- Content type: ${state.slideContent}
-- Include visual indicators that there are more slides (dots, arrows, or swipe hints)
-- Design should work as a cohesive series`;
+    if (state.includeBadge) {
+        prompt += `
+
+PROMOTIONAL BADGE: "${badgeDescriptions[state.badgeType]}"
+- Add a badge/ribbon/starburst element
+- Position it to draw attention without blocking the product
+- Use contrasting colors for visibility`;
     }
 
-    if (format === 'story') {
-        prompt += `\n\nSTORY FORMAT NOTES:
-- Vertical format optimized for mobile viewing
-- Consider tap zones and interactive areas
-- Design for quick, impactful viewing`;
+    // Platform-specific notes
+    prompt += `
+
+PRODUCT PLACEMENT:
+- The uploaded product image should be the hero/focal element
+- Position the product prominently, ensuring it's clearly visible
+- Scale appropriately for the ad dimensions
+
+ADVERTISING REQUIREMENTS:
+- Professional, marketing-ready quality
+- Clean composition with clear visual hierarchy
+- Text must be legible at actual ad display size
+- Follow ${config.name} advertising guidelines and best practices
+- High contrast between text and background for readability`;
+
+    // Quality note
+    if (state.quality === 'high') {
+        prompt += `
+
+HIGH QUALITY OUTPUT:
+- Extra attention to detail and polish
+- Sharp, crisp graphics and text
+- Professional advertising production quality`;
     }
 
-    if (format === 'thumbnail') {
-        prompt += `\n\nTHUMBNAIL NOTES:
-- Must be eye-catching and click-worthy
-- Text should be readable at small sizes
-- Include visual elements that create curiosity`;
-    }
+    prompt += `
 
-    // Additional elements
-    const includeElements = [];
-    if (state.includeLogo) includeElements.push('space for a logo in the corner');
-    if (state.includePrice) includeElements.push('a price tag or price display');
-    if (state.includeBadge) includeElements.push('a promotional badge (sale, new, limited, etc.)');
-
-    if (includeElements.length > 0) {
-        prompt += `\n\nINCLUDE THESE ELEMENTS:
-${includeElements.map(e => `- ${e}`).join('\n')}`;
-    }
-
-    prompt += `\n\nOUTPUT:
-- High-quality, ready-to-post social media graphic
-- Professional marketing quality
-- Visually cohesive and on-brand
-- The product should be the clear focus`;
+OUTPUT: A complete, ready-to-use advertising banner image.`;
 
     return prompt;
 }
@@ -324,7 +337,7 @@ ${includeElements.map(e => `- ${e}`).join('\n')}`;
 // API CALL
 // ============================================
 
-async function generateSocialGraphic() {
+async function generateAdCreative() {
     if (!state.uploadedImageBase64) {
         showError('Please upload a product image first');
         return;
@@ -350,7 +363,7 @@ async function generateSocialGraphic() {
                 'Authorization': `Bearer ${state.apiKey}`,
                 'Content-Type': 'application/json',
                 'HTTP-Referer': window.location.origin,
-                'X-Title': 'NGRAPHICS Social Studio'
+                'X-Title': 'NGRAPHICS Ad Creative'
             },
             body: JSON.stringify({
                 model: state.aiModel,
@@ -396,12 +409,12 @@ async function generateSocialGraphic() {
         hideLoading();
         showResult(imageUrl);
         await addToHistory(imageUrl, [imageUrl]);
-        showSuccess('Social graphic generated successfully!');
+        showSuccess('Ad creative generated successfully!');
 
     } catch (error) {
         console.error('Generation error:', error);
         hideLoading();
-        showError(error.message || 'Failed to generate graphic');
+        showError(error.message || 'Failed to generate ad');
     }
 }
 
@@ -472,68 +485,73 @@ function showSuccess(message) {
 }
 
 // ============================================
-// FORMAT & PLATFORM HANDLING
+// PLATFORM & SIZE HANDLING
 // ============================================
 
-function switchFormat(format) {
-    state.format = format;
+function switchPlatform(platform) {
+    state.platform = platform;
 
     // Update active tab
-    document.querySelectorAll('.format-tab').forEach(tab => {
-        tab.classList.toggle('active', tab.dataset.format === format);
+    document.querySelectorAll('.platform-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.platform === platform);
     });
 
-    // Update platform options
-    updatePlatformOptions(format);
-
-    // Show/hide carousel options
-    if (elements.carouselSection) {
-        elements.carouselSection.style.display = format === 'carousel' ? 'block' : 'none';
-    }
-
-    // Update aspect ratio based on format
-    const config = platformConfigs[format];
-    if (config) {
-        state.aspectRatio = config.defaultAspect;
-        updateAspectButtons();
-    }
-
-    // Show/hide aspect section (not needed for some formats)
-    if (elements.aspectSection) {
-        elements.aspectSection.style.display = ['story', 'pinterest'].includes(format) ? 'none' : 'block';
-    }
+    // Render size grid for this platform
+    renderSizeGrid(platform);
 }
 
-function updatePlatformOptions(format) {
-    const config = platformConfigs[format];
-    if (!config || !elements.platformGrid) return;
+function renderSizeGrid(platform) {
+    const config = platformConfigs[platform];
+    if (!config || !elements.sizeGrid) return;
 
-    elements.platformGrid.innerHTML = config.platforms.map((p, i) => `
-        <button type="button" class="platform-btn ${i === 0 ? 'active' : ''}" data-platform="${p.id}">
-            ${p.name}
-            <span class="dimension-hint">${p.dimensions}</span>
-        </button>
-    `).join('');
+    elements.sizeGrid.innerHTML = config.sizes.map((size, i) => {
+        // Calculate scaled preview dimensions (max 60px width, proportional height)
+        const maxPreviewWidth = 50;
+        const scale = maxPreviewWidth / size.width;
+        const previewWidth = Math.round(size.width * scale);
+        const previewHeight = Math.round(size.height * scale);
+        // Cap height for very tall ads
+        const cappedHeight = Math.min(previewHeight, 40);
+        const cappedWidth = previewHeight > 40 ? Math.round(previewWidth * (40 / previewHeight)) : previewWidth;
 
-    // Set first platform as default
-    if (config.platforms.length > 0) {
-        state.platform = config.platforms[0].id;
+        return `
+            <button type="button" class="size-btn ${i === 0 ? 'active' : ''} ${size.popular ? 'popular' : ''}" data-size="${size.id}">
+                <div class="size-preview" style="width: ${cappedWidth}px; height: ${cappedHeight}px;"></div>
+                <span class="size-name">${size.name}</span>
+                <span class="size-dimensions">${size.width}x${size.height}</span>
+            </button>
+        `;
+    }).join('');
+
+    // Set first size as default
+    if (config.sizes.length > 0) {
+        state.adSize = config.sizes[0].id;
+        updateSizeIndicator();
     }
 
     // Add event listeners
-    elements.platformGrid.querySelectorAll('.platform-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            elements.platformGrid.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            state.platform = btn.dataset.platform;
-        });
+    elements.sizeGrid.querySelectorAll('.size-btn').forEach(btn => {
+        btn.addEventListener('click', () => selectSize(btn.dataset.size));
     });
 }
 
-function updateAspectButtons() {
-    document.querySelectorAll('[data-aspect]').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.aspect === state.aspectRatio);
+function selectSize(sizeId) {
+    state.adSize = sizeId;
+
+    // Update active state
+    elements.sizeGrid.querySelectorAll('.size-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.size === sizeId);
     });
+
+    updateSizeIndicator();
+}
+
+function updateSizeIndicator() {
+    const config = platformConfigs[state.platform];
+    const size = config?.sizes.find(s => s.id === state.adSize);
+    if (size && elements.sizeIndicator) {
+        elements.sizeIndicator.textContent = `${size.width} x ${size.height}`;
+    }
 }
 
 // ============================================
@@ -633,8 +651,7 @@ async function loadFavorite(id) {
     state.seed = item.seed || '';
 
     // Update UI
-    switchFormat(state.format);
-    updateAspectButtons();
+    switchPlatform(state.platform);
 
     document.querySelectorAll('[data-style]').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.style === state.style);
@@ -644,10 +661,26 @@ async function loadFavorite(id) {
         btn.classList.toggle('active', btn.dataset.color === state.colorScheme);
     });
 
+    document.querySelectorAll('[data-position]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.position === state.textPosition);
+    });
+
     if (elements.headline) elements.headline.value = state.headline || '';
-    if (elements.bodyText) elements.bodyText.value = state.bodyText || '';
-    if (elements.ctaText) elements.ctaText.value = state.ctaText || '';
+    if (elements.description) elements.description.value = state.description || '';
+    if (elements.ctaSelect) elements.ctaSelect.value = state.ctaText || 'Shop Now';
     if (elements.seedInput) elements.seedInput.value = state.seed || '';
+    if (elements.includePrice) elements.includePrice.checked = state.includePrice || false;
+    if (elements.priceValue) elements.priceValue.value = state.price || '';
+    if (elements.includeBadge) elements.includeBadge.checked = state.includeBadge || false;
+    if (elements.badgeType) elements.badgeType.value = state.badgeType || 'sale';
+
+    // Update char counts
+    updateCharCount(elements.headline, elements.headlineCount);
+    updateCharCount(elements.description, elements.descCount);
+
+    // Show/hide conditional fields
+    if (elements.priceGroup) elements.priceGroup.style.display = state.includePrice ? 'flex' : 'none';
+    if (elements.badgeType) elements.badgeType.style.display = state.includeBadge ? 'block' : 'none';
 
     closeFavoritesModal();
     showSuccess('Settings loaded from favorite');
@@ -674,18 +707,21 @@ async function openFavoritesModal(id) {
 
     state.selectedFavorite = id;
 
+    const config = platformConfigs[item.settings?.platform || 'google'];
+    const size = config?.sizes.find(s => s.id === item.settings?.adSize);
+
     elements.favoritesModalBody.innerHTML = `
         <div class="favorite-preview">
             <img src="${item.fullImage || item.thumbnail}" alt="Favorite preview">
         </div>
         <div class="favorite-details">
             <div class="detail-row">
-                <span class="detail-label">Format:</span>
-                <span class="detail-value">${item.settings?.format || 'post'}</span>
+                <span class="detail-label">Platform:</span>
+                <span class="detail-value">${config?.name || 'Google Display'}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Platform:</span>
-                <span class="detail-value">${item.settings?.platform || 'instagram'}</span>
+                <span class="detail-label">Size:</span>
+                <span class="detail-value">${size?.name || '300x250'} (${item.settings?.adSize || '300x250'})</span>
             </div>
             <div class="detail-row">
                 <span class="detail-label">Style:</span>
@@ -703,10 +739,12 @@ async function openFavoritesModal(id) {
     `;
 
     elements.favoritesModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeFavoritesModal() {
     elements.favoritesModal.classList.remove('active');
+    document.body.style.overflow = '';
     state.selectedFavorite = null;
 }
 
@@ -715,15 +753,26 @@ function closeFavoritesModal() {
 // ============================================
 
 function downloadImage() {
-    const imageUrl = state.generatedImageUrl;
-    if (!imageUrl) return;
+    if (!state.generatedImageUrl) return;
 
     const link = document.createElement('a');
-    link.href = imageUrl;
-    link.download = `social-${state.format}-${state.platform}-${Date.now()}.png`;
+    link.href = state.generatedImageUrl;
+    const config = platformConfigs[state.platform];
+    const size = config?.sizes.find(s => s.id === state.adSize);
+    link.download = `ad-${state.platform}-${size?.name?.replace(/\s+/g, '-') || state.adSize}-${Date.now()}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+// ============================================
+// CHARACTER COUNT
+// ============================================
+
+function updateCharCount(input, countEl) {
+    if (input && countEl) {
+        countEl.textContent = input.value.length;
+    }
 }
 
 // ============================================
@@ -732,22 +781,14 @@ function downloadImage() {
 
 function setupEventListeners() {
     // Form submit
-    elements.socialForm?.addEventListener('submit', (e) => {
+    elements.adForm?.addEventListener('submit', (e) => {
         e.preventDefault();
-        generateSocialGraphic();
+        generateAdCreative();
     });
 
-    // Format tabs
-    elements.formatTabs?.querySelectorAll('.format-tab').forEach(tab => {
-        tab.addEventListener('click', () => switchFormat(tab.dataset.format));
-    });
-
-    // Aspect ratio
-    document.querySelectorAll('[data-aspect]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            state.aspectRatio = btn.dataset.aspect;
-            updateAspectButtons();
-        });
+    // Platform tabs
+    elements.platformTabs?.querySelectorAll('.platform-tab').forEach(tab => {
+        tab.addEventListener('click', () => switchPlatform(tab.dataset.platform));
     });
 
     // Style buttons
@@ -768,31 +809,16 @@ function setupEventListeners() {
         });
     });
 
-    // Custom color
-    elements.customColor?.addEventListener('input', (e) => {
-        state.customColor = e.target.value;
-        e.target.parentElement.querySelector('.color-swatch').style.background = e.target.value;
-    });
-
-    // Slide count
-    document.querySelectorAll('[data-slides]').forEach(btn => {
+    // Position buttons
+    document.querySelectorAll('[data-position]').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('[data-slides]').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('[data-position]').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            state.slideCount = parseInt(btn.dataset.slides);
+            state.textPosition = btn.dataset.position;
         });
     });
 
-    // Slide content
-    document.querySelectorAll('[data-content]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('[data-content]').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            state.slideContent = btn.dataset.content;
-        });
-    });
-
-    // Variations
+    // Variations buttons
     document.querySelectorAll('[data-variations]').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('[data-variations]').forEach(b => b.classList.remove('active'));
@@ -801,40 +827,86 @@ function setupEventListeners() {
         });
     });
 
-    // Text inputs
-    elements.headline?.addEventListener('input', (e) => state.headline = e.target.value);
-    elements.bodyText?.addEventListener('input', (e) => state.bodyText = e.target.value);
-    elements.ctaText?.addEventListener('input', (e) => state.ctaText = e.target.value);
-
-    // Checkboxes
-    elements.includeLogo?.addEventListener('change', (e) => state.includeLogo = e.target.checked);
-    elements.includePrice?.addEventListener('change', (e) => state.includePrice = e.target.checked);
-    elements.includeBadge?.addEventListener('change', (e) => state.includeBadge = e.target.checked);
-
-    // Seed
-    elements.seedInput?.addEventListener('input', (e) => state.seed = e.target.value);
-    elements.randomizeSeed?.addEventListener('click', () => {
-        const seed = Math.floor(Math.random() * 999999);
-        elements.seedInput.value = seed;
-        state.seed = seed;
+    // Quality buttons
+    document.querySelectorAll('[data-quality]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-quality]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.quality = btn.dataset.quality;
+        });
     });
 
-    // AI Model
-    elements.aiModel?.addEventListener('change', (e) => state.aiModel = e.target.value);
+    // Content inputs
+    elements.headline?.addEventListener('input', () => {
+        state.headline = elements.headline.value;
+        updateCharCount(elements.headline, elements.headlineCount);
+    });
 
-    // Upload handling
-    setupUploadHandlers();
+    elements.description?.addEventListener('input', () => {
+        state.description = elements.description.value;
+        updateCharCount(elements.description, elements.descCount);
+    });
+
+    elements.ctaSelect?.addEventListener('change', () => {
+        state.ctaText = elements.ctaSelect.value;
+    });
+
+    // Price checkbox
+    elements.includePrice?.addEventListener('change', () => {
+        state.includePrice = elements.includePrice.checked;
+        if (elements.priceGroup) {
+            elements.priceGroup.style.display = state.includePrice ? 'flex' : 'none';
+        }
+    });
+
+    elements.priceValue?.addEventListener('input', () => {
+        state.price = elements.priceValue.value;
+    });
+
+    // Badge checkbox
+    elements.includeBadge?.addEventListener('change', () => {
+        state.includeBadge = elements.includeBadge.checked;
+        if (elements.badgeType) {
+            elements.badgeType.style.display = state.includeBadge ? 'block' : 'none';
+        }
+    });
+
+    elements.badgeType?.addEventListener('change', () => {
+        state.badgeType = elements.badgeType.value;
+    });
+
+    // Custom color
+    elements.customColor?.addEventListener('input', () => {
+        state.customColor = elements.customColor.value;
+        document.documentElement.style.setProperty('--custom-color', state.customColor);
+    });
 
     // Advanced toggle
     elements.advancedToggle?.addEventListener('click', () => {
-        elements.advancedContent?.classList.toggle('expanded');
-        elements.advancedToggle?.classList.toggle('expanded');
+        elements.advancedContent.classList.toggle('show');
+        elements.advancedToggle.classList.toggle('open');
     });
 
     // Settings toggle
     elements.settingsToggle?.addEventListener('click', () => {
-        elements.settingsContent?.classList.toggle('expanded');
-        elements.settingsToggle?.classList.toggle('expanded');
+        elements.settingsContent.classList.toggle('show');
+        elements.settingsToggle.classList.toggle('open');
+    });
+
+    // AI Model
+    elements.aiModel?.addEventListener('change', () => {
+        state.aiModel = elements.aiModel.value;
+    });
+
+    // Seed
+    elements.seedInput?.addEventListener('input', () => {
+        state.seed = elements.seedInput.value;
+    });
+
+    elements.randomizeSeed?.addEventListener('click', () => {
+        const randomSeed = Math.floor(Math.random() * 999999);
+        elements.seedInput.value = randomSeed;
+        state.seed = randomSeed;
     });
 
     // API Key
@@ -844,18 +916,44 @@ function setupEventListeners() {
     });
 
     elements.saveApiKey?.addEventListener('click', () => {
-        const key = elements.apiKey.value.trim();
-        if (key) {
-            SharedAPI.saveKey(key);
-            state.apiKey = key;
-            showSuccess('API key saved');
-        }
+        state.apiKey = elements.apiKey.value;
+        localStorage.setItem('ngraphics_api_key', state.apiKey);
+        showSuccess('API key saved!');
+    });
+
+    // Upload
+    elements.uploadArea?.addEventListener('click', () => elements.productPhoto?.click());
+    elements.uploadArea?.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        elements.uploadArea.classList.add('dragover');
+    });
+    elements.uploadArea?.addEventListener('dragleave', () => {
+        elements.uploadArea.classList.remove('dragover');
+    });
+    elements.uploadArea?.addEventListener('drop', (e) => {
+        e.preventDefault();
+        elements.uploadArea.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) handleImageUpload(file);
+    });
+
+    elements.productPhoto?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) handleImageUpload(file);
+    });
+
+    elements.removeImage?.addEventListener('click', () => {
+        state.uploadedImage = null;
+        state.uploadedImageBase64 = null;
+        elements.imagePreview.style.display = 'none';
+        elements.uploadArea.style.display = 'block';
+        elements.productPhoto.value = '';
     });
 
     // Actions
     elements.downloadBtn?.addEventListener('click', downloadImage);
     elements.favoriteBtn?.addEventListener('click', saveFavorite);
-    elements.regenerateBtn?.addEventListener('click', generateSocialGraphic);
+    elements.regenerateBtn?.addEventListener('click', generateAdCreative);
 
     // History
     elements.clearHistory?.addEventListener('click', async () => {
@@ -878,14 +976,13 @@ function setupEventListeners() {
     });
 
     elements.deleteFavorite?.addEventListener('click', async () => {
-        if (state.selectedFavorite && confirm('Delete this favorite?')) {
+        if (state.selectedFavorite) {
             await favorites.remove(state.selectedFavorite);
             closeFavoritesModal();
             renderFavorites();
+            showSuccess('Favorite deleted');
         }
     });
-
-    elements.closeFavoritesModal?.addEventListener('click', closeFavoritesModal);
 
     // Lightbox
     elements.lightboxClose?.addEventListener('click', closeLightbox);
@@ -893,13 +990,18 @@ function setupEventListeners() {
         if (e.target === elements.lightbox) closeLightbox();
     });
     elements.lightboxDownload?.addEventListener('click', () => {
-        const url = elements.lightboxImage.src;
-        if (url) {
+        if (elements.lightboxImage.src) {
             const link = document.createElement('a');
-            link.href = url;
-            link.download = `social-graphic-${Date.now()}.png`;
+            link.href = elements.lightboxImage.src;
+            link.download = `ad-creative-${Date.now()}.png`;
             link.click();
         }
+    });
+
+    // Favorites modal
+    elements.closeFavoritesModal?.addEventListener('click', closeFavoritesModal);
+    elements.favoritesModal?.addEventListener('click', (e) => {
+        if (e.target === elements.favoritesModal) closeFavoritesModal();
     });
 
     // Keyboard shortcuts
@@ -910,7 +1012,7 @@ function setupEventListeners() {
         }
         if (e.ctrlKey && e.key === 'Enter') {
             e.preventDefault();
-            generateSocialGraphic();
+            generateAdCreative();
         }
         if (e.ctrlKey && e.key === 'd') {
             e.preventDefault();
@@ -919,48 +1021,9 @@ function setupEventListeners() {
     });
 }
 
-function setupUploadHandlers() {
-    const uploadArea = elements.uploadArea;
-    const fileInput = elements.productPhoto;
-
-    if (!uploadArea || !fileInput) return;
-
-    // Click to upload
-    uploadArea.addEventListener('click', () => fileInput.click());
-
-    // Drag and drop
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('dragover');
-    });
-
-    uploadArea.addEventListener('dragleave', () => {
-        uploadArea.classList.remove('dragover');
-    });
-
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-        const file = e.dataTransfer.files[0];
-        if (file) handleImageUpload(file);
-    });
-
-    // File input change
-    fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) handleImageUpload(file);
-    });
-
-    // Remove image
-    elements.removeImage?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        state.uploadedImage = null;
-        state.uploadedImageBase64 = null;
-        elements.imagePreview.style.display = 'none';
-        elements.uploadArea.style.display = 'flex';
-        fileInput.value = '';
-    });
-}
+// ============================================
+// IMAGE UPLOAD
+// ============================================
 
 function handleImageUpload(file) {
     if (!file.type.startsWith('image/')) {
@@ -968,32 +1031,32 @@ function handleImageUpload(file) {
         return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-        showError('Image must be less than 10MB');
-        return;
-    }
-
     const reader = new FileReader();
     reader.onload = (e) => {
-        const base64 = e.target.result.split(',')[1];
         state.uploadedImage = e.target.result;
-        state.uploadedImageBase64 = base64;
-
         elements.previewImg.src = e.target.result;
         elements.imagePreview.style.display = 'block';
         elements.uploadArea.style.display = 'none';
+
+        // Extract base64
+        const base64 = e.target.result.split(',')[1];
+        state.uploadedImageBase64 = base64;
     };
     reader.readAsDataURL(file);
 }
 
 // ============================================
-// INITIALIZATION
+// INIT
 // ============================================
 
 async function init() {
     initElements();
 
-    // Theme
+    // Load API key
+    state.apiKey = localStorage.getItem('ngraphics_api_key') || '';
+    if (elements.apiKey) elements.apiKey.value = state.apiKey;
+
+    // Initialize theme
     SharedTheme.init();
     SharedTheme.setupToggle(document.getElementById('themeToggle'));
     // Initialize account menu (Supabase auth)
@@ -1003,21 +1066,15 @@ async function init() {
     }
 
 
-    // API key
-    state.apiKey = SharedAPI.getKey();
-    if (elements.apiKey && state.apiKey) {
-        elements.apiKey.value = state.apiKey;
-    }
-
-    // Initialize format and platforms
-    switchFormat('post');
-
-    // Load history and favorites
-    renderHistory();
-    renderFavorites();
+    // Render initial size grid
+    renderSizeGrid(state.platform);
 
     // Setup event listeners
     setupEventListeners();
+
+    // Render history and favorites
+    renderHistory();
+    renderFavorites();
 }
 
 document.addEventListener('DOMContentLoaded', init);

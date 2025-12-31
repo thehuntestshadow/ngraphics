@@ -264,6 +264,12 @@ async function init() {
     initElements();
     SharedTheme.init();
     SharedTheme.setupToggle(document.getElementById('themeToggle'));
+    // Initialize account menu (Supabase auth)
+    const accountContainer = document.getElementById('accountContainer');
+    if (accountContainer && typeof AccountMenu !== 'undefined') {
+        new AccountMenu(accountContainer);
+    }
+
 
     // Initialize stores
     await imageStore.init();

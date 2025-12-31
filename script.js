@@ -5062,6 +5062,13 @@ async function init() {
     initElements();
     loadTheme();
     SharedTheme.setupToggle(document.getElementById('themeToggle'));
+
+    // Initialize account menu (Supabase auth)
+    const accountContainer = document.getElementById('accountContainer');
+    if (accountContainer && typeof AccountMenu !== 'undefined') {
+        new AccountMenu(accountContainer);
+    }
+
     loadApiKey();
     setupApiKeyHandlers();
     setupImageUploadHandlers();
