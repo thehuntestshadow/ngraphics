@@ -2,6 +2,21 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Production Environment
+
+**THIS IS A LIVE APPLICATION WITH REAL USERS.**
+
+- **Live URL**: https://hefaistos.xyz
+- **Hosting**: Coolify on Hetzner server
+- **Backend**: Supabase (auth, database, storage)
+  - Project: `rodzatuqkfqcdqgntdnd.supabase.co`
+
+**Production considerations:**
+- Test changes locally before deploying
+- Avoid breaking changes to existing features
+- Database migrations must be backward-compatible
+- Consider user data when modifying storage keys or schemas
+
 ## Project Overview
 
 NGRAPHICS - AI E-commerce Toolkit. A collection of web-based tools that e-commerce brands need and use every day. Uses the OpenRouter API with various AI models (Gemini, GPT, Flux, Recraft) for image generation and text content.
@@ -14,15 +29,16 @@ NGRAPHICS - AI E-commerce Toolkit. A collection of web-based tools that e-commer
 
 **Guiding principles:**
 - Each tool solves one specific problem well
-- No accounts, no subscriptions - works locally in browser
+- Works fully offline; optional accounts for cloud sync
 - AI-powered but user-controlled
 - Fast iteration: upload → configure → generate → download
 
 ## Development
 
-No build process required. To run:
-- Open any `.html` file directly in a browser, or
+No build process required. To run locally:
 - Serve with any static file server (e.g., `python3 -m http.server 8000`)
+- For auth testing, use `http://localhost:8000` (configured in Supabase)
+- Direct file open (`file://`) won't work with Supabase auth redirects
 
 ## Architecture
 
@@ -49,6 +65,8 @@ The application consists of multiple pages, each with its own JS file, sharing c
 | Product Variants | `product-variants.html`, `product-variants.js`, `product-variants.css` | Generate color, material, and pattern variants from product photos |
 | Social Studio | `social-studio.html`, `social-studio.js`, `social-studio.css` | Social media graphics for all platforms (posts, stories, carousels) |
 | Export Center | `export-center.html`, `export-center.js`, `export-center.css` | Batch resize, compress, watermark, and convert images |
+| Ad Creative | `ad-creative.html`, `ad-creative.js`, `ad-creative.css` | Banner ads for Google, Facebook, Amazon, Instagram |
+| Model Video | `model-video.html`, `model-video.js`, `model-video.css` | Animate model photos with motion and camera effects |
 | Dashboard | `dashboard.html`, `dashboard.js`, `dashboard.css` | Analytics, storage management, quick access to recent work |
 | Documentation | `docs.html`, `docs.css` | User documentation |
 
@@ -61,6 +79,9 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `workers.js` - Web Worker and Service Worker managers
 - `image-worker.js` - Web Worker for image processing (compression, thumbnails, enhancement)
 - `service-worker.js` - Service Worker for caching and offline support
+- `supabase.js` - Supabase client wrapper (auth, profiles, API key storage)
+- `auth-ui.js` - Authentication UI (login/signup modal, account menu)
+- `cloud-sync.js` - Cloud sync manager (history/favorites sync to Supabase)
 
 ### Documentation Files
 - `DESIGN.md` - Design system (colors, spacing, components, patterns)
@@ -531,6 +552,72 @@ Batch image processing utility - resize, compress, watermark, and convert images
 
 ---
 
+## Ad Creative (`ad-creative.html` + `ad-creative.js`)
+
+Generate banner ads for Google Display, Facebook/Meta, Amazon, and Instagram.
+
+### Platforms (4)
+- **Google Display**: 300x250, 728x90, 160x600, 300x600, 320x50, 336x280
+- **Facebook/Meta**: 1200x628, 1080x1080, 1080x1920, 1200x1200
+- **Amazon**: 1200x628, 970x250, 300x250, 160x600
+- **Instagram**: 1080x1080, 1080x1350, 1080x1920, 1080x566
+
+### Key Functions
+- `switchPlatform(platform)`: Change platform and render size grid
+- `renderSizeGrid(platform)`: Display available sizes for platform
+- `selectSize(sizeId)`: Set current ad size
+- `generatePrompt()`: Build prompt with ad content, style, position
+- `generateAdCreative()`: API call to generate ad
+
+### Options
+- **Ad Content**: Headline (30 chars), Description (90 chars), CTA dropdown
+- **Price Display**: Optional price tag overlay
+- **Badge**: Sale, New, Limited, Best Seller, Free Shipping
+- **Text Position**: 9-point grid for text placement
+- **Visual Style**: Modern, Bold, Minimal, Elegant, Playful, Dark
+- **Color Scheme**: Auto, preset gradients, or custom brand color
+- **A/B Variations**: Generate 1, 2, or 4 variants
+
+---
+
+## Model Video (`model-video.html` + `model-video.js`)
+
+Generate short video clips from model photos using Luma AI. Transform static images into dynamic videos with model movements and camera motion.
+
+### Motion Types (3)
+- **Model Motion**: Animate the model (subtle sway, product showcase, walking, turn, hair flip, gesture)
+- **Camera Motion**: Move the camera (zoom in/out, pan left/right, orbit, static)
+- **Combined**: Apply both model and camera motion simultaneously
+
+### Model Motions (6)
+- Subtle Sway, Product Showcase, Walking, Turn, Hair Flip, Gesture
+
+### Camera Motions (6)
+- Zoom In, Zoom Out, Pan Left, Pan Right, Orbit, Static
+
+### Key Functions
+- `switchMotionType(type)`: Toggle between model/camera/combined tabs
+- `selectModelMotion(motion)`: Set model motion type
+- `selectCameraMotion(motion)`: Set camera motion type
+- `generateVideoPrompt()`: Build motion prompt for Luma AI
+- `generateVideo()`: Call Luma AI API for video generation
+- `pollVideoStatus(id)`: Async polling for generation completion
+- `showVideoResult(url)`: Display video player with result
+
+### Options
+- **Duration**: 3-10 seconds slider
+- **Speed**: Normal, Slow-mo (0.5x), Cinematic (0.75x)
+- **Loop**: Seamless loop toggle for social media
+- **Intensity**: Subtle, Normal, Dramatic
+- **Smoothness**: High (cinematic), Medium, Snappy
+- **Aspect Ratio**: 1:1, 4:5, 9:16, 16:9
+- **Export**: MP4 download, GIF conversion (coming soon)
+
+### API
+Uses Luma AI Dream Machine API (separate API key from OpenRouter).
+
+---
+
 ## Dashboard (`dashboard.html` + `dashboard.js`)
 
 Central hub for analytics, storage management, and quick access.
@@ -559,7 +646,7 @@ Each page has `generatePrompt()` that builds AI prompts by concatenating descrip
 - Hybrid storage: thumbnails in localStorage, full images in IndexedDB
 - History: view in modal, download, configurable limits (default 20)
 - Favorites: save with all settings/seed/reference images, supports multiple variants
-- Storage keys: `ngraphics_*`, `model_studio_*`, `bundle_studio_*`, `lifestyle_studio_*`, `copywriter_*`, `packaging_*`, `comparison_generator_*`, `size_visualizer_*`, `faq_generator_*`, `background_studio_*`, `badge_generator_*`, `feature_cards_*`, `size_chart_*`, `aplus_generator_*`, `product_variants_*`, `social_studio_*`, `export_center_*`
+- Storage keys: `ngraphics_*`, `model_studio_*`, `bundle_studio_*`, `lifestyle_studio_*`, `copywriter_*`, `packaging_*`, `comparison_generator_*`, `size_visualizer_*`, `faq_generator_*`, `background_studio_*`, `badge_generator_*`, `feature_cards_*`, `size_chart_*`, `aplus_generator_*`, `product_variants_*`, `social_studio_*`, `export_center_*`, `ad_creative_*`, `model_video_*`
 
 ### Error Handling
 `showError()` displays user-friendly error messages. API errors caught and displayed appropriately.
