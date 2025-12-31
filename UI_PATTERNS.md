@@ -22,7 +22,9 @@ Reference file for consistent UI patterns across NGRAPHICS pages. **COPY THESE E
 14. [Empty States](#empty-states)
 15. [Message Boxes](#message-boxes)
 16. [Footer](#footer)
-17. [Apple Design System Quick Reference](#apple-design-system-quick-reference)
+17. [JavaScript Element Caching Pattern](#javascript-element-caching-pattern)
+18. [JavaScript Safety Patterns](#javascript-safety-patterns)
+19. [Apple Design System Quick Reference](#apple-design-system-quick-reference)
 
 ---
 
@@ -1015,6 +1017,71 @@ function initElements() {
 
 ---
 
+## JavaScript Safety Patterns
+
+### Null-Safe Element Access
+
+When accessing cached elements, use null checks to prevent `TypeError: Cannot read properties of undefined`:
+
+```javascript
+// WRONG: Direct access without null check
+function updateApiStatus() {
+    elements.apiStatus.classList.add('connected');  // Crashes if apiStatus doesn't exist!
+}
+
+// RIGHT: Use optional chaining
+function updateApiStatus() {
+    elements.apiStatus?.classList.add('connected');
+}
+
+// RIGHT: Use guard clause
+function updateApiStatus() {
+    if (!elements.apiStatus) return;
+    elements.apiStatus.classList.add('connected');
+}
+
+// RIGHT: Use SharedUI utility (has built-in null safety)
+SharedUI.updateApiStatus(elements.apiStatus, true);
+```
+
+### SharedUI Utilities with Null Safety
+
+These SharedUI methods have built-in null checks and are safe to call with undefined elements:
+
+```javascript
+// Safe - returns early if element is null
+SharedUI.updateApiStatus(elements.apiStatus, true);
+SharedUI.showError('Error message');
+SharedUI.showSuccess('Success message');
+SharedUI.showLoading(elements.container);
+SharedUI.hideLoading(elements.container);
+```
+
+### Common Pitfalls
+
+| Pattern | Risk | Solution |
+|---------|------|----------|
+| `elements.foo.classList.add()` | Crash if `foo` undefined | Use `elements.foo?.classList.add()` |
+| `elements.foo.value.trim()` | Crash if `foo` undefined | Use `elements.foo?.value?.trim()` |
+| `elements.foo.querySelector()` | Crash if `foo` undefined | Use `elements.foo?.querySelector()` |
+| Custom `updateApiStatus()` | Element may not exist in HTML | Use SharedUI or add null check |
+
+### Element Existence Verification
+
+Before using an element in event handlers, verify it exists:
+
+```javascript
+// WRONG: Assumes element always exists
+elements.saveApiKey.onclick = () => { ... };
+
+// RIGHT: Check before attaching
+if (elements.saveApiKey) {
+    elements.saveApiKey.onclick = () => { ... };
+}
+```
+
+---
+
 ## Checklist for New Pages
 
 Before finishing a new page, verify:
@@ -1070,6 +1137,12 @@ Before finishing a new page, verify:
 - [ ] Letter-spacing is `0` or negative (no wide tracking)
 - [ ] Font weights are 500-600 (not 700-800)
 - [ ] Label icons use muted colors (not accent)
+
+**JavaScript:**
+- [ ] Element access uses null checks or optional chaining (`?.`)
+- [ ] Custom utility functions have null guards (e.g., `if (!element) return;`)
+- [ ] Event handlers check element existence before attaching
+- [ ] Use `SharedUI.updateApiStatus()` instead of custom implementations
 
 **Other:**
 - [ ] Scene icons are `1rem` (not larger)
@@ -1173,4 +1246,4 @@ Place the footer after all scripts, before `</body>`.
 
 ---
 
-*Last updated: Dec 2025*
+*Last updated: Jan 2026*
