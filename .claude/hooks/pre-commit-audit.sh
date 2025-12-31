@@ -12,8 +12,6 @@ TOOL_INPUT="${1:-}"
 if [ -n "$TOOL_INPUT" ]; then
   COMMAND=$(echo "$TOOL_INPUT" | jq -r '.tool_input.command' 2>/dev/null || echo "")
   if [[ ! "$COMMAND" =~ ^git\ commit ]]; then
-    # Silent exit for non-commit commands
-    exec >/dev/null 2>&1
     exit 0
   fi
 fi
@@ -62,11 +60,10 @@ done
 
 # Check 4: Verify footer exists on studio pages
 echo "  Checking footers..."
-STUDIO_PAGES=("infographics.html" "models.html" "bundle.html" "lifestyle.html" "copywriter.html"
+STUDIO_PAGES=("index.html" "models.html" "bundle.html" "lifestyle.html" "copywriter.html"
               "packaging.html" "comparison.html" "size-visualizer.html" "faq-generator.html"
               "background.html" "badge-generator.html" "feature-cards.html" "size-chart.html"
-              "a-plus.html" "product-variants.html" "social-studio.html" "export-center.html"
-              "ad-creative.html" "model-video.html")
+              "a-plus.html" "product-variants.html")
 for page in "${STUDIO_PAGES[@]}"; do
   if [ -f "$PROJECT_DIR/$page" ]; then
     if ! grep -q "site-footer" "$PROJECT_DIR/$page" 2>/dev/null; then
@@ -81,9 +78,8 @@ echo "  Checking for debug statements..."
 WARNINGS=0
 for js_file in "$PROJECT_DIR"/*.js; do
   if [ -f "$js_file" ]; then
-    LOG_COUNT=$(grep -c "console\.log" "$js_file" 2>/dev/null | head -1 || echo "0")
-    LOG_COUNT=${LOG_COUNT:-0}
-    if [ "$LOG_COUNT" -gt 5 ] 2>/dev/null; then
+    LOG_COUNT=$(grep -c "console\.log" "$js_file" 2>/dev/null || echo "0")
+    if [ "$LOG_COUNT" -gt 5 ]; then
       echo "  ⚠️  $(basename "$js_file"): $LOG_COUNT console.log statements"
       WARNINGS=$((WARNINGS + 1))
     fi

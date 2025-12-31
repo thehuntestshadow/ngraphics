@@ -48,11 +48,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 
 | Page | Files | Purpose |
 |------|-------|---------|
-| Landing | `index.html`, `landing.js`, `landing.css` | Marketing landing page with product showcase |
-| Gallery | `gallery.html`, `gallery.js`, `gallery.css` | Curated showcase of AI-generated examples |
-| FAQ | `faq.html`, `faq.css` | Frequently asked questions |
-| Pricing | `pricing.html`, `pricing.js`, `pricing.css` | Subscription plans and pricing |
-| Infographics | `infographics.html`, `infographics.js` | Generate product infographics with features/callouts |
+| Infographics | `index.html`, `script.js` | Generate product infographics with features/callouts |
 | Model Studio | `models.html`, `models.js`, `models.css` | Generate AI model photos wearing/holding products |
 | Bundle Studio | `bundle.html`, `bundle.js`, `bundle.css` | Create bundle/kit images from multiple products |
 | Lifestyle Studio | `lifestyle.html`, `lifestyle.js`, `lifestyle.css` | Product photography in lifestyle environments (no overlays) |
@@ -103,7 +99,7 @@ Uses OpenRouter's `/api/v1/chat/completions` endpoint with `modalities: ['image'
 
 ---
 
-## Infographics Generator (`infographics.html` + `infographics.js`)
+## Infographics Generator (`index.html` + `script.js`)
 
 Main page for creating product marketing infographics.
 
