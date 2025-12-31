@@ -27,6 +27,26 @@ const SharedAPI = {
 };
 
 // ============================================
+// SECURITY UTILITIES
+// ============================================
+
+/**
+ * Escape HTML to prevent XSS attacks
+ * Use this when inserting user-provided text into innerHTML
+ * @param {string} str - String to escape
+ * @returns {string} HTML-escaped string
+ */
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    const div = document.createElement('div');
+    div.textContent = String(str);
+    return div.innerHTML;
+}
+
+// Expose globally for all pages
+window.escapeHtml = escapeHtml;
+
+// ============================================
 // THEME MANAGEMENT
 // ============================================
 const THEME_STORAGE = 'ngraphics_theme';

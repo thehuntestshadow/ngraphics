@@ -887,11 +887,7 @@ function formatTimeAgo(timestamp) {
     return date.toLocaleDateString();
 }
 
-function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-}
+// escapeHtml is now in shared.js (window.escapeHtml)
 
 // ============================================
 // START

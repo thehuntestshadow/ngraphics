@@ -4,6 +4,54 @@
  */
 
 // ============================================
+// LOGGING UTILITY
+// ============================================
+
+/**
+ * Conditional logging that can be toggled for production
+ * Set ngLog.enabled = false to disable debug logging
+ * Errors are always logged regardless of setting
+ */
+const ngLog = {
+    enabled: !location.hostname.includes('hefaistos.xyz'), // Auto-disable in production
+
+    log(...args) {
+        if (this.enabled) console.log('[NG]', ...args);
+    },
+
+    warn(...args) {
+        if (this.enabled) console.warn('[NG]', ...args);
+    },
+
+    error(...args) {
+        // Errors always logged
+        console.error('[NG]', ...args);
+    },
+
+    debug(...args) {
+        if (this.enabled) console.log('[NG:debug]', ...args);
+    },
+
+    // Enable/disable from console: ngLog.setEnabled(true/false)
+    setEnabled(enabled) {
+        this.enabled = enabled;
+        localStorage.setItem('ngraphics_debug', enabled ? '1' : '0');
+    },
+
+    // Check localStorage override
+    init() {
+        const override = localStorage.getItem('ngraphics_debug');
+        if (override !== null) {
+            this.enabled = override === '1';
+        }
+    }
+};
+
+// Initialize logging
+ngLog.init();
+window.ngLog = ngLog;
+
+// ============================================
 // EVENT BUS
 // ============================================
 class EventBus {

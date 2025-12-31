@@ -357,8 +357,9 @@ class AccountMenu {
 
     _renderLoggedIn() {
         const user = ngSupabase.user;
-        const initial = ngSupabase.getInitials();
-        const email = user?.email || 'User';
+        const initial = escapeHtml(ngSupabase.getInitials());
+        const email = escapeHtml(user?.email || 'User');
+        const displayName = escapeHtml(ngSupabase.getDisplayName());
 
         this.container.innerHTML = `
             <div class="account-dropdown">
@@ -369,7 +370,7 @@ class AccountMenu {
                     <div class="account-dropdown-header">
                         <span class="account-avatar-initial large">${initial}</span>
                         <div class="account-dropdown-info">
-                            <span class="account-dropdown-name">${ngSupabase.getDisplayName()}</span>
+                            <span class="account-dropdown-name">${displayName}</span>
                             <span class="account-dropdown-email">${email}</span>
                         </div>
                     </div>
