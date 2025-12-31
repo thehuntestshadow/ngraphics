@@ -792,7 +792,7 @@ Things explicitly out of scope:
 | Database | Supabase PostgreSQL | ✅ Live |
 | Storage | Supabase Storage | ✅ Live |
 | API Proxy | Supabase Edge Functions | 🔜 Next |
-| Payments | Stripe | 🔜 Next |
+| Payments | Stripe | ✅ Live |
 | Hosting | Coolify on Hetzner | ✅ Live |
 
 ### Implementation Status
@@ -809,18 +809,18 @@ Things explicitly out of scope:
 - [x] Image upload to Storage
 - [x] Background sync queue
 
-**Phase 3: Commercial Infrastructure** ✅ Schema Ready
+**Phase 3: Commercial Infrastructure** ✅ Complete
 - [x] Subscription tiers table
 - [x] Usage tracking tables
 - [x] Credits system tables
 - [x] Config.js for environment variables
-- [ ] Stripe products/prices
-- [ ] Edge Function: generate-image proxy
-- [ ] Edge Function: create-checkout
-- [ ] Edge Function: stripe-webhook
+- [x] Stripe products/prices (Pro, Business, Credits)
+- [x] Stripe Payment Links (no Edge Function needed)
+- [x] Edge Function: stripe-webhook
 
-**Phase 4: Monetization UI** 🔜 Next
-- [ ] Pricing page
+**Phase 4: Monetization UI** ✅ Complete
+- [x] Pricing page with billing toggle
+- [x] Landing page with pricing teaser
 - [ ] Usage dashboard in account menu
 - [ ] Upgrade prompts
 - [ ] Billing portal integration
@@ -897,12 +897,14 @@ Core generation across 3 studios with history/favorites
 - [ ] Infographic Video Generator - Animated product infographics (5-30s)
 - [ ] Lifestyle Video Generator - Ambient lifestyle product videos (5-15s)
 
-### v4.1 (Commercial Launch) 🔜 Next
-- [ ] Stripe Integration - Products, checkout, webhooks
+### v4.1 (Commercial Launch) ✅ Complete
+- [x] Stripe Integration - Products, prices, payment links
+- [x] Edge Function: stripe-webhook - Subscription/credit handling
+- [x] Pricing Page - Tier comparison, checkout buttons
+- [x] Landing Page - Marketing site with galleries
+- [x] Gallery Page - Curated demo showcase
+- [x] FAQ Page - Product FAQ with categories
 - [ ] Edge Function: generate-image - API proxy for paid users
-- [ ] Edge Function: create-checkout - Stripe checkout sessions
-- [ ] Edge Function: stripe-webhook - Payment handling
-- [ ] Pricing Page - Tier comparison, checkout buttons
 - [ ] Usage Dashboard - Show usage/limits in account menu
 - [ ] Upgrade Prompts - Contextual upgrade CTAs
 - [ ] Watermark System - Optional for free tier
@@ -1028,5 +1030,5 @@ Core generation across 3 studios with history/favorites
 
 ---
 
-*Last updated: Dec 2025 (v4.0 - Commercial architecture, Supabase auth, cloud sync)*
+*Last updated: Dec 2025 (v4.1 - Stripe payments, marketing pages, gallery)*
 *Add ideas freely - this is a living document*
