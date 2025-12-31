@@ -8,9 +8,11 @@
  *   if (ngSupabase.isAuthenticated) { ... }
  */
 
-// Configuration - Replace with your Supabase project details
-const SUPABASE_URL = 'https://rodzatuqkfqcdqgntdnd.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_E-NbHDT4EuwPQ11gYGrzQw_O7KceeSF';
+// Configuration from config.js (or fallback defaults)
+const SUPABASE_URL = (typeof CONFIG !== 'undefined' && CONFIG.SUPABASE_URL)
+    || 'https://rodzatuqkfqcdqgntdnd.supabase.co';
+const SUPABASE_ANON_KEY = (typeof CONFIG !== 'undefined' && CONFIG.SUPABASE_ANON_KEY)
+    || 'sb_publishable_E-NbHDT4EuwPQ11gYGrzQw_O7KceeSF';
 
 class SupabaseClient {
     constructor() {
