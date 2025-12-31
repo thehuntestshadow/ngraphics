@@ -9,6 +9,10 @@
   "waitTime": 500,
   "pages": [
     "index.html",
+    "infographics.html",
+    "gallery.html",
+    "faq.html",
+    "pricing.html",
     "models.html",
     "bundle.html",
     "lifestyle.html",
