@@ -56,6 +56,14 @@ Before adding a new tool, it should:
 ## Current State
 
 ### Completed Pages
+
+**Marketing Pages**
+- **Landing** - Marketing landing page with product showcase, studios grid, pricing teaser
+- **Gallery** - Curated showcase of AI-generated examples with filtering and lightbox
+- **FAQ** - Frequently asked questions with accordion, search, category filtering
+- **Pricing** - Subscription plans with Stripe integration
+
+**Studio Pages (20)**
 - **Infographics** - Product marketing infographics with features/callouts
 - **Model Studio** - AI model photos wearing/holding products
 - **Bundle Studio** - Multi-product bundle/kit images
@@ -71,6 +79,12 @@ Before adding a new tool, it should:
 - **Size Chart Generator** - Size charts for apparel, footwear, accessories with presets
 - **A+ Content Generator** - Amazon A+ Content modules (Image+Text, Comparison, Grid, Text, Single Image)
 - **Product Variants** - Generate color, material, and pattern variations from product photos
+- **Social Studio** - Social media graphics for all platforms (posts, stories, carousels)
+- **Export Center** - Batch resize, compress, watermark, and convert images
+- **Ad Creative** - Banner ads for Google, Facebook, Amazon, Instagram
+- **Model Video** - Animate model photos with motion and camera effects
+
+**Utility Pages**
 - **Dashboard** - Analytics, storage management, quick access hub
 - **Documentation** - User docs
 

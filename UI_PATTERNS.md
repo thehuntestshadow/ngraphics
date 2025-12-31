@@ -7,7 +7,8 @@ Reference file for consistent UI patterns across NGRAPHICS pages. **COPY THESE E
 ## Table of Contents
 
 1. [Page Boilerplate](#page-boilerplate)
-2. [Panel Headers](#panel-headers)
+2. [Marketing Page Boilerplate](#marketing-page-boilerplate)
+3. [Panel Headers](#panel-headers)
 3. [Section Labels](#section-labels)
 4. [Scene Grid Buttons](#scene-grid-buttons)
 5. [Option Buttons](#option-buttons)
@@ -132,6 +133,102 @@ SharedTheme.setupToggle(document.getElementById('themeToggle'));
 ```
 
 For the **home page (index.html)**, omit the `<a href="index.html" class="logo-link">` wrapper around the logo group since you're already on the home page.
+
+---
+
+## Marketing Page Boilerplate
+
+Marketing pages (Landing, Gallery, FAQ) have a different structure with SEO meta tags:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Title - NGRAPHICS</title>
+    <meta name="description" content="Page description for search engines.">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://hefaistos.xyz/page.html">
+    <meta property="og:title" content="Page Title - NGRAPHICS">
+    <meta property="og:description" content="Page description for social sharing.">
+    <meta property="og:image" content="https://hefaistos.xyz/assets/og-image.png">
+    <meta property="og:site_name" content="NGRAPHICS">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Page Title - NGRAPHICS">
+    <meta name="twitter:description" content="Page description for Twitter.">
+    <meta name="twitter:image" content="https://hefaistos.xyz/assets/og-image.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,...">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="pagename.css">
+</head>
+<body>
+    <!-- Noise overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Gradient orbs for atmosphere -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <!-- Header with navigation -->
+    <header class="site-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <div class="logo-mark">...</div>
+                <div class="logo-text">
+                    <span class="logo-title">NGRAPHICS</span>
+                </div>
+            </div>
+            <nav class="header-nav">
+                <a href="gallery.html">Gallery</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="docs.html">Docs</a>
+                <a href="faq.html">FAQ</a>
+            </nav>
+            <div class="header-controls">
+                <div id="accountContainer"></div>
+                <button class="theme-toggle" id="themeToggle">...</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pagename-main">
+        <!-- Page-specific content -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="pagename-footer">
+        <!-- Multi-column footer for landing, simple footer for others -->
+    </footer>
+
+    <!-- Scripts -->
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+    <script src="auth-ui.js"></script>
+    <script src="cloud-sync.js"></script>
+    <script src="shared.js"></script>
+    <script src="pagename.js"></script>
+</body>
+</html>
+```
+
+**Key differences from studio pages:**
+- SEO meta tags (Open Graph, Twitter Cards)
+- Navigation links in header (Gallery, Pricing, Docs, FAQ)
+- No Dashboard link in header
+- Simplified script loading (no core.js, api.js, etc.)
+- Multi-column footer on landing, simple footer on others
 
 ---
 
