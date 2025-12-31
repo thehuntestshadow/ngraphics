@@ -25,8 +25,6 @@
 }
 
 .studio-nav-card:hover {
-    border-color: var(--accent);
-    background: var(--bg-hover);
     transform: translateY(-3px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
@@ -38,24 +36,48 @@
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-md);
-    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    background: linear-gradient(135deg, var(--apple-blue), var(--apple-teal));
     transition: all var(--duration-fast) var(--ease-out);
 }
 
 .studio-nav-card:hover .studio-nav-icon {
-    background: var(--accent);
+    transform: scale(1.1);
 }
 
 .studio-nav-icon svg {
     width: 24px;
     height: 24px;
-    color: var(--accent);
+    color: white;
     transition: color var(--duration-fast) var(--ease-out);
 }
 
-.studio-nav-card:hover .studio-nav-icon svg {
-    color: white;
-}
+/* Unique gradient for each studio card */
+.studio-nav-card:nth-child(1) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-blue), var(--apple-teal)); }
+.studio-nav-card:nth-child(2) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-purple), var(--apple-pink)); }
+.studio-nav-card:nth-child(3) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-green), var(--apple-teal)); }
+.studio-nav-card:nth-child(4) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-orange), var(--apple-yellow)); }
+.studio-nav-card:nth-child(5) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-pink), var(--apple-red)); }
+.studio-nav-card:nth-child(6) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-indigo), var(--apple-purple)); }
+.studio-nav-card:nth-child(7) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-teal), var(--apple-green)); }
+.studio-nav-card:nth-child(8) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-red), var(--apple-orange)); }
+.studio-nav-card:nth-child(9) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-yellow), var(--apple-orange)); }
+.studio-nav-card:nth-child(10) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-pink), var(--apple-purple)); }
+.studio-nav-card:nth-child(11) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-blue), var(--apple-indigo)); }
+.studio-nav-card:nth-child(12) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-green), var(--apple-blue)); }
+
+/* Colorful hover border based on card index */
+.studio-nav-card:nth-child(1):hover { border-color: var(--apple-blue); }
+.studio-nav-card:nth-child(2):hover { border-color: var(--apple-purple); }
+.studio-nav-card:nth-child(3):hover { border-color: var(--apple-green); }
+.studio-nav-card:nth-child(4):hover { border-color: var(--apple-orange); }
+.studio-nav-card:nth-child(5):hover { border-color: var(--apple-pink); }
+.studio-nav-card:nth-child(6):hover { border-color: var(--apple-indigo); }
+.studio-nav-card:nth-child(7):hover { border-color: var(--apple-teal); }
+.studio-nav-card:nth-child(8):hover { border-color: var(--apple-red); }
+.studio-nav-card:nth-child(9):hover { border-color: var(--apple-yellow); }
+.studio-nav-card:nth-child(10):hover { border-color: var(--apple-pink); }
+.studio-nav-card:nth-child(11):hover { border-color: var(--apple-blue); }
+.studio-nav-card:nth-child(12):hover { border-color: var(--apple-green); }
 
 .studio-nav-content {
     display: flex;

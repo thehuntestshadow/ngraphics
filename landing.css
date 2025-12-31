@@ -1,6 +1,20 @@
 /**
  * NGRAPHICS - Landing Page Styles
+ * Apple-inspired colorful palette with gradients
  */
+
+/* Apple Color Palette */
+:root {
+    --apple-blue: #007AFF;
+    --apple-green: #34C759;
+    --apple-indigo: #5856D6;
+    --apple-orange: #FF9500;
+    --apple-pink: #FF2D55;
+    --apple-purple: #AF52DE;
+    --apple-red: #FF3B30;
+    --apple-teal: #5AC8FA;
+    --apple-yellow: #FFCC00;
+}
 
 /* ============================================
    LAYOUT
@@ -63,10 +77,24 @@
     letter-spacing: -0.04em;
     line-height: 1.1;
     margin-bottom: 24px;
-    background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 50%, var(--secondary) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--apple-blue) 0%,
+        var(--apple-purple) 25%,
+        var(--apple-pink) 50%,
+        var(--apple-orange) 75%,
+        var(--apple-yellow) 100%
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
 }
 
 .hero-subtitle {
@@ -89,21 +117,22 @@
     align-items: center;
     gap: 10px;
     padding: 16px 32px;
-    background: var(--accent);
-    color: var(--bg-primary);
+    background: linear-gradient(135deg, var(--apple-blue), var(--apple-purple), var(--apple-pink));
+    background-size: 200% 200%;
+    color: white;
     text-decoration: none;
     font-size: 1.1rem;
     font-weight: 600;
     border-radius: 12px;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    animation: gradientShift 6s ease infinite;
 }
 
 .hero-cta:hover {
-    filter: brightness(1.1);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(var(--accent-rgb), 0.4);
+    box-shadow: 0 8px 32px rgba(136, 84, 208, 0.5);
 }
 
 .hero-cta svg {
@@ -185,8 +214,11 @@
 .showcase-glow {
     position: absolute;
     inset: -50%;
-    background: radial-gradient(circle at 50% 50%, var(--accent-glow) 0%, transparent 50%);
-    opacity: 0.3;
+    background:
+        radial-gradient(circle at 30% 30%, rgba(0, 122, 255, 0.3) 0%, transparent 40%),
+        radial-gradient(circle at 70% 70%, rgba(255, 45, 85, 0.3) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(175, 82, 222, 0.2) 0%, transparent 50%);
+    opacity: 0.5;
     pointer-events: none;
     animation: pulse 4s ease-in-out infinite;
 }
@@ -294,14 +326,44 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--surface-secondary);
     border-radius: 12px;
     margin-bottom: 16px;
     font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+/* Colorful gradient icons per category */
+.studio-category:nth-child(1) .studio-card:nth-child(1) .studio-icon { background: linear-gradient(135deg, var(--apple-blue), var(--apple-teal)); }
+.studio-category:nth-child(1) .studio-card:nth-child(2) .studio-icon { background: linear-gradient(135deg, var(--apple-purple), var(--apple-pink)); }
+.studio-category:nth-child(1) .studio-card:nth-child(3) .studio-icon { background: linear-gradient(135deg, var(--apple-green), var(--apple-teal)); }
+.studio-category:nth-child(1) .studio-card:nth-child(4) .studio-icon { background: linear-gradient(135deg, var(--apple-orange), var(--apple-yellow)); }
+.studio-category:nth-child(1) .studio-card:nth-child(5) .studio-icon { background: linear-gradient(135deg, var(--apple-pink), var(--apple-red)); }
+.studio-category:nth-child(1) .studio-card:nth-child(6) .studio-icon { background: linear-gradient(135deg, var(--apple-indigo), var(--apple-purple)); }
+
+.studio-category:nth-child(2) .studio-card:nth-child(1) .studio-icon { background: linear-gradient(135deg, var(--apple-red), var(--apple-orange)); }
+.studio-category:nth-child(2) .studio-card:nth-child(2) .studio-icon { background: linear-gradient(135deg, var(--apple-teal), var(--apple-blue)); }
+.studio-category:nth-child(2) .studio-card:nth-child(3) .studio-icon { background: linear-gradient(135deg, var(--apple-yellow), var(--apple-orange)); }
+.studio-category:nth-child(2) .studio-card:nth-child(4) .studio-icon { background: linear-gradient(135deg, var(--apple-green), var(--apple-yellow)); }
+.studio-category:nth-child(2) .studio-card:nth-child(5) .studio-icon { background: linear-gradient(135deg, var(--apple-purple), var(--apple-indigo)); }
+.studio-category:nth-child(2) .studio-card:nth-child(6) .studio-icon { background: linear-gradient(135deg, var(--apple-pink), var(--apple-purple)); }
+
+.studio-category:nth-child(3) .studio-card:nth-child(1) .studio-icon { background: linear-gradient(135deg, var(--apple-orange), var(--apple-red)); }
+.studio-category:nth-child(3) .studio-card:nth-child(2) .studio-icon { background: linear-gradient(135deg, var(--apple-blue), var(--apple-indigo)); }
+.studio-category:nth-child(3) .studio-card:nth-child(3) .studio-icon { background: linear-gradient(135deg, var(--apple-green), var(--apple-teal)); }
+.studio-category:nth-child(3) .studio-card:nth-child(4) .studio-icon { background: linear-gradient(135deg, var(--apple-yellow), var(--apple-green)); }
+
+.studio-category:nth-child(4) .studio-card:nth-child(1) .studio-icon { background: linear-gradient(135deg, var(--apple-teal), var(--apple-green)); }
+.studio-category:nth-child(4) .studio-card:nth-child(2) .studio-icon { background: linear-gradient(135deg, var(--apple-indigo), var(--apple-blue)); }
+.studio-category:nth-child(4) .studio-card:nth-child(3) .studio-icon { background: linear-gradient(135deg, var(--apple-pink), var(--apple-orange)); }
+.studio-category:nth-child(4) .studio-card:nth-child(4) .studio-icon { background: linear-gradient(135deg, var(--apple-purple), var(--apple-pink)); }
+
+.studio-icon svg {
+    color: white;
 }
 
 .studio-card:hover .studio-icon {
-    background: rgba(var(--accent-rgb), 0.1);
+    transform: scale(1.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .studio-name {
@@ -351,15 +413,28 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.1), rgba(var(--secondary-rgb), 0.1));
     border-radius: 16px;
     margin: 0 auto 24px;
+    transition: all 0.3s ease;
 }
+
+/* Colorful feature icons */
+.feature-card:nth-child(1) .feature-icon { background: linear-gradient(135deg, var(--apple-blue), var(--apple-purple)); }
+.feature-card:nth-child(2) .feature-icon { background: linear-gradient(135deg, var(--apple-green), var(--apple-teal)); }
+.feature-card:nth-child(3) .feature-icon { background: linear-gradient(135deg, var(--apple-orange), var(--apple-pink)); }
+.feature-card:nth-child(4) .feature-icon { background: linear-gradient(135deg, var(--apple-purple), var(--apple-pink)); }
+.feature-card:nth-child(5) .feature-icon { background: linear-gradient(135deg, var(--apple-red), var(--apple-orange)); }
+.feature-card:nth-child(6) .feature-icon { background: linear-gradient(135deg, var(--apple-indigo), var(--apple-blue)); }
 
 .feature-icon svg {
     width: 32px;
     height: 32px;
-    color: var(--accent);
+    color: white;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .feature-title {
@@ -549,8 +624,9 @@
     padding: 80px 40px;
     background: linear-gradient(
         135deg,
-        rgba(var(--accent-rgb), 0.1) 0%,
-        rgba(var(--secondary-rgb), 0.05) 100%
+        rgba(0, 122, 255, 0.1) 0%,
+        rgba(175, 82, 222, 0.08) 50%,
+        rgba(255, 45, 85, 0.06) 100%
     );
     border-radius: 32px;
     border: 1px solid var(--border-subtle);
@@ -562,7 +638,9 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at top, rgba(var(--accent-rgb), 0.1), transparent 60%);
+    background:
+        radial-gradient(ellipse at top left, rgba(0, 122, 255, 0.15), transparent 50%),
+        radial-gradient(ellipse at bottom right, rgba(255, 45, 85, 0.15), transparent 50%);
     pointer-events: none;
 }
 

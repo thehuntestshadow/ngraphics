@@ -90,7 +90,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `cloud-sync.js` - Cloud sync manager (history/favorites sync to Supabase)
 
 ### Documentation Files
-- `DESIGN.md` - Design system (colors, spacing, components, patterns)
+- `DESIGN.md` - Design system (Apple color palette, gradients, spacing, components)
 - `PROMPTS.md` - Prompt engineering patterns for AI image generation
 - `ROADMAP.md` - Feature ideas & plans
 - `UI_PATTERNS.md` - HTML/CSS patterns for consistent UI

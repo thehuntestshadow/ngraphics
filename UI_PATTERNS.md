@@ -391,11 +391,12 @@ The generate button **MUST** follow this exact structure for consistent styling.
 
 ### Apple-inspired Button Styling
 
-The generate button uses a solid Apple Blue background (`#007AFF`) instead of gradients:
-- **Background**: Solid `var(--accent)` color
+The generate button uses an **animated rainbow gradient** with Apple colors:
+- **Background**: `linear-gradient(135deg, blue → indigo → purple → pink → blue)`
+- **Animation**: `gradientShift 8s ease infinite` - slowly cycles through colors
 - **Hover**: `filter: brightness(1.1)` with subtle shadow
 - **Active**: `filter: brightness(0.95)` with slight scale
-- **No glow effects**: `.btn-glow` is hidden via CSS
+- **`.btn-glow`**: Hidden via CSS but kept for compatibility
 
 ### Icon by Page
 
@@ -1063,7 +1064,8 @@ Before finishing a new page, verify:
 **Apple Design Guidelines:**
 - [ ] Uses Inter font (NOT Outfit)
 - [ ] No noise overlay or ambient orb elements
-- [ ] Buttons use solid colors (no gradients)
+- [ ] Generate button uses animated gradient (blue → indigo → purple → pink)
+- [ ] Active states use `var(--gradient-primary)` gradient
 - [ ] Hover uses `filter: brightness()` (no `translateY`)
 - [ ] Letter-spacing is `0` or negative (no wide tracking)
 - [ ] Font weights are 500-600 (not 700-800)
@@ -1105,18 +1107,34 @@ Place the footer after all scripts, before `</body>`.
 
 ## Apple Design System Quick Reference
 
+### Apple Color Palette
+| Variable | Value | Usage |
+|---------|----------|-------|
+| `--apple-blue` | `#007AFF` | Primary accent |
+| `--apple-indigo` | `#5856D6` | Gradients, secondary |
+| `--apple-purple` | `#AF52DE` | Gradients |
+| `--apple-pink` | `#FF2D55` | Highlights |
+| `--apple-red` | `#FF3B30` | Errors |
+| `--apple-orange` | `#FF9500` | Warnings |
+| `--apple-yellow` | `#FFCC00` | Favorites |
+| `--apple-green` | `#34C759` | Success |
+| `--apple-teal` | `#5AC8FA` | Info |
+
+### Gradient Presets
+| Variable | Colors | Usage |
+|----------|--------|-------|
+| `--gradient-primary` | blue → indigo | Active states, checkboxes |
+| `--gradient-primary-hover` | indigo → purple | Hover states |
+| Generate button | blue → indigo → purple → pink | Animated CTA |
+
 ### Colors (Dark Mode)
 | Purpose | Variable | Value |
 |---------|----------|-------|
-| Page background | `--bg-deep` | `#000000` |
-| Panel background | `--bg-base` | `#1c1c1e` |
-| Elevated surface | `--bg-elevated` | `#2c2c2e` |
-| Input/button bg | `--bg-surface` | `#3a3a3c` |
-| Hover state | `--bg-hover` | `#48484a` |
-| Primary accent | `--accent` | `#007AFF` |
-| Secondary accent | `--secondary` | `#5856D6` |
-| Success | `--success` | `#30D158` |
-| Error | `--error` | `#FF453A` |
+| Page background | `--bg-deep` | `#09090b` |
+| Panel background | `--bg-base` | `#18181b` |
+| Elevated surface | `--bg-elevated` | `#27272a` |
+| Input/button bg | `--bg-surface` | `#3f3f46` |
+| Hover state | `--bg-hover` | `#52525b` |
 
 ### Typography
 - **Font**: Inter (not Outfit)
@@ -1141,16 +1159,17 @@ Place the footer after all scripts, before `</body>`.
 - **Duration**: 0.2s (fast), 0.3s (normal)
 - **Hover**: Use `filter: brightness(1.1)` instead of `translateY`
 - **Active**: Use `transform: scale(0.99)` for press feedback
+- **Gradient animation**: `gradientShift 8s ease infinite` for generate button
 
 ### Anti-Patterns (Avoid)
-1. Gradient backgrounds on buttons
-2. Glow/neon effects
-3. Bounce/spring animations
-4. Wide letter-spacing
-5. Font weights above 600
-6. Noise overlays
-7. Ambient orbs/blurs
-8. `translateY` hover effects
+1. Glow/neon effects
+2. Bounce/spring animations
+3. Wide letter-spacing
+4. Font weights above 600
+5. Noise overlays
+6. Ambient orbs/blurs
+7. `translateY` hover effects
+8. Solid colors on primary CTAs (use gradients)
 
 ---
 

@@ -51,21 +51,43 @@ Design system documentation for NGRAPHICS. Use this as reference for consistent 
 | `--border-strong` | `rgba(255,255,255,0.22)` | Hover states, emphasis |
 | `--border-highlight` | `rgba(255,255,255,0.30)` | Active states |
 
+### Apple Color Palette
+| Variable | Value | Usage |
+|----------|-------|-------|
+| `--apple-blue` | `#007AFF` | Primary accent, links, CTAs |
+| `--apple-indigo` | `#5856D6` | Secondary accent, gradients |
+| `--apple-purple` | `#AF52DE` | Tertiary accent, gradients |
+| `--apple-pink` | `#FF2D55` | Accent highlights |
+| `--apple-red` | `#FF3B30` | Errors, destructive actions |
+| `--apple-orange` | `#FF9500` | Warnings, alerts |
+| `--apple-yellow` | `#FFCC00` | Favorites star, highlights |
+| `--apple-green` | `#34C759` | Success, connected status |
+| `--apple-teal` | `#5AC8FA` | Info, secondary highlights |
+
 ### Accent Colors
 | Variable | Value | Usage |
 |----------|-------|-------|
-| `--accent` | `#3b82f6` | Primary actions, links, focus |
-| `--accent-dim` | `#2563eb` | Darker accent variant |
-| `--accent-glow` | `rgba(59,130,246,0.25)` | Focus rings (subtle) |
-| `--accent-subtle` | `rgba(59,130,246,0.12)` | Backgrounds, hover states |
-| `--secondary` | `#8b5cf6` | Secondary accent (indigo) |
+| `--accent` | `var(--apple-blue)` | Primary actions, links, focus |
+| `--accent-dim` | `#0056B3` | Darker accent variant |
+| `--accent-glow` | `rgba(0,122,255,0.25)` | Focus rings (subtle) |
+| `--accent-subtle` | `rgba(0,122,255,0.12)` | Backgrounds, hover states |
+| `--secondary` | `var(--apple-indigo)` | Secondary accent |
+
+### Gradient Presets
+| Variable | Value | Usage |
+|----------|-------|-------|
+| `--gradient-primary` | `linear-gradient(135deg, var(--apple-blue), var(--apple-indigo))` | Primary buttons, active states |
+| `--gradient-primary-hover` | `linear-gradient(135deg, var(--apple-indigo), var(--apple-purple))` | Primary button hover |
+| `--gradient-success` | `linear-gradient(135deg, var(--apple-green), var(--apple-teal))` | Success states |
+| `--gradient-warning` | `linear-gradient(135deg, var(--apple-orange), var(--apple-yellow))` | Warning states |
+| `--gradient-danger` | `linear-gradient(135deg, var(--apple-red), var(--apple-orange))` | Error/danger states |
 
 ### Functional Colors
 | Variable | Value | Usage |
 |----------|-------|-------|
-| `--success` | `#22c55e` | Success messages, connected status |
-| `--error` | `#ef4444` | Errors, destructive actions |
-| `--warning` | `#eab308` | Warnings, favorites star |
+| `--success` | `var(--apple-green)` | Success messages, connected status |
+| `--error` | `var(--apple-red)` | Errors, destructive actions |
+| `--warning` | `var(--apple-orange)` | Warnings |
 
 ---
 
@@ -168,15 +190,21 @@ Design system documentation for NGRAPHICS. Use this as reference for consistent 
 
 ### Buttons
 
-**Primary (Generate)**
+**Primary (Generate) - Animated Rainbow Gradient**
 ```css
 .btn-generate {
     padding: 16px 24px;
-    background: var(--accent);
+    background: linear-gradient(135deg,
+        var(--apple-blue), var(--apple-indigo),
+        var(--apple-purple), var(--apple-pink),
+        var(--apple-blue));
+    background-size: 300% 300%;
+    animation: gradientShift 8s ease infinite;
     color: #ffffff;
     font-weight: 600;
     border-radius: var(--radius-md);
 }
+/* Animated gradient cycles through Apple colors */
 /* Hover: filter: brightness(1.1), box-shadow: var(--shadow-md) */
 /* Active: filter: brightness(0.95), transform: scale(0.99) */
 ```
@@ -202,8 +230,8 @@ Design system documentation for NGRAPHICS. Use this as reference for consistent 
     font-weight: 500;
 }
 .option-btn.active {
-    background: var(--accent);
-    border-color: var(--accent);
+    background: var(--gradient-primary);
+    border-color: var(--apple-blue);
     color: #ffffff;
 }
 ```
@@ -277,18 +305,29 @@ Design system documentation for NGRAPHICS. Use this as reference for consistent 
 
 ---
 
-## Anti-Patterns (Avoid These)
+## Design Patterns
 
-1. **Gradients on buttons** - Use solid colors
-2. **Glow effects** - Use subtle shadows instead
-3. **Bounce/spring animations** - Use smooth easing
-4. **Wide letter-spacing** - Keep tracking tight
-5. **Heavy font weights** - Use 500-600, not 700-800
-6. **Accent-colored icons in labels** - Use muted colors
-7. **TranslateY hover effects** - Use brightness filter
-8. **Noise overlays** - Removed for clean aesthetic
-9. **Ambient orbs/blurs** - Removed for simplicity
-10. **Uppercase text** - Use sparingly, reduce tracking
+### Gradient Usage
+Gradients are used throughout the app for interactive elements:
+
+1. **Generate button** - Animated rainbow gradient (blue → indigo → purple → pink)
+2. **Active states** - Blue → Indigo gradient for toggles, tabs, checkboxes
+3. **Progress bars** - Blue → Indigo gradient (warning: orange, danger: red)
+4. **Dashboard nav icons** - Unique colorful gradient per studio
+5. **Title numbers** - Blue gradient for panel headers
+
+### Anti-Patterns (Avoid These)
+
+1. **Glow effects** - Use subtle shadows instead
+2. **Bounce/spring animations** - Use smooth easing
+3. **Wide letter-spacing** - Keep tracking tight
+4. **Heavy font weights** - Use 500-600, not 700-800
+5. **Accent-colored icons in labels** - Use muted colors
+6. **TranslateY hover effects** - Use brightness filter
+7. **Noise overlays** - Removed for clean aesthetic
+8. **Ambient orbs/blurs** - Removed for simplicity
+9. **Uppercase text** - Use sparingly, reduce tracking
+10. **Solid colors for CTAs** - Use gradients for primary actions
 
 ---
 
