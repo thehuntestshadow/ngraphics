@@ -33,7 +33,22 @@
       "mcp__playwright__browser_navigate",
       "mcp__playwright__browser_take_screenshot",
       "mcp__playwright__browser_close",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(git reset:*)",
+      "Bash(for:*)",
+      "Bash(if [ -f \"$f\" ])",
+      "Bash(then grep -c \"site-footer\" \"$f\")",
+      "Bash(fi)",
+      "Bash(python3:*)",
+      "mcp__playwright__browser_console_messages",
+      "mcp__playwright__browser_evaluate",
+      "mcp__playwright__browser_run_code",
+      "Bash(xargs -I {} sh -c 'echo \"\"=== {} ===\"\" && grep -n \"\"history-item\"\" {} | grep -v \"\"loading=\\\\\"\"lazy\\\\\"\"\"\" | head -3')",
+      "mcp__memory-keeper__context_search",
+      "mcp__memory-keeper__context_session_list",
+      "Bash(claude mcp list:*)",
+      "Bash(claude mcp remove:*)",
+      "mcp__memory-keeper__context_save"
     ]
   }
 }
