@@ -26,7 +26,7 @@ NGRAPHICS is a collection of **tools that e-commerce brands need and use every d
 
 **Guiding principles:**
 - Each tool solves one specific problem well
-- No accounts, no subscriptions - works locally in browser
+- Works fully offline - accounts optional for cloud sync
 - AI-powered but user-controlled
 - Fast iteration: upload → configure → generate → download
 - Platform-agnostic but platform-aware (export for specific marketplaces)
@@ -77,13 +77,20 @@ Before adding a new tool, it should:
 ### Core Features (All Pages)
 - OpenRouter API integration
 - Multiple AI model support (Gemini, GPT)
-- Generation history (localStorage)
+- Generation history (localStorage + IndexedDB)
 - Favorites with settings/seed preservation (IndexedDB)
 - Keyboard shortcuts (Ctrl+Enter, Ctrl+D, Escape)
 - Feedback-based regeneration
 - Seed control for reproducibility
 - Negative prompts
 - Multiple variations (1, 2, 4)
+
+### Infrastructure (v4.0)
+- **Supabase Auth** - Optional accounts for cloud sync
+- **Cloud Sync** - History/favorites sync across devices
+- **Config System** - Environment-based configuration
+- **Security** - XSS prevention, production logging toggle
+- **Commercial Ready** - Subscription tiers, usage tracking schema
 
 ---
 
@@ -300,7 +307,7 @@ Remove/replace product backgrounds - essential for e-commerce.
 - Value: Very High (most requested e-commerce tool)
 - **Implemented**: `background.html` with 5 background types, shadow options, scene presets
 
-#### **Social Studio** (Consolidated)
+#### **Social Studio** ✅ DONE
 All social media content in one unified tool. *Replaces: Social Templates, Carousel Post Generator, Pin Generator, Story/Reel Cover Generator, Video Thumbnail Generator.*
 
 **Format Tabs:**
@@ -318,18 +325,20 @@ All social media content in one unified tool. *Replaces: Social Templates, Carou
 - Batch export for all platforms at once
 - Difficulty: Medium
 - Value: Very High (essential for modern marketing)
+- **Implemented**: `social-studio.html` with 5 format tabs, 8 overlay types, AI caption generation
 
-#### **Ad Creative Generator**
+#### **Ad Creative Generator** ✅ DONE
 Banner ads and paid media creatives in multiple sizes.
 - Standard IAB sizes: 300x250, 728x90, 160x600, 320x50, 300x600, etc.
-- Platform-specific: Google Display, Facebook/Meta, Amazon Sponsored Brands
-- Auto-generate headline + CTA text variations
-- A/B variant generation (2-4 versions per size)
-- Brand color/logo integration
-- Export as image set or HTML5
-- Animated GIF option
+- Platform-specific: Google Display, Facebook/Meta, Amazon, Instagram
+- Headline, description, and CTA text inputs
+- A/B variant generation (1/2/4 versions)
+- 9-point text position grid
+- Visual styles: Modern, Bold, Minimal, Elegant, Playful, Dark
+- Price display and promotional badges
 - Difficulty: Medium-Hard
 - Value: Very High (direct revenue driver)
+- **Implemented**: `ad-creative.html` with 4 platforms, 20 ad sizes, position grid, A/B variants
 
 ### 🎬 Video Generation (New Category)
 
@@ -346,15 +355,16 @@ Animated versions of product infographics for social media and listings.
 - Difficulty: Hard
 - Value: Very High (video content drives 2x engagement)
 
-#### **Model Video Generator**
-Short video clips of AI models with products.
-- Model movements: subtle sway, product showcase gestures, walking
-- Camera movements: slow zoom, pan, orbit
-- Duration: 3-10 seconds (loopable)
-- Multiple angles in single video
-- Export: MP4, GIF
-- Use cases: Product page hero, social ads, email headers
-- Difficulty: Hard
+#### **Model Video Generator** ✅ DONE
+Short video clips of AI models with products using Luma AI.
+- Model movements: subtle sway, product showcase gestures, walking, turn, hair flip, gesture
+- Camera movements: slow zoom in/out, pan left/right, orbit, static
+- Combined mode: Model + camera motion together
+- Duration: 3-10 seconds with loop option
+- Speed: Normal, Slow-mo, Cinematic
+- Export: MP4, GIF (coming soon)
+- Uses Luma AI Dream Machine API (separate from OpenRouter)
+- Difficulty: Hard (complete)
 - Value: Very High (video models for fraction of real shoot cost)
 
 #### **Lifestyle Video Generator**
@@ -457,8 +467,8 @@ Auto-generate product Q&As.
 - Value: Medium
 - **Status: Implemented** - 6 categories, 4 tones, Schema.org JSON-LD, visual infographics
 
-#### **Copywriter Expansion** (to be added to existing Copywriter)
-Instead of separate tools, extend the existing Copywriter with new content types:
+#### **Copywriter Expansion** ✅ DONE
+Extended the existing Copywriter with new content types:
 
 **Email Tab:**
 - Welcome series (3-5 emails)
@@ -479,6 +489,7 @@ Instead of separate tools, extend the existing Copywriter with new content types
 - Tone matching
 
 This consolidates 3 planned tools into the existing Copywriter.
+- **Implemented**: Added Email, Naming, and Reviews tabs to `copywriter.html` with full prompt generation
 
 ### 📊 Analytics & Optimization
 
@@ -592,14 +603,14 @@ AI upscaling and quality improvement.
 - Difficulty: Medium
 - Value: Medium
 
-#### **Export Center** (Consolidated)
+#### **Export Center** ✅ DONE
 All image utilities in one tool. *Replaces: Crop & Resize Tool, Watermark Tool, Image Compressor.*
 
 **Tabs:**
 - **Resize**: Preset crops for marketplaces + social, custom aspect ratios, smart crop
 - **Compress**: Smart compression, target file size, format conversion (WebP, AVIF)
 - **Watermark**: Text/logo watermarks, position presets, opacity control
-- **Export**: Multi-format output, metadata embedding, ZIP packaging
+- **Convert**: Format conversion (JPEG, PNG, WebP)
 
 **Features:**
 - Batch processing across all operations
@@ -608,6 +619,7 @@ All image utilities in one tool. *Replaces: Crop & Resize Tool, Watermark Tool, 
 - Naming convention templates
 - Difficulty: Medium
 - Value: High (consolidates 4 tools)
+- **Implemented**: `export-center.html` with 4 tool tabs, batch processing, 20+ size presets
 
 ### 📅 Additional Tools
 
@@ -693,10 +705,12 @@ Random ideas to evaluate later, organized by theme.
 - Client/brand separation
 - Keyboard-only power user mode
 
-### 💰 Monetization Ideas
-- Credit-based usage model
+### 💰 Monetization Ideas ✅ PLANNED
+> See **Commercial Architecture** section for implementation details
+- ✅ Credit-based usage model (credits table ready)
+- ✅ Subscription tiers (Free/Pro/Business/Enterprise)
+- ✅ Priority API access (via Edge Function proxy)
 - Premium templates
-- Priority API access
 - Custom model fine-tuning
 - White-glove onboarding service
 - Agency reseller program
@@ -741,8 +755,72 @@ Things explicitly out of scope:
 - **Social media posting** - Use native platforms or Buffer/Hootsuite
 - **Inventory management** - Not our domain
 - **Complex animations** - Short AI-generated clips OK, timeline editing not
-- **User accounts/auth** - Keep it simple, local-first
 - **Fragmented tools** - Consolidate related features into unified studios
+
+---
+
+## Commercial Architecture
+
+### Business Model: Freemium Hybrid
+
+| Tier | Price | Generations | Key Features |
+|------|-------|-------------|--------------|
+| **Free** | $0 | BYOK | Bring your own API key, local storage |
+| **Pro** | $19/mo | 200/mo | API included, cloud sync, no watermark |
+| **Business** | $49/mo | 1000/mo | Team seats, API access, priority |
+| **Enterprise** | Custom | Unlimited | SLA, custom integrations |
+
+### Technical Stack
+
+| Component | Technology | Status |
+|-----------|------------|--------|
+| Auth | Supabase Auth | ✅ Live |
+| Database | Supabase PostgreSQL | ✅ Live |
+| Storage | Supabase Storage | ✅ Live |
+| API Proxy | Supabase Edge Functions | 🔜 Next |
+| Payments | Stripe | 🔜 Next |
+| Hosting | Coolify on Hetzner | ✅ Live |
+
+### Implementation Status
+
+**Phase 1: Auth Foundation** ✅ Complete
+- [x] Supabase client integration
+- [x] Login/signup modal
+- [x] Account menu in header
+- [x] Auth styles
+
+**Phase 2: Cloud Sync** ✅ Complete
+- [x] History sync to cloud
+- [x] Favorites sync to cloud
+- [x] Image upload to Storage
+- [x] Background sync queue
+
+**Phase 3: Commercial Infrastructure** ✅ Schema Ready
+- [x] Subscription tiers table
+- [x] Usage tracking tables
+- [x] Credits system tables
+- [x] Config.js for environment variables
+- [ ] Stripe products/prices
+- [ ] Edge Function: generate-image proxy
+- [ ] Edge Function: create-checkout
+- [ ] Edge Function: stripe-webhook
+
+**Phase 4: Monetization UI** 🔜 Next
+- [ ] Pricing page
+- [ ] Usage dashboard in account menu
+- [ ] Upgrade prompts
+- [ ] Billing portal integration
+
+### Files Reference
+
+| File | Purpose |
+|------|---------|
+| `COMMERCIAL.md` | Full business plan and technical details |
+| `config.js` | Environment configuration |
+| `supabase.js` | Supabase client wrapper |
+| `auth-ui.js` | Login modal and account menu |
+| `cloud-sync.js` | Sync manager |
+| `SECURITY.md` | Security configuration and headers |
 
 ---
 
@@ -785,20 +863,35 @@ Core generation across 3 studios with history/favorites
 - [x] A+ Content Generator - Amazon EBC modules
 - [x] Product Variants - Color/material/pattern variations
 
-### v3.5 (Next - Consolidation Release)
-- [ ] **Social Studio** - All social formats in one tool (posts, stories, carousels, pins, thumbnails)
-- [ ] **Ad Creative Generator** - IAB banner ads in multiple sizes
+### v3.5 (Complete) ✅
+- [x] **Social Studio** - All social formats in one tool (posts, stories, carousels, pins, thumbnails)
+- [x] **Ad Creative Generator** - IAB banner ads in multiple sizes
 - [ ] Batch Processor Studio - Bulk operations with CSV support
 
-### v3.6 (Utilities & Expansion)
-- [ ] **Export Center** - Resize, compress, watermark, export (consolidated utility)
+### v3.6 (Complete) ✅
+- [x] **Export Center** - Resize, compress, watermark, convert (consolidated utility)
 - [ ] **Brand Kit Manager** - Colors, logos, fonts, palette extraction
-- [ ] **Copywriter expansion** - Email campaigns, product naming, review responses, platform presets
+- [x] **Copywriter expansion** - Email campaigns, product naming, review responses
 
-### v4.0 (Video Generation)
+### v4.0 (Video Generation + Infrastructure) ✅ Current
+- [x] Model Video Generator - AI model video clips with products (3-10s)
+- [x] Supabase Auth - Optional accounts for cloud sync
+- [x] Cloud Sync - History/favorites across devices
+- [x] Config System - Environment-based configuration
+- [x] Security Hardening - XSS prevention, production logging
+- [x] Commercial Schema - Subscriptions, usage, credits tables
 - [ ] Infographic Video Generator - Animated product infographics (5-30s)
-- [ ] Model Video Generator - AI model video clips with products (3-10s)
 - [ ] Lifestyle Video Generator - Ambient lifestyle product videos (5-15s)
+
+### v4.1 (Commercial Launch) 🔜 Next
+- [ ] Stripe Integration - Products, checkout, webhooks
+- [ ] Edge Function: generate-image - API proxy for paid users
+- [ ] Edge Function: create-checkout - Stripe checkout sessions
+- [ ] Edge Function: stripe-webhook - Payment handling
+- [ ] Pricing Page - Tier comparison, checkout buttons
+- [ ] Usage Dashboard - Show usage/limits in account menu
+- [ ] Upgrade Prompts - Contextual upgrade CTAs
+- [ ] Watermark System - Optional for free tier
 
 ### v4.5 (Polish & Advanced)
 - [ ] Template Library - Cross-studio templates
@@ -815,13 +908,13 @@ Core generation across 3 studios with history/favorites
 | User Need | Recommended Tools | Status |
 |-----------|-------------------|--------|
 | **Better product photos** | Background Studio, Product Variants | ✅ Done |
-| **Social media content** | **Social Studio** (consolidated) | 🔜 v3.5 |
+| **Social media content** | **Social Studio** (consolidated) | ✅ Done |
 | **Video content** | Infographic/Model/Lifestyle Video | 🔜 v4.0 |
 | **Increase conversions** | Badge Generator, Testimonial Generator | ✅ Badges done |
 | **Amazon optimization** | A+ Content, Size Chart, Size Visualizer | ✅ Done |
-| **Save time** | Batch Processor, Export Center | 🔜 v3.5-3.6 |
+| **Save time** | Batch Processor, Export Center | ✅ Export done |
 | **Brand consistency** | Brand Kit Manager | 🔜 v3.6 |
-| **Marketing copy** | Copywriter (with email/platform expansion) | ✅ + 🔜 v3.6 |
+| **Marketing copy** | Copywriter (with email/naming/reviews) | ✅ Done |
 
 ### By Effort
 
@@ -836,22 +929,24 @@ Core generation across 3 studios with history/favorites
 ### By Category
 
 **Image Generation**
-- ✅ Infographics, Model Studio, Bundle, Lifestyle, Packaging, Background Studio, Product Variants
-- 🔜 Social Studio, Ad Creative Generator
+- ✅ Infographics, Model Studio, Bundle, Lifestyle, Packaging, Background Studio, Product Variants, Social Studio
+- 🔜 Ad Creative Generator
 
 **Video Generation**
-- 🔜 Infographic Video, Model Video, Lifestyle Video
+- ✅ Model Video (3-10s model animation)
+- 🔜 Infographic Video, Lifestyle Video
 
 **Content Writing**
-- ✅ Copywriter, FAQ Generator
-- 🔜 Copywriter expansion (emails, names, reviews, platform presets)
+- ✅ Copywriter (with Email, Naming, Reviews tabs), FAQ Generator
+- 🔜 Platform presets for Copywriter
 
 **Conversion Tools**
 - ✅ Comparison, Size Visualizer, Badge Generator, Feature Cards, Size Chart, A+ Content
 - 🔜 Testimonial Generator
 
 **Utility**
-- 🔜 Export Center (resize/compress/watermark), Brand Kit, Image Enhancer
+- ✅ Export Center (resize/compress/watermark/convert)
+- 🔜 Brand Kit, Image Enhancer
 
 ### Quick Reference: Priority Matrix
 
@@ -912,8 +1007,12 @@ Core generation across 3 studios with history/favorites
 | Conversion | Size Chart Generator | Apparel, footwear, accessories sizing |
 | Platform | A+ Content Generator | 5 Amazon EBC module types |
 | Visual | Product Variants | Color, material, pattern variations |
+| Visual | Social Studio | 5 format tabs, overlays, AI captions |
+| Utility | Export Center | Resize, compress, watermark, convert |
+| Video | Model Video | Model animation, camera motion, Luma AI |
+| Marketing | Ad Creative | 4 platforms, 20 sizes, A/B variants |
 
 ---
 
-*Last updated: Dec 2024 (consolidated roadmap - reduced ~25 tools to ~12 focused studios)*
+*Last updated: Dec 2025 (v4.0 - Commercial architecture, Supabase auth, cloud sync)*
 *Add ideas freely - this is a living document*

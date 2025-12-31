@@ -1,0 +1,173 @@
+/**
+ * NGRAPHICS - Generate Image Edge Function
+ * Proxies OpenRouter API calls for paid users
+ *
+ * Deploy: supabase functions deploy generate-image
+ * Set secrets: supabase secrets set OPENROUTER_API_KEY=sk-or-xxx
+ */
+
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+const OPENROUTER_API_KEY = Deno.env.get('OPENROUTER_API_KEY')!
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
+const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
+  try {
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+
+    // Get user from auth header
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Missing authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser(
+      authHeader.replace('Bearer ', '')
+    )
+
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized', code: 'AUTH_ERROR' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Get subscription and check tier
+    const { data: sub } = await supabase
+      .from('subscriptions')
+      .select('tier_id, status')
+      .eq('user_id', user.id)
+      .single()
+
+    const tierId = sub?.tier_id || 'free'
+    const isActive = sub?.status === 'active' || !sub // No sub means free
+
+    // Free tier must use BYOK (their own API key)
+    if (tierId === 'free') {
+      return new Response(
+        JSON.stringify({
+          error: 'Free tier requires your own API key',
+          code: 'BYOK_REQUIRED',
+          tier: 'free'
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Check subscription is active
+    if (!isActive) {
+      return new Response(
+        JSON.stringify({
+          error: 'Subscription is not active',
+          code: 'SUBSCRIPTION_INACTIVE',
+          status: sub?.status
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Get tier limits
+    const { data: tier } = await supabase
+      .from('subscription_tiers')
+      .select('generations_per_month')
+      .eq('id', tierId)
+      .single()
+
+    const monthlyLimit = tier?.generations_per_month
+
+    // Check monthly usage if there's a limit
+    if (monthlyLimit) {
+      const monthStart = new Date()
+      monthStart.setDate(1)
+      monthStart.setHours(0, 0, 0, 0)
+
+      const { data: usage } = await supabase
+        .from('usage_monthly')
+        .select('generation_count')
+        .eq('user_id', user.id)
+        .eq('month', monthStart.toISOString().split('T')[0])
+        .single()
+
+      const currentUsage = usage?.generation_count || 0
+
+      if (currentUsage >= monthlyLimit) {
+        return new Response(
+          JSON.stringify({
+            error: 'Monthly generation limit reached',
+            code: 'LIMIT_REACHED',
+            limit: monthlyLimit,
+            used: currentUsage,
+            resetsAt: new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 1).toISOString()
+          }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+    }
+
+    // Parse request body
+    const body = await req.json()
+    const { studio, ...openrouterPayload } = body
+
+    // Proxy request to OpenRouter
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://hefaistos.xyz',
+        'X-Title': 'NGRAPHICS'
+      },
+      body: JSON.stringify(openrouterPayload)
+    })
+
+    const result = await response.json()
+
+    // Track usage (non-blocking)
+    const monthStart = new Date()
+    monthStart.setDate(1)
+    monthStart.setHours(0, 0, 0, 0)
+    const monthStr = monthStart.toISOString().split('T')[0]
+
+    // Insert usage record
+    supabase.from('usage').insert({
+      user_id: user.id,
+      studio: studio || 'unknown',
+      model: openrouterPayload.model || 'unknown',
+      tokens_used: result.usage?.total_tokens || 0
+    }).then(() => {})
+
+    // Increment monthly counter
+    supabase.rpc('increment_monthly_usage', {
+      p_user_id: user.id,
+      p_month: monthStr
+    }).then(() => {})
+
+    // Return OpenRouter response
+    return new Response(JSON.stringify(result), {
+      status: response.status,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+
+  } catch (error) {
+    console.error('Edge function error:', error)
+    return new Response(
+      JSON.stringify({ error: 'Internal server error', details: error.message }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+})
