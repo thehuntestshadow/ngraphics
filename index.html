@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NGRAPHICS - AI Product Infographics</title>
+    <title>NGRAPHICS - AI E-commerce Toolkit</title>
+    <meta name="description" content="Create stunning product visuals in seconds. 20+ AI-powered studios for infographics, model photos, lifestyle shots, and more.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="landing.css">
 </head>
 <body>
     <!-- Noise overlay -->
@@ -17,7 +19,7 @@
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
 
-    <!-- Header (pre-rendered to prevent flash, JS sets up theme toggle) -->
+    <!-- Header -->
     <header class="site-header">
         <div class="header-content">
             <div class="logo-group">
@@ -29,19 +31,15 @@
                 </div>
                 <div class="logo-text">
                     <span class="logo-title">NGRAPHICS</span>
-                    <span class="logo-subtitle">Infographic Studio</span>
                 </div>
             </div>
+            <nav class="header-nav">
+                <a href="gallery.html">Gallery</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="docs.html">Docs</a>
+                <a href="faq.html">FAQ</a>
+            </nav>
             <div class="header-controls">
-                <a href="dashboard.html" class="docs-link" title="Dashboard">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="7" height="9" rx="1"/>
-                        <rect x="14" y="3" width="7" height="5" rx="1"/>
-                        <rect x="14" y="12" width="7" height="9" rx="1"/>
-                        <rect x="3" y="16" width="7" height="5" rx="1"/>
-                    </svg>
-                    <span>Dashboard</span>
-                </a>
                 <div id="accountContainer"></div>
                 <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
                     <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -63,1463 +61,549 @@
         </div>
     </header>
 
-    <!-- Main Application -->
-    <main class="app-main">
-        <div class="app-grid">
+    <!-- Main Content -->
+    <main class="landing-main">
+        <!-- Hero Section -->
+        <section class="landing-hero">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                    <span>AI-Powered E-commerce Toolkit</span>
+                </div>
+                <h1 class="hero-title">Create stunning product visuals in seconds</h1>
+                <p class="hero-subtitle">20+ AI studios for infographics, model photos, lifestyle shots, packaging mockups, and everything else your e-commerce brand needs.</p>
+                <div class="hero-actions">
+                    <a href="infographics.html" class="hero-cta">
+                        <span>Start Creating</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                            <polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                    </a>
+                    <a href="gallery.html" class="hero-cta-secondary">
+                        <span>View Gallery</span>
+                    </a>
+                </div>
+            </div>
 
-            <!-- Left Panel: Configuration -->
-            <section class="panel panel-config">
-                <div class="panel-header">
-                    <h2 class="panel-title">
-                        <span class="title-number">01</span>
-                        Configure
-                    </h2>
-                    <div class="language-toggle">
-                        <button type="button" class="lang-btn" data-lang="en">EN</button>
-                        <button type="button" class="lang-btn active" data-lang="ro">RO</button>
+            <div class="hero-showcase">
+                <div class="showcase-glow"></div>
+                <div class="showcase-container">
+                    <div class="showcase-images">
+                        <img src="assets/gallery/showcase-1.jpg" alt="Product infographic" class="showcase-image" onerror="this.style.background='var(--surface-secondary)'">
+                        <img src="assets/gallery/showcase-2.jpg" alt="Model photo" class="showcase-image" onerror="this.style.background='var(--surface-secondary)'">
+                        <img src="assets/gallery/showcase-3.jpg" alt="Lifestyle shot" class="showcase-image" onerror="this.style.background='var(--surface-secondary)'">
+                        <img src="assets/gallery/showcase-4.jpg" alt="Bundle image" class="showcase-image" onerror="this.style.background='var(--surface-secondary)'">
+                        <img src="assets/gallery/showcase-5.jpg" alt="Packaging mockup" class="showcase-image" onerror="this.style.background='var(--surface-secondary)'">
+                        <img src="assets/gallery/showcase-6.jpg" alt="Social media graphic" class="showcase-image" onerror="this.style.background='var(--surface-secondary)'">
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <!-- Error/Success Messages -->
-                <div class="message message-error" id="errorMessage">
-                    <div class="message-icon">!</div>
-                    <div class="message-content">
-                        <span class="error-text"></span>
+        <!-- Studios Section -->
+        <section class="studios-section">
+            <div class="landing-container">
+                <div class="section-header reveal">
+                    <div class="section-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
+                        </svg>
+                        <span>Studios</span>
                     </div>
-                </div>
-                <div class="message message-success" id="successMessage">
-                    <div class="message-icon">✓</div>
-                    <div class="message-content">Saved successfully</div>
+                    <h2 class="section-title">20+ AI-Powered Creative Tools</h2>
+                    <p class="section-subtitle">Every visual your e-commerce brand needs, generated in seconds with AI.</p>
                 </div>
 
-                <!-- Preset Selector -->
-                <div id="presetSelectorContainer"></div>
-
-                <form id="infographicForm" class="config-form">
-                    <!-- Product Photo Upload -->
-                    <div class="config-section">
-                        <div class="section-label" data-tooltip="Upload the product image to generate an infographic from. The AI will analyze and feature this product.">
-                            <span class="label-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                                    <path d="M21 15l-5-5L5 21"/>
-                                </svg>
-                            </span>
-                            Product Photo
-                            <span class="label-hint">Reference image</span>
-                            <button type="button" class="batch-mode-toggle" id="batchModeToggle" title="Switch to batch mode">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="3" width="7" height="7"/>
-                                    <rect x="14" y="3" width="7" height="7"/>
-                                    <rect x="3" y="14" width="7" height="7"/>
-                                    <rect x="14" y="14" width="7" height="7"/>
-                                </svg>
-                                <span>Batch</span>
-                            </button>
-                        </div>
-
-                        <!-- Single Image Upload (default) -->
-                        <div class="single-upload-container" id="singleUploadContainer">
-                            <!-- Multi-angle toggle -->
-                            <label class="checkbox-field multi-angle-toggle">
-                                <input type="checkbox" id="multiAngleToggle">
-                                <span class="checkbox-mark"></span>
-                                Multiple angles
-                                <span class="toggle-hint">(2-4 photos for better accuracy)</span>
-                            </label>
-
-                            <!-- Single image upload (default) -->
-                            <div class="single-image-upload" id="singleImageUpload">
-                                <div class="upload-zone" id="uploadArea">
-                                    <div class="upload-content">
-                                        <div class="upload-icon">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                                                <polyline points="17,8 12,3 7,8"/>
-                                                <line x1="12" y1="3" x2="12" y2="15"/>
-                                            </svg>
-                                        </div>
-                                        <p class="upload-text">Drop image or click to upload</p>
-                                        <p class="upload-formats">PNG, JPG, WebP • Max 10MB</p>
-                                    </div>
-                                    <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="Upload product photo">
-                                </div>
-                                <div class="image-preview" id="imagePreview">
-                                    <img src="" alt="Preview" class="preview-img" id="previewImg">
-                                    <button type="button" class="preview-remove" id="removeImage">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <line x1="18" y1="6" x2="6" y2="18"/>
-                                            <line x1="6" y1="6" x2="18" y2="18"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Multi-angle upload (hidden by default) -->
-                            <div class="multi-angle-upload" id="multiAngleUpload" style="display: none;">
-                                <div class="multi-angle-grid" id="multiAngleGrid">
-                                    <!-- Uploaded images will appear here -->
-                                </div>
-                                <div class="multi-angle-add" id="multiAngleAdd">
+                <div class="studio-categories">
+                    <!-- Visual Content -->
+                    <div class="studio-category reveal">
+                        <h3 class="category-title">Visual Content</h3>
+                        <div class="studio-grid reveal-stagger">
+                            <a href="infographics.html" class="studio-card">
+                                <div class="studio-icon">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="12" y1="5" x2="12" y2="19"/>
-                                        <line x1="5" y1="12" x2="19" y2="12"/>
-                                    </svg>
-                                    <span>Add angle</span>
-                                    <span class="multi-angle-count" id="multiAngleCount">0/4</span>
-                                    <input type="file" class="upload-input" id="multiAngleInput" accept="image/png,image/jpeg,image/jpg,image/webp" multiple aria-label="Upload multiple angle photos">
-                                </div>
-                                <p class="multi-angle-hint">Upload 2-4 photos of the same product from different angles for better AI understanding</p>
-                            </div>
-
-                            <label class="checkbox-field">
-                                <input type="checkbox" id="autoEnhance">
-                                <span class="checkbox-mark"></span>
-                                Auto-enhance (brightness/contrast)
-                            </label>
-                        <!-- AI Feature Extraction -->
-                        <button type="button" class="btn-analyze" id="analyzeImageBtn" style="display: none;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="3"/>
-                                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                            </svg>
-                            <span>Analyze with AI</span>
-                            <span class="analyze-hint">Extract title & features</span>
-                        </button>
-                        </div><!-- /single-upload-container -->
-
-                        <!-- Batch Upload Container (hidden by default) -->
-                        <div class="batch-upload-container" id="batchUploadContainer" style="display: none;">
-                            <div class="batch-upload-zone" id="batchUploadArea">
-                                <div class="upload-content">
-                                    <div class="upload-icon">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                            <rect x="3" y="3" width="7" height="7"/>
-                                            <rect x="14" y="3" width="7" height="7"/>
-                                            <rect x="3" y="14" width="7" height="7"/>
-                                            <rect x="14" y="14" width="7" height="7"/>
-                                        </svg>
-                                    </div>
-                                    <p class="upload-text">Drop multiple images or click to upload</p>
-                                    <p class="upload-formats">PNG, JPG, WebP • Max 10MB each</p>
-                                </div>
-                                <input type="file" class="upload-input" id="batchProductPhotos" accept="image/png,image/jpeg,image/jpg,image/webp" multiple aria-label="Upload batch product photos">
-                            </div>
-                            <div class="batch-queue" id="batchQueue"></div>
-                            <div class="batch-controls" id="batchControls" style="display: none;">
-                                <div class="batch-progress">
-                                    <span class="batch-status" id="batchStatus">0 / 0 processed</span>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" id="batchProgressFill"></div>
-                                    </div>
-                                </div>
-                                <div class="batch-actions">
-                                    <button type="button" class="btn-secondary btn-sm" id="clearBatchBtn">Clear All</button>
-                                    <button type="button" class="btn-primary btn-sm" id="startBatchBtn">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polygon points="5 3 19 12 5 21 5 3"/>
-                                        </svg>
-                                        Process All
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Start Templates -->
-                    <div class="config-section">
-                        <div id="templateSelectorContainer"></div>
-                    </div>
-
-                    <!-- Product Title -->
-                    <div class="config-section">
-                        <div class="section-label" data-tooltip="The main product name that will appear on the infographic. Keep it concise and descriptive.">
-                            <span class="label-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M4 7V4h16v3"/>
-                                    <path d="M9 20h6"/>
-                                    <path d="M12 4v16"/>
-                                </svg>
-                            </span>
-                            Product Title
-                            <span class="label-hint" id="titleHint">(in English)</span>
-                        </div>
-                        <input type="text" class="input-field" id="productTitle" placeholder="e.g., Premium Wireless Headphones" required aria-label="Product title">
-                    </div>
-
-                    <!-- Product Characteristics -->
-                    <div class="config-section">
-                        <div class="section-label" data-tooltip="Technical features and specifications of your product. Star important features to highlight them.">
-                            <span class="label-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="8" y1="6" x2="21" y2="6"/>
-                                    <line x1="8" y1="12" x2="21" y2="12"/>
-                                    <line x1="8" y1="18" x2="21" y2="18"/>
-                                    <line x1="3" y1="6" x2="3.01" y2="6"/>
-                                    <line x1="3" y1="12" x2="3.01" y2="12"/>
-                                    <line x1="3" y1="18" x2="3.01" y2="18"/>
-                                </svg>
-                            </span>
-                            Features
-                            <span class="label-hint" id="charHint">Drag to reorder • Star = primary</span>
-                        </div>
-                        <div class="characteristics-list" id="characteristicsList">
-                            <div class="char-item" draggable="true">
-                                <div class="char-drag" title="Drag to reorder">
-                                    <svg viewBox="0 0 24 24" fill="currentColor">
-                                        <circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/>
-                                        <circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/>
-                                        <circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/>
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                                        <path d="M21 15l-5-5L5 21"/>
                                     </svg>
                                 </div>
-                                <button type="button" class="char-star" title="Mark as primary">
+                                <h4 class="studio-name">Infographics</h4>
+                                <p class="studio-desc">Product feature callouts and benefit highlights</p>
+                            </a>
+                            <a href="models.html" class="studio-card">
+                                <div class="studio-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="8" r="4"/>
+                                        <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                                    </svg>
+                                </div>
+                                <h4 class="studio-name">Model Studio</h4>
+                                <p class="studio-desc">AI models wearing or holding your products</p>
+                            </a>
+                            <a href="lifestyle.html" class="studio-card">
+                                <div class="studio-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                                        <polyline points="9 22 9 12 15 12 15 22"/>
+                                    </svg>
+                                </div>
+                                <h4 class="studio-name">Lifestyle</h4>
+                                <p class="studio-desc">Products in real-world environments</p>
+                            </a>
+                            <a href="bundle.html" class="studio-card">
+                                <div class="studio-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                        <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                        <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                    </svg>
+                                </div>
+                                <h4 class="studio-name">Bundle Studio</h4>
+                                <p class="studio-desc">Multi-product kit and bundle images</p>
+                            </a>
+                            <a href="background.html" class="studio-card">
+                                <div class="studio-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <line x1="3" y1="9" x2="21" y2="9"/>
+                                        <line x1="9" y1="21" x2="9" y2="9"/>
+                                    </svg>
+                                </div>
+                                <h4 class="studio-name">Background</h4>
+                                <p class="studio-desc">Remove and replace product backgrounds</p>
+                            </a>
+                            <a href="packaging.html" class="studio-card">
+                                <div class="studio-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                                    </svg>
+                                </div>
+                                <h4 class="studio-name">Packaging</h4>
+                                <p class="studio-desc">Product packaging mockups and visualizations</p>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Marketing & Conversion -->
+                    <div class="studio-category reveal">
+                        <h3 class="category-title">Marketing & Conversion</h3>
+                        <div class="studio-grid reveal-stagger">
+                            <a href="social-studio.html" class="studio-card">
+                                <div class="studio-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="2" y="2" width="20" height="20" rx="5"/>
+                                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                                    </svg>
+                                </div>
+                                <h4 class="studio-name">Social Studio</h4>
+                                <p class="studio-desc">Social media graphics for all platforms</p>
+                            </a>
+                            <a href="ad-creative.html" class="studio-card">
+                                <div class="studio-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="2" y="3" width="20" height="14" rx="2"/>
+                                        <line x1="8" y1="21" x2="16" y2="21"/>
+                                        <line x1="12" y1="17" x2="12" y2="21"/>
+                                    </svg>
+                                </div>
+                                <h4 class="studio-name">Ad Creative</h4>
+                                <p class="studio-desc">Banner ads for Google, Facebook, Amazon</p>
+                            </a>
+                            <a href="badge-generator.html" class="studio-card">
+                                <div class="studio-icon">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                                     </svg>
-                                </button>
-                                <input type="text" class="input-field" placeholder="e.g., Active Noise Cancellation">
-                                <button type="button" class="char-remove" title="Remove">
+                                </div>
+                                <h4 class="studio-name">Badges</h4>
+                                <p class="studio-desc">Sale and trust badges for products</p>
+                            </a>
+                            <a href="comparison.html" class="studio-card">
+                                <div class="studio-icon">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="18" y1="6" x2="6" y2="18"/>
-                                        <line x1="6" y1="6" x2="18" y2="18"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="char-item" draggable="true">
-                                <div class="char-drag" title="Drag to reorder">
-                                    <svg viewBox="0 0 24 24" fill="currentColor">
-                                        <circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/>
-                                        <circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/>
-                                        <circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/>
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <line x1="12" y1="3" x2="12" y2="21"/>
                                     </svg>
                                 </div>
-                                <button type="button" class="char-star" title="Mark as primary">
+                                <h4 class="studio-name">Comparison</h4>
+                                <p class="studio-desc">Before/after and product comparisons</p>
+                            </a>
+                            <a href="feature-cards.html" class="studio-card">
+                                <div class="studio-icon">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                                    </svg>
-                                </button>
-                                <input type="text" class="input-field" placeholder="e.g., 30-hour battery life">
-                                <button type="button" class="char-remove" title="Remove">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="18" y1="6" x2="6" y2="18"/>
-                                        <line x1="6" y1="6" x2="18" y2="18"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="char-item" draggable="true">
-                                <div class="char-drag" title="Drag to reorder">
-                                    <svg viewBox="0 0 24 24" fill="currentColor">
-                                        <circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/>
-                                        <circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/>
-                                        <circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/>
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <polygon points="12 8 14 12 10 12 12 8"/>
+                                        <line x1="8" y1="16" x2="16" y2="16"/>
                                     </svg>
                                 </div>
-                                <button type="button" class="char-star" title="Mark as primary">
+                                <h4 class="studio-name">Feature Cards</h4>
+                                <p class="studio-desc">Individual feature cards for galleries</p>
+                            </a>
+                            <a href="a-plus.html" class="studio-card">
+                                <div class="studio-icon">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                        <path d="M2 17l10 5 10-5"/>
+                                        <path d="M2 12l10 5 10-5"/>
                                     </svg>
-                                </button>
-                                <input type="text" class="input-field" placeholder="e.g., Bluetooth 5.3">
-                                <button type="button" class="char-remove" title="Remove">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="18" y1="6" x2="6" y2="18"/>
-                                        <line x1="6" y1="6" x2="18" y2="18"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        <button type="button" class="btn-add" id="addCharBtn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="5" x2="12" y2="19"/>
-                                <line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                            Add Feature
-                        </button>
-                    </div>
-
-                    <!-- Product Benefits -->
-                    <div class="config-section">
-                        <div class="section-label" data-tooltip="Customer value propositions - the reasons why someone should buy this product.">
-                            <span class="label-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                                    <polyline points="22 4 12 14.01 9 11.01"/>
-                                </svg>
-                            </span>
-                            Benefits
-                            <span class="label-hint">Why customers should buy</span>
-                        </div>
-                        <div class="benefits-list" id="benefitsList">
-                            <div class="benefit-item">
-                                <input type="text" class="input-field" placeholder="e.g., Crystal-clear sound quality">
-                                <button type="button" class="benefit-remove" title="Remove">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="18" y1="6" x2="6" y2="18"/>
-                                        <line x1="6" y1="6" x2="18" y2="18"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="benefit-item">
-                                <input type="text" class="input-field" placeholder="e.g., All-day comfort">
-                                <button type="button" class="benefit-remove" title="Remove">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="18" y1="6" x2="6" y2="18"/>
-                                        <line x1="6" y1="6" x2="18" y2="18"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="benefit-item">
-                                <input type="text" class="input-field" placeholder="e.g., Works with all devices">
-                                <button type="button" class="benefit-remove" title="Remove">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="18" y1="6" x2="6" y2="18"/>
-                                        <line x1="6" y1="6" x2="18" y2="18"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        <button type="button" class="btn-add" id="addBenefitBtn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="5" x2="12" y2="19"/>
-                                <line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                            Add Benefit
-                        </button>
-                    </div>
-
-                    <!-- Style Selection -->
-                    <div class="config-section">
-                        <div class="section-label" data-tooltip="Choose the background style for your infographic. Auto analyzes your product colors.">
-                            <span class="label-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <path d="M12 2a14.5 14.5 0 000 20 14.5 14.5 0 000-20"/>
-                                    <path d="M2 12h20"/>
-                                </svg>
-                            </span>
-                            Background Style
-                        </div>
-                        <div class="style-grid">
-                            <label class="style-option" data-tooltip="Automatically selects the best background based on your product colors.">
-                                <input type="radio" name="style" value="auto" checked>
-                                <span class="style-card">
-                                    <span class="style-preview style-auto"></span>
-                                    <span class="style-name">Auto</span>
-                                </span>
-                            </label>
-                            <label class="style-option" data-tooltip="Clean white or light background, ideal for e-commerce listings.">
-                                <input type="radio" name="style" value="light">
-                                <span class="style-card">
-                                    <span class="style-preview style-light"></span>
-                                    <span class="style-name">Light</span>
-                                </span>
-                            </label>
-                            <label class="style-option" data-tooltip="Dark background for a premium, dramatic appearance.">
-                                <input type="radio" name="style" value="dark">
-                                <span class="style-card">
-                                    <span class="style-preview style-dark"></span>
-                                    <span class="style-name">Dark</span>
-                                </span>
-                            </label>
-                            <label class="style-option" data-tooltip="Smooth gradient derived from your product colors.">
-                                <input type="radio" name="style" value="gradient">
-                                <span class="style-card">
-                                    <span class="style-preview style-gradient"></span>
-                                    <span class="style-name">Gradient</span>
-                                </span>
-                            </label>
-                        </div>
-                        <!-- Hidden select for JS compatibility -->
-                        <select class="hidden" id="infographicStyle">
-                            <option value="auto">Auto</option>
-                            <option value="light">Light</option>
-                            <option value="dark">Dark</option>
-                            <option value="gradient">Gradient</option>
-                        </select>
-                    </div>
-
-                    <!-- Advanced Options -->
-                    <div class="advanced-section" id="advancedSection">
-                        <button type="button" class="advanced-toggle" id="advancedToggle">
-                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="4" y1="21" x2="4" y2="14"/>
-                                <line x1="4" y1="10" x2="4" y2="3"/>
-                                <line x1="12" y1="21" x2="12" y2="12"/>
-                                <line x1="12" y1="8" x2="12" y2="3"/>
-                                <line x1="20" y1="21" x2="20" y2="16"/>
-                                <line x1="20" y1="12" x2="20" y2="3"/>
-                                <circle cx="4" cy="12" r="2"/>
-                                <circle cx="12" cy="10" r="2"/>
-                                <circle cx="20" cy="14" r="2"/>
-                            </svg>
-                            <span>Advanced Options</span>
-                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </button>
-                        <div class="advanced-content">
-                            <!-- Layout & Composition -->
-                            <div class="advanced-group">
-                                <div class="group-title">Layout & Composition</div>
-                                <div class="advanced-grid">
-                                    <div class="field-group">
-                                        <label class="field-label" data-tooltip="Product placement in the image. Hero makes it large and prominent.">Layout</label>
-                                        <select class="select-field select-sm" id="layoutTemplate">
-                                            <option value="auto">Auto</option>
-                                            <option value="center">Center</option>
-                                            <option value="left">Left</option>
-                                            <option value="right">Right</option>
-                                            <option value="top">Top</option>
-                                            <option value="grid">Grid</option>
-                                            <option value="hero">Hero</option>
-                                        </select>
-                                    </div>
-                                    <div class="field-group">
-                                        <label class="field-label" data-tooltip="Image dimensions. Use 1:1 for square, 9:16 for stories, 16:9 for banners.">Aspect Ratio</label>
-                                        <div class="aspect-ratio-preview">
-                                            <select class="select-field select-sm" id="aspectRatio">
-                                                <option value="auto">Auto</option>
-                                                <option value="1:1">1:1</option>
-                                                <option value="2:3">2:3</option>
-                                                <option value="4:5">4:5</option>
-                                                <option value="16:9">16:9</option>
-                                                <option value="9:16">9:16</option>
-                                            </select>
-                                            <div class="aspect-preview-box" id="aspectPreviewBox">
-                                                <div class="aspect-preview-inner" id="aspectPreviewInner"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="field-group">
-                                        <label class="field-label" data-tooltip="How much of the product to show. Close-up focuses on details, In Context places it in a real-world setting.">Product Focus</label>
-                                        <select class="select-field select-sm" id="productFocus">
-                                            <option value="auto">Auto</option>
-                                            <option value="full">Full</option>
-                                            <option value="closeup">Close-up</option>
-                                            <option value="angle">Dynamic</option>
-                                            <option value="context">In Context</option>
-                                            <option value="floating">Floating</option>
-                                            <option value="multiple">Multi-View</option>
-                                        </select>
-                                    </div>
-                                    <div class="field-group">
-                                        <label class="field-label" data-tooltip="Number of image variations to generate at once.">Variations</label>
-                                        <div class="option-buttons" role="group" aria-label="Variations">
-                                            <button type="button" class="option-btn active" data-option="variations" data-value="1">1</button>
-                                            <button type="button" class="option-btn" data-option="variations" data-value="2">2</button>
-                                            <button type="button" class="option-btn" data-option="variations" data-value="4">4</button>
-                                        </div>
-                                    </div>
                                 </div>
-                                <div id="contextDescriptionGroup" style="display: none; margin-top: 12px;">
-                                    <label class="field-label" data-tooltip="Describe the scene when using 'In Context' focus. E.g., 'on a kitchen counter' or 'being used outdoors'.">Context Description</label>
-                                    <input type="text" class="input-field" id="contextDescription" placeholder="Describe the context (e.g., kitchen countertop, office desk, outdoor picnic)" aria-label="Context description">
-                                </div>
-                            </div>
-
-                            <!-- Visual Style -->
-                            <div class="advanced-group">
-                                <div class="group-title" data-tooltip="Controls typography, icons, and visual complexity.">Visual Style</div>
-                                <div class="slider-field">
-                                    <div class="slider-header">
-                                        <span class="slider-label" data-tooltip="Amount of visual detail. Minimal is clean, Rich includes more decorative elements.">Visual Density</span>
-                                        <span class="slider-value" id="visualDensityValue">Balanced</span>
-                                    </div>
-                                    <input type="range" class="range-slider" id="visualDensity" min="1" max="5" value="3" aria-label="Visual density">
-                                    <div class="slider-marks">
-                                        <span>Minimal</span>
-                                        <span>Rich</span>
-                                    </div>
-                                </div>
-                                <div class="advanced-grid">
-                                    <div class="field-group">
-                                        <label class="field-label" data-tooltip="Typography for text labels and callouts.">Font Style</label>
-                                        <select class="select-field select-sm" id="fontStyle">
-                                            <option value="auto">Auto</option>
-                                            <option value="modern">Modern</option>
-                                            <option value="classic">Classic</option>
-                                            <option value="bold">Bold</option>
-                                            <option value="playful">Playful</option>
-                                            <option value="technical">Technical</option>
-                                            <option value="elegant">Elegant</option>
-                                        </select>
-                                    </div>
-                                    <div class="field-group">
-                                        <label class="field-label" data-tooltip="Style for feature icons. Choose None for text-only labels.">Icon Style</label>
-                                        <select class="select-field select-sm" id="iconStyle">
-                                            <option value="auto">Auto</option>
-                                            <option value="realistic">Realistic / Photo-like</option>
-                                            <option value="illustrated">Illustrated / Hand-drawn</option>
-                                            <option value="3d">3D Rendered</option>
-                                            <option value="flat">Flat / Minimal</option>
-                                            <option value="outlined">Outlined / Stroke</option>
-                                            <option value="gradient">Gradient / Glossy</option>
-                                            <option value="none">None (text only)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <!-- Callout Lines -->
-                                <div class="callout-lines-section">
-                                    <div class="toggle-row">
-                                        <label class="toggle-label">
-                                            <input type="checkbox" id="calloutLinesEnabled" class="toggle-checkbox">
-                                            <span class="toggle-switch"></span>
-                                            <span class="toggle-text">Callout Lines</span>
-                                        </label>
-                                        <span class="toggle-hint">Draw lines connecting features to product</span>
-                                    </div>
-                                    <div class="callout-lines-options" id="calloutLinesOptions">
-                                        <div class="slider-group">
-                                            <div class="slider-header">
-                                                <span class="slider-label">Line Thickness</span>
-                                                <span class="slider-value" id="lineThicknessValue">Medium</span>
-                                            </div>
-                                            <input type="range" class="range-slider" id="lineThickness" min="1" max="5" value="3" aria-label="Line thickness">
-                                            <div class="slider-marks">
-                                                <span>Thin</span>
-                                                <span>Thick</span>
-                                            </div>
-                                        </div>
-                                        <div class="field-group" style="margin-top: 12px;">
-                                            <label class="field-label" data-tooltip="Color mode for callout lines. Mono uses one color, Multi uses different colors for each line.">Line Colors</label>
-                                            <select class="select-field select-sm" id="lineColorMode">
-                                                <option value="auto" selected>Auto</option>
-                                                <option value="mono">Monochrome (single color)</option>
-                                                <option value="multi">Multicolored (different per feature)</option>
-                                                <option value="gradient">Gradient lines</option>
-                                                <option value="match">Match product colors</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Style & Generation Settings (Nested Collapsible) -->
-                            <div class="advanced-section nested" id="styleGenSection">
-                                <button type="button" class="advanced-toggle" id="styleGenToggle">
-                                    <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="12" r="3"/>
-                                        <path d="M12 1v6m0 6v10"/>
-                                        <path d="M21 12h-6m-6 0H1"/>
-                                        <path d="m18.364 5.636-4.243 4.243m-4.242 4.242-4.243 4.243"/>
-                                        <path d="m5.636 5.636 4.243 4.243m4.242 4.242 4.243 4.243"/>
-                                    </svg>
-                                    <span>Style & Generation</span>
-                                    <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="6 9 12 15 18 9"/>
-                                    </svg>
-                                </button>
-                                <div class="advanced-content">
-                                    <!-- Colors -->
-                                    <div class="advanced-group">
-                                        <div class="group-title" data-tooltip="Color palette settings for the infographic.">Colors</div>
-                                        <div class="advanced-grid">
-                                            <div class="field-group">
-                                                <label class="field-label" data-tooltip="Color relationship strategy. Match Product extracts colors from your product.">Color Harmony</label>
-                                                <select class="select-field select-sm" id="colorHarmony">
-                                                    <option value="match">Match Product</option>
-                                                    <option value="complementary">Complementary</option>
-                                                    <option value="analogous">Analogous</option>
-                                                    <option value="triadic">Triadic</option>
-                                                    <option value="monochrome">Monochrome</option>
-                                                    <option value="contrast">High Contrast</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="field-group full-width">
-                                            <label class="field-label" data-tooltip="Specific colors to include. Click presets or add custom hex codes.">Brand Colors</label>
-                                            <div class="color-picker-section">
-                                                <div class="color-presets" id="colorPresets">
-                                                    <button type="button" class="color-preset" style="background: #EF4444;" data-color="#EF4444" title="#EF4444"></button>
-                                                    <button type="button" class="color-preset" style="background: #9B59B6;" data-color="#9B59B6" title="#9B59B6"></button>
-                                                    <button type="button" class="color-preset" style="background: #3498DB;" data-color="#3498DB" title="#3498DB"></button>
-                                                    <button type="button" class="color-preset" style="background: #2563EB;" data-color="#2563EB" title="#2563EB"></button>
-                                                    <button type="button" class="color-preset" style="background: #1ABC9C;" data-color="#1ABC9C" title="#1ABC9C"></button>
-                                                    <button type="button" class="color-preset" style="background: #10B981;" data-color="#10B981" title="#10B981"></button>
-                                                    <button type="button" class="color-preset" style="background: #F1C40F;" data-color="#F1C40F" title="#F1C40F"></button>
-                                                    <button type="button" class="color-preset" style="background: #E67E22;" data-color="#E67E22" title="#E67E22"></button>
-                                                    <button type="button" class="color-preset" style="background: #1A1A1A;" data-color="#1A1A1A" title="#1A1A1A"></button>
-                                                    <button type="button" class="color-preset" style="background: #FFFFFF; border-color: var(--border-default);" data-color="#FFFFFF" title="#FFFFFF"></button>
-                                                </div>
-                                                <div class="selected-colors" id="selectedColors"></div>
-                                                <div class="custom-color-row">
-                                                    <div class="color-input-wrapper">
-                                                        <input type="color" class="color-input-native" id="customColorPicker" value="#6366F1" aria-label="Custom color picker">
-                                                    </div>
-                                                    <input type="text" class="input-field input-sm input-mono" id="customColorHex" placeholder="#6366F1" maxlength="7" aria-label="Custom color hex code">
-                                                    <button type="button" class="btn-add-color" id="addCustomColor">Add</button>
-                                                </div>
-                                            </div>
-                                            <input type="hidden" id="brandColors">
-                                        </div>
-                                    </div>
-
-                                    <!-- Style Reference -->
-                                    <div class="advanced-group">
-                                        <div class="group-title" data-tooltip="Upload an image as visual inspiration for style, colors, and composition.">Style Reference</div>
-                                        <div class="style-ref-container">
-                                            <div class="style-upload-zone" id="styleUploadArea">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                                                    <path d="M21 15l-5-5L5 21"/>
-                                                </svg>
-                                                <span>Upload style reference</span>
-                                                <input type="file" class="upload-input" id="styleReference" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="Upload style reference image">
-                                            </div>
-                                            <div class="style-preview-wrap" id="stylePreviewContainer" style="display: none;">
-                                                <img src="" alt="Style Reference" id="stylePreviewImg">
-                                                <button type="button" class="preview-remove-sm" id="removeStyleRef">×</button>
-                                            </div>
-                                        </div>
-                                        <div class="slider-field" id="styleStrengthSlider">
-                                            <div class="slider-header">
-                                                <span class="slider-label" data-tooltip="How closely to follow the reference style. Higher values create a stronger match.">Style Influence</span>
-                                                <span class="slider-value" id="styleStrengthValue">70%</span>
-                                            </div>
-                                            <input type="range" class="range-slider" id="styleStrength" min="10" max="100" value="70" aria-label="Style influence strength">
-                                            <div class="slider-marks">
-                                                <span>Subtle</span>
-                                                <span>Strong</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Generation Settings -->
-                                    <div class="advanced-group">
-                                        <div class="group-title" data-tooltip="Technical settings for image generation.">Generation Settings</div>
-                                        <div class="field-group full-width">
-                                            <label class="field-label" data-tooltip="Fixed number for reproducible results. Same seed with same settings creates similar images.">Seed</label>
-                                            <div class="seed-input-group">
-                                                <input type="number" class="input-field input-sm input-mono" id="seedInput" placeholder="Random" min="0" max="999999999" aria-label="Generation seed">
-                                                <label class="checkbox-field checkbox-inline">
-                                                    <input type="checkbox" id="randomSeed" checked>
-                                                    <span class="checkbox-mark"></span>
-                                                    Random
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="field-group full-width">
-                                            <label class="field-label" data-tooltip="Elements to exclude from the generated image.">Negative Prompts <span class="label-hint">(what to avoid)</span></label>
-                                            <textarea class="textarea-field" id="negativePrompt" rows="2" placeholder="e.g., clipart, busy backgrounds, small text, watermarks" aria-label="Negative prompts"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                <h4 class="studio-name">A+ Content</h4>
+                                <p class="studio-desc">Amazon Enhanced Brand Content modules</p>
+                            </a>
                         </div>
                     </div>
 
-                    <!-- API & Model Settings (Collapsed) -->
-                    <div class="settings-section" id="settingsSection">
-                        <button type="button" class="settings-toggle" id="settingsToggle">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="3"/>
-                                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-                            </svg>
-                            <span>API & Model Settings</span>
-                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </button>
-                        <div class="settings-content">
-                            <!-- API Key -->
-                            <div class="settings-field">
-                                <label class="field-label" data-tooltip="Your OpenRouter API key for AI image generation. Get one free at openrouter.ai">API Key</label>
-                                <div class="api-input-group">
-                                    <input type="password" class="input-field input-mono input-sm" id="apiKey" placeholder="sk-or-v1-..." aria-label="OpenRouter API key">
-                                    <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                            <circle cx="12" cy="12" r="3"/>
-                                        </svg>
-                                    </button>
-                                    <button type="button" class="btn-accent btn-sm" id="saveApiKey">Save</button>
+                    <!-- Content & Information -->
+                    <div class="studio-category reveal">
+                        <h3 class="category-title">Content & Information</h3>
+                        <div class="studio-grid reveal-stagger">
+                            <a href="copywriter.html" class="studio-card">
+                                <div class="studio-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                    </svg>
                                 </div>
-                            </div>
-                            <!-- AI Model -->
-                            <div class="settings-field">
-                                <label class="field-label" data-tooltip="Different AI models produce different styles. Gemini is best for product photos, GPT-4o for creative imagery.">AI Model</label>
-                                <select class="select-field select-sm" id="aiModel">
-                                    <optgroup label="Google Gemini (Image Gen)">
-                                        <option value="google/gemini-3-pro-image-preview" selected>Gemini 3 Pro Image (Best)</option>
-                                        <option value="google/gemini-2.5-flash-image">Gemini 2.5 Flash Image</option>
-                                        <option value="google/gemini-2.5-flash-image-preview">Gemini 2.5 Flash Preview</option>
-                                        <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
-                                    </optgroup>
-                                </select>
-                            </div>
+                                <h4 class="studio-name">Copywriter</h4>
+                                <p class="studio-desc">AI-powered marketing copy from images</p>
+                            </a>
+                            <a href="faq-generator.html" class="studio-card">
+                                <div class="studio-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                    </svg>
+                                </div>
+                                <h4 class="studio-name">FAQ Generator</h4>
+                                <p class="studio-desc">Product Q&As with text and visual output</p>
+                            </a>
+                            <a href="size-chart.html" class="studio-card">
+                                <div class="studio-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                        <line x1="3" y1="9" x2="21" y2="9"/>
+                                        <line x1="3" y1="15" x2="21" y2="15"/>
+                                        <line x1="9" y1="3" x2="9" y2="21"/>
+                                        <line x1="15" y1="3" x2="15" y2="21"/>
+                                    </svg>
+                                </div>
+                                <h4 class="studio-name">Size Chart</h4>
+                                <p class="studio-desc">Generate size charts from measurements</p>
+                            </a>
+                            <a href="size-visualizer.html" class="studio-card">
+                                <div class="studio-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M2 12h20M2 12l4-4M2 12l4 4M22 12l-4-4M22 12l-4 4"/>
+                                    </svg>
+                                </div>
+                                <h4 class="studio-name">Size Visualizer</h4>
+                                <p class="studio-desc">Product scale with reference objects</p>
+                            </a>
                         </div>
                     </div>
 
-                    <!-- Cost Estimator -->
-                    <div id="costEstimatorContainer"></div>
+                    <!-- Utility Tools -->
+                    <div class="studio-category reveal">
+                        <h3 class="category-title">Utility Tools</h3>
+                        <div class="studio-grid reveal-stagger">
+                            <a href="product-variants.html" class="studio-card">
+                                <div class="studio-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="2" y="2" width="9" height="9" rx="1"/>
+                                        <rect x="13" y="2" width="9" height="9" rx="1"/>
+                                        <rect x="2" y="13" width="9" height="9" rx="1"/>
+                                        <circle cx="17.5" cy="17.5" r="4.5" fill="none"/>
+                                    </svg>
+                                </div>
+                                <h4 class="studio-name">Product Variants</h4>
+                                <p class="studio-desc">Color, material, and pattern variations</p>
+                            </a>
+                            <a href="export-center.html" class="studio-card">
+                                <div class="studio-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                        <polyline points="7 10 12 15 17 10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                </div>
+                                <h4 class="studio-name">Export Center</h4>
+                                <p class="studio-desc">Batch resize, compress, and convert</p>
+                            </a>
+                            <a href="model-video.html" class="studio-card">
+                                <div class="studio-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3"/>
+                                    </svg>
+                                </div>
+                                <h4 class="studio-name">Model Video</h4>
+                                <p class="studio-desc">Animate model photos with motion</p>
+                            </a>
+                            <a href="dashboard.html" class="studio-card">
+                                <div class="studio-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="7" height="9" rx="1"/>
+                                        <rect x="14" y="3" width="7" height="5" rx="1"/>
+                                        <rect x="14" y="12" width="7" height="9" rx="1"/>
+                                        <rect x="3" y="16" width="7" height="5" rx="1"/>
+                                    </svg>
+                                </div>
+                                <h4 class="studio-name">Dashboard</h4>
+                                <p class="studio-desc">Analytics and storage management</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                    <!-- Generate Button -->
-                    <button type="submit" class="btn-generate" id="generateBtn">
-                        <span class="btn-content">
+        <!-- Features Section -->
+        <section class="features-section">
+            <div class="landing-container">
+                <div class="section-header reveal">
+                    <div class="section-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                        <span>Features</span>
+                    </div>
+                    <h2 class="section-title">Why NGRAPHICS?</h2>
+                    <p class="section-subtitle">Everything you need to create professional product visuals, without the learning curve.</p>
+                </div>
+
+                <div class="features-grid reveal-stagger">
+                    <div class="feature-card">
+                        <div class="feature-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
                             </svg>
-                            Generate Infographic
-                        </span>
-                        <span class="btn-glow"></span>
-                    </button>
-                    <div class="shortcut-hint"><kbd>Ctrl</kbd><span>+</span><kbd>Enter</kbd></div>
-                </form>
-            </section>
-
-            <!-- Right Panel: Output -->
-            <section class="panel panel-output">
-                <div class="panel-header">
-                    <h2 class="panel-title">
-                        <span class="title-number">02</span>
-                        Output
-                    </h2>
-                </div>
-
-                <!-- Placeholder State -->
-                <div class="output-placeholder" id="resultPlaceholder">
-                    <div class="placeholder-visual">
-                        <svg viewBox="0 0 120 120" fill="none">
-                            <rect x="10" y="10" width="100" height="100" rx="8" stroke="currentColor" stroke-width="2" stroke-dasharray="6 4"/>
-                            <circle cx="35" cy="35" r="8" stroke="currentColor" stroke-width="2"/>
-                            <path d="M10 80L40 50L70 80L110 40" stroke="currentColor" stroke-width="2"/>
-                        </svg>
+                        </div>
+                        <h3 class="feature-title">AI-Powered</h3>
+                        <p class="feature-desc">State-of-the-art AI models generate professional visuals from simple prompts. No design skills required.</p>
                     </div>
-                    <p class="placeholder-title">Ready to Generate</p>
-                    <p class="placeholder-text">Configure your product details and click generate</p>
-                </div>
-
-                <!-- Loading State -->
-                <div class="output-loading" id="loadingContainer">
-                    <div class="loader">
-                        <div class="loader-ring"></div>
-                        <div class="loader-ring"></div>
-                        <div class="loader-ring"></div>
-                    </div>
-                    <p class="loading-text">Generating...</p>
-                    <p class="loading-status" id="loadingStatus">Preparing prompt...</p>
-                </div>
-
-                <!-- Result Display -->
-                <div class="output-result" id="resultContainer">
-                    <!-- Single Image -->
-                    <div class="result-image-wrap">
-                        <img src="" alt="Generated Infographic" class="result-image" id="resultImage">
-                        <button class="btn-favorite" id="favoriteBtn" title="Save to favorites">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                            </svg>
-                        </button>
-                        <button class="btn-image-info" id="imageInfoBtn" title="Show image info">
+                    <div class="feature-card">
+                        <div class="feature-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="10"/>
-                                <line x1="12" y1="16" x2="12" y2="12"/>
-                                <line x1="12" y1="8" x2="12.01" y2="8"/>
+                                <polyline points="12 6 12 12 16 14"/>
                             </svg>
-                        </button>
-                        <div class="image-info-overlay" id="imageInfoOverlay" style="display: none;"></div>
-                    </div>
-
-                    <!-- Grid for variations -->
-                    <div class="result-grid" id="resultGrid" style="display: none;"></div>
-
-                    <!-- Seed Display -->
-                    <div class="seed-display" id="seedDisplay" style="display: none;">
-                        <span class="seed-label">Seed:</span>
-                        <code class="seed-value" id="seedValue"></code>
-                        <button class="btn-copy" id="copySeedBtn">Copy</button>
-                    </div>
-
-                    <!-- Alt Text Section -->
-                    <div class="alt-text-section" id="altTextSection" style="display: none;">
-                        <div class="alt-text-header">
-                            <span class="alt-text-label">SEO Alt Text</span>
-                            <button class="btn-copy" id="copyAltText">Copy</button>
                         </div>
-                        <div class="alt-text-content" id="altTextContent">
-                            <span class="alt-text-loading">Generating...</span>
-                        </div>
+                        <h3 class="feature-title">Instant Results</h3>
+                        <p class="feature-desc">Generate product photos, infographics, and marketing assets in seconds instead of hours.</p>
                     </div>
-
-                    <!-- Product Copy Section -->
-                    <div class="product-copy-section" id="productCopySection" style="display: none;">
-                        <button type="button" class="copy-section-toggle" id="copyToggle">
-                            <span>Marketing Copy</span>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </button>
-                        <div class="copy-section-content" id="copySectionContent">
-                            <!-- Short Description -->
-                            <div class="copy-block">
-                                <div class="copy-block-header">
-                                    <span class="copy-block-label">Short Description</span>
-                                    <button class="btn-copy-sm" data-target="shortDesc">Copy</button>
-                                </div>
-                                <div class="copy-block-content" id="shortDescContent">
-                                    <span class="copy-loading">Generating...</span>
-                                </div>
-                            </div>
-
-                            <!-- Long Description -->
-                            <div class="copy-block">
-                                <div class="copy-block-header">
-                                    <span class="copy-block-label">Long Description</span>
-                                    <button class="btn-copy-sm" data-target="longDesc">Copy</button>
-                                </div>
-                                <div class="copy-block-content" id="longDescContent">
-                                    <span class="copy-loading">Generating...</span>
-                                </div>
-                            </div>
-
-                            <!-- Taglines -->
-                            <div class="copy-block">
-                                <div class="copy-block-header">
-                                    <span class="copy-block-label">Taglines</span>
-                                    <button class="btn-copy-sm" data-target="taglines">Copy All</button>
-                                </div>
-                                <div class="copy-block-content taglines-list" id="taglinesContent">
-                                    <span class="copy-loading">Generating...</span>
-                                </div>
-                            </div>
-
-                            <!-- Social Media -->
-                            <div class="copy-block">
-                                <div class="copy-block-header">
-                                    <span class="copy-block-label">Social Media</span>
-                                    <button class="btn-copy-sm" data-target="social">Copy</button>
-                                </div>
-                                <div class="copy-tabs" id="socialTabs">
-                                    <button type="button" class="copy-tab active" data-platform="instagram">Instagram</button>
-                                    <button type="button" class="copy-tab" data-platform="facebook">Facebook</button>
-                                    <button type="button" class="copy-tab" data-platform="twitter">Twitter/X</button>
-                                </div>
-                                <div class="copy-block-content social-content" id="socialContent">
-                                    <span class="copy-loading">Generating...</span>
-                                </div>
-                            </div>
-
-                            <!-- SEO Meta -->
-                            <div class="copy-block">
-                                <div class="copy-block-header">
-                                    <span class="copy-block-label">SEO Meta</span>
-                                    <button class="btn-copy-sm" data-target="seo">Copy All</button>
-                                </div>
-                                <div class="seo-fields">
-                                    <div class="seo-field">
-                                        <span class="seo-field-label">Title</span>
-                                        <div class="seo-field-content" id="seoTitleContent">-</div>
-                                    </div>
-                                    <div class="seo-field">
-                                        <span class="seo-field-label">Description</span>
-                                        <div class="seo-field-content" id="seoDescContent">-</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="result-actions">
-                        <button class="btn-action btn-download" id="downloadBtn">
+                    <div class="feature-card">
+                        <div class="feature-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                                <polyline points="7,10 12,15 17,10"/>
+                                <polyline points="7 10 12 15 17 10"/>
                                 <line x1="12" y1="15" x2="12" y2="3"/>
                             </svg>
-                            Download
-                        </button>
-                        <button class="btn-action btn-secondary" id="regenerateBtn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="23,4 23,10 17,10"/>
-                                <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
-                            </svg>
-                            Regenerate
-                        </button>
-                    </div>
-
-                    <!-- Meta Actions -->
-                    <div class="result-meta-actions">
-                        <button class="btn-meta" id="copyPromptBtn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-                            </svg>
-                            Copy Prompt
-                        </button>
-                        <button class="btn-meta" id="downloadAllBtn" style="display: none;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                                <polyline points="7,10 12,15 17,10"/>
-                                <line x1="12" y1="15" x2="12" y2="3"/>
-                            </svg>
-                            Download All
-                        </button>
-                        <button class="btn-meta" id="compareBtn" style="display: none;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="2" x2="12" y2="22"/>
-                                <rect x="2" y="4" width="8" height="16" rx="1"/>
-                                <rect x="14" y="4" width="8" height="16" rx="1"/>
-                            </svg>
-                            Compare
-                        </button>
-                        <!-- Rating -->
-                        <div class="result-rating" id="ratingContainer"></div>
-                    </div>
-
-                    <!-- Smart Regeneration -->
-                    <div class="smart-regen-section" id="smartRegenSection">
-                        <button type="button" class="smart-regen-toggle" id="smartRegenToggle">
-                            <span>Smart Regeneration</span>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </button>
-                        <div class="smart-regen-content">
-                            <div class="lock-controls">
-                                <span class="lock-label">Lock elements:</span>
-                                <div class="lock-options">
-                                    <label class="lock-option">
-                                        <input type="checkbox" id="lockLayout">
-                                        <span class="lock-checkbox"></span>
-                                        <span>Layout</span>
-                                    </label>
-                                    <label class="lock-option">
-                                        <input type="checkbox" id="lockColors">
-                                        <span class="lock-checkbox"></span>
-                                        <span>Colors</span>
-                                    </label>
-                                    <label class="lock-option">
-                                        <input type="checkbox" id="lockBackground">
-                                        <span class="lock-checkbox"></span>
-                                        <span>Background</span>
-                                    </label>
-                                    <label class="lock-option">
-                                        <input type="checkbox" id="lockTextStyle">
-                                        <span class="lock-checkbox"></span>
-                                        <span>Text Style</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="variation-strength">
-                                <div class="slider-header">
-                                    <span class="slider-label">Variation Strength</span>
-                                    <span class="slider-value" id="variationStrengthValue">Medium</span>
-                                </div>
-                                <input type="range" class="range-slider" id="variationStrength" min="1" max="5" value="3" aria-label="Variation strength">
-                                <div class="slider-marks">
-                                    <span>Similar</span>
-                                    <span>Different</span>
-                                </div>
-                            </div>
-                            <button type="button" class="btn-smart-regen" id="smartRegenBtn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-                                </svg>
-                                Regenerate with Locks
-                            </button>
                         </div>
-                    </div>
-
-                    <!-- Complementary Images Section -->
-                    <div class="complementary-section" id="complementarySection" style="display: none;">
-                        <button type="button" class="complementary-toggle" id="complementaryToggle">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="3" width="7" height="7"/>
-                                <rect x="14" y="3" width="7" height="7"/>
-                                <rect x="3" y="14" width="7" height="7"/>
-                                <rect x="14" y="14" width="7" height="7"/>
-                            </svg>
-                            <span>Complementary Images</span>
-                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </button>
-                        <div class="complementary-content">
-                            <!-- Image Type Selection -->
-                            <div class="comp-type-selector">
-                                <label class="field-label" data-tooltip="Type of supplementary image to generate. Close-ups show detail, Angles show different perspectives, Features highlight specific attributes.">Image Type</label>
-                                <div class="comp-type-buttons">
-                                    <button type="button" class="comp-type-btn active" data-type="closeup">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="11" cy="11" r="8"/>
-                                            <path d="M21 21l-4.35-4.35"/>
-                                            <circle cx="11" cy="11" r="3"/>
-                                        </svg>
-                                        <span>Close-up Detail</span>
-                                    </button>
-                                    <button type="button" class="comp-type-btn" data-type="angle">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
-                                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                                            <line x1="12" y1="22.08" x2="12" y2="12"/>
-                                        </svg>
-                                        <span>Angle Views</span>
-                                    </button>
-                                    <button type="button" class="comp-type-btn" data-type="feature">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                                        </svg>
-                                        <span>Feature Highlight</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Close-up Options -->
-                            <div class="comp-options" id="closeupOptions">
-                                <label class="field-label" data-tooltip="What aspect of the product to focus on in the close-up shot.">Focus On</label>
-                                <select class="select-field select-sm" id="closeupFocus">
-                                    <option value="detail">Fine Details & Texture</option>
-                                    <option value="material">Material & Craftsmanship</option>
-                                    <option value="component">Key Component</option>
-                                    <option value="branding">Logo & Branding</option>
-                                    <option value="controls">Controls & Buttons</option>
-                                </select>
-                            </div>
-
-                            <!-- Angle Options -->
-                            <div class="comp-options" id="angleOptions" style="display: none;">
-                                <label class="field-label" data-tooltip="Choose which viewing angles to generate. Select multiple for a complete product showcase.">Select Angles</label>
-                                <div class="angle-checkboxes">
-                                    <label class="angle-checkbox">
-                                        <input type="checkbox" value="front" checked>
-                                        <span>Front</span>
-                                    </label>
-                                    <label class="angle-checkbox">
-                                        <input type="checkbox" value="back">
-                                        <span>Back</span>
-                                    </label>
-                                    <label class="angle-checkbox">
-                                        <input type="checkbox" value="side">
-                                        <span>Side</span>
-                                    </label>
-                                    <label class="angle-checkbox">
-                                        <input type="checkbox" value="top">
-                                        <span>Top</span>
-                                    </label>
-                                    <label class="angle-checkbox">
-                                        <input type="checkbox" value="threequarter">
-                                        <span>3/4 View</span>
-                                    </label>
-                                    <label class="angle-checkbox">
-                                        <input type="checkbox" value="bottom">
-                                        <span>Bottom</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!-- Feature Options -->
-                            <div class="comp-options" id="featureOptions" style="display: none;">
-                                <label class="field-label" data-tooltip="Select which product feature to emphasize in the generated image.">Highlight Feature</label>
-                                <select class="select-field select-sm" id="featureSelect">
-                                    <option value="">Select a feature...</option>
-                                </select>
-                            </div>
-
-                            <!-- Common Options -->
-                            <div class="comp-common-options">
-                                <div class="comp-option-row">
-                                    <label class="field-label" data-tooltip="Match Main keeps the same style as your infographic, Variation adds creative differences, Clean uses a minimal isolated background.">Style</label>
-                                    <div class="style-toggle">
-                                        <button type="button" class="style-btn active" data-style="match">Match Main</button>
-                                        <button type="button" class="style-btn" data-style="variation">Variation</button>
-                                        <button type="button" class="style-btn" data-style="clean">Clean/Isolated</button>
-                                    </div>
-                                </div>
-                                <div class="comp-option-row">
-                                    <label class="field-label" data-tooltip="Number of complementary images to generate at once.">Quantity</label>
-                                    <div class="quantity-selector">
-                                        <button type="button" class="qty-btn active" data-qty="1">1</button>
-                                        <button type="button" class="qty-btn" data-qty="2">2</button>
-                                        <button type="button" class="qty-btn" data-qty="3">3</button>
-                                        <button type="button" class="qty-btn" data-qty="4">4</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Generate Button -->
-                            <button type="button" class="btn-complementary" id="generateComplementaryBtn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="3" width="7" height="7"/>
-                                    <rect x="14" y="3" width="7" height="7"/>
-                                    <rect x="3" y="14" width="7" height="7"/>
-                                    <path d="M14 14h7v7h-7z" stroke-dasharray="2 2"/>
-                                </svg>
-                                Generate Complementary Images
-                            </button>
-
-                            <!-- Results Grid -->
-                            <div class="comp-results" id="compResults" style="display: none;">
-                                <label class="field-label" data-tooltip="Your generated complementary images. Click to view full size, use the download button to save.">Generated Images</label>
-                                <div class="comp-results-grid" id="compResultsGrid"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Feedback Section -->
-                    <div class="feedback-section">
-                        <label class="feedback-label">Adjust this infographic</label>
-                        <textarea class="textarea-field" id="feedbackTextarea" placeholder="Describe changes: 'Make background darker', 'Use larger font'..." aria-label="Adjustment feedback"></textarea>
-                        <button class="btn-adjust" id="adjustBtn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                            </svg>
-                            Apply Adjustments
-                        </button>
-                    </div>
-
-                    <!-- Watermark Section -->
-                    <div class="watermark-section" id="watermarkSection">
-                        <button type="button" class="watermark-toggle" id="watermarkToggle">
-                            <span>Add Watermark</span>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </button>
-                        <div class="watermark-content">
-                            <div class="watermark-tabs">
-                                <button type="button" class="watermark-tab active" data-tab="text">Text</button>
-                                <button type="button" class="watermark-tab" data-tab="logo">Logo</button>
-                            </div>
-                            <div class="watermark-tab-content active" id="watermarkTextTab">
-                                <input type="text" class="input-field input-sm" id="watermarkText" placeholder="Watermark text" aria-label="Watermark text">
-                            </div>
-                            <div class="watermark-tab-content" id="watermarkLogoTab">
-                                <input type="file" id="watermarkLogo" accept="image/png,image/jpeg,image/webp" style="display: none;" aria-label="Upload watermark logo">
-                                <button type="button" class="btn-secondary-sm" id="uploadLogoBtn">Upload Logo</button>
-                                <img src="" alt="Logo" class="watermark-logo-preview" id="watermarkLogoPreview" style="display: none;">
-                            </div>
-                            <div class="watermark-position">
-                                <label class="field-label" data-tooltip="Where to place the watermark on the image. Click a position button to select.">Position</label>
-                                <div class="position-grid">
-                                    <button type="button" class="pos-btn" data-pos="tl">↖</button>
-                                    <button type="button" class="pos-btn" data-pos="tc">↑</button>
-                                    <button type="button" class="pos-btn" data-pos="tr">↗</button>
-                                    <button type="button" class="pos-btn" data-pos="ml">←</button>
-                                    <button type="button" class="pos-btn" data-pos="mc">●</button>
-                                    <button type="button" class="pos-btn" data-pos="mr">→</button>
-                                    <button type="button" class="pos-btn" data-pos="bl">↙</button>
-                                    <button type="button" class="pos-btn active" data-pos="bc">↓</button>
-                                    <button type="button" class="pos-btn" data-pos="br">↘</button>
-                                </div>
-                            </div>
-                            <div class="slider-field slider-sm">
-                                <div class="slider-header">
-                                    <span class="slider-label">Opacity</span>
-                                    <span class="slider-value" id="opacityValue">50%</span>
-                                </div>
-                                <input type="range" class="range-slider" id="watermarkOpacity" min="10" max="100" value="50" aria-label="Watermark opacity">
-                            </div>
-                            <div class="slider-field slider-sm" id="watermarkSizeGroup" style="display: none;">
-                                <div class="slider-header">
-                                    <span class="slider-label">Size</span>
-                                    <span class="slider-value" id="sizeValue">20%</span>
-                                </div>
-                                <input type="range" class="range-slider" id="watermarkSize" min="5" max="50" value="20" aria-label="Watermark size">
-                            </div>
-                            <button type="button" class="btn-accent" id="applyWatermark">Apply Watermark</button>
-                        </div>
+                        <h3 class="feature-title">Platform Ready</h3>
+                        <p class="feature-desc">Export in perfect sizes for Amazon, Shopify, Instagram, Facebook, and more.</p>
                     </div>
                 </div>
-            </section>
-        </div>
+            </div>
+        </section>
+
+        <!-- Gallery Preview Section -->
+        <section class="gallery-preview">
+            <div class="landing-container">
+                <div class="section-header reveal">
+                    <div class="section-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <path d="M21 15l-5-5L5 21"/>
+                        </svg>
+                        <span>Gallery</span>
+                    </div>
+                    <h2 class="section-title">See What's Possible</h2>
+                    <p class="section-subtitle">Real examples created with NGRAPHICS studios.</p>
+                </div>
+            </div>
+            <div class="gallery-scroll">
+                <div class="gallery-item">
+                    <img src="assets/gallery/preview-1.jpg" alt="Product infographic example" onerror="this.parentElement.style.background='var(--surface-primary)'">
+                    <div class="gallery-item-overlay">
+                        <span class="gallery-item-label">Infographics</span>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/gallery/preview-2.jpg" alt="Model photo example" onerror="this.parentElement.style.background='var(--surface-primary)'">
+                    <div class="gallery-item-overlay">
+                        <span class="gallery-item-label">Model Studio</span>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/gallery/preview-3.jpg" alt="Lifestyle shot example" onerror="this.parentElement.style.background='var(--surface-primary)'">
+                    <div class="gallery-item-overlay">
+                        <span class="gallery-item-label">Lifestyle</span>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/gallery/preview-4.jpg" alt="Bundle image example" onerror="this.parentElement.style.background='var(--surface-primary)'">
+                    <div class="gallery-item-overlay">
+                        <span class="gallery-item-label">Bundle Studio</span>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/gallery/preview-5.jpg" alt="Social media graphic example" onerror="this.parentElement.style.background='var(--surface-primary)'">
+                    <div class="gallery-item-overlay">
+                        <span class="gallery-item-label">Social Studio</span>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/gallery/preview-6.jpg" alt="Packaging mockup example" onerror="this.parentElement.style.background='var(--surface-primary)'">
+                    <div class="gallery-item-overlay">
+                        <span class="gallery-item-label">Packaging</span>
+                    </div>
+                </div>
+            </div>
+            <div class="gallery-cta reveal">
+                <a href="gallery.html" class="hero-cta-secondary">
+                    <span>View Full Gallery</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </a>
+            </div>
+        </section>
+
+        <!-- Pricing Preview Section -->
+        <section class="pricing-preview">
+            <div class="landing-container">
+                <div class="section-header reveal">
+                    <div class="section-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                        <span>Pricing</span>
+                    </div>
+                    <h2 class="section-title">Start Free, Scale When Ready</h2>
+                    <p class="section-subtitle">Use your own API key for free, or upgrade for included credits.</p>
+                </div>
+
+                <div class="pricing-cards reveal-stagger">
+                    <div class="price-card">
+                        <h3 class="price-card-name">Free</h3>
+                        <div class="price-card-price">$0</div>
+                        <div class="price-card-period">forever</div>
+                        <div class="price-card-feature">All 20+ studios</div>
+                        <div class="price-card-feature">Unlimited generations</div>
+                        <div class="price-card-feature">Bring your own API key</div>
+                    </div>
+                    <div class="price-card featured">
+                        <span class="price-card-badge">Popular</span>
+                        <h3 class="price-card-name">Pro</h3>
+                        <div class="price-card-price">$19</div>
+                        <div class="price-card-period">per month</div>
+                        <div class="price-card-feature">API included</div>
+                        <div class="price-card-feature">200 generations/month</div>
+                        <div class="price-card-feature">Cloud sync</div>
+                    </div>
+                    <div class="price-card">
+                        <h3 class="price-card-name">Business</h3>
+                        <div class="price-card-price">$49</div>
+                        <div class="price-card-period">per month</div>
+                        <div class="price-card-feature">1,000 generations/month</div>
+                        <div class="price-card-feature">Team seats (up to 5)</div>
+                        <div class="price-card-feature">Priority support</div>
+                    </div>
+                </div>
+
+                <div class="pricing-cta reveal">
+                    <a href="pricing.html" class="hero-cta-secondary">
+                        <span>See Full Pricing</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                            <polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA Section -->
+        <section class="final-cta">
+            <div class="landing-container">
+                <div class="cta-box reveal">
+                    <h2 class="cta-title">Ready to transform your product images?</h2>
+                    <p class="cta-subtitle">Start creating professional e-commerce visuals today. No credit card required.</p>
+                    <a href="infographics.html" class="hero-cta">
+                        <span>Start Creating for Free</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                            <polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <!-- History Section -->
-    <section class="history-section" id="historySection">
-        <div class="history-container">
-            <div class="history-header">
-                <div class="history-title-group">
-                    <h3 class="history-title">History</h3>
-                    <span class="history-count" id="historyCount"></span>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn-text" id="bulkModeBtn" title="Select multiple">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="7" height="7"/>
-                            <rect x="14" y="3" width="7" height="7"/>
-                            <rect x="3" y="14" width="7" height="7"/>
-                            <rect x="14" y="14" width="7" height="7"/>
-                        </svg>
-                    </button>
-                    <button class="btn-text-danger" id="clearHistoryBtn">Clear All</button>
-                </div>
-            </div>
-            <!-- Search & Bulk Actions -->
-            <div class="org-search">
-                <input type="text" class="org-search-input" id="historySearch" placeholder="Search history..." aria-label="Search history">
-            </div>
-            <div class="bulk-actions-bar" id="historyBulkBar">
-                <label class="bulk-select-all">
-                    <input type="checkbox" id="historySelectAll">
-                    Select all
-                </label>
-                <span class="bulk-selected-count"><strong id="historySelectedCount">0</strong> selected</span>
-                <div class="bulk-actions">
-                    <button class="bulk-btn" id="bulkDownloadBtn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                            <polyline points="7,10 12,15 17,10"/>
-                            <line x1="12" y1="15" x2="12" y2="3"/>
-                        </svg>
-                        Download
-                    </button>
-                    <button class="bulk-btn danger" id="bulkDeleteBtn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="3,6 5,6 21,6"/>
-                            <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/>
-                        </svg>
-                        Delete
-                    </button>
-                </div>
-            </div>
-            <div class="history-grid" id="historyGrid"></div>
-            <div class="history-empty empty-state" id="historyEmpty">
-                <div class="empty-state-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12,6 12,12 16,14"/>
-                    </svg>
-                </div>
-                <div class="empty-state-title">No History Yet</div>
-                <p class="empty-state-text">Generated images will appear here. Start by uploading a product image.</p>
-            </div>
-
-            <!-- Favorites Section -->
-            <div class="favorites-section" id="favoritesSection">
-                <div class="favorites-header">
-                    <div class="favorites-title-group">
-                        <h3 class="favorites-title">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                            </svg>
-                            Favorites
-                        </h3>
-                        <span class="favorites-count" id="favoritesCount">0</span>
-                    </div>
-                    <button class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
-                </div>
-                <!-- Search -->
-                <div class="org-search">
-                    <input type="text" class="org-search-input" id="favoritesSearch" placeholder="Search favorites..." aria-label="Search favorites">
-                </div>
-                <!-- Folder Navigation -->
-                <div class="folder-nav" id="folderNav">
-                    <button class="folder-btn active" data-folder="" title="All favorites">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                        All
-                    </button>
-                    <button class="folder-btn" data-folder="null" title="Unfiled favorites">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="7" height="7"/>
-                            <rect x="14" y="3" width="7" height="7"/>
-                            <rect x="3" y="14" width="7" height="7"/>
-                            <rect x="14" y="14" width="7" height="7"/>
-                        </svg>
-                        Unfiled
-                    </button>
-                    <!-- Dynamic folder buttons will be inserted here -->
-                </div>
-                <!-- Tag Filters -->
-                <div class="tag-filters" id="tagFilters" style="display: none;">
-                    <span class="tag-filters-label">Tags:</span>
-                    <div class="tag-chips" id="tagChips"></div>
-                </div>
-                <div class="favorites-grid" id="favoritesGrid"></div>
-                <div class="favorites-empty empty-state" id="favoritesEmpty">
-                    <div class="empty-state-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                    </div>
-                    <div class="empty-state-title">No Favorites</div>
-                    <p class="empty-state-text">Star your best generations to save them here for easy style reuse.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Lightbox -->
-    <div class="lightbox" id="lightbox">
-        <div class="lightbox-backdrop"></div>
-        <div class="lightbox-content">
-            <button class="lightbox-close" id="lightboxClose">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-            </button>
-            <img src="" alt="Zoomed" class="lightbox-image" id="lightboxImage">
-            <div class="lightbox-actions">
-                <button class="btn-lightbox" id="lightboxDownload">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                        <polyline points="7,10 12,15 17,10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    Download
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- History Modal -->
-    <div class="modal" id="historyModal">
-        <div class="modal-backdrop"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Infographic</h3>
-                <button class="modal-close" id="closeModal">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body">
-                <img src="" alt="Infographic" id="modalImage">
-            </div>
-            <div class="modal-footer">
-                <button class="btn-action btn-download" id="modalDownload">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                        <polyline points="7,10 12,15 17,10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    Download
-                </button>
-                <button class="btn-action btn-secondary" id="modalUseAsBase">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="23,4 23,10 17,10"/>
-                        <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
-                    </svg>
-                    Load to Editor
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Favorites Modal -->
-    <div class="modal favorites-modal" id="favoritesModal">
-        <div class="modal-backdrop"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Favorite</h3>
-                <button class="modal-close" id="closeFavoritesModal">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="favorite-preview-container">
-                    <img src="" alt="Favorite preview" id="favoritePreviewImg">
-                    <div class="favorite-variants" id="favoriteVariants" style="display: none;"></div>
-                </div>
-                <div class="favorite-details">
-                    <div class="favorite-name-row">
-                        <input type="text" class="favorite-name-input" id="favoriteNameInput" placeholder="Favorite name..." aria-label="Favorite name">
-                    </div>
-                    <div class="favorite-meta">
-                        <div class="favorite-meta-item">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polyline points="12,6 12,12 16,14"/>
-                            </svg>
-                            <span id="favoriteDate"></span>
-                        </div>
-                        <div class="favorite-meta-item">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-                            </svg>
-                            <span>Seed:</span>
-                            <code class="favorite-seed-value" id="favoriteSeedValue"></code>
-                            <button class="btn-copy-seed" id="copyFavoriteSeed">Copy</button>
-                        </div>
-                    </div>
-                    <!-- Folder Selection -->
-                    <div class="favorite-folder-row">
-                        <label class="favorite-folder-label">
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
-                            </svg>
-                            Folder:
-                        </label>
-                        <select class="favorite-folder-select" id="favoriteFolderSelect">
-                            <option value="">None</option>
-                        </select>
-                        <input type="text" class="favorite-folder-new" id="favoriteFolderNew" placeholder="New folder..." aria-label="New folder name">
-                    </div>
-                    <!-- Tags -->
-                    <div class="favorite-tags-row">
-                        <label class="favorite-tags-label">
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
-                                <line x1="7" y1="7" x2="7.01" y2="7"/>
-                            </svg>
-                            Tags:
-                        </label>
-                        <div class="favorite-tags-container" id="favoriteTagsContainer"></div>
-                        <div class="tag-input-container">
-                            <input type="text" class="tag-input" id="favoriteTagInput" placeholder="Add tag..." aria-label="Add tag">
-                            <button class="tag-add-btn" id="addFavoriteTagBtn" title="Add tag">+</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-load" id="loadFavoriteBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                        <polyline points="17,8 12,3 7,8"/>
-                        <line x1="12" y1="3" x2="12" y2="15"/>
-                    </svg>
-                    Load Settings
-                </button>
-                <button class="btn btn-secondary" id="downloadFavoriteBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                        <polyline points="7,10 12,15 17,10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    Download
-                </button>
-                <button class="btn btn-danger" id="deleteFavoriteBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3,6 5,6 21,6"/>
-                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Footer -->
-    <footer class="site-footer">
-        <div class="footer-content">
-            <span>NGRAPHICS</span>
-            <span class="footer-divider">•</span>
-            <span>Powered by OpenRouter AI</span>
-            <span class="footer-divider">•</span>
-            <span class="footer-shortcut"><kbd>Ctrl</kbd>+<kbd>D</kbd> Download</span>
+    <footer class="landing-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="/" class="footer-logo">
+                    <svg viewBox="0 0 40 40" fill="none">
+                        <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
+                    </svg>
+                    <span>NGRAPHICS</span>
+                </a>
+                <p class="footer-tagline">AI-powered e-commerce toolkit. Create stunning product visuals in seconds.</p>
+            </div>
+            <div class="footer-column">
+                <h4>Studios</h4>
+                <ul>
+                    <li><a href="infographics.html">Infographics</a></li>
+                    <li><a href="models.html">Model Studio</a></li>
+                    <li><a href="lifestyle.html">Lifestyle</a></li>
+                    <li><a href="bundle.html">Bundle Studio</a></li>
+                    <li><a href="social-studio.html">Social Studio</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="docs.html">Documentation</a></li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="pricing.html">Pricing</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="mailto:support@hefaistos.xyz">Support</a></li>
+                    <li><a href="mailto:enterprise@hefaistos.xyz">Enterprise</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copy">&copy; 2025 NGRAPHICS. All rights reserved.</p>
         </div>
     </footer>
 
-    <script src="core.js"></script>
-    <script src="shared.js"></script>
-    <script src="api.js"></script>
-    <script src="components.js"></script>
-    <script src="workers.js"></script>
+    <!-- Scripts -->
     <script src="config.js"></script>
     <script src="supabase.js"></script>
     <script src="auth-ui.js"></script>
     <script src="cloud-sync.js"></script>
-    <script src="script.js"></script>
+    <script src="shared.js"></script>
+    <script src="landing.js"></script>
 </body>
 </html>
