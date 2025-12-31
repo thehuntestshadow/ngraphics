@@ -11,8 +11,20 @@ const CONFIG = {
     SUPABASE_URL: 'https://rodzatuqkfqcdqgntdnd.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_E-NbHDT4EuwPQ11gYGrzQw_O7KceeSF',
 
-    // Stripe (for payments - add when ready)
-    STRIPE_PUBLISHABLE_KEY: '',
+    // Stripe (for payments)
+    STRIPE_PUBLISHABLE_KEY: 'pk_live_nYUxzuWfWDlybpLUxH3frHaQ00GX3OcqV7',
+    STRIPE_PRICES: {
+        PRO_MONTHLY: 'price_1SkTw4G8e7fqKTguuqHpJEqi',
+        PRO_YEARLY: 'price_1SkTw4G8e7fqKTgu5E1GyYiZ',
+        BUSINESS_MONTHLY: 'price_1SkTw5G8e7fqKTguRra3rgMg',
+        BUSINESS_YEARLY: 'price_1SkTw5G8e7fqKTguHURNx22O',
+    },
+    STRIPE_PAYMENT_LINKS: {
+        PRO_MONTHLY: 'https://buy.stripe.com/5kQ4gz6ZzdlabxEbjufAc00',
+        PRO_YEARLY: 'https://buy.stripe.com/6oU00j4Rr0yo0T03R2fAc01',
+        BUSINESS_MONTHLY: 'https://buy.stripe.com/aFa3cvdnXepedFM2MYfAc02',
+        BUSINESS_YEARLY: 'https://buy.stripe.com/7sY28r1Ff3KAcBI1IUfAc03',
+    },
 
     // App settings
     APP_URL: typeof window !== 'undefined' ? window.location.origin : 'https://hefaistos.xyz',
@@ -21,7 +33,7 @@ const CONFIG = {
     // Feature flags
     FEATURES: {
         CLOUD_SYNC: true,
-        PAYMENTS: false,  // Enable when Stripe is set up
+        PAYMENTS: true,
         WATERMARK_FREE: false,  // Watermark exports for free users
     },
 
@@ -47,6 +59,8 @@ const CONFIG = {
 Object.freeze(CONFIG);
 Object.freeze(CONFIG.FEATURES);
 Object.freeze(CONFIG.API);
+Object.freeze(CONFIG.STRIPE_PRICES);
+Object.freeze(CONFIG.STRIPE_PAYMENT_LINKS);
 
 // Expose globally
 window.CONFIG = CONFIG;

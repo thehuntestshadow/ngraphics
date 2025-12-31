@@ -19,18 +19,27 @@ const state = {
 
 const PRICES = {
     pro: {
-        monthly: { amount: 19, priceId: 'pro_monthly' },
-        yearly: { amount: 15, priceId: 'pro_yearly' }  // Per month when billed yearly
+        monthly: { amount: 19, priceId: CONFIG.STRIPE_PRICES?.PRO_MONTHLY || 'price_1SkTw4G8e7fqKTguuqHpJEqi' },
+        yearly: { amount: 15, priceId: CONFIG.STRIPE_PRICES?.PRO_YEARLY || 'price_1SkTw4G8e7fqKTgu5E1GyYiZ' }
     },
     business: {
-        monthly: { amount: 49, priceId: 'business_monthly' },
-        yearly: { amount: 39, priceId: 'business_yearly' }
+        monthly: { amount: 49, priceId: CONFIG.STRIPE_PRICES?.BUSINESS_MONTHLY || 'price_1SkTw5G8e7fqKTguRra3rgMg' },
+        yearly: { amount: 39, priceId: CONFIG.STRIPE_PRICES?.BUSINESS_YEARLY || 'price_1SkTw5G8e7fqKTguHURNx22O' }
     },
     credits: {
         credits_50: { amount: 5, credits: 50 },
         credits_200: { amount: 15, credits: 200 }
     }
 };
+
+// Initialize Stripe
+let stripe = null;
+function getStripe() {
+    if (!stripe && CONFIG.STRIPE_PUBLISHABLE_KEY) {
+        stripe = Stripe(CONFIG.STRIPE_PUBLISHABLE_KEY);
+    }
+    return stripe;
+}
 
 // ============================================
 // INITIALIZATION
@@ -121,26 +130,15 @@ function setupCTAButtons() {
 }
 
 async function handleUpgrade(tier) {
-    // Check if authenticated
-    if (!ngSupabase.isAuthenticated) {
-        // Show login modal
-        if (typeof authUI !== 'undefined') {
-            authUI.show('signup');
+    // Get payment link key based on tier and billing period
+    const linkKey = `${tier.toUpperCase()}_${state.billing.toUpperCase()}`;
+    const paymentLink = CONFIG.STRIPE_PAYMENT_LINKS?.[linkKey];
 
-            // Wait for auth, then redirect back
-            ngSupabase.once('authChange', ({ user }) => {
-                if (user) {
-                    handleUpgrade(tier);
-                }
-            });
-        } else {
-            alert('Please sign in to upgrade');
-        }
+    if (!paymentLink) {
+        console.error('Payment link not found for:', linkKey);
+        alert('Payment not available. Please try again later.');
         return;
     }
-
-    // Get price ID based on billing period
-    const priceId = PRICES[tier][state.billing].priceId;
 
     // Show loading state
     const btn = document.getElementById(`cta${tier.charAt(0).toUpperCase() + tier.slice(1)}`);
@@ -149,49 +147,14 @@ async function handleUpgrade(tier) {
         btn.disabled = true;
     }
 
-    try {
-        // Call checkout Edge Function
-        const response = await fetch(
-            `${CONFIG.SUPABASE_URL}/functions/v1/create-checkout`,
-            {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${ngSupabase.session.access_token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    priceId,
-                    successUrl: `${window.location.origin}/pricing.html?checkout=success`,
-                    cancelUrl: `${window.location.origin}/pricing.html?checkout=cancelled`
-                })
-            }
-        );
-
-        const data = await response.json();
-
-        if (data.error) {
-            throw new Error(data.error);
-        }
-
-        // Redirect to Stripe checkout
-        if (data.url) {
-            window.location.href = data.url;
-        }
-
-    } catch (error) {
-        console.error('Checkout error:', error);
-
-        if (typeof SharedUI !== 'undefined' && SharedUI.toast) {
-            SharedUI.toast('Failed to start checkout. Please try again.', 'error');
-        } else {
-            alert('Failed to start checkout. Please try again.');
-        }
-    } finally {
-        if (btn) {
-            btn.classList.remove('loading');
-            btn.disabled = false;
-        }
+    // Add email prefill if user is authenticated
+    let checkoutUrl = paymentLink;
+    if (typeof ngSupabase !== 'undefined' && ngSupabase.isAuthenticated && ngSupabase.user?.email) {
+        checkoutUrl += `?prefilled_email=${encodeURIComponent(ngSupabase.user.email)}`;
     }
+
+    // Redirect to Stripe payment link
+    window.location.href = checkoutUrl;
 }
 
 // ============================================
