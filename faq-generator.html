@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FAQ Generator - NGRAPHICS</title>
+    <script>if(localStorage.getItem('ngraphics_theme')==='light')document.documentElement.setAttribute('data-theme','light')</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="faq-generator.css">
 </head>
@@ -22,7 +23,7 @@
                     <div class="logo-mark">
                         <svg viewBox="0 0 40 40" fill="none">
                             <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
-                            <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
+                            <text x="20" y="28" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="400" fill="currentColor">?</text>
                         </svg>
                     </div>
                     <div class="logo-text">
@@ -196,7 +197,7 @@
 
                     <button type="submit" class="btn-generate" id="generateBtn">
                         <span class="btn-content">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><text x="12" y="17" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="currentColor">?</text></svg>
                             Generate FAQs
                         </span>
                         <span class="btn-glow"></span>
@@ -234,7 +235,7 @@
                 </div>
                 <div class="faq-output-container">
                     <div class="output-placeholder" id="faqPlaceholder">
-                        <div class="placeholder-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                        <div class="placeholder-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><text x="12" y="17" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="currentColor">?</text></svg></div>
                         <h3>FAQ Generator</h3>
                         <p>Generate product Q&As with SEO schema</p>
                         <ul class="placeholder-features">
@@ -307,7 +308,7 @@
                     </div>
                     <div class="history-grid" id="historyGrid"></div>
                     <div class="empty-state" id="historyEmpty">
-                        <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                        <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><text x="12" y="17" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="currentColor">?</text></svg></div>
                         <p class="empty-state-title">No FAQs yet</p>
                         <p class="empty-state-text">Generated FAQs will appear here</p>
                     </div>
@@ -356,6 +357,7 @@
     </div>
 
     <script src="core.js"></script>
+    <script src="i18n.js"></script>
     <script src="shared.js"></script>
     <script src="api.js"></script>
     <script src="components.js"></script>

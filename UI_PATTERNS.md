@@ -9,20 +9,20 @@ Reference file for consistent UI patterns across NGRAPHICS pages. **COPY THESE E
 1. [Page Boilerplate](#page-boilerplate)
 2. [Marketing Page Boilerplate](#marketing-page-boilerplate)
 3. [Panel Headers](#panel-headers)
-3. [Section Labels](#section-labels)
-4. [Scene Grid Buttons](#scene-grid-buttons)
-5. [Option Buttons](#option-buttons)
-6. [Generate Button](#generate-button)
-7. [API Settings Toggle](#api-settings-toggle)
-8. [Advanced Options Toggle](#advanced-options-toggle)
-9. [History Section](#history-section)
-10. [Favorites Section](#favorites-section)
+4. [Section Labels](#section-labels)
+5. [Scene Grid Buttons](#scene-grid-buttons)
+6. [Option Buttons](#option-buttons)
+7. [Generate Button](#generate-button)
+8. [API Settings Toggle](#api-settings-toggle)
+9. [Advanced Options Toggle](#advanced-options-toggle)
+10. [History & Favorites Sections](#history--favorites-sections)
 11. [Lightbox](#lightbox)
 12. [Modals](#modals)
 13. [Upload Zone](#upload-zone)
 14. [Empty States](#empty-states)
 15. [Message Boxes](#message-boxes)
 16. [Footer](#footer)
+17. [Apple Design System Quick Reference](#apple-design-system-quick-reference)
 
 ---
 
@@ -37,20 +37,15 @@ Every page starts with this structure:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Name - NGRAPHICS</title>
+    <!-- CRITICAL: Inline theme script prevents flash of wrong theme -->
+    <script>if(localStorage.getItem('ngraphics_theme')==='light')document.documentElement.setAttribute('data-theme','light')</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="pagename.css">
 </head>
 <body>
-    <!-- Noise overlay -->
-    <div class="noise-overlay"></div>
-
-    <!-- Gradient orbs for atmosphere -->
-    <div class="ambient-orb orb-1"></div>
-    <div class="ambient-orb orb-2"></div>
-
     <!-- Header (pre-rendered to prevent flash, JS sets up theme toggle) -->
     <header class="site-header">
         <div class="header-content">
@@ -147,6 +142,8 @@ Marketing pages (Landing, Gallery, FAQ) have a different structure with SEO meta
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Title - NGRAPHICS</title>
+    <!-- CRITICAL: Inline theme script prevents flash of wrong theme -->
+    <script>if(localStorage.getItem('ngraphics_theme')==='light')document.documentElement.setAttribute('data-theme','light')</script>
     <meta name="description" content="Page description for search engines.">
 
     <!-- Open Graph -->
@@ -168,18 +165,11 @@ Marketing pages (Landing, Gallery, FAQ) have a different structure with SEO meta
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="pagename.css">
 </head>
 <body>
-    <!-- Noise overlay -->
-    <div class="noise-overlay"></div>
-
-    <!-- Gradient orbs for atmosphere -->
-    <div class="ambient-orb orb-1"></div>
-    <div class="ambient-orb orb-2"></div>
-
     <!-- Header with navigation -->
     <header class="site-header">
         <div class="header-content">
@@ -369,7 +359,7 @@ document.querySelectorAll('.option-btn[data-option="variations"]').forEach(btn =
 
 ## Generate Button
 
-The generate button **MUST** follow this exact structure for consistent styling and loading states.
+The generate button **MUST** follow this exact structure for consistent styling.
 
 ### Required Structure
 
@@ -396,8 +386,16 @@ The generate button **MUST** follow this exact structure for consistent styling 
 | Content wrapper | `.btn-content` | ✅ | Wraps icon and text |
 | Icon | SVG inside `.btn-content` | ✅ | Page-specific, before text |
 | Text | Plain text | ✅ | "Generate [Page Name]" |
-| Glow effect | `.btn-glow` | ✅ | MUST be after `.btn-content` |
+| Glow effect | `.btn-glow` | ✅ | Keep for compatibility (hidden by CSS) |
 | Shortcut hint | `.shortcut-hint` | ✅ | Below button |
+
+### Apple-inspired Button Styling
+
+The generate button uses a solid Apple Blue background (`#007AFF`) instead of gradients:
+- **Background**: Solid `var(--accent)` color
+- **Hover**: `filter: brightness(1.1)` with subtle shadow
+- **Active**: `filter: brightness(0.95)` with slight scale
+- **No glow effects**: `.btn-glow` is hidden via CSS
 
 ### Icon by Page
 
@@ -1020,6 +1018,10 @@ function initElements() {
 
 Before finishing a new page, verify:
 
+**Head Section:**
+- [ ] Inline theme script immediately after `</title>` tag (prevents flash of wrong theme)
+- [ ] Script: `<script>if(localStorage.getItem('ngraphics_theme')==='light')document.documentElement.setAttribute('data-theme','light')</script>`
+
 **Header:**
 - [ ] Header is pre-rendered in HTML (NOT empty for JS to populate)
 - [ ] Contains full logo SVG, title, subtitle
@@ -1031,7 +1033,7 @@ Before finishing a new page, verify:
 **Generate Button:**
 - [ ] Uses `.btn-generate` class only (NOT `.btn .btn-primary`)
 - [ ] Has `.btn-content` wrapper containing SVG icon + text
-- [ ] Has `.btn-glow` span AFTER `.btn-content` (not before, not `btn-loader`)
+- [ ] Has `.btn-glow` span AFTER `.btn-content` (hidden by CSS, kept for compatibility)
 - [ ] Has `.shortcut-hint` below button with Ctrl+Enter
 
 **Advanced Options:**
@@ -1057,6 +1059,15 @@ Before finishing a new page, verify:
 - [ ] Favorites nested inside `.history-section`
 - [ ] Both use `.empty-state` pattern for empty state
 - [ ] History uses `.btn-text` "Clear", Favorites uses `.btn-text-danger` "Clear All"
+
+**Apple Design Guidelines:**
+- [ ] Uses Inter font (NOT Outfit)
+- [ ] No noise overlay or ambient orb elements
+- [ ] Buttons use solid colors (no gradients)
+- [ ] Hover uses `filter: brightness()` (no `translateY`)
+- [ ] Letter-spacing is `0` or negative (no wide tracking)
+- [ ] Font weights are 500-600 (not 700-800)
+- [ ] Label icons use muted colors (not accent)
 
 **Other:**
 - [ ] Scene icons are `1rem` (not larger)
@@ -1089,6 +1100,57 @@ All pages include a consistent footer:
 ```
 
 Place the footer after all scripts, before `</body>`.
+
+---
+
+## Apple Design System Quick Reference
+
+### Colors (Dark Mode)
+| Purpose | Variable | Value |
+|---------|----------|-------|
+| Page background | `--bg-deep` | `#000000` |
+| Panel background | `--bg-base` | `#1c1c1e` |
+| Elevated surface | `--bg-elevated` | `#2c2c2e` |
+| Input/button bg | `--bg-surface` | `#3a3a3c` |
+| Hover state | `--bg-hover` | `#48484a` |
+| Primary accent | `--accent` | `#007AFF` |
+| Secondary accent | `--secondary` | `#5856D6` |
+| Success | `--success` | `#30D158` |
+| Error | `--error` | `#FF453A` |
+
+### Typography
+- **Font**: Inter (not Outfit)
+- **Weights**: 400 (body), 500 (labels/buttons), 600 (titles)
+- **Letter-spacing**: `0` or `-0.01em` (never wide tracking)
+
+### Border Radius
+| Variable | Value | Usage |
+|----------|-------|-------|
+| `--radius-sm` | `8px` | Buttons, badges |
+| `--radius-md` | `12px` | Inputs, cards |
+| `--radius-lg` | `16px` | Panels |
+
+### Shadows
+```css
+--shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
+--shadow-md: 0 4px 12px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.1);
+```
+
+### Animations
+- **Easing**: `cubic-bezier(0.25, 0.1, 0.25, 1)` (no bounce)
+- **Duration**: 0.2s (fast), 0.3s (normal)
+- **Hover**: Use `filter: brightness(1.1)` instead of `translateY`
+- **Active**: Use `transform: scale(0.99)` for press feedback
+
+### Anti-Patterns (Avoid)
+1. Gradient backgrounds on buttons
+2. Glow/neon effects
+3. Bounce/spring animations
+4. Wide letter-spacing
+5. Font weights above 600
+6. Noise overlays
+7. Ambient orbs/blurs
+8. `translateY` hover effects
 
 ---
 

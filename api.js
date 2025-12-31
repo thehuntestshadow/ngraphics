@@ -28,6 +28,7 @@ class APIError extends Error {
             'MODEL_ERROR': 'The AI model encountered an error. Try a different model.',
             'CONTENT_FILTERED': 'Content was filtered. Try adjusting your prompt.',
             'QUOTA_EXCEEDED': 'API quota exceeded. Please check your OpenRouter account.',
+            'LIMIT_REACHED': 'Monthly generation limit reached. Upgrade your plan or use credits.',
             'SERVER_ERROR': 'Server error. Please try again later.',
             'EMPTY_RESPONSE': 'No response received from the API.',
             'PARSE_ERROR': 'Failed to parse API response.',
@@ -75,6 +76,11 @@ class APIClient {
         // Cloud API key cache
         this._cloudApiKey = null;
         this._cloudApiKeyLoaded = false;
+
+        // Usage limit cache (30 second TTL to avoid repeated API calls)
+        this._cachedUsage = null;
+        this._usageCacheTime = 0;
+        this._usageCacheTTL = 30000; // 30 seconds
     }
 
     // ========================================
@@ -153,6 +159,109 @@ class APIClient {
     clearCloudApiKey() {
         this._cloudApiKey = null;
         this._cloudApiKeyLoaded = false;
+    }
+
+    // ========================================
+    // USAGE LIMIT CHECKING
+    // ========================================
+
+    /**
+     * Check if user can proceed with generation based on usage limits
+     * Shows upgrade modal or credits prompt if at limit
+     * @returns {Promise<boolean>} true if can proceed, false if blocked
+     */
+    async _checkUsageLimit() {
+        // Skip check for unauthenticated users (they use their own API key)
+        if (typeof ngSupabase === 'undefined' || !ngSupabase.isAuthenticated) {
+            return true;
+        }
+
+        try {
+            // Get usage data (cached for 30 seconds)
+            const usage = await this._getUsageWithCache();
+            if (!usage) {
+                // If we can't get usage, fail open (allow generation)
+                return true;
+            }
+
+            // Free tier uses own API key - no limits
+            if (usage.isUnlimited) {
+                return true;
+            }
+
+            // Check if under limit
+            if (usage.generationsUsed < usage.generationsLimit) {
+                return true;
+            }
+
+            // At limit - check for credits first
+            if (usage.creditsBalance > 0) {
+                const useCredit = await SharedUI.showCreditsPrompt(usage.creditsBalance);
+                if (useCredit) {
+                    // TODO: Deduct credit via Supabase
+                    // For now, allow the generation
+                    return true;
+                }
+                return false;
+            }
+
+            // No credits - show upgrade modal
+            const action = await SharedUI.showUpgradeModal(usage);
+            // 'upgrade' navigates to pricing, 'cancel' blocks generation
+            return false;
+
+        } catch (error) {
+            console.warn('[API] Usage check failed, allowing generation:', error.message);
+            // Fail open - allow generation if usage check fails
+            return true;
+        }
+    }
+
+    /**
+     * Get usage data with caching to avoid repeated API calls
+     * @returns {Promise<Object|null>} Usage data or null
+     */
+    async _getUsageWithCache() {
+        const now = Date.now();
+
+        // Return cached usage if still valid
+        if (this._cachedUsage && (now - this._usageCacheTime) < this._usageCacheTTL) {
+            return this._cachedUsage;
+        }
+
+        // Fetch fresh usage data
+        this._cachedUsage = await ngSupabase.getUsage();
+        this._usageCacheTime = now;
+
+        return this._cachedUsage;
+    }
+
+    /**
+     * Show warning toast if approaching usage limit (80%+)
+     * Only shows once per session
+     */
+    _checkUsageWarning() {
+        if (!this._cachedUsage || this._cachedUsage.isUnlimited) {
+            return;
+        }
+
+        const pct = (this._cachedUsage.generationsUsed / this._cachedUsage.generationsLimit) * 100;
+
+        // Show warning at 80%+ usage, but only once per session
+        if (pct >= 80 && !sessionStorage.getItem('ngraphics_usage_warning_shown')) {
+            if (typeof SharedUI !== 'undefined' && SharedUI.showUsageWarning) {
+                SharedUI.showUsageWarning(this._cachedUsage);
+                sessionStorage.setItem('ngraphics_usage_warning_shown', 'true');
+            }
+        }
+    }
+
+    /**
+     * Invalidate usage cache (call after generation to get fresh count)
+     */
+    invalidateUsageCache() {
+        this._cachedUsage = null;
+        this._usageCacheTime = 0;
     }
 
     // ========================================
@@ -346,6 +455,12 @@ class APIClient {
             throw new APIError('API key not configured', 'AUTH_ERROR');
         }
 
+        // Check usage limits (for authenticated paid users)
+        const canProceed = await this._checkUsageLimit();
+        if (!canProceed) {
+            throw new APIError('Generation limit reached', 'LIMIT_REACHED', { retryable: false });
+        }
+
         // Check cache
         if (cache) {
             const cacheKey = this.getCacheKey(endpoint, body);
@@ -423,6 +538,11 @@ class APIClient {
                     }
 
                     this.stats.successfulRequests++;
+
+                    // Invalidate usage cache and check for warning
+                    this.invalidateUsageCache();
+                    this._checkUsageWarning();
+
                     return result;
 
                 } catch (err) {

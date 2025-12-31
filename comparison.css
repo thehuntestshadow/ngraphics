@@ -934,7 +934,7 @@
 /* ============================================
    RESULT PANEL
    ============================================ */
-.result-placeholder {
+.output-placeholder {
     display: flex;
     flex-direction: column;
     align-items: center;

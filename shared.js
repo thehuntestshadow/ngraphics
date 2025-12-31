@@ -1597,6 +1597,120 @@ const SharedUI = {
             // Focus confirm button
             modal.querySelector('.confirm-ok').focus();
         });
+    },
+
+    /**
+     * Show upgrade modal when generation limit is reached
+     * @param {Object} usage - Usage data from ngSupabase.getUsage()
+     * @returns {Promise<string>} 'upgrade' | 'credits' | 'cancel'
+     */
+    showUpgradeModal(usage) {
+        return new Promise((resolve) => {
+            const hasCredits = usage.creditsBalance > 0;
+            const nextTier = usage.tier === 'pro' ? 'Business' : 'Pro';
+            const nextLimit = usage.tier === 'pro' ? 1000 : 200;
+
+            const modal = document.createElement('div');
+            modal.className = 'upgrade-modal';
+            modal.innerHTML = `
+                <div class="upgrade-modal-backdrop"></div>
+                <div class="upgrade-modal-content">
+                    <div class="upgrade-modal-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <div class="upgrade-modal-title">Generation Limit Reached</div>
+                    <div class="upgrade-modal-message">
+                        You've used all <strong>${usage.generationsLimit}</strong> generations this month.
+                    </div>
+                    <div class="upgrade-modal-stats">
+                        <div class="usage-bar-container">
+                            <div class="usage-bar-fill danger" style="width: 100%"></div>
+                        </div>
+                        <div class="upgrade-modal-stat-text">
+                            ${usage.generationsUsed} / ${usage.generationsLimit} generations used
+                        </div>
+                    </div>
+                    <div class="upgrade-modal-options">
+                        <p>Upgrade to <strong>${nextTier}</strong> for ${nextLimit} generations/month, or buy credits for one-time use.</p>
+                    </div>
+                    <div class="upgrade-modal-actions">
+                        <button class="btn btn-secondary upgrade-cancel">Cancel</button>
+                        ${hasCredits ? `<button class="btn btn-outline upgrade-credits">Use Credits (${usage.creditsBalance})</button>` : ''}
+                        <button class="btn btn-primary upgrade-plan">Upgrade Plan</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            requestAnimationFrame(() => modal.classList.add('visible'));
+
+            const cleanup = (result) => {
+                modal.classList.remove('visible');
+                setTimeout(() => modal.remove(), 300);
+                resolve(result);
+            };
+
+            modal.querySelector('.upgrade-cancel').addEventListener('click', () => cleanup('cancel'));
+            modal.querySelector('.upgrade-plan').addEventListener('click', () => {
+                window.location.href = '/pricing.html?action=upgrade';
+                cleanup('upgrade');
+            });
+            if (hasCredits) {
+                modal.querySelector('.upgrade-credits').addEventListener('click', () => cleanup('credits'));
+            }
+            modal.querySelector('.upgrade-modal-backdrop').addEventListener('click', () => cleanup('cancel'));
+
+            // ESC to cancel
+            const handleEsc = (e) => {
+                if (e.key === 'Escape') {
+                    cleanup('cancel');
+                    document.removeEventListener('keydown', handleEsc);
+                }
+            };
+            document.addEventListener('keydown', handleEsc);
+
+            // Focus upgrade button
+            modal.querySelector('.upgrade-plan').focus();
+        });
+    },
+
+    /**
+     * Show credits prompt when user has credits available
+     * @param {number} credits - Available credits
+     * @returns {Promise<boolean>} true to use credit, false to cancel
+     */
+    showCreditsPrompt(credits) {
+        return this.confirm(
+            `You have <strong>${credits}</strong> credits available.<br>Use 1 credit for this generation?`,
+            {
+                title: 'Use Credits?',
+                confirmText: 'Use 1 Credit',
+                cancelText: 'Cancel',
+                confirmClass: 'btn-primary',
+                icon: 'info'
+            }
+        );
+    },
+
+    /**
+     * Show usage warning toast when approaching limit
+     * @param {Object} usage - Usage data
+     */
+    showUsageWarning(usage) {
+        const remaining = usage.generationsLimit - usage.generationsUsed;
+        const pct = Math.round((usage.generationsUsed / usage.generationsLimit) * 100);
+
+        // Create clickable toast with upgrade link
+        const toastHtml = `
+            <span>${usage.generationsUsed}/${usage.generationsLimit} generations used (${pct}%)</span>
+            <a href="/pricing.html?action=upgrade" class="toast-upgrade-link">Upgrade →</a>
+        `;
+
+        this.toast(toastHtml, 'warning', 5000);
     }
 };
 
@@ -4328,6 +4442,63 @@ const SharedRating = {
     }
 };
 
+/**
+ * SharedLanguage - Generation language helpers
+ * Provides language prompts for AI-generated content
+ */
+const SharedLanguage = {
+    // Language instructions for AI prompts (with proper diacritics guidance)
+    _langInstructions: {
+        en: 'English',
+        ro: 'Romanian (use proper diacritics: ă, â, î, ș, ț)',
+        de: 'German (use proper umlauts: ä, ö, ü, ß)',
+        fr: 'French (use proper accents: é, è, ê, ç, à, ù)',
+        es: 'Spanish (use proper accents: á, é, í, ó, ú, ñ, ¿, ¡)',
+        it: 'Italian (use proper accents: à, è, é, ì, ò, ù)',
+        pt: 'Portuguese (use proper accents: ã, õ, á, é, í, ó, ú, ç)',
+        nl: 'Dutch',
+        pl: 'Polish (use proper diacritics: ą, ć, ę, ł, ń, ó, ś, ź, ż)',
+        cs: 'Czech (use proper diacritics: á, č, ď, é, ě, í, ň, ó, ř, š, ť, ú, ů, ý, ž)'
+    },
+
+    /**
+     * Get the current generation language code
+     * @returns {string} Language code (e.g., 'en', 'ro')
+     */
+    getLanguage() {
+        if (typeof i18n !== 'undefined') {
+            return i18n.getGenerationLanguage();
+        }
+        return localStorage.getItem('ngraphics_gen_language') || 'en';
+    },
+
+    /**
+     * Get language prompt instruction for AI generation
+     * Returns empty string for English (no instruction needed)
+     * @returns {string} Language instruction for AI prompt
+     */
+    getPrompt() {
+        const lang = this.getLanguage();
+        if (lang === 'en') return ''; // No instruction needed for English
+        const instruction = this._langInstructions[lang] || this._langInstructions.en;
+        return `\n\nLANGUAGE: All text in the image must be in ${instruction}. Do not use English.\n`;
+    },
+
+    /**
+     * Get the display name for a language code
+     * @param {string} code - Language code
+     * @returns {string} Language display name
+     */
+    getDisplayName(code) {
+        const names = {
+            en: 'English', ro: 'Romanian', de: 'German', fr: 'French',
+            es: 'Spanish', it: 'Italian', pt: 'Portuguese', nl: 'Dutch',
+            pl: 'Polish', cs: 'Czech'
+        };
+        return names[code] || code;
+    }
+};
+
 // Export for use in other modules (if using ES modules in future)
 if (typeof window !== 'undefined') {
     window.SharedAPI = SharedAPI;
@@ -4356,6 +4527,7 @@ if (typeof window !== 'undefined') {
     window.SharedTemplates = SharedTemplates;
     window.SharedExamples = SharedExamples;
     window.SharedRating = SharedRating;
+    window.SharedLanguage = SharedLanguage;
 
     // Auto-cleanup on load (runs once per day, cleans items >30 days old)
     const globalImageStore = new ImageStore();

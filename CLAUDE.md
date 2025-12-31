@@ -72,19 +72,21 @@ The application consists of multiple pages, each with its own JS file, sharing c
 | Ad Creative | `ad-creative.html`, `ad-creative.js`, `ad-creative.css` | Banner ads for Google, Facebook, Amazon, Instagram |
 | Model Video | `model-video.html`, `model-video.js`, `model-video.css` | Animate model photos with motion and camera effects |
 | Dashboard | `dashboard.html`, `dashboard.js`, `dashboard.css` | Analytics, storage management, quick access to recent work |
+| Admin | `admin.html`, `admin.js`, `admin.css` | User management, analytics, system administration (admin only) |
 | Documentation | `docs.html`, `docs.css` | User documentation |
 
 ### Shared Resources
 - `styles.css` - Base styles, CSS variables, theming, common components
 - `core.js` - Core infrastructure: Reactive State, Event Bus, Image Compression, Virtual Scrolling, Lazy Loading
-- `shared.js` - Shared utilities: API handling, history, favorites, UI helpers, upload handling, lightbox, keyboard shortcuts
-- `api.js` - Unified API client with retry logic, rate limiting, response normalization
+- `i18n.js` - Internationalization module with 10 languages, interface/generation language settings
+- `shared.js` - Shared utilities: API handling, history, favorites, UI helpers, upload handling, lightbox, keyboard shortcuts, upgrade prompts, language helpers
+- `api.js` - Unified API client with retry logic, rate limiting, response normalization, usage limit checking
 - `components.js` - Reusable Web Components and UI elements
 - `workers.js` - Web Worker and Service Worker managers
 - `image-worker.js` - Web Worker for image processing (compression, thumbnails, enhancement)
 - `service-worker.js` - Service Worker for caching and offline support
-- `supabase.js` - Supabase client wrapper (auth, profiles, API key storage)
-- `auth-ui.js` - Authentication UI (login/signup modal, account menu)
+- `supabase.js` - Supabase client wrapper (auth, profiles, API key storage, usage tracking)
+- `auth-ui.js` - Authentication UI (login/signup modal, account menu, settings modal with language settings, usage display)
 - `cloud-sync.js` - Cloud sync manager (history/favorites sync to Supabase)
 
 ### Documentation Files
@@ -635,6 +637,24 @@ Central hub for analytics, storage management, and quick access.
 
 ---
 
+## Admin Panel (`admin.html` + `admin.js`)
+
+Administrative dashboard for user management and system analytics. Requires admin role.
+
+### Features
+- User management: search, view, edit roles, manage subscriptions
+- System analytics: total users, active subscriptions, generation counts
+- User detail modal with profile info, subscription status, usage stats
+- Role management (user/admin) and subscription tier editing
+- Responsive data tables with search and pagination
+
+### Access Control
+- Admin-only access via Supabase RLS policies
+- Checks `profiles.role = 'admin'` before allowing access
+- Redirects non-admin users to dashboard
+
+---
+
 ## Common Patterns
 
 ### State Management
@@ -652,6 +672,11 @@ Each page has `generatePrompt()` that builds AI prompts by concatenating descrip
 - Favorites: save with all settings/seed/reference images, supports multiple variants
 - Storage keys: `ngraphics_*`, `model_studio_*`, `bundle_studio_*`, `lifestyle_studio_*`, `copywriter_*`, `packaging_*`, `comparison_generator_*`, `size_visualizer_*`, `faq_generator_*`, `background_studio_*`, `badge_generator_*`, `feature_cards_*`, `size_chart_*`, `aplus_generator_*`, `product_variants_*`, `social_studio_*`, `export_center_*`, `ad_creative_*`, `model_video_*`
 
+### Language Settings
+- `ngraphics_ui_language` - Interface language (EN, RO, DE, FR, ES, IT, PT, NL, PL, CS)
+- `ngraphics_gen_language` - Generation language for AI content
+- `copywriter_language` - Legacy key (synced with gen_language for backwards compatibility)
+
 ### Error Handling
 `showError()` displays user-friendly error messages. API errors caught and displayed appropriately.
 
@@ -667,15 +692,41 @@ Each page has `generatePrompt()` that builds AI prompts by concatenating descrip
 - **SharedFavorites**: Hybrid storage with same interface as SharedHistory
 
 ### Utility Objects
-- **SharedTheme**: `init()`, `apply()`, `toggle()`, `setupToggle()`
+- **SharedTheme**: `init()`, `apply()`, `toggle()`, `setupToggle()` - Note: All HTML pages include inline `<script>` in `<head>` to prevent theme flash
 - **SharedHeader**: `render(options)` - consistent header across pages
 - **SharedDashboard**: `loadAllData()`, `getMetrics()`, `getGenerationTrends()`, `getModelUsage()`, `getRecentActivity()`, `getStorageEstimate()`, `clearOldItems()`
-- **SharedUI**: `showError()`, `showSuccess()`, `updateApiStatus()`, `showLoading()`, `hideLoading()`
+- **SharedUI**: `showError()`, `showSuccess()`, `updateApiStatus()`, `showLoading()`, `hideLoading()`, `toast()`, `confirm()`, `showUpgradeModal()`, `showCreditsPrompt()`, `showUsageWarning()`
 - **SharedUpload**: `setup()`, `handleFile()`
 - **SharedLightbox**: `setup()`, `open()`, `close()`
 - **SharedDownload**: `downloadImage()`
 - **SharedKeyboard**: `setup(handlers)` - Ctrl+Enter, Ctrl+D, Escape
 - **SharedCollapsible**: `setup()`
+- **SharedLanguage**: `getLanguage()`, `getPrompt()`, `getDisplayName()` - generation language helpers
+
+---
+
+## Internationalization (`i18n.js`)
+
+Lightweight i18n module for key UI strings and generation language.
+
+### Supported Languages (10)
+EN (English), RO (Romanian), DE (German), FR (French), ES (Spanish), IT (Italian), PT (Portuguese), NL (Dutch), PL (Polish), CS (Czech)
+
+### i18n Object
+- `init()` - Initialize from localStorage
+- `t(key, fallback)` - Translate key to current UI language
+- `getUILanguage()` / `setUILanguage(lang)` - Interface language
+- `getGenerationLanguage()` / `setGenerationLanguage(lang)` - AI content language
+- `getGenerationPrompt()` - Get language instruction for AI prompts (empty for English)
+- `getLanguages()` - Get all supported languages
+- `getLanguageInfo(code)` - Get language object by code
+
+### Usage in Studios
+Studios use `SharedLanguage.getPrompt()` to append language instructions to AI prompts:
+```javascript
+prompt += SharedLanguage.getPrompt();
+// Returns "" for English, or "\n\nLANGUAGE: German (use proper umlauts: ä, ö, ü, ß)..." for non-English
+```
 
 ---
 
@@ -727,6 +778,6 @@ See `API_REFERENCE.md` for usage examples.
 - `generateImage()`: Image generation with multimodal support
 - `analyzeImage()`: Image analysis
 - `generateText()`: Text generation
-- Features: Automatic retries, rate limiting, response normalization, request cancellation, caching, error classification
+- Features: Automatic retries, rate limiting, response normalization, request cancellation, caching, error classification, usage limit checking with upgrade prompts
 
 See `API_REFERENCE.md` for usage examples.

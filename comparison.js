@@ -111,7 +111,7 @@ function initElements() {
         settingsToggle: document.getElementById('settingsToggle'),
         apiKey: document.getElementById('apiKey'),
         toggleApiKey: document.getElementById('toggleApiKey'),
-        saveKeyBtn: document.getElementById('saveKeyBtn'),
+        saveApiKey: document.getElementById('saveApiKey'),
         aiModel: document.getElementById('aiModel'),
 
         // Comparison Type
@@ -911,6 +911,9 @@ CRITICAL REQUIREMENTS:
         prompt += `\n\nAVOID: ${state.negativePrompt}`;
     }
 
+    // Add language instruction for non-English
+    prompt += SharedLanguage.getPrompt();
+
     return prompt;
 }
 
@@ -1135,7 +1138,7 @@ function showResult(imageUrl) {
     elements.seedValue.textContent = state.lastSeed;
 
     // Hide placeholder
-    const placeholder = elements.resultContainer.querySelector('.result-placeholder');
+    const placeholder = elements.resultContainer.querySelector('.output-placeholder');
     if (placeholder) placeholder.style.display = 'none';
 
     addToHistory(imageUrl);
@@ -1171,7 +1174,7 @@ function showMultipleResults(imageUrls) {
     });
 
     // Hide placeholder
-    const placeholder = elements.resultContainer.querySelector('.result-placeholder');
+    const placeholder = elements.resultContainer.querySelector('.output-placeholder');
     if (placeholder) placeholder.style.display = 'none';
 
     // Add all to history
@@ -1468,7 +1471,7 @@ function setupEventListeners() {
     });
 
     // API Key
-    elements.saveKeyBtn.addEventListener('click', () => {
+    elements.saveApiKey.addEventListener('click', () => {
         const key = elements.apiKey.value.trim();
         if (key) {
             state.apiKey = key;
@@ -1481,7 +1484,7 @@ function setupEventListeners() {
     elements.apiKey.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            elements.saveKeyBtn.click();
+            elements.saveApiKey.click();
         }
     });
 

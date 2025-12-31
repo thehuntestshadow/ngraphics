@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Export Center - NGRAPHICS</title>
+    <script>if(localStorage.getItem('ngraphics_theme')==='light')document.documentElement.setAttribute('data-theme','light')</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="export-center.css">
     <script src="config.js"></script>
@@ -473,7 +474,7 @@
 
                 <div class="output-container">
                     <!-- Placeholder State -->
-                    <div class="result-placeholder" id="resultPlaceholder">
+                    <div class="output-placeholder" id="resultPlaceholder">
                         <div class="placeholder-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
                                 <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -486,7 +487,7 @@
                     </div>
 
                     <!-- Processing State -->
-                    <div class="loading-container" id="loadingContainer" style="display: none;">
+                    <div class="output-loading" id="loadingContainer" style="display: none;">
                         <div class="loading-spinner"></div>
                         <p class="loading-text">Processing images...</p>
                         <div class="progress-bar" id="progressBar">
@@ -544,6 +545,7 @@
 
     <!-- Scripts -->
     <script src="core.js"></script>
+    <script src="i18n.js"></script>
     <script src="shared.js"></script>
     <script src="components.js"></script>
     <script src="export-center.js?v=2"></script>

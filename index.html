@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NGRAPHICS - AI E-commerce Toolkit</title>
+    <script>if(localStorage.getItem('ngraphics_theme')==='light')document.documentElement.setAttribute('data-theme','light')</script>
     <meta name="description" content="Create stunning product visuals in seconds. 20+ AI-powered studios for infographics, model photos, lifestyle shots, and more.">
 
     <!-- Open Graph -->
@@ -25,7 +26,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="landing.css">
 </head>
@@ -298,8 +299,7 @@
                                 <div class="studio-icon">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <circle cx="12" cy="12" r="10"/>
-                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                        <text x="12" y="17" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="currentColor">?</text>
                                     </svg>
                                 </div>
                                 <h4 class="studio-name">FAQ Generator</h4>
@@ -621,6 +621,7 @@
     <script src="supabase.js"></script>
     <script src="auth-ui.js"></script>
     <script src="cloud-sync.js"></script>
+    <script src="i18n.js"></script>
     <script src="shared.js"></script>
     <script src="landing.js"></script>
 </body>

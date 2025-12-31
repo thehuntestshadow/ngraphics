@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Badge Generator - NGRAPHICS</title>
+    <script>if(localStorage.getItem('ngraphics_theme')==='light')document.documentElement.setAttribute('data-theme','light')</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="badge-generator.css">
 </head>
@@ -304,7 +305,7 @@
                 </div>
 
                 <div class="result-container">
-                    <div class="result-placeholder" id="resultPlaceholder">
+                    <div class="output-placeholder" id="resultPlaceholder">
                         <div class="placeholder-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
                                 <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
@@ -492,6 +493,7 @@
 
     <!-- Scripts -->
     <script src="core.js"></script>
+    <script src="i18n.js"></script>
     <script src="shared.js"></script>
     <script src="api.js"></script>
     <script src="components.js"></script>

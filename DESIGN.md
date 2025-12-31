@@ -4,14 +4,14 @@ Design system documentation for NGRAPHICS. Use this as reference for consistent 
 
 ## Design Philosophy
 
-**Dark Editorial Brutalism × Tech Futurism**
+**Refined Apple-inspired Aesthetic**
 
-- Dark, immersive interface with subtle noise texture
-- Electric cyan (`--accent`) and hot magenta (`--secondary`) accents
-- Clean typography with strong visual hierarchy
-- Generous whitespace, not cramped
-- Subtle animations and glow effects
-- Professional, not playful
+- Clean, minimal interface with subtle depth
+- Soft shadows and frosted glass effects
+- Pure colors with Apple's system palette
+- Generous whitespace and clear hierarchy
+- Smooth, subtle animations
+- Professional, premium feel
 
 ---
 
@@ -20,75 +20,89 @@ Design system documentation for NGRAPHICS. Use this as reference for consistent 
 ### Backgrounds (Dark Mode)
 | Variable | Value | Usage |
 |----------|-------|-------|
-| `--bg-deep` | `#0a0a0c` | Page background, deepest layer |
-| `--bg-base` | `#0f0f12` | Panel backgrounds |
-| `--bg-elevated` | `#151519` | Elevated surfaces (headers, cards) |
-| `--bg-surface` | `#1a1a1f` | Form inputs, buttons |
-| `--bg-hover` | `#222228` | Hover states |
+| `--bg-deep` | `#09090b` | Page background, deepest layer |
+| `--bg-base` | `#18181b` | Panel backgrounds |
+| `--bg-elevated` | `#27272a` | Elevated surfaces (headers, cards) |
+| `--bg-surface` | `#3f3f46` | Form inputs, buttons |
+| `--bg-hover` | `#52525b` | Hover states |
 
-### Text
+### Backgrounds (Light Mode)
 | Variable | Value | Usage |
 |----------|-------|-------|
-| `--text-primary` | `#f0f0f2` | Headings, important text |
-| `--text-secondary` | `#9a9aa8` | Body text, labels |
-| `--text-muted` | `#5a5a68` | Helper text, hints |
-| `--text-dim` | `#3a3a45` | Placeholders, disabled |
+| `--bg-deep` | `#ffffff` | Page background |
+| `--bg-base` | `#f2f2f7` | Panel backgrounds |
+| `--bg-elevated` | `#ffffff` | Elevated surfaces |
+| `--bg-surface` | `#e5e5ea` | Form inputs, buttons |
+| `--bg-hover` | `#d1d1d6` | Hover states |
+
+### Text
+| Variable | Dark Mode | Light Mode | Usage |
+|----------|-----------|------------|-------|
+| `--text-primary` | `#fafafa` | `#000000` | Headings, important text |
+| `--text-secondary` | `#a1a1aa` | `#3c3c43` | Body text, labels |
+| `--text-muted` | `#71717a` | `#8e8e93` | Helper text, hints |
+| `--text-dim` | `#52525b` | `#aeaeb2` | Disabled text |
 
 ### Borders
 | Variable | Value | Usage |
 |----------|-------|-------|
-| `--border-subtle` | `rgba(255,255,255,0.06)` | Dividers, section separators |
-| `--border-default` | `rgba(255,255,255,0.1)` | Input borders, cards |
-| `--border-strong` | `rgba(255,255,255,0.15)` | Hover states, emphasis |
+| `--border-subtle` | `rgba(255,255,255,0.08)` | Dividers, section separators |
+| `--border-default` | `rgba(255,255,255,0.14)` | Input borders, cards |
+| `--border-strong` | `rgba(255,255,255,0.22)` | Hover states, emphasis |
+| `--border-highlight` | `rgba(255,255,255,0.30)` | Active states |
 
 ### Accent Colors
 | Variable | Value | Usage |
 |----------|-------|-------|
-| `--accent` | `#00d4ff` | Primary actions, links, focus |
-| `--accent-dim` | `#00a8cc` | Darker accent variant |
-| `--accent-glow` | `rgba(0,212,255,0.3)` | Glow effects |
-| `--accent-subtle` | `rgba(0,212,255,0.08)` | Backgrounds, hover states |
-| `--secondary` | `#ff2d95` | Secondary accent (magenta) |
+| `--accent` | `#3b82f6` | Primary actions, links, focus |
+| `--accent-dim` | `#2563eb` | Darker accent variant |
+| `--accent-glow` | `rgba(59,130,246,0.25)` | Focus rings (subtle) |
+| `--accent-subtle` | `rgba(59,130,246,0.12)` | Backgrounds, hover states |
+| `--secondary` | `#8b5cf6` | Secondary accent (indigo) |
 
 ### Functional Colors
 | Variable | Value | Usage |
 |----------|-------|-------|
-| `--success` | `#00cc88` | Success messages, connected status |
-| `--error` | `#ff4757` | Errors, destructive actions |
-| `--warning` | `#ffb830` | Warnings, favorites star |
+| `--success` | `#22c55e` | Success messages, connected status |
+| `--error` | `#ef4444` | Errors, destructive actions |
+| `--warning` | `#eab308` | Warnings, favorites star |
 
 ---
 
 ## Typography
 
 ### Font Families
-- **Display**: `'Outfit', sans-serif` - All UI text
-- **Mono**: `'JetBrains Mono', monospace` - Code, seeds, API keys
+- **Display**: `'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif` - All UI text
+- **Mono**: `'SF Mono', 'JetBrains Mono', 'Fira Code', monospace` - Code, seeds, API keys
 
 ### Scale
 | Size | Usage |
 |------|-------|
-| `1.25rem` | Logo title |
-| `1rem` | Generate button, major headings |
-| `0.9rem` | Panel titles, input text |
-| `0.85rem` | Body text, select options |
+| `1.2rem` | Logo title |
+| `0.95rem` | Panel titles, generate button |
+| `0.9rem` | Input text, major headings |
+| `0.85rem` | Body text, action buttons |
 | `0.8rem` | Labels, option text |
-| `0.75rem` | Small labels, hints, status text |
+| `0.75rem` | Small labels, hints |
 | `0.7rem` | Keyboard hints, tiny labels |
 
 ### Weights
 - `400` - Body text
-- `500` - Labels, buttons
-- `600` - Section labels, emphasis
-- `700` - Titles, generate button
-- `800` - Logo
+- `500` - Labels, buttons, section labels
+- `600` - Titles, emphasis, primary buttons
+
+### Letter Spacing
+- Default: `0` (no tracking)
+- Negative for large text: `-0.01em`
+- Small uppercase text: `0.02em`
+- Avoid wide letter-spacing
 
 ---
 
 ## Spacing
 
 ### Standard Gaps
-- `4px` - Tight (toggle buttons, inline elements)
+- `4px` - Tight (inline elements)
 - `6-8px` - Compact (button groups, small gaps)
 - `10-12px` - Default (label to input, list items)
 - `16px` - Comfortable (between form groups)
@@ -97,8 +111,8 @@ Design system documentation for NGRAPHICS. Use this as reference for consistent 
 - `32px` - Page margins, panel gaps
 
 ### Padding Patterns
-- **Inputs**: `12px 16px` (default), `10px 12px` (small)
-- **Buttons**: `8px 16px` (default), `6px 12px` (small)
+- **Inputs**: `12px 16px` (default)
+- **Buttons**: `8px 14px` (option buttons), `16px 24px` (generate)
 - **Panels**: `24px` horizontal padding
 - **Sections**: `20px 0` vertical padding
 
@@ -108,10 +122,45 @@ Design system documentation for NGRAPHICS. Use this as reference for consistent 
 
 | Variable | Value | Usage |
 |----------|-------|-------|
-| `--radius-sm` | `6px` | Small buttons, badges, checkboxes |
-| `--radius-md` | `10px` | Inputs, cards, modals |
-| `--radius-lg` | `14px` | Panels, large cards |
-| `--radius-xl` | `20px` | Special containers |
+| `--radius-xs` | `4px` | Small elements, checkboxes |
+| `--radius-sm` | `8px` | Buttons, badges, option buttons |
+| `--radius-md` | `12px` | Inputs, cards, modals |
+| `--radius-lg` | `16px` | Panels, large cards |
+| `--radius-xl` | `22px` | Special containers |
+
+---
+
+## Shadows
+
+| Variable | Value | Usage |
+|----------|-------|-------|
+| `--shadow-sm` | `0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)` | Subtle elevation |
+| `--shadow-md` | `0 4px 12px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.1)` | Cards, dropdowns |
+| `--shadow-lg` | `0 8px 24px rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.1)` | Modals, overlays |
+| `--shadow-glow` | `0 0 20px rgba(0,122,255,0.15)` | Focus states (subtle) |
+
+---
+
+## Animation & Transitions
+
+### Durations
+| Variable | Value | Usage |
+|----------|-------|-------|
+| `--duration-fast` | `0.2s` | Hover states, small changes |
+| `--duration-normal` | `0.3s` | Standard transitions |
+| `--duration-slow` | `0.5s` | Large animations, modals |
+
+### Easing
+| Variable | Value | Usage |
+|----------|-------|-------|
+| `--ease-out` | `cubic-bezier(0.25, 0.1, 0.25, 1)` | All transitions (smooth) |
+| `--ease-spring` | `cubic-bezier(0.25, 0.1, 0.25, 1)` | Same as ease-out (no bounce) |
+
+### Common Patterns
+- **Hover**: `filter: brightness(1.1)` for buttons
+- **Active**: `transform: scale(0.99)` for press feedback
+- **Focus**: `box-shadow: 0 0 0 3px var(--accent-subtle)` for focus rings
+- No `translateY` hover effects (or very subtle)
 
 ---
 
@@ -122,49 +171,40 @@ Design system documentation for NGRAPHICS. Use this as reference for consistent 
 **Primary (Generate)**
 ```css
 .btn-generate {
-    padding: 18px 24px;
-    background: radial-gradient(...accent...);
-    color: var(--bg-deep);
-    font-weight: 700;
+    padding: 16px 24px;
+    background: var(--accent);
+    color: #ffffff;
+    font-weight: 600;
     border-radius: var(--radius-md);
 }
-/* Hover: translateY(-2px), glow shadow */
+/* Hover: filter: brightness(1.1), box-shadow: var(--shadow-md) */
+/* Active: filter: brightness(0.95), transform: scale(0.99) */
 ```
 
 **Secondary**
 ```css
 .btn-secondary {
     padding: 10px 16px;
-    background: transparent;
+    background: var(--bg-surface);
     border: 1px solid var(--border-default);
     color: var(--text-secondary);
 }
-/* Hover: border-color accent, color accent */
+/* Hover: background: var(--bg-hover), color: var(--text-primary) */
 ```
 
-**Icon Button**
+**Option Button**
 ```css
-.btn-icon {
-    width: 36px;
-    height: 36px;
+.option-btn {
+    padding: 8px 14px;
     background: var(--bg-surface);
     border: 1px solid var(--border-default);
     border-radius: var(--radius-sm);
+    font-weight: 500;
 }
-```
-
-**Text Button**
-```css
-.btn-text {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 0.75rem;
-}
-/* Hover: color text-secondary */
-
-.btn-text-danger {
-    color: var(--error);
+.option-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
 }
 ```
 
@@ -179,27 +219,10 @@ Design system documentation for NGRAPHICS. Use this as reference for consistent 
     border-radius: var(--radius-md);
     font-size: 0.9rem;
 }
-/* Focus: border-color accent, box-shadow accent-subtle */
-```
-
-**Textarea**
-```css
-.textarea-field {
-    min-height: 80px;
-    resize: vertical;
-}
+/* Focus: border-color: var(--accent), box-shadow: 0 0 0 3px var(--accent-subtle) */
 ```
 
 ### Panels
-
-**Two-Panel Layout**
-```css
-.app-grid {
-    display: grid;
-    grid-template-columns: minmax(400px, 480px) 1fr;
-    gap: 32px;
-}
-```
 
 **Panel Structure**
 ```html
@@ -216,269 +239,56 @@ Design system documentation for NGRAPHICS. Use this as reference for consistent 
 </section>
 ```
 
-### Form Sections
-
-**Config Section**
+**Panel Title**
 ```css
-.config-section {
-    padding: 20px 0;
-    border-bottom: 1px solid var(--border-subtle);
+.panel-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0;
 }
-```
-
-**Section Label**
-```html
-<div class="section-label">
-    <span class="label-icon"><svg>...</svg></span>
-    <span>Label Text</span>
-</div>
-```
-
-**Option Row**
-```css
-.option-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-```
-
-### Toggle Group (Segmented Control)
-```html
-<div class="toggle-group">
-    <button class="toggle-btn active" data-value="1">Option 1</button>
-    <button class="toggle-btn" data-value="2">Option 2</button>
-</div>
-```
-```css
-.toggle-group {
-    display: flex;
-    gap: 4px;
-    padding: 4px;
+.title-number {
     background: var(--bg-surface);
-    border-radius: var(--radius-md);
-}
-.toggle-btn.active {
-    background: var(--accent);
-    color: var(--bg-deep);
+    color: var(--text-muted);
 }
 ```
 
-### Collapsible Section
-```html
-<div class="advanced-section">
-    <button class="advanced-toggle" id="advancedToggle">
-        <span>Advanced Options</span>
-        <svg class="toggle-chevron">...</svg>
-    </button>
-    <div class="advanced-content">...</div>
-</div>
+### Section Labels
+```css
+.section-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--text-secondary);
+}
+.label-icon {
+    color: var(--text-muted);  /* Not accent color */
+}
 ```
-
-### Messages
-```html
-<div class="message message-error">
-    <div class="message-icon">!</div>
-    <div class="message-content">Error text</div>
-</div>
-```
-
-### Empty States
-```html
-<div class="empty-state">
-    <div class="empty-state-icon"><svg>...</svg></div>
-    <p class="empty-state-title">No items yet</p>
-    <p class="empty-state-text">Description text</p>
-</div>
-```
-
----
-
-## Animation & Transitions
-
-### Durations
-| Variable | Value | Usage |
-|----------|-------|-------|
-| `--duration-fast` | `0.15s` | Hover states, small changes |
-| `--duration-normal` | `0.25s` | Standard transitions |
-| `--duration-slow` | `0.4s` | Large animations, modals |
-
-### Easing
-| Variable | Value | Usage |
-|----------|-------|-------|
-| `--ease-out` | `cubic-bezier(0.16, 1, 0.3, 1)` | Most transitions |
-| `--ease-spring` | `cubic-bezier(0.34, 1.56, 0.64, 1)` | Bouncy effects |
-
-### Common Patterns
-- **Hover lift**: `transform: translateY(-2px)`
-- **Focus glow**: `box-shadow: 0 0 0 3px var(--accent-subtle)`
-- **Button press**: No transform on disabled
 
 ---
 
 ## Icons
 
 - Use inline SVGs with `stroke="currentColor"` for color inheritance
-- Default stroke-width: `2` (sometimes `1.5` for larger icons)
+- Default stroke-width: `1.5` to `2`
 - Standard sizes: `14px`, `16px`, `18px`, `20px`
-
-### Icon Size by Context
-| Context | Size | Example |
-|---------|------|---------|
-| Section label icons | `16px` | `.section-label .label-icon svg` |
-| History/Favorites header icons | `14px` | `.history-header h3 svg`, `.favorites-title svg` |
-| Option/scene buttons | `20px` | `.scene-btn svg`, `.option-btn svg` |
-| Small buttons | `14-16px` | `.btn-icon svg`, `.btn-text svg` |
-| Result placeholder icons | `48px` | `.placeholder-icon svg` |
-| Empty state icons | `64px` | `.empty-state-icon svg` |
-
----
-
-## Shadows
-
-| Variable | Usage |
-|----------|-------|
-| `--shadow-sm` | Subtle elevation |
-| `--shadow-md` | Cards, dropdowns |
-| `--shadow-lg` | Modals, overlays |
-| `--shadow-glow` | Accent glow on hover |
-
----
-
-## Layout Patterns
-
-### Header
-- Sticky, blur backdrop
-- Logo left, controls right
-- Gap between controls: `20px`
-
-### Navigation Links
-```css
-.docs-link, .btn-back {
-    padding: 6px 12px;
-    font-size: 0.75-0.8rem;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-sm);
-}
-```
-
-### Result Panel (Right)
-- Contains: result image, result info, feedback section
-- History and Favorites sections with grid layout
-- Grid: `repeat(auto-fill, minmax(100px, 1fr))`
-
-### History & Favorites Component
-
-Standardized component for all pages. See `UI_PATTERNS.md` for full HTML.
-
-| Element | Class | Styling |
-|---------|-------|---------|
-| History header | `.history-header` | Flex, space-between |
-| History title | `h3` with clock icon | Icon 14px, label "Recent" |
-| History count | `.history-count` | Accent badge style |
-| History grid | `.history-grid` | Auto-fill grid, 140px min |
-| Favorites header | `.favorites-header` | Flex, space-between |
-| Favorites title | `.favorites-title` | Icon 14px yellow, uppercase |
-| Favorites count | `.favorites-count` | Warning badge style |
-| Favorites grid | `.favorites-grid` | Auto-fill grid, 140px min |
-| Clear buttons | `.btn-text`, `.btn-text-danger` | Text-only buttons |
-
-**Key rules:**
-- History label is "Recent" (not "History")
-- Favorites icon is star (not heart)
-- Sections are stacked, not tabbed
-- Header icons are 14px (not 16px)
-- Favorites nested inside history-section
-
-### Generate Button Component
-
-| Element | Class | Notes |
-|---------|-------|-------|
-| Button | `.btn-generate` | Only this class, NOT `.btn .btn-primary` |
-| Content wrapper | `.btn-content` | Contains icon + text |
-| Icon | SVG inside `.btn-content` | Page-specific icon |
-| Glow effect | `.btn-glow` | MUST be after `.btn-content` |
-| Shortcut hint | `.shortcut-hint` | Below button, shows Ctrl+Enter |
-
-**Key rules:**
-- `.btn-content` wraps icon and text
-- `.btn-glow` comes AFTER `.btn-content` (not before)
-- Never use `.btn-loader` (deprecated)
-- Never add `.btn .btn-primary` classes
-
-### Advanced Options Component
-
-| Element | Class/ID | Notes |
-|---------|----------|-------|
-| Container | `.advanced-section` `#advancedSection` | Collapsible section |
-| Toggle | `.advanced-toggle` `#advancedToggle` | Button with slider icon |
-| Icon | `.toggle-icon` | 3-slider mixer icon |
-| Chevron | `.toggle-chevron` | Expands/collapses |
-| Content | `.advanced-content` | Contains option groups |
-| AI Model | `#aiModel` | Select dropdown |
-
-**Key rules:**
-- Uses 3-slider mixer icon (not gear)
-- Placed BEFORE generate button
-- Contains AI model select and variations
-
-### API Settings Component
-
-| Element | Class/ID | Notes |
-|---------|----------|-------|
-| Container | `.settings-section` `#settingsSection` | Collapsible section |
-| Toggle | `.settings-toggle` `#settingsToggle` | Button with gear icon |
-| Icon | Sun-ray gear | Simple rays, not complex teeth |
-| Chevron | `.toggle-chevron` | Expands/collapses |
-| Content | `.settings-content` | Contains API key group |
-| Input row | `.api-key-input` | NOT `.api-input-row` |
-| API input | `#apiKey` | Password type |
-| Eye toggle | `#toggleApiKey` | Show/hide button |
-| Save button | `#saveApiKey` | `.btn-secondary .btn-sm` |
-
-**Key rules:**
-- Uses sun-ray gear icon (simple)
-- Placed AFTER generate button
-- API input ID is `apiKey` (not `apiKeyInput`)
-
-### Section Order (Bottom of Config Panel)
-
-1. Advanced Options (`.advanced-section`)
-2. Generate Button (`.btn-generate`)
-3. API Settings (`.settings-section`)
-
-### Modal
-```html
-<div class="modal">
-    <div class="modal-backdrop"></div>
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Title</h3>
-            <button class="modal-close">&times;</button>
-        </div>
-        <div class="modal-body">...</div>
-        <div class="modal-footer">...</div>
-    </div>
-</div>
-```
+- Label icons: `14px` (subtle, muted color)
+- Button icons: `18px`
 
 ---
 
 ## Anti-Patterns (Avoid These)
 
-1. **Generic AI aesthetics** - No gradients everywhere, no excessive glow
-2. **Cramped layouts** - Always use proper spacing
-3. **Inconsistent border radius** - Stick to the scale
-4. **Mixed button styles** - Use established patterns
-5. **Placeholder text as labels** - Use proper `<label>` elements
-6. **Orphaned icons** - Icons should have text or tooltips
-7. **Harsh color transitions** - Use subtle hover states
-8. **Breaking the grid** - Align to the established layout
-9. **Overusing accent color** - Reserve for primary actions
-10. **Ignoring disabled states** - Always style `:disabled`
+1. **Gradients on buttons** - Use solid colors
+2. **Glow effects** - Use subtle shadows instead
+3. **Bounce/spring animations** - Use smooth easing
+4. **Wide letter-spacing** - Keep tracking tight
+5. **Heavy font weights** - Use 500-600, not 700-800
+6. **Accent-colored icons in labels** - Use muted colors
+7. **TranslateY hover effects** - Use brightness filter
+8. **Noise overlays** - Removed for clean aesthetic
+9. **Ambient orbs/blurs** - Removed for simplicity
+10. **Uppercase text** - Use sparingly, reduce tracking
 
 ---
 
@@ -495,7 +305,7 @@ Standardized component for all pages. See `UI_PATTERNS.md` for full HTML.
 
 ## Accessibility Notes
 
-- Focus states: Always visible with accent color
+- Focus states: Always visible with accent color ring
 - Color contrast: Text passes WCAG AA
 - Keyboard navigation: All interactive elements focusable
 - Touch targets: Minimum 36px for buttons

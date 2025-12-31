@@ -199,6 +199,9 @@ Requirements:
         prompt += `\n\nAdditional instructions: ${state.customInstructions}`;
     }
 
+    // Add language instruction for non-English
+    prompt += SharedLanguage.getPrompt();
+
     return prompt;
 }
 

@@ -2266,7 +2266,6 @@ function copyFavoriteSeed() {
 function generatePrompt() {
     const title = elements.productTitle.value.trim();
     const style = elements.infographicStyle.value;
-    const language = state.language === 'ro' ? 'Romanian' : 'English';
 
     // Get characteristics with emphasis and icons
     const charItems = elements.characteristicsList.querySelectorAll('.char-item');
@@ -2489,7 +2488,8 @@ DESIGN REQUIREMENTS:
         prompt += `\n`;
     }
 
-    prompt += `\nLANGUAGE: ${language}${state.language === 'ro' ? ' (use proper Romanian characters: ă, â, î, ș, ț)' : ''}\n`;
+    // Add language instruction for non-English
+    prompt += SharedLanguage.getPrompt();
 
     // Add layout template
     if (layoutTemplate !== 'auto' && layoutDescriptions[layoutTemplate]) {

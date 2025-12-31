@@ -693,6 +693,9 @@ CRITICAL REQUIREMENTS:
         prompt += `\n\nAVOID: ${state.negativePrompt}`;
     }
 
+    // Add language instruction for non-English
+    prompt += SharedLanguage.getPrompt();
+
     return prompt;
 }
 
@@ -753,6 +756,9 @@ LAYOUT REQUIREMENTS:
 - Checkmarks in green, X marks in red
 - Text values clearly readable
 - Professional table styling with subtle borders or separators`;
+
+    // Add language instruction for non-English
+    prompt += SharedLanguage.getPrompt();
 
     return prompt;
 }

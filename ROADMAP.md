@@ -86,6 +86,7 @@ Before adding a new tool, it should:
 
 **Utility Pages**
 - **Dashboard** - Analytics, storage management, quick access hub
+- **Admin** - User management, system analytics (admin only)
 - **Documentation** - User docs
 
 ### Core Features (All Pages)
@@ -105,6 +106,8 @@ Before adding a new tool, it should:
 - **Config System** - Environment-based configuration
 - **Security** - XSS prevention, production logging toggle
 - **Commercial Ready** - Subscription tiers, usage tracking schema
+- **Settings Modal** - User preferences, API keys, appearance, danger zone actions
+- **Admin Panel** - User management, system analytics, role management
 
 ---
 
@@ -230,9 +233,13 @@ See **Future Page Ideas** section below for comprehensive list of potential new 
 - Slideshow creation
 
 *Multi-language*
-- Full i18n support
-- Auto-translation of features
-- RTL language support
+- [x] i18n module with 10 languages (i18n.js)
+- [x] Interface language setting (UI text)
+- [x] Generation language setting (AI content)
+- [x] Language section in Settings modal
+- [ ] Full i18n coverage (all ~400 strings)
+- [ ] Auto-translation of features
+- [ ] RTL language support
 
 *Collaboration*
 - Shareable generation links
@@ -277,6 +284,42 @@ See **Future Page Ideas** section below for comprehensive list of potential new 
 - [ ] Progress indicators for long operations
 - [x] Keyboard shortcut help modal (see Quick Wins)
 <!-- Onboarding, Mobile listed in Larger Features section -->
+
+### Design Refresh (Apple-like Aesthetic)
+Goal: Premium, refined visual design inspired by Apple's design language.
+
+*Typography & Spacing*
+- [ ] Refined type scale with better hierarchy
+- [ ] Generous whitespace and breathing room
+- [ ] Consistent 8px grid system
+- [ ] Lighter font weights for elegance
+
+*Visual Polish*
+- [ ] Softer shadows (layered, diffused)
+- [ ] Subtle glassmorphism effects (backdrop blur)
+- [ ] Refined border radius (more consistent)
+- [ ] Muted, sophisticated color palette
+- [ ] Smooth gradient overlays
+
+*Motion & Interaction*
+- [ ] Refined micro-animations (easing curves)
+- [ ] Smooth state transitions (hover, focus, active)
+- [ ] Subtle parallax/depth effects
+- [ ] Spring-based animations for modals
+- [ ] Loading states with elegant shimmer
+
+*Component Refinement*
+- [ ] Redesigned buttons (pill shapes, subtle depth)
+- [ ] Floating card style with soft elevation
+- [ ] Refined input fields (cleaner focus states)
+- [ ] Improved dropdown/select styling
+- [ ] Premium toggle switches
+
+*Layout*
+- [ ] More breathing room between sections
+- [ ] Centered, narrower content width
+- [ ] Better visual grouping with subtle dividers
+- [ ] Refined panel/card structure
 
 ### API
 - [x] Unified API client (api.js)
@@ -821,8 +864,8 @@ Things explicitly out of scope:
 **Phase 4: Monetization UI** ✅ Complete
 - [x] Pricing page with billing toggle
 - [x] Landing page with pricing teaser
-- [ ] Usage dashboard in account menu
-- [ ] Upgrade prompts
+- [x] Usage dashboard in account menu
+- [x] Upgrade prompts
 - [ ] Billing portal integration
 
 ### Files Reference
@@ -904,9 +947,9 @@ Core generation across 3 studios with history/favorites
 - [x] Landing Page - Marketing site with galleries
 - [x] Gallery Page - Curated demo showcase
 - [x] FAQ Page - Product FAQ with categories
+- [x] Usage Dashboard - Show usage/limits in account menu
+- [x] Upgrade Prompts - Contextual upgrade CTAs
 - [ ] Edge Function: generate-image - API proxy for paid users
-- [ ] Usage Dashboard - Show usage/limits in account menu
-- [ ] Upgrade Prompts - Contextual upgrade CTAs
 - [ ] Watermark System - Optional for free tier
 
 ### v4.5 (Polish & Advanced)
@@ -1030,5 +1073,5 @@ Core generation across 3 studios with history/favorites
 
 ---
 
-*Last updated: Dec 2025 (v4.1 - Stripe payments, marketing pages, gallery)*
+*Last updated: Dec 2025 (v4.1 - Usage dashboard, upgrade prompts, commercial launch)*
 *Add ideas freely - this is a living document*

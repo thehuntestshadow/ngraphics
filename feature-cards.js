@@ -274,6 +274,9 @@ REQUIREMENTS:
         prompt += `\n\nAVOID: ${state.negativePrompt}`;
     }
 
+    // Add language instruction for non-English
+    prompt += SharedLanguage.getPrompt();
+
     return prompt;
 }
 

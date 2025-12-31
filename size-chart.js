@@ -318,6 +318,9 @@ ${bgDesc}`;
         prompt += `\n\nIncorporate the uploaded brand logo in a subtle position (corner or header).`;
     }
 
+    // Add language instruction for non-English
+    prompt += SharedLanguage.getPrompt();
+
     return prompt;
 }
 

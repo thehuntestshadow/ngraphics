@@ -286,7 +286,7 @@
 }
 
 /* Result Placeholder */
-.result-placeholder {
+.output-placeholder {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -308,14 +308,14 @@
     height: 48px;
 }
 
-.result-placeholder h3 {
+.output-placeholder h3 {
     font-size: 1rem;
     font-weight: 600;
     color: var(--text-primary);
     margin-bottom: 8px;
 }
 
-.result-placeholder p {
+.output-placeholder p {
     font-size: 0.875rem;
     color: var(--text-secondary);
     margin-bottom: 0;

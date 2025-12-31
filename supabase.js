@@ -401,6 +401,50 @@ class SupabaseClient {
         if (error) throw error;
     }
 
+    // ==================== Usage & Billing ====================
+
+    /**
+     * Get user's usage data (subscription, credits, generations)
+     * @returns {Promise<Object|null>} Usage data
+     */
+    async getUsage() {
+        if (!this.isAuthenticated) return null;
+        await this.init();
+
+        const userId = this._user.id;
+        // Get first day of current month in YYYY-MM-DD format
+        const now = new Date();
+        const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+
+        try {
+            // Fetch subscription, credits, and monthly usage in parallel
+            const [subResult, creditsResult, usageResult] = await Promise.all([
+                this._client.from('subscriptions').select('*').eq('user_id', userId).maybeSingle(),
+                this._client.from('credits').select('balance').eq('user_id', userId).maybeSingle(),
+                this._client.from('usage_monthly').select('generation_count')
+                    .eq('user_id', userId).eq('month', currentMonth).maybeSingle()
+            ]);
+
+            const tier = subResult.data?.tier_id || 'free';
+            const limits = { free: Infinity, pro: 200, business: 1000 };
+
+            return {
+                tier,
+                tierLabel: tier.charAt(0).toUpperCase() + tier.slice(1),
+                status: subResult.data?.status || 'active',
+                periodStart: subResult.data?.current_period_start,
+                periodEnd: subResult.data?.current_period_end,
+                generationsUsed: usageResult.data?.generation_count || 0,
+                generationsLimit: limits[tier],
+                creditsBalance: creditsResult.data?.balance || 0,
+                isUnlimited: tier === 'free' // Free tier uses own API key
+            };
+        } catch (error) {
+            console.error('[Supabase] Error fetching usage:', error);
+            return null;
+        }
+    }
+
     // ==================== Database Helpers ====================
 
     /**

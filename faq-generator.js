@@ -214,6 +214,9 @@ REQUIREMENTS:
         prompt += `\n\nADDITIONAL INSTRUCTIONS:\n${state.customInstructions}`;
     }
 
+    // Add language instruction for non-English
+    prompt += SharedLanguage.getPrompt();
+
     return prompt;
 }
 
@@ -325,6 +328,9 @@ OUTPUT: Create a visually appealing infographic-style image that displays these 
     if (state.uploadedImageBase64) {
         prompt += '\n\nThe product image is provided - you may incorporate it subtly in the design.';
     }
+
+    // Add language instruction for non-English
+    prompt += SharedLanguage.getPrompt();
 
     return prompt;
 }

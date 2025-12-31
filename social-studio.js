@@ -317,6 +317,9 @@ ${includeElements.map(e => `- ${e}`).join('\n')}`;
 - Visually cohesive and on-brand
 - The product should be the clear focus`;
 
+    // Add language instruction for non-English
+    prompt += SharedLanguage.getPrompt();
+
     return prompt;
 }
 

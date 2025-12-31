@@ -330,6 +330,9 @@ HIGH QUALITY OUTPUT:
 
 OUTPUT: A complete, ready-to-use advertising banner image.`;
 
+    // Add language instruction for non-English
+    prompt += SharedLanguage.getPrompt();
+
     return prompt;
 }
 
