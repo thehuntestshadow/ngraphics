@@ -278,12 +278,13 @@ Comprehensive list of potential new studios and tools, organized by category.
 | Category | Purpose | Examples |
 |----------|---------|----------|
 | **Image Generation** | Create new visuals from product photos | Infographics, Model Studio, Lifestyle |
-| **Image Processing** | Modify/enhance existing images | Background removal, upscaling, variants |
-| **Content Writing** | Generate text content | Copywriter, FAQ Generator |
-| **Conversion Tools** | Content that drives sales | Comparisons, testimonials, urgency graphics |
-| **Platform-Specific** | Marketplace-optimized content | Amazon A+, Etsy tags, Shopify pages |
-| **Analytics** | Insights and optimization | Listing analyzer, competitor analysis |
-| **Workflow** | Efficiency and consistency | Batch processing, templates, brand kit |
+| **Video Generation** | Create short product videos (3-30s AI clips, not editing) | Infographic Video, Model Video, Lifestyle Video |
+| **Image Processing** | Modify/enhance existing images | Background Studio, Product Variants, Image Enhancer |
+| **Content Writing** | Generate text content | Copywriter (includes emails, platform presets) |
+| **Social Media** | Platform-optimized content | Social Studio (posts, stories, carousels, pins) |
+| **Conversion Tools** | Content that drives sales | Comparisons, badges, testimonials |
+| **Utility** | Export and brand management | Export Center, Brand Kit |
+| **Workflow** | Efficiency and consistency | Batch processing, templates |
 
 ### 🔥 High Priority (Implement Next)
 
@@ -299,16 +300,22 @@ Remove/replace product backgrounds - essential for e-commerce.
 - Value: Very High (most requested e-commerce tool)
 - **Implemented**: `background.html` with 5 background types, shadow options, scene presets
 
-#### **Social Templates**
-Platform-optimized social media graphics with product placement.
-- Instagram: Post (1:1), Story (9:16), Carousel (multiple slides)
-- Facebook: Post, Cover photo, Ad creative
-- Pinterest: Standard pin (2:3), Idea pin
-- TikTok/Reels: Thumbnail, cover frame
-- Templates with text overlays, prices, sale badges, CTAs
-- Drag-and-drop product positioning
-- Auto-sizing for each platform
+#### **Social Studio** (Consolidated)
+All social media content in one unified tool. *Replaces: Social Templates, Carousel Post Generator, Pin Generator, Story/Reel Cover Generator, Video Thumbnail Generator.*
+
+**Format Tabs:**
+- **Posts**: 1:1 (Instagram/Facebook), 4:5 (Instagram), 16:9 (Twitter/LinkedIn)
+- **Stories/Reels**: 9:16 vertical format
+- **Carousels**: Multi-slide sequences (2-10 slides)
+- **Pinterest**: 2:3 vertical pins, Idea pins
+- **Thumbnails**: YouTube, TikTok, video covers
+
+**Features:**
+- Text overlays, prices, sale badges, CTAs
+- Product positioning with drag-and-drop
+- Platform-specific safe zones and guidelines
 - Caption suggestions (integrates with Copywriter)
+- Batch export for all platforms at once
 - Difficulty: Medium
 - Value: Very High (essential for modern marketing)
 
@@ -323,6 +330,44 @@ Banner ads and paid media creatives in multiple sizes.
 - Animated GIF option
 - Difficulty: Medium-Hard
 - Value: Very High (direct revenue driver)
+
+### 🎬 Video Generation (New Category)
+
+#### **Infographic Video Generator**
+Animated versions of product infographics for social media and listings.
+- Animated callouts and feature highlights
+- Text reveals, icon animations, product zoom effects
+- Duration options: 5s, 10s, 15s, 30s
+- Export: MP4, GIF, WebM
+- Aspect ratios: 1:1 (Instagram), 9:16 (Stories/Reels), 16:9 (YouTube)
+- Background music integration (optional)
+- Voiceover text-to-speech (optional)
+- Templates: Feature showcase, Benefits list, How-to steps
+- Difficulty: Hard
+- Value: Very High (video content drives 2x engagement)
+
+#### **Model Video Generator**
+Short video clips of AI models with products.
+- Model movements: subtle sway, product showcase gestures, walking
+- Camera movements: slow zoom, pan, orbit
+- Duration: 3-10 seconds (loopable)
+- Multiple angles in single video
+- Export: MP4, GIF
+- Use cases: Product page hero, social ads, email headers
+- Difficulty: Hard
+- Value: Very High (video models for fraction of real shoot cost)
+
+#### **Lifestyle Video Generator**
+Product videos in lifestyle environments with ambient motion.
+- Scene animations: steam rising, leaves falling, water ripples, light changes
+- Time-lapse effects: day-to-night, seasonal
+- Subtle camera movements: dolly, parallax
+- Duration: 5-15 seconds
+- Background audio: ambient sounds matching scene
+- Export: MP4, GIF, cinemagraph
+- Use cases: Hero banners, social content, product pages
+- Difficulty: Hard
+- Value: High (brings static product shots to life)
 
 #### **Product Variants** ✅ DONE
 Generate color/material variations from a single photo.
@@ -386,18 +431,6 @@ Side-by-side and before/after images.
 - Value: Medium-High (conversion optimization)
 - **Status: Implemented** - 5 comparison types, 4 layouts, visual styles
 
-#### **Video Thumbnail Generator**
-Thumbnails for YouTube, TikTok, tutorials.
-- Product review thumbnail styles
-- Unboxing thumbnails with excitement elements
-- Tutorial/How-to frames with numbered steps
-- "Top 10" / Listicle styles
-- Face + product compositions (reaction style)
-- Text overlays optimized for small screens
-- Platform-specific sizes (YouTube, TikTok, Instagram)
-- Difficulty: Easy-Medium
-- Value: Medium-High (video content creators)
-
 #### **Batch Processor Studio**
 Bulk operations across multiple products.
 - Upload CSV + images → batch generate all content types
@@ -412,18 +445,6 @@ Bulk operations across multiple products.
 
 ### 🎨 Content Generation Tools
 
-#### **Email Campaign Writer**
-Full marketing email sequences (extends Copywriter).
-- Welcome series (3-5 emails)
-- Abandoned cart recovery sequences
-- Product launch announcements
-- Re-engagement campaigns
-- Seasonal/holiday promotions
-- Subject lines + preview text + body + CTAs
-- A/B variant subject lines
-- Difficulty: Easy-Medium
-- Value: Medium-High
-
 #### **FAQ Generator** ✅
 Auto-generate product Q&As.
 - Common questions based on product category
@@ -436,27 +457,28 @@ Auto-generate product Q&As.
 - Value: Medium
 - **Status: Implemented** - 6 categories, 4 tones, Schema.org JSON-LD, visual infographics
 
-#### **Review Responder**
-AI-assisted review response drafts.
-- Positive review thank-you templates
-- Negative review damage control responses
-- Question/inquiry responses
-- Tone matching (professional, friendly, apologetic)
-- Multi-language support
-- Bulk response generation
-- Difficulty: Easy
-- Value: Medium
+#### **Copywriter Expansion** (to be added to existing Copywriter)
+Instead of separate tools, extend the existing Copywriter with new content types:
 
-#### **Product Naming Studio**
-Generate product and brand names.
+**Email Tab:**
+- Welcome series (3-5 emails)
+- Abandoned cart recovery sequences
+- Product launch announcements
+- Subject lines + preview text + body + CTAs
+- A/B variant subject lines
+
+**Names Tab:**
 - Product name suggestions based on features/benefits
-- Brand name brainstorming with style options
-- SKU generation patterns
 - Tagline suggestions
-- Domain availability hints
-- Trademark conflict warnings
-- Difficulty: Easy
-- Value: Medium
+- SKU generation patterns
+
+**Review Responses Tab:**
+- Positive review thank-yous
+- Negative review damage control
+- Question/inquiry responses
+- Tone matching
+
+This consolidates 3 planned tools into the existing Copywriter.
 
 ### 📊 Analytics & Optimization
 
@@ -533,79 +555,12 @@ Individual feature cards for galleries.
 - Value: Medium
 - **Implemented**: `feature-cards.html` with 5 card types, 5 visual styles
 
-### 📱 Social & Marketing Tools
-
-#### **Story/Reel Cover Generator**
-Covers for social media content.
-- Instagram Story highlight covers (product categories)
-- Reel thumbnail with product focus
-- TikTok video covers
-- YouTube Shorts thumbnails
-- Consistent branding across all covers
-- Difficulty: Easy
-- Value: Medium
-
-#### **Carousel Post Generator**
-Multi-slide social content.
-- Product showcase carousels (swipe through features)
-- Educational carousels (how to use product)
-- Comparison carousels (us vs them)
-- Testimonial carousels (multiple reviews)
-- Numbered slide sequences
-- Platform-specific sizing (Instagram, LinkedIn)
-- Difficulty: Medium
-- Value: High
-
-#### **Pin Generator**
-Pinterest-optimized graphics.
-- 2:3 vertical format (1000x1500px)
-- Product + lifestyle mashup
-- Text overlay optimization for Pinterest
-- Rich pins-ready with metadata
-- Multiple pin styles per product
-- Collection pin layouts
-- Difficulty: Easy-Medium
-- Value: Medium
-
-### 📊 Data & Analytics Tools
-
-#### **Price Comparison Table**
-Visual price comparison graphics.
-- Us vs competitors pricing
-- Feature + price matrix
-- "Most Popular" / "Best Value" highlighting
-- Subscription tier tables
-- Per-unit price breakdowns
-- Bundle savings calculators
-- Difficulty: Easy-Medium
-- Value: Medium-High
-
-#### **Specification Sheet Generator**
-Technical spec documents.
-- Clean spec table layouts
-- Icon-based spec displays
-- Comparison spec sheets
-- Downloadable PDF format
-- Multiple product spec comparison
-- Unit conversion options
-- Difficulty: Easy-Medium
-- Value: Medium
-
-#### **Analytics Dashboard Export**
-Visualize performance data.
-- Sales trend graphics
-- Review sentiment visualization
-- Keyword ranking charts
-- Traffic source breakdown
-- Export as shareable images
-- Difficulty: Medium
-- Value: Low-Medium
-
 ### 🛠️ Utility Tools
 
 #### **Brand Kit Manager**
-Centralized brand asset management.
+Centralized brand asset management. *Includes Color Palette Extractor functionality.*
 - Brand colors (primary, secondary, accent, background)
+- **Color Palette Extractor**: Extract colors from product images, get complementary suggestions
 - Logo uploads (light/dark/icon versions)
 - Font preferences and pairings
 - Voice/tone guidelines
@@ -615,7 +570,7 @@ Centralized brand asset management.
 - Value: High (consistency across content)
 
 #### **Template Library**
-Save and reuse successful configurations.
+Save and reuse successful configurations. *Extends existing preset system.*
 - Save any generation as a reusable template
 - Category organization (by product type, campaign, season)
 - Import/export templates as JSON
@@ -637,71 +592,24 @@ AI upscaling and quality improvement.
 - Difficulty: Medium
 - Value: Medium
 
-#### **Export Center**
-Unified export with format/size options.
-- Resize for all platforms at once
-- Format conversion (JPG, PNG, WebP, AVIF)
-- Quality/compression settings
-- Watermark application (text or logo)
-- Metadata embedding (EXIF, alt text)
-- ZIP packaging organized by platform
+#### **Export Center** (Consolidated)
+All image utilities in one tool. *Replaces: Crop & Resize Tool, Watermark Tool, Image Compressor.*
+
+**Tabs:**
+- **Resize**: Preset crops for marketplaces + social, custom aspect ratios, smart crop
+- **Compress**: Smart compression, target file size, format conversion (WebP, AVIF)
+- **Watermark**: Text/logo watermarks, position presets, opacity control
+- **Export**: Multi-format output, metadata embedding, ZIP packaging
+
+**Features:**
+- Batch processing across all operations
+- Platform presets (Amazon, eBay, Etsy, Instagram, etc.)
+- Before/after preview
 - Naming convention templates
 - Difficulty: Medium
-- Value: Medium
+- Value: High (consolidates 4 tools)
 
-#### **Crop & Resize Tool**
-Quick image cropping for different platforms.
-- Preset crops for all marketplaces (Amazon, eBay, Etsy, Shopify)
-- Social media sizes (Instagram, Facebook, Pinterest)
-- Custom aspect ratios
-- Batch crop multiple images
-- Smart crop suggestions (product detection)
-- Difficulty: Easy
-- Value: Medium
-
-#### **Watermark Tool**
-Apply watermarks to product images.
-- Text watermarks with font control
-- Logo watermarks with opacity
-- Batch apply to multiple images
-- Position presets (corner, center, tile)
-- Removable vs embedded options
-- Difficulty: Easy
-- Value: Low-Medium
-
-#### **Image Compressor**
-Optimize images for web.
-- Smart compression without quality loss
-- Batch compress multiple images
-- Target file size option
-- Format conversion (WebP, AVIF)
-- Before/after quality preview
-- Difficulty: Easy
-- Value: Medium
-
-#### **Color Palette Extractor**
-Extract colors from product images.
-- Dominant colors extraction
-- Complementary color suggestions
-- Palette export (HEX, RGB)
-- Use for brand consistency
-- Apply palette to other tools
-- Difficulty: Easy
-- Value: Low-Medium
-
-### 📅 Seasonal & Themed
-
-#### **Seasonal Studio**
-Holiday and seasonal themed product images.
-- Christmas, Valentine's, Halloween, Easter, etc.
-- Summer/Winter/Fall/Spring themes
-- Sale events: Black Friday, Prime Day, Cyber Monday
-- Cultural holidays (Diwali, Lunar New Year, etc.)
-- Props and decorations automatically added
-- Seasonal color grading presets
-- Calendar-based suggestions
-- Difficulty: Medium
-- Value: Medium
+### 📅 Additional Tools
 
 #### **Catalog Generator**
 Multi-product layouts for catalogs/lookbooks.
@@ -714,35 +622,19 @@ Multi-product layouts for catalogs/lookbooks.
 - Difficulty: Medium-Hard
 - Value: Medium
 
-### 🏪 Platform-Specific Tools
+> **Note:** Seasonal/holiday themes are already available in **Lifestyle Studio** via the Season option (Spring, Summer, Fall, Winter, Holiday).
 
-#### **Amazon Optimizer**
-Complete Amazon listing optimization.
-- A+ Content generation (see above)
-- Main image and gallery optimization
-- Bullet point generator
-- Backend keyword suggestions
-- Brand Story module creation
-- Difficulty: Medium
-- Value: High (Amazon is dominant marketplace)
+### 🏪 Platform-Specific Content
 
-#### **Etsy Listing Generator**
-Optimized for Etsy's unique format.
-- 13 tag generator with trending analysis
-- Description with story-telling format
-- Shop announcement generator
-- About section content
-- Difficulty: Easy-Medium
-- Value: Medium
+> **Note:** Platform-specific content should be **Copywriter presets**, not separate tools. The Copywriter already generates product descriptions and can be extended with platform templates.
 
-#### **Shopify Product Page**
-Full product page content generation.
-- Product description (short + long)
-- Collection page content
-- Blog post tie-ins
-- Email capture popup copy
-- Difficulty: Easy-Medium
-- Value: Medium
+**Copywriter Platform Presets (to be added):**
+- **Amazon**: Bullet points, backend keywords, A+ text, Brand Story
+- **Etsy**: 13 tags, story-telling descriptions, shop announcements
+- **Shopify**: Short/long descriptions, collection content, blog tie-ins
+- **eBay**: Item specifics, condition descriptions
+
+This keeps one powerful Copywriter tool instead of fragmenting into 4+ separate generators.
 
 ---
 
@@ -845,11 +737,12 @@ Random ideas to evaluate later, organized by theme.
 Things explicitly out of scope:
 
 - **Full photo editor** - Use Photoshop/Figma for that
-- **Video editing** - Complex, different tools exist
+- **Video editing/timeline** - We generate short AI clips (3-30s), not edit them
 - **Social media posting** - Use native platforms or Buffer/Hootsuite
 - **Inventory management** - Not our domain
-- **Complex animations** - Stick to static images
+- **Complex animations** - Short AI-generated clips OK, timeline editing not
 - **User accounts/auth** - Keep it simple, local-first
+- **Fragmented tools** - Consolidate related features into unified studios
 
 ---
 
@@ -884,21 +777,34 @@ Core generation across 3 studios with history/favorites
 - [x] Size Visualizer - Scale reference with common objects
 - [x] FAQ Generator - AI Q&As with Schema.org and visual output
 
-### v3.0 (Current)
+### v3.0 (Current) ✅
 - [x] Background Studio - Background removal/replacement
 - [x] Badge Generator - Sale and trust badges
 - [x] Feature Cards - Individual feature cards for galleries
 - [x] Size Chart Generator - Size charts for apparel/footwear/accessories
 - [x] A+ Content Generator - Amazon EBC modules
 - [x] Product Variants - Color/material/pattern variations
-- [ ] Style library
-- [ ] Prompt templates
-- [ ] Social Templates - Platform-optimized graphics
 
-### v3.5 (Next)
-- [ ] Ad Creative Generator - Banner ads in multiple sizes
-- [ ] Batch Processor Studio - Bulk operations
-- [ ] Brand Kit Manager - Centralized brand assets
+### v3.5 (Next - Consolidation Release)
+- [ ] **Social Studio** - All social formats in one tool (posts, stories, carousels, pins, thumbnails)
+- [ ] **Ad Creative Generator** - IAB banner ads in multiple sizes
+- [ ] Batch Processor Studio - Bulk operations with CSV support
+
+### v3.6 (Utilities & Expansion)
+- [ ] **Export Center** - Resize, compress, watermark, export (consolidated utility)
+- [ ] **Brand Kit Manager** - Colors, logos, fonts, palette extraction
+- [ ] **Copywriter expansion** - Email campaigns, product naming, review responses, platform presets
+
+### v4.0 (Video Generation)
+- [ ] Infographic Video Generator - Animated product infographics (5-30s)
+- [ ] Model Video Generator - AI model video clips with products (3-10s)
+- [ ] Lifestyle Video Generator - Ambient lifestyle product videos (5-15s)
+
+### v4.5 (Polish & Advanced)
+- [ ] Template Library - Cross-studio templates
+- [ ] Image Enhancer - AI upscaling
+- [ ] Testimonial Generator - Review quote graphics
+- [ ] Catalog Generator - Multi-product lookbooks
 
 ---
 
@@ -908,66 +814,84 @@ Core generation across 3 studios with history/favorites
 
 | User Need | Recommended Tools | Status |
 |-----------|-------------------|--------|
-| **Better product photos** | ~~Background Studio~~ ✅, ~~Product Variants~~ ✅ | Done |
-| **Social media content** | Social Templates, Carousel Generator, Pin Generator | Planned |
-| **Increase conversions** | Testimonial Generator, ~~Sale Badges~~, ~~Trust Badges~~ | Badge Generator ✅ |
-| **Amazon optimization** | A+ Content ✅, Size Chart ✅, Size Visualizer ✅ | Done |
-| **Save time** | Batch Processor, Template Library | Planned |
-| **Brand consistency** | Brand Kit Manager | Planned |
+| **Better product photos** | Background Studio, Product Variants | ✅ Done |
+| **Social media content** | **Social Studio** (consolidated) | 🔜 v3.5 |
+| **Video content** | Infographic/Model/Lifestyle Video | 🔜 v4.0 |
+| **Increase conversions** | Badge Generator, Testimonial Generator | ✅ Badges done |
+| **Amazon optimization** | A+ Content, Size Chart, Size Visualizer | ✅ Done |
+| **Save time** | Batch Processor, Export Center | 🔜 v3.5-3.6 |
+| **Brand consistency** | Brand Kit Manager | 🔜 v3.6 |
+| **Marketing copy** | Copywriter (with email/platform expansion) | ✅ + 🔜 v3.6 |
 
-### By Effort (Quick Wins First)
+### By Effort
 
-| Effort | Tools | Time Est. |
-|--------|-------|-----------|
-| **Easy** | ~~Sale Badges~~, ~~Trust Badges~~ ✅, Watermark Tool, Crop Tool | 2-4 hours |
-| **Easy-Medium** | Testimonial Generator, ~~Feature Cards~~ ✅, Pin Generator | 4-8 hours |
-| **Medium** | Social Templates, Carousel Generator, ~~Product Variants~~ ✅ | 1-2 days |
-| **Medium-Hard** | ~~Background Studio~~ ✅, ~~A+ Content~~ ✅, Batch Processor | 2-4 days |
+| Effort | Tools |
+|--------|-------|
+| **Medium** | Social Studio, Ad Creative Generator |
+| **Medium** | Export Center, Brand Kit Manager |
+| **Medium** | Copywriter expansion (emails, platforms) |
+| **Medium-Hard** | Batch Processor Studio |
+| **Hard** | Video Generators (3 tools) |
 
 ### By Category
 
-**Image Generation (Visual Content)**
+**Image Generation**
 - ✅ Infographics, Model Studio, Bundle, Lifestyle, Packaging, Background Studio, Product Variants
-- 🔜 Social Templates
+- 🔜 Social Studio, Ad Creative Generator
+
+**Video Generation**
+- 🔜 Infographic Video, Model Video, Lifestyle Video
 
 **Content Writing**
 - ✅ Copywriter, FAQ Generator
-- 🔜 Email Campaign, Review Responder
+- 🔜 Copywriter expansion (emails, names, reviews, platform presets)
 
 **Conversion Tools**
-- ✅ Comparison Generator, Size Visualizer, Badge Generator, Feature Cards, Size Chart
-- 🔜 Testimonial Generator, Watermark Tool, Crop Tool
-
-**Platform-Specific**
-- ✅ A+ Content Generator
+- ✅ Comparison, Size Visualizer, Badge Generator, Feature Cards, Size Chart, A+ Content
+- 🔜 Testimonial Generator
 
 **Utility**
-- 🔜 Crop Tool, Watermark, Image Compressor, Brand Kit
+- 🔜 Export Center (resize/compress/watermark), Brand Kit, Image Enhancer
 
 ### Quick Reference: Priority Matrix
 
 ```
                         HIGH VALUE
                             │
-        Background ✅     ──┼── Social Templates
+        Background ✅     ──┼── Social Studio
         A+ Content ✅     ──┤   Testimonial Gen
-        Ad Creative       ──┤
-        Product Variants ✅──┤
+        Ad Creative       ──┤   Infographic Video
+        Product Variants ✅──┤   Model Video
                             │
-        Size Chart ✅ ──────┼── Carousel Generator
+        Size Chart ✅ ──────┼── Lifestyle Video
         Batch Processor   ──┤
+        Export Center     ──┤
         Brand Kit         ──┤
                             │
         ────────────────────┼────────────────────
         LESS EFFORT         │         MORE EFFORT
                             │
         Badge Gen ✅      ──┼── Listing Analyzer
-        Feature Cards ✅  ──┤   Trend Spotter
-        Crop Tool         ──┤
-        Watermark         ──┤
+        Feature Cards ✅  ──┤   Catalog Generator
+        Copywriter exp.   ──┤
                             │
                         LOW VALUE
 ```
+
+### Consolidation Summary
+
+| Before (Fragmented) | After (Consolidated) |
+|---------------------|----------------------|
+| Social Templates, Carousel Post, Pin Generator, Story/Reel Cover, Video Thumbnail | **Social Studio** |
+| Crop & Resize, Watermark, Image Compressor, Export Center | **Export Center** |
+| Email Campaign, Product Naming, Review Responder | **Copywriter expansion** |
+| Amazon Optimizer, Etsy Listing, Shopify Product Page | **Copywriter presets** |
+| Color Palette Extractor | **Brand Kit feature** |
+| Seasonal Studio | **Lifestyle Studio** (already has seasons) |
+| Price Comparison Table | **Comparison Generator** (already does this) |
+| Specification Sheet | **Feature Cards** (Spec type exists) |
+
+**Result:** ~25 planned tools → ~12 focused tools
 
 ### Completed Tools ✅
 
@@ -991,5 +915,5 @@ Core generation across 3 studios with history/favorites
 
 ---
 
-*Last updated: Dec 2024*
+*Last updated: Dec 2024 (consolidated roadmap - reduced ~25 tools to ~12 focused studios)*
 *Add ideas freely - this is a living document*

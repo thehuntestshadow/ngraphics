@@ -355,6 +355,9 @@
                             <button type="button" class="output-tab active" data-tab="ecommerce">E-commerce</button>
                             <button type="button" class="output-tab" data-tab="seo">SEO</button>
                             <button type="button" class="output-tab" data-tab="social">Social</button>
+                            <button type="button" class="output-tab" data-tab="email">Email</button>
+                            <button type="button" class="output-tab" data-tab="naming">Naming</button>
+                            <button type="button" class="output-tab" data-tab="reviews">Reviews</button>
                             <button type="button" class="output-tab" data-tab="extras">Extras</button>
                         </div>
 
@@ -549,6 +552,195 @@
                                     <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
                                 </svg>
                                 Copy All Social
+                            </button>
+                        </div>
+
+                        <!-- Tab Content: Email -->
+                        <div class="tab-content" id="tab-email">
+                            <div class="copy-field">
+                                <div class="copy-field-header">
+                                    <label>Welcome Email</label>
+                                    <button type="button" class="btn-copy" data-field="welcomeEmail">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="copy-field-content copy-field-email" id="output-welcomeEmail"></div>
+                            </div>
+
+                            <div class="copy-field">
+                                <div class="copy-field-header">
+                                    <label>Product Launch Email</label>
+                                    <button type="button" class="btn-copy" data-field="launchEmail">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="copy-field-content copy-field-email" id="output-launchEmail"></div>
+                            </div>
+
+                            <div class="copy-field">
+                                <div class="copy-field-header">
+                                    <label>Promotional Email</label>
+                                    <button type="button" class="btn-copy" data-field="promoEmail">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="copy-field-content copy-field-email" id="output-promoEmail"></div>
+                            </div>
+
+                            <div class="copy-field">
+                                <div class="copy-field-header">
+                                    <label>Abandoned Cart Email</label>
+                                    <button type="button" class="btn-copy" data-field="cartEmail">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="copy-field-content copy-field-email" id="output-cartEmail"></div>
+                            </div>
+
+                            <button type="button" class="btn-copy-all" id="copyAllEmail">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                </svg>
+                                Copy All Emails
+                            </button>
+                        </div>
+
+                        <!-- Tab Content: Naming -->
+                        <div class="tab-content" id="tab-naming">
+                            <div class="copy-field">
+                                <div class="copy-field-header">
+                                    <label>Product Names</label>
+                                    <button type="button" class="btn-copy" data-field="productNames">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="copy-field-content copy-field-list" id="output-productNames"></div>
+                            </div>
+
+                            <div class="copy-field">
+                                <div class="copy-field-header">
+                                    <label>Brand Names</label>
+                                    <button type="button" class="btn-copy" data-field="brandNames">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="copy-field-content copy-field-list" id="output-brandNames"></div>
+                            </div>
+
+                            <div class="copy-field">
+                                <div class="copy-field-header">
+                                    <label>Collection Names</label>
+                                    <button type="button" class="btn-copy" data-field="collectionNames">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="copy-field-content copy-field-list" id="output-collectionNames"></div>
+                            </div>
+
+                            <div class="copy-field">
+                                <div class="copy-field-header">
+                                    <label>SKU Suggestions</label>
+                                    <button type="button" class="btn-copy" data-field="skuSuggestions">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="copy-field-content copy-field-list" id="output-skuSuggestions"></div>
+                            </div>
+
+                            <button type="button" class="btn-copy-all" id="copyAllNaming">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                </svg>
+                                Copy All Names
+                            </button>
+                        </div>
+
+                        <!-- Tab Content: Reviews -->
+                        <div class="tab-content" id="tab-reviews">
+                            <div class="copy-field">
+                                <div class="copy-field-header">
+                                    <label>5-Star Review Response</label>
+                                    <button type="button" class="btn-copy" data-field="response5Star">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="copy-field-content" id="output-response5Star"></div>
+                            </div>
+
+                            <div class="copy-field">
+                                <div class="copy-field-header">
+                                    <label>4-Star Review Response</label>
+                                    <button type="button" class="btn-copy" data-field="response4Star">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="copy-field-content" id="output-response4Star"></div>
+                            </div>
+
+                            <div class="copy-field">
+                                <div class="copy-field-header">
+                                    <label>Neutral Review Response</label>
+                                    <button type="button" class="btn-copy" data-field="responseNeutral">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="copy-field-content" id="output-responseNeutral"></div>
+                            </div>
+
+                            <div class="copy-field">
+                                <div class="copy-field-header">
+                                    <label>Negative Review Response</label>
+                                    <button type="button" class="btn-copy" data-field="responseNegative">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="copy-field-content" id="output-responseNegative"></div>
+                            </div>
+
+                            <button type="button" class="btn-copy-all" id="copyAllReviews">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                                </svg>
+                                Copy All Responses
                             </button>
                         </div>
 

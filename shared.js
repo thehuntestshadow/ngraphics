@@ -2239,7 +2239,9 @@ const SharedDashboard = {
         featureCards: { history: 'feature_cards_history', favorites: 'feature_cards_favorites' },
         sizeChart: { history: 'size_chart_history', favorites: 'size_chart_favorites' },
         aplus: { history: 'aplus_generator_history', favorites: 'aplus_generator_favorites' },
-        productVariants: { history: 'product_variants_history', favorites: 'product_variants_favorites' }
+        productVariants: { history: 'product_variants_history', favorites: 'product_variants_favorites' },
+        socialStudio: { history: 'social_studio_history', favorites: 'social_studio_favorites' },
+        exportCenter: { history: 'export_center_history', favorites: 'export_center_favorites' }
     },
 
     /**

@@ -683,6 +683,18 @@
     color: var(--text-muted);
 }
 
+/* Email fields */
+.copy-field-content.copy-field-email {
+    white-space: pre-wrap;
+    font-size: 0.9rem;
+}
+
+.copy-field-content.copy-field-email strong {
+    display: block;
+    color: var(--accent);
+    margin-bottom: 8px;
+}
+
 /* Responsive */
 @media (max-width: 1400px) {
     .app-grid-copywriter {

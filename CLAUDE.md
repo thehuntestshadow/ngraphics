@@ -47,6 +47,8 @@ The application consists of multiple pages, each with its own JS file, sharing c
 | Size Chart | `size-chart.html`, `size-chart.js`, `size-chart.css` | Generate size charts from product measurements |
 | A+ Content | `a-plus.html`, `a-plus.js`, `a-plus.css` | Amazon A+ Content (EBC) module generator |
 | Product Variants | `product-variants.html`, `product-variants.js`, `product-variants.css` | Generate color, material, and pattern variants from product photos |
+| Social Studio | `social-studio.html`, `social-studio.js`, `social-studio.css` | Social media graphics for all platforms (posts, stories, carousels) |
+| Export Center | `export-center.html`, `export-center.js`, `export-center.css` | Batch resize, compress, watermark, and convert images |
 | Dashboard | `dashboard.html`, `dashboard.js`, `dashboard.css` | Analytics, storage management, quick access to recent work |
 | Documentation | `docs.html`, `docs.css` | User documentation |
 
@@ -183,10 +185,13 @@ AI-powered marketing copy generator from product images.
 - `buildCopyPrompt()`: Constructs comprehensive marketing copy generation prompt
 - `generateCopy()`: Generates all marketing copy via `api.generateText()`
 
-### Generated Content
+### Generated Content (7 tabs)
 - **E-commerce**: Title, Short/Long Description, Feature Bullets, Benefits List
 - **SEO**: Meta Title (<60 chars), Meta Description (<160 chars), Keywords, Alt Text
 - **Social Media**: Instagram, Facebook, Twitter/X posts
+- **Email**: Welcome, Launch, Promotional, Abandoned Cart email templates
+- **Naming**: Product names, Brand names, Collection names, SKU suggestions
+- **Reviews**: Response templates for 5-star, 4-star, neutral, and negative reviews
 - **Extras**: Taglines, Email subject lines
 
 ### Options
@@ -469,6 +474,63 @@ Generate color, material, and pattern variations from a single product photo. Us
 
 ---
 
+## Social Studio (`social-studio.html` + `social-studio.js`)
+
+Create social media graphics for all platforms with AI-generated visuals.
+
+### Format Types (5)
+- **Post**: Square/feed images (1:1, 4:5)
+- **Story/Reel**: Vertical format (9:16)
+- **Carousel**: Multi-slide posts (up to 10 slides)
+- **Pinterest**: Tall pin format (2:3)
+- **Thumbnail**: Video thumbnails (16:9)
+
+### Platforms
+Instagram, Facebook, TikTok, Pinterest, Twitter/X, LinkedIn, YouTube
+
+### Style Options
+Modern, Minimal, Bold, Elegant, Playful, Dark
+
+### Key Functions
+- `switchFormat(format)`: Switch between post/story/carousel/etc.
+- `generatePrompt()`: Builds platform-specific prompt
+- `generateSocialGraphic()`: API call for image generation
+- `selectStyle(style)`, `selectColor(color)`: Visual options
+
+### Options
+- **Text Content**: Headline, body text, CTA
+- **Color Scheme**: Auto-extract, preset colors, custom color picker
+- **Platform Dimensions**: Auto-set based on selected platform
+- **Variations**: 1, 2, or 4 images
+
+---
+
+## Export Center (`export-center.html` + `export-center.js`)
+
+Batch image processing utility - resize, compress, watermark, and convert images.
+
+### Tools (4)
+- **Resize**: Preset sizes (Amazon, Instagram, Facebook, etc.) or custom dimensions
+- **Compress**: Quality slider, max file size targets
+- **Watermark**: Text or logo watermarks with position and opacity controls
+- **Convert**: JPG, PNG, WebP format conversion
+
+### Key Functions
+- `switchTool(tool)`: Switch between resize/compress/watermark/convert
+- `processImages()`: Batch process all uploaded images
+- `applyWatermark(ctx, canvas)`: Canvas-based watermark application
+- `generateFilename(name, width, height)`: Pattern-based naming
+
+### Options
+- **Batch Upload**: Process multiple images at once
+- **Size Presets**: Platform-specific dimensions
+- **Aspect Lock**: Maintain proportions when resizing
+- **Fit Modes**: Contain, Cover, Fill
+- **Watermark Position**: 9-point grid placement
+- **Naming Pattern**: {name}, {size}, {date}, {index} tokens
+
+---
+
 ## Dashboard (`dashboard.html` + `dashboard.js`)
 
 Central hub for analytics, storage management, and quick access.
@@ -497,7 +559,7 @@ Each page has `generatePrompt()` that builds AI prompts by concatenating descrip
 - Hybrid storage: thumbnails in localStorage, full images in IndexedDB
 - History: view in modal, download, configurable limits (default 20)
 - Favorites: save with all settings/seed/reference images, supports multiple variants
-- Storage keys: `ngraphics_*`, `model_studio_*`, `bundle_studio_*`, `lifestyle_studio_*`, `copywriter_*`, `packaging_*`, `comparison_generator_*`, `size_visualizer_*`, `faq_generator_*`, `background_studio_*`, `badge_generator_*`, `feature_cards_*`, `size_chart_*`, `aplus_generator_*`, `product_variants_*`
+- Storage keys: `ngraphics_*`, `model_studio_*`, `bundle_studio_*`, `lifestyle_studio_*`, `copywriter_*`, `packaging_*`, `comparison_generator_*`, `size_visualizer_*`, `faq_generator_*`, `background_studio_*`, `badge_generator_*`, `feature_cards_*`, `size_chart_*`, `aplus_generator_*`, `product_variants_*`, `social_studio_*`, `export_center_*`
 
 ### Error Handling
 `showError()` displays user-friendly error messages. API errors caught and displayed appropriately.

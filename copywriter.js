@@ -214,6 +214,9 @@ function setupEventListeners() {
     document.getElementById('copyAllEcommerce').addEventListener('click', () => copySection('ecommerce'));
     document.getElementById('copyAllSeo').addEventListener('click', () => copySection('seo'));
     document.getElementById('copyAllSocial').addEventListener('click', () => copySection('social'));
+    document.getElementById('copyAllEmail').addEventListener('click', () => copySection('email'));
+    document.getElementById('copyAllNaming').addEventListener('click', () => copySection('naming'));
+    document.getElementById('copyAllReviews').addEventListener('click', () => copySection('reviews'));
     document.getElementById('copyAllExtras').addEventListener('click', () => copySection('extras'));
     elements.copyEverything.addEventListener('click', copyEverything);
 
@@ -652,6 +655,24 @@ Return this EXACT JSON structure:
         "facebook": "Facebook post with conversational tone and call-to-action",
         "twitter": "Twitter/X post (max 280 characters)"
     },
+    "email": {
+        "welcomeEmail": "Welcome email for new customers (subject + body, ~100 words)",
+        "launchEmail": "Product launch announcement email (subject + body, ~150 words)",
+        "promoEmail": "Promotional/sale email (subject + body, ~100 words)",
+        "cartEmail": "Abandoned cart recovery email (subject + body, ~80 words)"
+    },
+    "naming": {
+        "productNames": ["Creative name 1", "Creative name 2", "Creative name 3", "Creative name 4", "Creative name 5"],
+        "brandNames": ["Brand name 1", "Brand name 2", "Brand name 3"],
+        "collectionNames": ["Collection name 1", "Collection name 2", "Collection name 3"],
+        "skuSuggestions": ["SKU-PROD-001", "SKU-ITEM-A1", "PRD-2024-001"]
+    },
+    "reviews": {
+        "response5Star": "Response template for 5-star positive reviews (thankful, encouraging repeat purchase)",
+        "response4Star": "Response template for 4-star reviews (thankful, addressing minor concerns)",
+        "responseNeutral": "Response template for 3-star neutral reviews (professional, offering support)",
+        "responseNegative": "Response template for 1-2 star negative reviews (apologetic, solution-focused)"
+    },
     "extras": {
         "taglines": ["Tagline option 1", "Tagline option 2", "Tagline option 3"],
         "emailSubjects": ["Email subject 1", "Email subject 2", "Email subject 3"]
@@ -685,6 +706,24 @@ function renderOutput(copy) {
     setOutput('facebook', copy.social?.facebook || '');
     setOutput('twitter', copy.social?.twitter || '');
 
+    // Email
+    setOutputEmail('welcomeEmail', copy.email?.welcomeEmail || '');
+    setOutputEmail('launchEmail', copy.email?.launchEmail || '');
+    setOutputEmail('promoEmail', copy.email?.promoEmail || '');
+    setOutputEmail('cartEmail', copy.email?.cartEmail || '');
+
+    // Naming
+    setOutputList('productNames', copy.naming?.productNames || []);
+    setOutputList('brandNames', copy.naming?.brandNames || []);
+    setOutputList('collectionNames', copy.naming?.collectionNames || []);
+    setOutputList('skuSuggestions', copy.naming?.skuSuggestions || []);
+
+    // Reviews
+    setOutput('response5Star', copy.reviews?.response5Star || '');
+    setOutput('response4Star', copy.reviews?.response4Star || '');
+    setOutput('responseNeutral', copy.reviews?.responseNeutral || '');
+    setOutput('responseNegative', copy.reviews?.responseNegative || '');
+
     // Extras
     setOutputList('taglines', copy.extras?.taglines || []);
     setOutputList('emailSubjects', copy.extras?.emailSubjects || []);
@@ -709,6 +748,15 @@ function setOutputTags(field, tags) {
     const el = document.getElementById(`output-${field}`);
     if (el) {
         el.innerHTML = tags.map(tag => `<span class="keyword-tag">${tag}</span>`).join('');
+    }
+}
+
+function setOutputEmail(field, content) {
+    const el = document.getElementById(`output-${field}`);
+    if (el) {
+        // Format email with subject line highlighted
+        const formatted = content.replace(/^(Subject:.*?)$/m, '<strong>$1</strong>');
+        el.innerHTML = formatted.replace(/\n/g, '<br>');
     }
 }
 
@@ -805,6 +853,21 @@ function copySection(section) {
             text = `INSTAGRAM:\n${social.instagram}\n\nFACEBOOK:\n${social.facebook}\n\nTWITTER/X:\n${social.twitter}`;
             break;
 
+        case 'email':
+            const email = state.generatedCopy.email || {};
+            text = `WELCOME EMAIL:\n${email.welcomeEmail || ''}\n\nPRODUCT LAUNCH EMAIL:\n${email.launchEmail || ''}\n\nPROMOTIONAL EMAIL:\n${email.promoEmail || ''}\n\nABANDONED CART EMAIL:\n${email.cartEmail || ''}`;
+            break;
+
+        case 'naming':
+            const naming = state.generatedCopy.naming || {};
+            text = `PRODUCT NAMES:\n${(naming.productNames || []).map((n, i) => `${i + 1}. ${n}`).join('\n')}\n\nBRAND NAMES:\n${(naming.brandNames || []).map((n, i) => `${i + 1}. ${n}`).join('\n')}\n\nCOLLECTION NAMES:\n${(naming.collectionNames || []).map((n, i) => `${i + 1}. ${n}`).join('\n')}\n\nSKU SUGGESTIONS:\n${(naming.skuSuggestions || []).join(', ')}`;
+            break;
+
+        case 'reviews':
+            const reviews = state.generatedCopy.reviews || {};
+            text = `5-STAR RESPONSE:\n${reviews.response5Star || ''}\n\n4-STAR RESPONSE:\n${reviews.response4Star || ''}\n\nNEUTRAL RESPONSE:\n${reviews.responseNeutral || ''}\n\nNEGATIVE RESPONSE:\n${reviews.responseNegative || ''}`;
+            break;
+
         case 'extras':
             const extras = state.generatedCopy.extras;
             text = `TAGLINES:\n${extras.taglines.map((t, i) => `${i + 1}. ${t}`).join('\n')}\n\nEMAIL SUBJECTS:\n${extras.emailSubjects.map((s, i) => `${i + 1}. ${s}`).join('\n')}`;
@@ -819,6 +882,10 @@ function copyEverything() {
     if (!state.generatedCopy) return;
 
     const copy = state.generatedCopy;
+    const email = copy.email || {};
+    const naming = copy.naming || {};
+    const reviews = copy.reviews || {};
+
     const text = `
 ====== E-COMMERCE ======
 
@@ -861,6 +928,48 @@ ${copy.social.facebook}
 
 TWITTER/X:
 ${copy.social.twitter}
+
+====== EMAIL TEMPLATES ======
+
+WELCOME EMAIL:
+${email.welcomeEmail || ''}
+
+PRODUCT LAUNCH EMAIL:
+${email.launchEmail || ''}
+
+PROMOTIONAL EMAIL:
+${email.promoEmail || ''}
+
+ABANDONED CART EMAIL:
+${email.cartEmail || ''}
+
+====== NAMING IDEAS ======
+
+PRODUCT NAMES:
+${(naming.productNames || []).map((n, i) => `${i + 1}. ${n}`).join('\n')}
+
+BRAND NAMES:
+${(naming.brandNames || []).map((n, i) => `${i + 1}. ${n}`).join('\n')}
+
+COLLECTION NAMES:
+${(naming.collectionNames || []).map((n, i) => `${i + 1}. ${n}`).join('\n')}
+
+SKU SUGGESTIONS:
+${(naming.skuSuggestions || []).join(', ')}
+
+====== REVIEW RESPONSES ======
+
+5-STAR RESPONSE:
+${reviews.response5Star || ''}
+
+4-STAR RESPONSE:
+${reviews.response4Star || ''}
+
+NEUTRAL RESPONSE:
+${reviews.responseNeutral || ''}
+
+NEGATIVE RESPONSE:
+${reviews.responseNegative || ''}
 
 ====== EXTRAS ======
 
