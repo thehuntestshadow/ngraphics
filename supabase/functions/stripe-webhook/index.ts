@@ -4,11 +4,12 @@
  *
  * Deploy: supabase functions deploy stripe-webhook
  * Set secrets:
- *   supabase secrets set STRIPE_SECRET_KEY=sk_live_xxx
- *   supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_xxx
+ *   supabase secrets set STRIPE_SECRET_KEY=sk_live_51GpANWG8e7fqKTgu...
+ *   supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_wa2dH3KtBrSKkmp1p4j6587WKGVqcXSe
  *
- * Configure webhook in Stripe Dashboard:
- *   URL: https://[project-ref].supabase.co/functions/v1/stripe-webhook
+ * Webhook endpoint (already configured in Stripe):
+ *   URL: https://rodzatuqkfqcdqgntdnd.supabase.co/functions/v1/stripe-webhook
+ *   ID: we_1SkUBbG8e7fqKTguemoqLrUX
  *   Events: checkout.session.completed, customer.subscription.updated,
  *           customer.subscription.deleted, invoice.payment_failed
  */
@@ -24,16 +25,16 @@ const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
 // Map Stripe price IDs to tier IDs
 const PRICE_TO_TIER: Record<string, string> = {
-  'price_pro_monthly': 'pro',
-  'price_pro_yearly': 'pro',
-  'price_business_monthly': 'business',
-  'price_business_yearly': 'business',
+  'price_1SkTw4G8e7fqKTguuqHpJEqi': 'pro',      // Pro monthly
+  'price_1SkTw4G8e7fqKTgu5E1GyYiZ': 'pro',      // Pro yearly
+  'price_1SkTw5G8e7fqKTguRra3rgMg': 'business', // Business monthly
+  'price_1SkTw5G8e7fqKTguHURNx22O': 'business', // Business yearly
 }
 
 // Map credit price IDs to amounts
 const PRICE_TO_CREDITS: Record<string, number> = {
-  'price_credits_50': 50,
-  'price_credits_200': 200,
+  'price_1SkU9OG8e7fqKTgu5SxHWtd7': 50,  // 50 credits ($5)
+  'price_1SkU9VG8e7fqKTguXNRnQxmu': 200, // 200 credits ($15)
 }
 
 serve(async (req) => {
