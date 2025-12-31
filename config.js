@@ -24,6 +24,8 @@ const CONFIG = {
         PRO_YEARLY: 'https://buy.stripe.com/6oU00j4Rr0yo0T03R2fAc01',
         BUSINESS_MONTHLY: 'https://buy.stripe.com/aFa3cvdnXepedFM2MYfAc02',
         BUSINESS_YEARLY: 'https://buy.stripe.com/7sY28r1Ff3KAcBI1IUfAc03',
+        CREDITS_50: 'https://buy.stripe.com/00w7sL1Ff4OEeJQevGfAc04',
+        CREDITS_200: 'https://buy.stripe.com/eVqdR92Jj0yo45ccnyfAc05',
     },
 
     // App settings

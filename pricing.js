@@ -171,14 +171,13 @@ function setupCreditButtons() {
 }
 
 async function handleCreditPurchase(priceId) {
-    // Check if authenticated
-    if (!ngSupabase.isAuthenticated) {
-        if (typeof authUI !== 'undefined') {
-            authUI.show('signup');
-            ngSupabase.once('authChange', ({ user }) => {
-                if (user) handleCreditPurchase(priceId);
-            });
-        }
+    // Get payment link key based on priceId
+    const linkKey = priceId.toUpperCase(); // credits_50 -> CREDITS_50
+    const paymentLink = CONFIG.STRIPE_PAYMENT_LINKS?.[linkKey];
+
+    if (!paymentLink) {
+        console.error('Payment link not found for:', linkKey);
+        alert('Payment not available. Please try again later.');
         return;
     }
 
@@ -188,42 +187,14 @@ async function handleCreditPurchase(priceId) {
         btn.disabled = true;
     }
 
-    try {
-        const response = await fetch(
-            `${CONFIG.SUPABASE_URL}/functions/v1/create-checkout`,
-            {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${ngSupabase.session.access_token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    priceId,
-                    successUrl: `${window.location.origin}/pricing.html?checkout=success&credits=true`,
-                    cancelUrl: `${window.location.origin}/pricing.html?checkout=cancelled`
-                })
-            }
-        );
-
-        const data = await response.json();
-
-        if (data.error) {
-            throw new Error(data.error);
-        }
-
-        if (data.url) {
-            window.location.href = data.url;
-        }
-
-    } catch (error) {
-        console.error('Credit purchase error:', error);
-        alert('Failed to start checkout. Please try again.');
-    } finally {
-        if (btn) {
-            btn.classList.remove('loading');
-            btn.disabled = false;
-        }
+    // Add email prefill if user is authenticated
+    let checkoutUrl = paymentLink;
+    if (typeof ngSupabase !== 'undefined' && ngSupabase.isAuthenticated && ngSupabase.user?.email) {
+        checkoutUrl += `?prefilled_email=${encodeURIComponent(ngSupabase.user.email)}`;
     }
+
+    // Redirect to Stripe payment link
+    window.location.href = checkoutUrl;
 }
 
 // ============================================
