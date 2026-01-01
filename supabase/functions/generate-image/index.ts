@@ -65,15 +65,10 @@ serve(async (req) => {
 
     console.log('Admin check result:', user.email, 'isAdmin:', isAdmin, 'profileEmail:', profile?.email, 'forcedAdmin:', adminEmails.includes(user.email || ''))
 
-    // DEBUG: Return debug info for troubleshooting
+    // Debug info only logged server-side, not returned to client
     const debugInfo = {
       userId: user.id,
-      email: user.email,
-      profileData: profile,
-      profileError: profileError?.message,
-      profileCode: profileError?.code,
-      isAdmin,
-      serviceKeySet: !!SUPABASE_SERVICE_KEY
+      isAdmin
     }
 
     // Get subscription and check tier
@@ -93,8 +88,7 @@ serve(async (req) => {
           error: 'Subscription required. Upgrade to Pro or Business to generate images.',
           code: 'SUBSCRIPTION_REQUIRED',
           tier: 'free',
-          upgradeUrl: 'https://hefaistos.xyz/pricing.html',
-          debug: debugInfo // Include debug info to troubleshoot
+          upgradeUrl: 'https://hefaistos.xyz/pricing.html'
         }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
@@ -145,8 +139,7 @@ serve(async (req) => {
               code: 'LIMIT_REACHED',
               limit: monthlyLimit,
               used: currentUsage,
-              resetsAt: new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 1).toISOString(),
-              debug: debugInfo // Include debug info to troubleshoot
+              resetsAt: new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 1).toISOString()
             }),
             { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           )
@@ -215,7 +208,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Edge function error:', error)
     return new Response(
-      JSON.stringify({ error: 'Internal server error', details: error.message }),
+      JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
