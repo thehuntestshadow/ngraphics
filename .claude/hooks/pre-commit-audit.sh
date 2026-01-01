@@ -1,5 +1,5 @@
 #!/bin/bash
-# Pre-commit audit hook for NGRAPHICS
+# Pre-commit audit hook for HEFAISTOS
 # Runs basic checks before allowing commits
 
 set -e
@@ -40,8 +40,8 @@ for html_file in "$PROJECT_DIR"/*.html; do
     if ! grep -q "site-header" "$html_file" 2>/dev/null; then
       continue
     fi
-    if ! grep -q "logo-mark" "$html_file" 2>/dev/null; then
-      echo "  ❌ $(basename "$html_file"): Header not pre-rendered (missing logo-mark)"
+    if ! grep -q "logo-title" "$html_file" 2>/dev/null; then
+      echo "  ❌ $(basename "$html_file"): Header not pre-rendered (missing logo-title)"
       ERRORS=$((ERRORS + 1))
     fi
   fi

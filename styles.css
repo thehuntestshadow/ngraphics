@@ -1,5 +1,5 @@
 /* ============================================
-   NGRAPHICS - Refined Apple-inspired Design
+   HEFAISTOS - Refined Apple-inspired Design
    ============================================ */
 
 /* ============================================
@@ -146,6 +146,26 @@
     background: rgba(255, 255, 255, 0.85);
 }
 
+[data-theme="light"] .brand-name {
+    color: #1a1a1a;
+}
+
+[data-theme="light"] .logo-link .brand-name {
+    color: #1a1a1a;
+}
+
+[data-theme="light"] .page-title-text {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] .page-title-text::before {
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.15));
+}
+
+[data-theme="light"] .page-title-text::after {
+    background: linear-gradient(270deg, transparent, rgba(0, 0, 0, 0.15));
+}
+
 /* ============================================
    RESET & BASE
    ============================================ */
@@ -216,9 +236,10 @@ kbd {
     max-width: 1440px;
     margin: 0 auto;
     padding: 16px 32px;
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
+    gap: 16px;
 }
 
 .logo-link {
@@ -257,15 +278,9 @@ kbd {
     gap: 0;
 }
 
+/* Logo mark hidden - text-only branding */
 .logo-mark {
-    width: 40px;
-    height: 40px;
-    color: var(--apple-blue);
-}
-
-.logo-mark svg {
-    width: 100%;
-    height: 100%;
+    display: none;
 }
 
 .logo-text {
@@ -274,11 +289,66 @@ kbd {
     gap: 2px;
 }
 
-/* Gradient logo text for branding */
+/* Brand name - left side */
+.brand-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: #fff;
+}
+
+.logo-link .brand-name {
+    color: #fff;
+}
+
+.logo-link:hover .brand-name {
+    opacity: 0.8;
+}
+
+/* Centered page title */
+.page-title-center {
+    text-align: center;
+}
+
+.page-title-text {
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    position: relative;
+    padding: 0 24px;
+}
+
+.page-title-text::before,
+.page-title-text::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 12px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3));
+}
+
+.page-title-text::before {
+    left: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3));
+}
+
+.page-title-text::after {
+    right: 0;
+    background: linear-gradient(270deg, transparent, rgba(255, 255, 255, 0.3));
+}
+
+/* Logo title - HEFAISTOS text */
 .logo-title {
     font-size: 1.2rem;
     font-weight: 600;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.08em;
+    color: #fff;
+}
+
+[data-theme="light"] .logo-title {
     background: linear-gradient(135deg, var(--apple-blue), var(--apple-purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -296,7 +366,9 @@ kbd {
 .header-controls {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 20px;
+    grid-column: 3;
 }
 
 /* Docs Link */
@@ -485,16 +557,7 @@ kbd {
 }
 
 .title-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    background: var(--gradient-blue);
-    color: #ffffff;
-    border-radius: var(--radius-sm);
+    display: none;
 }
 
 /* Different gradients for each panel number */
@@ -5542,6 +5605,15 @@ button:disabled,
         padding: 12px 16px;
     }
 
+    .brand-name {
+        font-size: 1rem;
+    }
+
+    .page-title-text {
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+    }
+
     .logo-title {
         font-size: 1rem;
     }
@@ -5587,8 +5659,16 @@ button:disabled,
 @media (max-width: 480px) {
     .header-content {
         padding: 10px 12px;
-        flex-wrap: wrap;
+        grid-template-columns: auto 1fr auto;
         gap: 8px;
+    }
+
+    .brand-name {
+        font-size: 0.9rem;
+    }
+
+    .page-title-center {
+        display: none;
     }
 
     .header-controls {

@@ -4094,8 +4094,7 @@ function setupEventListeners() {
         });
     });
 
-    // Theme toggle
-    elements.themeToggle.addEventListener('click', toggleTheme);
+    // Theme toggle is handled by SharedTheme.setupToggle() in init()
 
     // Style radio buttons - sync with hidden select
     elements.styleRadios.forEach(radio => {
@@ -4940,7 +4939,7 @@ async function generateForBatchItem(item) {
             'Authorization': `Bearer ${state.apiKey}`,
             'Content-Type': 'application/json',
             'HTTP-Referer': window.location.href,
-            'X-Title': 'NGRAPHICS - AI Product Infographics'
+            'X-Title': 'HEFAISTOS - AI Product Infographics'
         },
         body: JSON.stringify(requestBody)
     });
@@ -5104,7 +5103,7 @@ async function init() {
     if (state.apiKey) {
         updateApiStatus(true);
     }
-    console.log('NGRAPHICS: Ready!');
+    console.log('HEFAISTOS: Ready!');
 }
 
 // Initialize on DOM ready
