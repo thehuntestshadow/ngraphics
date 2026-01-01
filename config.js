@@ -42,7 +42,7 @@ const CONFIG = {
     // API defaults
     API: {
         OPENROUTER_BASE_URL: 'https://openrouter.ai/api/v1',
-        DEFAULT_MODEL: 'google/gemini-2.0-flash-exp:free',
+        DEFAULT_MODEL: 'google/gemini-3-pro-image-preview',
         TIMEOUT_MS: 120000
     },
 

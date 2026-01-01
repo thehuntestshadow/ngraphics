@@ -147,9 +147,31 @@ The application consists of multiple pages, each with its own JS file, sharing c
 
 ## API Integration
 
-Uses OpenRouter's `/api/v1/chat/completions` endpoint with `modalities: ['image', 'text']` for image generation. Response handling supports multiple formats (Gemini's inline_data, OpenAI's image_url, base64 responses).
+Uses OpenRouter's `/api/v1/chat/completions` endpoint with `modalities: ['image', 'text']` for image generation.
 
-**Default Model:** Gemini 3 Pro - Best balance of quality and speed for image generation tasks.
+**Default Image Generation Model:** `google/gemini-3-pro-image-preview` (Nano Banana Pro)
+- ALWAYS use this model for image generation across all studios
+- Best quality, supports image editing, multi-turn conversations
+- Requires `modalities: ['image', 'text']` in request body
+
+**Response Format:**
+OpenRouter returns images in `message.images` array (not in `message.content`):
+```json
+{
+  "choices": [{
+    "message": {
+      "content": "",
+      "images": [{"type": "image_url", "image_url": {"url": "data:image/png;base64,..."}}]
+    }
+  }]
+}
+```
+
+**Provider Preferences:**
+- Use Google Vertex provider when possible (fewer geographic restrictions)
+- Add `provider: { order: ['Google Vertex', 'Google'], allow_fallbacks: true }` to requests
+
+**Text Analysis Model:** `google/gemini-2.0-flash-001` - Fast, cheap, for product analysis.
 
 ---
 

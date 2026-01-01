@@ -3,7 +3,7 @@
  * Remove and replace product backgrounds for e-commerce ready images
  */
 
-const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+const DEFAULT_MODEL = 'google/gemini-3-pro-image-preview';
 const STUDIO_ID = 'background';
 
 // ============================================

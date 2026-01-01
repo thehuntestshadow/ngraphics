@@ -3,7 +3,7 @@
  * Creates various comparison layouts: Before/After, Product vs Product, Feature Tables, Size Lineups
  */
 
-const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+const DEFAULT_MODEL = 'google/gemini-3-pro-image-preview';
 
 const STUDIO_ID = 'comparison';
 

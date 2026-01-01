@@ -527,7 +527,14 @@ class APIClient {
         const body = {
             model,
             messages,
-            modalities: ['image', 'text']
+            modalities: ['image', 'text'],
+            // Disable reasoning for image generation - model should output image directly
+            include_reasoning: false,
+            // Prefer Google Vertex over Google AI Studio (Vertex has fewer geographic restrictions)
+            provider: {
+                order: ['Google Vertex', 'Google'],
+                allow_fallbacks: true
+            }
         };
 
         // Add optional parameters based on model capabilities
@@ -854,7 +861,21 @@ class APIClient {
         }
 
         const content = choice.message?.content;
+        const messageImages = choice.message?.images;
         const result = { text: '', image: null, images: [] };
+
+        // Handle images in message.images (OpenRouter/Gemini format)
+        if (Array.isArray(messageImages)) {
+            for (const img of messageImages) {
+                if (img.type === 'image_url' && img.image_url?.url) {
+                    result.images.push(img.image_url.url);
+                    if (!result.image) result.image = img.image_url.url;
+                } else if (img.url) {
+                    result.images.push(img.url);
+                    if (!result.image) result.image = img.url;
+                }
+            }
+        }
 
         // Handle array content (multimodal responses)
         if (Array.isArray(content)) {
@@ -936,8 +957,8 @@ class APIClient {
     }
 
     getErrorCodeFromStatus(status, data = {}) {
-        const errorType = data.error?.type || data.error?.code || '';
-        const errorCode = data.code || '';
+        const errorType = String(data.error?.type || data.error?.code || '');
+        const errorCode = String(data.code || '');
 
         // Handle proxy-specific error codes
         if (errorCode === 'SUBSCRIPTION_INACTIVE') return 'SUBSCRIPTION_INACTIVE';

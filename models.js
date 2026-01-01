@@ -4,7 +4,7 @@
  */
 
 // Default model for image generation (handled by edge function)
-const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+const DEFAULT_MODEL = 'google/gemini-3-pro-image-preview';
 
 const STUDIO_ID = 'models';
 
@@ -699,7 +699,7 @@ function generatePrompt() {
     if (collageConfig) {
         if (showFaceInCollage) {
             // Multi-angle collage WITH face
-            prompt = `Create a ${qualityBoosterDesc[currentQualityLevel] || 'professional photography'} - a ${collageConfig.layout} showing the SAME model from ${collageConfig.count} different angles.
+            prompt = `Generate an image: ${qualityBoosterDesc[currentQualityLevel] || 'professional photography'} - a ${collageConfig.layout} showing the SAME model from ${collageConfig.count} different angles.
 
 COLLAGE LAYOUT: ${collageConfig.layout} with ${collageConfig.count} photos arranged neatly with minimal gaps.
 
@@ -736,7 +736,7 @@ CRITICAL REQUIREMENTS:
 - Realistic, photographic result (not illustrated)`;
         } else {
             // Multi-angle collage WITHOUT face - product-focused
-            prompt = `Create a ${qualityBoosterDesc[currentQualityLevel] || 'professional photography'} - a ${collageConfig.layout} showcasing a product from ${collageConfig.count} different angles.
+            prompt = `Generate an image: ${qualityBoosterDesc[currentQualityLevel] || 'professional photography'} - a ${collageConfig.layout} showcasing a product from ${collageConfig.count} different angles.
 
 COLLAGE LAYOUT: ${collageConfig.layout} with ${collageConfig.count} photos arranged neatly with minimal gaps.
 
@@ -772,7 +772,7 @@ CRITICAL REQUIREMENTS:
         }
     } else {
         // Standard single shot mode
-        prompt = `Create a ${qualityBoosterDesc[currentQualityLevel] || 'professional photography'}.
+        prompt = `Generate an image: ${qualityBoosterDesc[currentQualityLevel] || 'professional photography'}.
 
 SUBJECT: A ${modelDesc}, ${productTypeDesc[state.productType] || 'with the product'}.
 
@@ -943,6 +943,11 @@ async function generateModelPhoto() {
 function showResult(imageUrl) {
     hideLoading();
 
+    if (!imageUrl) {
+        console.warn('showResult called with invalid imageUrl:', imageUrl);
+        return;
+    }
+
     elements.resultImage.src = imageUrl;
     elements.resultImage.style.display = 'block';
     elements.resultGrid.style.display = 'none';
@@ -963,11 +968,18 @@ function showResult(imageUrl) {
 function showMultipleResults(imageUrls) {
     hideLoading();
 
+    // Filter out null/undefined URLs
+    const validUrls = imageUrls.filter(url => url);
+    if (validUrls.length === 0) {
+        console.warn('showMultipleResults called with no valid URLs');
+        return;
+    }
+
     elements.resultImage.style.display = 'none';
     elements.resultGrid.style.display = 'grid';
-    elements.resultGrid.className = `result-grid grid-${imageUrls.length}`;
+    elements.resultGrid.className = `result-grid grid-${validUrls.length}`;
 
-    elements.resultGrid.innerHTML = imageUrls.map((url, index) => `
+    elements.resultGrid.innerHTML = validUrls.map((url, index) => `
         <div class="result-grid-item${index === 0 ? ' selected' : ''}" data-index="${index}">
             <img src="${url}" alt="Variation ${index + 1}">
             <span class="result-grid-item-badge">${index + 1}</span>
@@ -979,26 +991,26 @@ function showMultipleResults(imageUrls) {
             elements.resultGrid.querySelectorAll('.result-grid-item').forEach(i => i.classList.remove('selected'));
             item.classList.add('selected');
             const index = parseInt(item.dataset.index, 10);
-            state.generatedImageUrl = imageUrls[index];
+            state.generatedImageUrl = validUrls[index];
         });
         item.addEventListener('dblclick', () => {
             const index = parseInt(item.dataset.index, 10);
-            openLightbox(imageUrls[index]);
+            openLightbox(validUrls[index]);
         });
     });
 
     elements.resultContainer.classList.add('visible');
-    state.generatedImageUrl = imageUrls[0];
-    state.generatedImages = imageUrls;
+    state.generatedImageUrl = validUrls[0];
+    state.generatedImages = validUrls;
 
     // Show compare button for multiple images
     if (elements.compareBtn) {
-        elements.compareBtn.style.display = imageUrls.length >= 2 ? 'inline-flex' : 'none';
+        elements.compareBtn.style.display = validUrls.length >= 2 ? 'inline-flex' : 'none';
     }
 
     elements.feedbackTextarea.value = '';
 
-    imageUrls.forEach(url => addToHistory(url));
+    validUrls.forEach(url => addToHistory(url));
 }
 
 async function adjustPhoto() {
@@ -1068,6 +1080,7 @@ function loadHistory() {
 }
 
 async function addToHistory(imageUrl) {
+    if (!imageUrl) return; // Don't save null/undefined images
     await history.add(imageUrl, {
         imageUrls: [imageUrl]
     });
@@ -1090,15 +1103,17 @@ function renderHistory() {
     elements.historyGrid.style.display = 'grid';
     elements.historyEmpty.style.display = 'none';
 
-    elements.historyGrid.innerHTML = history.getAll().map(item => {
-        // Use thumbnail for grid display
-        const imgSrc = item.thumbnail || item.imageUrl;
-        return `
-            <div class="history-item" data-id="${item.id}">
-                <img src="${imgSrc}" alt="History item">
-            </div>
-        `;
-    }).join('');
+    elements.historyGrid.innerHTML = history.getAll()
+        .filter(item => item.thumbnail || item.imageUrl) // Skip items with no image
+        .map(item => {
+            // Use thumbnail for grid display
+            const imgSrc = item.thumbnail || item.imageUrl;
+            return `
+                <div class="history-item" data-id="${item.id}">
+                    <img src="${imgSrc}" alt="History item">
+                </div>
+            `;
+        }).join('');
 
     elements.historyGrid.querySelectorAll('.history-item').forEach(item => {
         item.addEventListener('click', async () => {
@@ -1108,7 +1123,9 @@ function renderHistory() {
                 // Fetch full image from IndexedDB
                 const images = await history.getImages(id);
                 const fullImageUrl = images?.imageUrl || historyItem.thumbnail || historyItem.imageUrl;
-                openLightbox(fullImageUrl);
+                if (fullImageUrl) {
+                    openLightbox(fullImageUrl);
+                }
             }
         });
     });
@@ -1231,7 +1248,9 @@ function renderFavorites() {
     empty.style.display = 'none';
 
     // Use thumbnail for grid display (falls back to imageUrl for legacy items)
-    grid.innerHTML = items.map(item => `
+    grid.innerHTML = items
+        .filter(item => item.thumbnail || item.imageUrl) // Skip items with no image
+        .map(item => `
         <div class="favorite-item" data-id="${item.id}">
             <img src="${item.thumbnail || item.imageUrl}" alt="${item.name}" loading="lazy">
             ${item.variantCount > 1 ? `<div class="favorite-item-variants">${item.variantCount}</div>` : ''}

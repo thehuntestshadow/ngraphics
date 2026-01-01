@@ -11,7 +11,7 @@
 // ============================================
 
 const STUDIO_ID = 'lifestyle';
-const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+const DEFAULT_MODEL = 'google/gemini-3-pro-image-preview';
 
 // ============================================
 // STATE

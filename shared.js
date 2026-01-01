@@ -1878,7 +1878,7 @@ const SharedLightbox = {
     },
 
     open(lightboxEl, imageEl, imageUrl) {
-        if (!lightboxEl || !imageEl) return;
+        if (!lightboxEl || !imageEl || !imageUrl) return;
 
         this._currentImageUrl = imageUrl;
         imageEl.src = imageUrl;
@@ -3176,9 +3176,12 @@ const SharedCostEstimator = {
         'google/gemini-2.0-flash-exp': { input: 0, output: 0, image: 0, label: 'Free' },
         'google/gemini-2.5-flash-preview': { input: 0.15, output: 0.6, image: 0.003, label: '$0.003/img' },
         'google/gemini-2.5-pro-preview': { input: 1.25, output: 5, image: 0.01, label: '$0.01/img' },
+        'google/gemini-3-pro-preview': { input: 1.25, output: 5, image: 0.015, label: '$0.015/img' },
         'google/gemini-3-pro-image-preview': { input: 1.25, output: 5, image: 0.015, label: '$0.015/img' },
         'openai/gpt-4o': { input: 2.5, output: 10, image: 0.02, label: '$0.02/img' },
-        'openai/gpt-4o-mini': { input: 0.15, output: 0.6, image: 0.005, label: '$0.005/img' }
+        'openai/gpt-4o-mini': { input: 0.15, output: 0.6, image: 0.005, label: '$0.005/img' },
+        'openai/gpt-5-image': { input: 5, output: 15, image: 0.04, label: '$0.04/img' },
+        'openai/gpt-5-image-mini': { input: 1.1, output: 4.4, image: 0.02, label: '$0.02/img' }
     },
 
     // Session totals

@@ -50,13 +50,31 @@ serve(async (req) => {
     let isAdmin = false
 
     // Check if user is admin (bypass all restrictions)
-    const { data: profile } = await supabase
+    console.log('Checking profile for user:', user.id, user.email)
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('is_admin')
+      .select('is_admin, email')
       .eq('id', user.id)
       .single()
 
-    isAdmin = profile?.is_admin === true
+    console.log('Profile query result:', JSON.stringify({ profile, error: profileError?.message }))
+
+    // TEMPORARY: Force admin for debugging - remove after testing
+    const adminEmails = ['auerbach.impex@gmail.com', 'thehuntestshadow@gmail.com']
+    isAdmin = profile?.is_admin === true || adminEmails.includes(user.email || '')
+
+    console.log('Admin check result:', user.email, 'isAdmin:', isAdmin, 'profileEmail:', profile?.email, 'forcedAdmin:', adminEmails.includes(user.email || ''))
+
+    // DEBUG: Return debug info for troubleshooting
+    const debugInfo = {
+      userId: user.id,
+      email: user.email,
+      profileData: profile,
+      profileError: profileError?.message,
+      profileCode: profileError?.code,
+      isAdmin,
+      serviceKeySet: !!SUPABASE_SERVICE_KEY
+    }
 
     // Get subscription and check tier
     const { data: sub } = await supabase
@@ -75,7 +93,8 @@ serve(async (req) => {
           error: 'Subscription required. Upgrade to Pro or Business to generate images.',
           code: 'SUBSCRIPTION_REQUIRED',
           tier: 'free',
-          upgradeUrl: 'https://hefaistos.xyz/pricing.html'
+          upgradeUrl: 'https://hefaistos.xyz/pricing.html',
+          debug: debugInfo // Include debug info to troubleshoot
         }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
@@ -126,7 +145,8 @@ serve(async (req) => {
               code: 'LIMIT_REACHED',
               limit: monthlyLimit,
               used: currentUsage,
-              resetsAt: new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 1).toISOString()
+              resetsAt: new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 1).toISOString(),
+              debug: debugInfo // Include debug info to troubleshoot
             }),
             { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           )
@@ -151,6 +171,20 @@ serve(async (req) => {
     })
 
     const result = await response.json()
+
+    // Log OpenRouter response for debugging
+    console.log('OpenRouter response status:', response.status)
+    console.log('OpenRouter result keys:', Object.keys(result))
+    if (result.error) {
+      console.log('OpenRouter error:', JSON.stringify(result.error))
+    }
+    if (result.choices?.[0]) {
+      const content = result.choices[0].message?.content
+      console.log('Content type:', typeof content, Array.isArray(content) ? 'array' : '')
+      if (Array.isArray(content)) {
+        console.log('Content parts:', content.map((p: any) => p.type || (p.inline_data ? 'inline_data' : 'unknown')))
+      }
+    }
 
     // Track usage (non-blocking)
     const monthStart = new Date()

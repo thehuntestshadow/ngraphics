@@ -3,7 +3,7 @@
  * Creates professional bundle/kit images from multiple product photos
  */
 
-const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+const DEFAULT_MODEL = 'google/gemini-3-pro-image-preview';
 
 const STUDIO_ID = 'bundle';
 
