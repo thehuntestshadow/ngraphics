@@ -50,20 +50,13 @@ serve(async (req) => {
     let isAdmin = false
 
     // Check if user is admin (bypass all restrictions)
-    console.log('Checking profile for user:', user.id, user.email)
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile } = await supabase
       .from('profiles')
-      .select('is_admin, email')
+      .select('is_admin')
       .eq('id', user.id)
       .single()
 
-    console.log('Profile query result:', JSON.stringify({ profile, error: profileError?.message }))
-
-    // TEMPORARY: Force admin for debugging - remove after testing
-    const adminEmails = ['auerbach.impex@gmail.com', 'thehuntestshadow@gmail.com']
-    isAdmin = profile?.is_admin === true || adminEmails.includes(user.email || '')
-
-    console.log('Admin check result:', user.email, 'isAdmin:', isAdmin, 'profileEmail:', profile?.email, 'forcedAdmin:', adminEmails.includes(user.email || ''))
+    isAdmin = profile?.is_admin === true
 
     // Debug info only logged server-side, not returned to client
     const debugInfo = {
