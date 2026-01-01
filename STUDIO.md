@@ -403,6 +403,27 @@ A HEFAISTOS studio should feel like a **professional tool that respects your tim
 
 ---
 
+## Exceptions
+
+Some studios deviate from standard patterns due to their unique nature:
+
+### Studios Without Auto-Generate Toggle
+
+These studios don't have the auto-generate toggle because they don't fit the "upload image → auto-generate" pattern:
+
+| Studio | Reason |
+|--------|--------|
+| **Copywriter** | Text generation from images, not image generation. Analysis happens on upload, but generation is multi-step (7 tabs of content). |
+| **Export Center** | Utility tool for resizing/compressing/watermarking. No AI generation involved. |
+| **Size Chart** | Generates from data table input, not from image analysis. |
+| **Badge Generator** | Text-based badge creator with style selection. No image upload required. |
+
+### Copywriter DOM IDs
+
+Copywriter uses `historyList`/`favoritesList` instead of `historyGrid`/`favoritesGrid` because it displays text content in a list format rather than image thumbnails in a grid layout.
+
+---
+
 ## Checklist for New Studios
 
 Before shipping a new studio, verify:

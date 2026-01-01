@@ -273,6 +273,55 @@ See **Future Page Ideas** section below for comprehensive list of potential new 
 
 ## Technical Improvements
 
+### 🎯 STUDIO.md Compliance (Priority 1)
+
+**Goal:** Ensure all 20 studios follow STUDIO.md patterns consistently.
+
+**Checklist per studio:**
+- [ ] Auto-generate toggle (ON by default)
+- [ ] Progressive disclosure (Basic/Advanced collapsed)
+- [ ] Professional labels (no uppercase text-transform)
+- [ ] Consistent DOM IDs (uploadArea, generateBtn, resultContainer, etc.)
+- [ ] Keyboard shortcuts (Ctrl+Enter, Ctrl+D, Escape)
+- [ ] Loading states (descriptive text, not just spinners)
+- [ ] Empty states (friendly messages with hints)
+- [ ] Error handling (user-friendly, actionable)
+- [ ] History/Favorites panels
+- [ ] Theme support (light/dark)
+
+**Studios to audit (20):** ✅ ALL COMPLETE
+- [x] Infographics (`infographics.html`) - Auto-generate toggle, collapsible Basic Settings, history width fixed
+- [x] Model Studio (`models.html`) - Label casing fixed
+- [x] Bundle Studio (`bundle.html`) - Label casing fixed
+- [x] Lifestyle Studio (`lifestyle.html`) - JS errors + label casing fixed
+- [x] Copywriter (`copywriter.html`) - Label casing fixed
+- [x] Packaging Mockup (`packaging.html`) - Uses shared styles
+- [x] Comparison Generator (`comparison.html`) - Already compliant
+- [x] Size Visualizer (`size-visualizer.html`) - Label casing fixed
+- [x] FAQ Generator (`faq-generator.html`) - Label casing fixed
+- [x] Background Studio (`background.html`) - Label casing fixed
+- [x] Badge Generator (`badge-generator.html`) - Already compliant
+- [x] Feature Cards (`feature-cards.html`) - Label casing fixed
+- [x] Size Chart (`size-chart.html`) - Uses shared styles
+- [x] A+ Content (`a-plus.html`) - Label casing fixed
+- [x] Product Variants (`product-variants.html`) - Label casing fixed
+- [x] Social Studio (`social-studio.html`) - Uses shared styles
+- [x] Export Center (`export-center.html`) - Label casing fixed
+- [x] Ad Creative (`ad-creative.html`) - Uses shared styles
+- [x] Model Video (`model-video.html`) - Uses shared styles
+- [x] Dashboard (`dashboard.html`) - Badges/headers intentionally uppercase
+
+**Completed fixes:**
+1. ✅ Remove `text-transform: uppercase` from `.option-label` across 12 CSS files
+2. ✅ Fix field labels in styles.css (alt-text, copy-block, seo-field)
+3. ✅ Bump service worker cache to v7
+4. ✅ History section max-width aligned with app-main (1200px)
+5. ✅ Infographics: Auto-generate toggle, collapsible Basic Settings
+6. [ ] Standardize loading/empty state messaging
+7. [ ] Verify keyboard shortcut registration
+
+---
+
 ### Performance
 - [x] Image compression before upload (core.js, image-worker.js)
 - [x] Web Worker for background processing (image-worker.js)
