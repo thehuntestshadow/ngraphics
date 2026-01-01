@@ -47,6 +47,15 @@ serve(async (req) => {
       )
     }
 
+    // Check if user is admin (bypass all restrictions)
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single()
+
+    const isAdmin = profile?.is_admin === true
+
     // Get subscription and check tier
     const { data: sub } = await supabase
       .from('subscriptions')
@@ -57,8 +66,8 @@ serve(async (req) => {
     const tierId = sub?.tier_id || 'free'
     const isActive = sub?.status === 'active' || !sub // No sub means free
 
-    // Subscription required - no free tier
-    if (tierId === 'free') {
+    // Subscription required - no free tier (admins bypass)
+    if (tierId === 'free' && !isAdmin) {
       return new Response(
         JSON.stringify({
           error: 'Subscription required. Upgrade to Pro or Business to generate images.',
@@ -70,8 +79,8 @@ serve(async (req) => {
       )
     }
 
-    // Check subscription is active
-    if (!isActive) {
+    // Check subscription is active (admins bypass)
+    if (!isActive && !isAdmin) {
       return new Response(
         JSON.stringify({
           error: 'Subscription is not active',
@@ -82,41 +91,44 @@ serve(async (req) => {
       )
     }
 
-    // Get tier limits
-    const { data: tier } = await supabase
-      .from('subscription_tiers')
-      .select('generations_per_month')
-      .eq('id', tierId)
-      .single()
-
-    const monthlyLimit = tier?.generations_per_month
-
-    // Check monthly usage if there's a limit
-    if (monthlyLimit) {
-      const monthStart = new Date()
-      monthStart.setDate(1)
-      monthStart.setHours(0, 0, 0, 0)
-
-      const { data: usage } = await supabase
-        .from('usage_monthly')
-        .select('generation_count')
-        .eq('user_id', user.id)
-        .eq('month', monthStart.toISOString().split('T')[0])
+    // Admins have unlimited usage - skip limit checks
+    if (!isAdmin) {
+      // Get tier limits
+      const { data: tier } = await supabase
+        .from('subscription_tiers')
+        .select('generations_per_month')
+        .eq('id', tierId)
         .single()
 
-      const currentUsage = usage?.generation_count || 0
+      const monthlyLimit = tier?.generations_per_month
 
-      if (currentUsage >= monthlyLimit) {
-        return new Response(
-          JSON.stringify({
-            error: 'Monthly generation limit reached',
-            code: 'LIMIT_REACHED',
-            limit: monthlyLimit,
-            used: currentUsage,
-            resetsAt: new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 1).toISOString()
-          }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
+      // Check monthly usage if there's a limit
+      if (monthlyLimit) {
+        const monthStart = new Date()
+        monthStart.setDate(1)
+        monthStart.setHours(0, 0, 0, 0)
+
+        const { data: usage } = await supabase
+          .from('usage_monthly')
+          .select('generation_count')
+          .eq('user_id', user.id)
+          .eq('month', monthStart.toISOString().split('T')[0])
+          .single()
+
+        const currentUsage = usage?.generation_count || 0
+
+        if (currentUsage >= monthlyLimit) {
+          return new Response(
+            JSON.stringify({
+              error: 'Monthly generation limit reached',
+              code: 'LIMIT_REACHED',
+              limit: monthlyLimit,
+              used: currentUsage,
+              resetsAt: new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 1).toISOString()
+            }),
+            { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          )
+        }
       }
     }
 
