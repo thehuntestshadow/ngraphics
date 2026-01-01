@@ -1,6 +1,6 @@
 # Security Configuration
 
-This document describes security measures for the NGRAPHICS application.
+This document describes security measures for the HEFAISTOS application.
 
 ## Current Security Measures
 

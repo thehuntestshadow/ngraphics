@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Worker Manager
+ * HEFAISTOS - Worker Manager
  * Easy interface for Web Worker and Service Worker operations
  */
 

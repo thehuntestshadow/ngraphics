@@ -1,5 +1,5 @@
 /**
- * Background Studio - NGRAPHICS
+ * Background Studio - HEFAISTOS
  * Remove and replace product backgrounds for e-commerce ready images
  */
 
@@ -135,6 +135,7 @@ function initElements() {
         loadingContainer: document.getElementById('loadingContainer'),
         loadingStatus: document.getElementById('loadingStatus'),
         loadingSubtext: document.getElementById('loadingSubtext'),
+        skeletonGrid: document.getElementById('skeletonGrid'),
         resultDisplay: document.getElementById('resultDisplay'),
         resultImage: document.getElementById('resultImage'),
         resultGrid: document.getElementById('resultGrid'),
@@ -404,7 +405,7 @@ async function makeGenerationRequest(prompt, seed) {
             'Authorization': `Bearer ${state.apiKey}`,
             'Content-Type': 'application/json',
             'HTTP-Referer': window.location.origin,
-            'X-Title': 'NGRAPHICS Background Studio'
+            'X-Title': 'HEFAISTOS Background Studio'
         },
         body: JSON.stringify(requestBody)
     });
@@ -462,6 +463,16 @@ Please regenerate the product image with these specific changes applied while ma
 // UI FUNCTIONS
 // ============================================
 
+function updateSkeletonGrid(count = 1) {
+    if (!elements.skeletonGrid) return;
+    elements.skeletonGrid.className = `skeleton-grid cols-${count > 1 ? (count === 2 ? 2 : 4) : 1}`;
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        html += `<div class="skeleton-card"><div class="skeleton-image"></div></div>`;
+    }
+    elements.skeletonGrid.innerHTML = html;
+}
+
 function showLoading() {
     elements.resultPlaceholder.style.display = 'none';
     elements.resultDisplay.style.display = 'none';
@@ -469,6 +480,7 @@ function showLoading() {
     elements.loadingSubtext.textContent = 'This may take 10-30 seconds';
     elements.generateBtn.disabled = true;
     elements.generateBtn.classList.add('loading');
+    updateSkeletonGrid(state.variations || 1);
 }
 
 function hideLoading() {

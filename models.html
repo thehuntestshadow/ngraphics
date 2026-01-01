@@ -876,15 +876,24 @@
                         </ul>
                     </div>
 
-                    <!-- Loading State -->
-                    <div class="output-loading" id="loadingContainer">
-                        <div class="loader">
-                            <div class="loader-ring"></div>
-                            <div class="loader-ring"></div>
-                            <div class="loader-ring"></div>
+                    <!-- Loading State with Skeleton -->
+                    <div class="output-loading with-skeleton" id="loadingContainer">
+                        <div class="skeleton-wrapper" id="skeletonWrapper">
+                            <div class="skeleton-grid cols-1" id="skeletonGrid">
+                                <div class="skeleton-card">
+                                    <div class="skeleton-image"></div>
+                                </div>
+                            </div>
                         </div>
-                        <p class="loading-text">Generating...</p>
-                        <p class="loading-status" id="loadingStatus">Creating your model photo...</p>
+                        <div class="loading-info">
+                            <div class="loader">
+                                <div class="loader-ring"></div>
+                                <div class="loader-ring"></div>
+                                <div class="loader-ring"></div>
+                            </div>
+                            <p class="loading-text">Generating...</p>
+                            <p class="loading-status" id="loadingStatus">Creating your model photo...</p>
+                        </div>
                     </div>
 
                     <!-- Result Display -->

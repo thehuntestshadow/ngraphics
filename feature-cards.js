@@ -1,5 +1,5 @@
 /**
- * Feature Cards - NGRAPHICS
+ * Feature Cards - HEFAISTOS
  * Generate individual feature cards for product listing galleries
  */
 
@@ -393,7 +393,7 @@ async function generateSingleCard(apiKey, prompt, seed) {
                 'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json',
                 'HTTP-Referer': window.location.origin,
-                'X-Title': 'NGRAPHICS Feature Cards'
+                'X-Title': 'HEFAISTOS Feature Cards'
             },
             body: JSON.stringify(body)
         });

@@ -1,6 +1,6 @@
 ---
 name: perf
-description: Run Lighthouse performance audits on NGRAPHICS pages. Checks performance, accessibility, best practices, and SEO scores.
+description: Run Lighthouse performance audits on HEFAISTOS pages. Checks performance, accessibility, best practices, and SEO scores.
 ---
 
 # Performance Audit Skill
@@ -50,7 +50,7 @@ Arguments:
 ## Output
 
 ```
-LIGHTHOUSE AUDIT: NGRAPHICS
+LIGHTHOUSE AUDIT: HEFAISTOS
 ===========================
 
 PAGE: index.html

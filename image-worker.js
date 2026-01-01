@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Image Processing Web Worker
+ * HEFAISTOS - Image Processing Web Worker
  * Offloads heavy image operations from main thread
  */
 

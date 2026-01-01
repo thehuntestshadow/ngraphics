@@ -1,5 +1,5 @@
 /**
- * Product Variants - NGRAPHICS
+ * Product Variants - HEFAISTOS
  * Generate color, material, and pattern variations from a single product photo
  */
 
@@ -112,6 +112,7 @@ function initElements() {
         loadingContainer: document.getElementById('loadingContainer'),
         loadingStatus: document.getElementById('loadingStatus'),
         loadingSubtext: document.getElementById('loadingSubtext'),
+        skeletonGrid: document.getElementById('skeletonGrid'),
         resultDisplay: document.getElementById('resultDisplay'),
         variantGrid: document.getElementById('variantGrid'),
 
@@ -488,7 +489,7 @@ async function makeGenerationRequest(prompt, seed) {
             'Authorization': `Bearer ${state.apiKey}`,
             'Content-Type': 'application/json',
             'HTTP-Referer': window.location.origin,
-            'X-Title': 'NGRAPHICS Product Variants'
+            'X-Title': 'HEFAISTOS Product Variants'
         },
         body: JSON.stringify(requestBody)
     });
@@ -546,6 +547,16 @@ Please regenerate the product variants with these specific changes applied while
 // UI FUNCTIONS
 // ============================================
 
+function updateSkeletonGrid(count = 1) {
+    if (!elements.skeletonGrid) return;
+    elements.skeletonGrid.className = `skeleton-grid cols-${count > 1 ? (count === 2 ? 2 : 4) : 1}`;
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        html += `<div class="skeleton-card"><div class="skeleton-image"></div></div>`;
+    }
+    elements.skeletonGrid.innerHTML = html;
+}
+
 function showLoading() {
     elements.resultPlaceholder.style.display = 'none';
     elements.resultDisplay.style.display = 'none';
@@ -553,6 +564,7 @@ function showLoading() {
     elements.loadingSubtext.textContent = 'This may take 30-60 seconds';
     elements.generateBtn.disabled = true;
     elements.generateBtn.classList.add('loading');
+    updateSkeletonGrid(state.variantCount || 4);
 }
 
 function hideLoading() {

@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Core Infrastructure
+ * HEFAISTOS - Core Infrastructure
  * Reactive State, Event Bus, and foundational utilities
  */
 

@@ -1,30 +1,103 @@
 # UI_PATTERNS.md
 
-Reference file for consistent UI patterns across NGRAPHICS pages. **COPY THESE EXACTLY** when creating new pages.
+Reference file for consistent UI patterns across HEFAISTOS pages. **COPY THESE EXACTLY** when creating new pages.
 
 ---
 
 ## Table of Contents
 
-1. [Page Boilerplate](#page-boilerplate)
-2. [Marketing Page Boilerplate](#marketing-page-boilerplate)
-3. [Panel Headers](#panel-headers)
-4. [Section Labels](#section-labels)
-5. [Scene Grid Buttons](#scene-grid-buttons)
-6. [Option Buttons](#option-buttons)
-7. [Generate Button](#generate-button)
-8. [API Settings Toggle](#api-settings-toggle)
-9. [Advanced Options Toggle](#advanced-options-toggle)
-10. [History & Favorites Sections](#history--favorites-sections)
-11. [Lightbox](#lightbox)
-12. [Modals](#modals)
-13. [Upload Zone](#upload-zone)
-14. [Empty States](#empty-states)
-15. [Message Boxes](#message-boxes)
-16. [Footer](#footer)
-17. [JavaScript Element Caching Pattern](#javascript-element-caching-pattern)
-18. [JavaScript Safety Patterns](#javascript-safety-patterns)
-19. [Apple Design System Quick Reference](#apple-design-system-quick-reference)
+1. [DOM ID Conventions](#dom-id-conventions)
+2. [Page Boilerplate](#page-boilerplate)
+3. [Marketing Page Boilerplate](#marketing-page-boilerplate)
+4. [Panel Headers](#panel-headers)
+5. [Section Labels](#section-labels)
+6. [Scene Grid Buttons](#scene-grid-buttons)
+7. [Option Buttons](#option-buttons)
+8. [Toggle Switches](#toggle-switches)
+9. [Auto-Mode Toggle](#auto-mode-toggle)
+10. [Basic Settings Collapsible](#basic-settings-collapsible)
+11. [Generate Button](#generate-button)
+12. [API Settings Toggle](#api-settings-toggle)
+13. [Advanced Options Toggle](#advanced-options-toggle)
+14. [History & Favorites Sections](#history--favorites-sections)
+15. [Bottom Panels Layout](#bottom-panels-layout)
+16. [Lightbox](#lightbox)
+17. [Modals](#modals)
+18. [Upload Zone](#upload-zone)
+19. [Empty States](#empty-states)
+20. [Message Boxes](#message-boxes)
+21. [Footer](#footer)
+22. [JavaScript Element Caching Pattern](#javascript-element-caching-pattern)
+23. [JavaScript Safety Patterns](#javascript-safety-patterns)
+24. [Apple Design System Quick Reference](#apple-design-system-quick-reference)
+
+---
+
+## DOM ID Conventions
+
+Standard DOM IDs ensure consistency across studios. Use these exact IDs for elements that interact with `StudioBootstrap` and shared utilities.
+
+### Required IDs (all studios must have)
+
+| ID | Element | Purpose |
+|----|---------|---------|
+| `generateBtn` | `<button>` | Main generate/create action |
+| `resultContainer` | `<div>` | Wrapper for all result states |
+| `resultPlaceholder` | `<div>` | Empty state before generation |
+| `loadingContainer` | `<div>` | Loading state during generation |
+| `resultDisplay` | `<div>` | Result display after generation |
+| `errorMessage` | `<div>` | Error message display |
+| `successMessage` | `<div>` | Success message display |
+| `themeToggle` | `<button>` | Theme toggle button |
+| `accountContainer` | `<div>` | Account menu mount point |
+
+### Optional Standard IDs
+
+| ID | Element | Purpose |
+|----|---------|---------|
+| `downloadBtn` | `<button>` | Download current result |
+| `favoriteBtn` | `<button>` | Add to favorites |
+| `historySection` | `<div>` | History panel |
+| `historyGrid` | `<div>` | History items grid |
+| `favoritesModal` | `<div>` | Favorites modal |
+| `favoritesGrid` | `<div>` | Favorites items grid |
+| `imageInfoBtn` | `<button>` | Toggle image info overlay |
+| `imageInfoOverlay` | `<div>` | Image metadata display |
+| `seedInput` | `<input>` | Seed control input |
+| `apiKey` | `<input>` | API key input |
+| `apiStatus` | `<div>` | API connection status |
+| `presetSelectorContainer` | `<div>` | Preset selector mount point |
+| `costEstimatorContainer` | `<div>` | Cost estimator mount point |
+
+### Data Attributes for Event Delegation
+
+Use data attributes for option buttons and dynamic content:
+
+```html
+<!-- Option buttons -->
+<button data-option="variations" data-value="1" class="active">1</button>
+<button data-option="variations" data-value="2">2</button>
+<button data-option="variations" data-value="4">4</button>
+
+<!-- Scene/Mood buttons -->
+<button class="scene-btn active" data-scene="living-room">Living Room</button>
+<button class="mood-btn" data-mood="cozy">Cozy</button>
+
+<!-- History items -->
+<div class="history-item" data-id="${item.id}">...</div>
+```
+
+### Class Naming Convention
+
+| Class | Usage |
+|-------|-------|
+| `.scene-btn` | Scene selection buttons |
+| `.mood-btn` | Mood selection buttons |
+| `.time-btn` | Time of day buttons |
+| `.option-btn` | Generic option buttons |
+| `.history-item` | History grid items |
+| `.favorite-item` | Favorites grid items |
+| `.result-grid-item` | Multi-result grid items |
 
 ---
 
@@ -38,7 +111,7 @@ Every page starts with this structure:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Name - NGRAPHICS</title>
+    <title>Page Name - HEFAISTOS</title>
     <!-- CRITICAL: Inline theme script prevents flash of wrong theme -->
     <script>if(localStorage.getItem('ngraphics_theme')==='light')document.documentElement.setAttribute('data-theme','light')</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,7 +133,7 @@ Every page starts with this structure:
                         </svg>
                     </div>
                     <div class="logo-text">
-                        <span class="logo-title">NGRAPHICS</span>
+                        <span class="logo-title">HEFAISTOS</span>
                         <span class="logo-subtitle">Page Name Studio</span>
                     </div>
                 </div>
@@ -143,7 +216,7 @@ Marketing pages (Landing, Gallery, FAQ) have a different structure with SEO meta
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Title - NGRAPHICS</title>
+    <title>Page Title - HEFAISTOS</title>
     <!-- CRITICAL: Inline theme script prevents flash of wrong theme -->
     <script>if(localStorage.getItem('ngraphics_theme')==='light')document.documentElement.setAttribute('data-theme','light')</script>
     <meta name="description" content="Page description for search engines.">
@@ -151,14 +224,14 @@ Marketing pages (Landing, Gallery, FAQ) have a different structure with SEO meta
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://hefaistos.xyz/page.html">
-    <meta property="og:title" content="Page Title - NGRAPHICS">
+    <meta property="og:title" content="Page Title - HEFAISTOS">
     <meta property="og:description" content="Page description for social sharing.">
     <meta property="og:image" content="https://hefaistos.xyz/assets/og-image.png">
-    <meta property="og:site_name" content="NGRAPHICS">
+    <meta property="og:site_name" content="HEFAISTOS">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Page Title - NGRAPHICS">
+    <meta name="twitter:title" content="Page Title - HEFAISTOS">
     <meta name="twitter:description" content="Page description for Twitter.">
     <meta name="twitter:image" content="https://hefaistos.xyz/assets/og-image.png">
 
@@ -178,7 +251,7 @@ Marketing pages (Landing, Gallery, FAQ) have a different structure with SEO meta
             <div class="logo-group">
                 <div class="logo-mark">...</div>
                 <div class="logo-text">
-                    <span class="logo-title">NGRAPHICS</span>
+                    <span class="logo-title">HEFAISTOS</span>
                 </div>
             </div>
             <nav class="header-nav">
@@ -333,7 +406,7 @@ For scene/setting selection with emoji icons:
 
 ## Option Buttons
 
-For button groups (variations, gender, etc.):
+For button groups (variations, gender, etc.). Uses **pill-shaped buttons** with shadow depth.
 
 ```html
 <div class="model-option">
@@ -346,6 +419,21 @@ For button groups (variations, gender, etc.):
 </div>
 ```
 
+**Pill Button Styling (from styles.css):**
+```css
+.option-btn {
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);  /* Pill shape */
+    box-shadow: var(--shadow-xs);
+    transition: all var(--duration-fast) var(--ease-out);
+}
+.option-btn.active {
+    background: linear-gradient(135deg, var(--apple-blue), var(--apple-indigo));
+    border-color: transparent;
+    box-shadow: var(--shadow-primary);
+}
+```
+
 **JavaScript handler pattern:**
 ```javascript
 document.querySelectorAll('.option-btn[data-option="variations"]').forEach(btn => {
@@ -356,6 +444,257 @@ document.querySelectorAll('.option-btn[data-option="variations"]').forEach(btn =
     });
 });
 ```
+
+---
+
+## Toggle Switches
+
+Use toggle switches (not checkboxes) for binary on/off preferences. The toggle pattern from `styles.css` provides a consistent Apple-style appearance.
+
+### Required Structure
+
+```html
+<label class="toggle-label">
+    <input type="checkbox" class="toggle-checkbox" id="someToggle" checked>
+    <span class="toggle-switch"></span>
+</label>
+```
+
+### Required Elements
+
+| Element | Class | Required | Notes |
+|---------|-------|----------|-------|
+| Container | `.toggle-label` | ✅ | Wraps input and visual switch |
+| Checkbox | `.toggle-checkbox` | ✅ | Hidden but accessible |
+| Visual switch | `.toggle-switch` | ✅ | The visible toggle track |
+
+### Styling (from styles.css)
+
+The toggle uses Apple-style dimensions and colors:
+
+```css
+.toggle-label {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.toggle-checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-switch {
+    display: block;
+    width: 44px;
+    height: 24px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-pill);
+    transition: all var(--duration-fast) var(--ease-spring);
+}
+
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--duration-fast) var(--ease-spring);
+}
+
+.toggle-checkbox:checked + .toggle-switch {
+    background: var(--apple-green);
+    border-color: var(--apple-green);
+}
+
+.toggle-checkbox:checked + .toggle-switch::after {
+    transform: translateX(20px);
+}
+```
+
+### JavaScript Pattern
+
+```javascript
+// Element caching
+elements.someToggle = document.getElementById('someToggle');
+
+// Load saved preference
+state.somePreference = localStorage.getItem('studio_some_pref') !== 'false';
+if (elements.someToggle) {
+    elements.someToggle.checked = state.somePreference;
+    elements.someToggle.addEventListener('change', (e) => {
+        state.somePreference = e.target.checked;
+        localStorage.setItem('studio_some_pref', state.somePreference);
+    });
+}
+```
+
+### WRONG Patterns (Do NOT use)
+
+```html
+<!-- WRONG: Native checkbox without toggle styling -->
+<input type="checkbox" id="someOption">
+
+<!-- WRONG: Custom toggle without proper structure -->
+<div class="toggle" onclick="toggle()">
+    <div class="toggle-knob"></div>
+</div>
+
+<!-- WRONG: Missing toggle-switch span -->
+<label class="toggle-label">
+    <input type="checkbox" class="toggle-checkbox">
+</label>
+```
+
+---
+
+## Auto-Mode Toggle
+
+For "auto-generate on upload" and similar auto-action preferences. Placed near the upload area to indicate immediate behavior.
+
+### Required Structure
+
+```html
+<div class="auto-mode-row">
+    <span class="auto-mode-label">Auto-generate on upload</span>
+    <label class="toggle-label">
+        <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
+        <span class="toggle-switch"></span>
+    </label>
+</div>
+```
+
+### Required CSS
+
+```css
+.auto-mode-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+}
+
+.auto-mode-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+```
+
+### JavaScript Pattern
+
+```javascript
+// State
+const state = {
+    autoMode: true,  // ON by default for 30-second experience
+    // ...
+};
+
+// Load preference (default true)
+state.autoMode = localStorage.getItem('studio_auto_mode') !== 'false';
+if (elements.autoModeToggle) {
+    elements.autoModeToggle.checked = state.autoMode;
+    elements.autoModeToggle.addEventListener('change', (e) => {
+        state.autoMode = e.target.checked;
+        localStorage.setItem('studio_auto_mode', state.autoMode);
+    });
+}
+
+// In upload handler - chain generation if auto mode
+async function onImageUpload(base64, file) {
+    // ... setup preview ...
+
+    if (state.autoMode && state.apiKey) {
+        showLoading();
+        updateLoadingStatus('Analyzing product...');
+        await analyzeProductImage();  // This chains to generation
+    } else {
+        await analyzeProductImage();  // Just analyze, don't generate
+    }
+}
+```
+
+### Behavior
+
+| Auto Mode | Has API Key | Behavior |
+|-----------|-------------|----------|
+| ON | Yes | Upload → Analyze → Auto-generate → Result |
+| ON | No | Upload → Prompt for API key |
+| OFF | Yes | Upload → Analyze → Wait for Generate click |
+| OFF | No | Upload → Wait for Generate click |
+
+---
+
+## Basic Settings Collapsible
+
+Hides basic options (Scene, Mood, Time, etc.) behind a collapsible section. Uses the same pattern as Advanced Options but collapsed by default for a cleaner initial experience.
+
+### Required Structure
+
+```html
+<div class="advanced-section" id="basicSection">
+    <button type="button" class="advanced-toggle" id="basicToggle" aria-expanded="false" aria-controls="basicContent">
+        <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <span>Basic Settings</span>
+        <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+        </svg>
+    </button>
+    <div class="advanced-content" id="basicContent">
+        <!-- Scene, Mood, Time options inside -->
+    </div>
+</div>
+```
+
+### Icon Options
+
+Use the **sun-ray settings icon** for Basic Settings (same as API Settings):
+
+```html
+<svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+</svg>
+```
+
+### JavaScript Pattern
+
+```javascript
+// Element caching
+elements.basicSection = document.getElementById('basicSection');
+elements.basicToggle = document.getElementById('basicToggle');
+
+// Toggle handler (same pattern as advanced)
+if (elements.basicToggle) {
+    elements.basicToggle.addEventListener('click', () => {
+        const isOpen = elements.basicSection?.classList.toggle('open');
+        elements.basicToggle.setAttribute('aria-expanded', isOpen);
+    });
+}
+```
+
+### Key Differences from Advanced Options
+
+| Aspect | Basic Settings | Advanced Options |
+|--------|---------------|------------------|
+| Default state | Collapsed | Collapsed |
+| Icon | Sun-ray gear | 3-slider mixer |
+| Contents | Scene, Mood, Time | AI Model, Seed, Variations |
+| Purpose | Reduce initial options | Power user controls |
 
 ---
 
@@ -808,6 +1147,145 @@ Every page CSS file MUST include these icon size rules:
 
 ---
 
+## Bottom Panels Layout
+
+An alternative layout that places History and Favorites as separate panels below the main content area. Used when the right panel is fully dedicated to output/result display.
+
+### When to Use
+
+- When the right panel needs full width for result display
+- When History and Favorites benefit from a wider, more prominent view
+- When you want panels hidden until they have content
+
+### Required Structure
+
+```html
+</main>  <!-- End of main content -->
+
+<!-- Bottom Panels (outside main, hidden by default) -->
+<section class="bottom-panels-section">
+    <div class="bottom-panels-grid">
+        <!-- History Panel -->
+        <div class="bottom-panel" id="historySection" style="display: none;">
+            <div class="history-header">
+                <h3>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    Recent
+                    <span class="history-count" id="historyCount">0</span>
+                </h3>
+                <button type="button" class="btn-text" id="clearHistoryBtn">Clear</button>
+            </div>
+            <div class="history-grid" id="historyGrid"></div>
+        </div>
+
+        <!-- Favorites Panel -->
+        <div class="bottom-panel" id="favoritesSection" style="display: none;">
+            <div class="favorites-header">
+                <div class="favorites-title-group">
+                    <h3 class="favorites-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        Favorites
+                    </h3>
+                    <span class="favorites-count" id="favoritesCount">0</span>
+                </div>
+                <button type="button" class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
+            </div>
+            <div class="favorites-grid" id="favoritesGrid"></div>
+        </div>
+    </div>
+</section>
+```
+
+### Required CSS
+
+```css
+/* Bottom Panels Section */
+.bottom-panels-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-8) var(--space-8);
+}
+
+.bottom-panels-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.bottom-panel {
+    background: var(--bg-base);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+}
+
+/* Mobile: Stack vertically */
+@media (max-width: 768px) {
+    .bottom-panels-grid {
+        grid-template-columns: 1fr;
+    }
+}
+```
+
+### JavaScript Pattern
+
+Show/hide panels based on content:
+
+```javascript
+function renderHistory() {
+    const items = history.getAll();
+
+    // Show/hide entire panel based on content
+    if (elements.historySection) {
+        elements.historySection.style.display = items.length === 0 ? 'none' : 'block';
+    }
+
+    if (elements.historyCount) {
+        elements.historyCount.textContent = items.length;
+    }
+
+    if (elements.historyGrid) {
+        elements.historyGrid.innerHTML = items.map(item => `
+            <div class="history-item" data-id="${item.id}">
+                <img src="${item.thumbnail}" alt="" loading="lazy">
+            </div>
+        `).join('');
+    }
+}
+
+function renderFavorites() {
+    const items = favorites.getAll();
+
+    // Show/hide entire panel based on content
+    if (elements.favoritesSection) {
+        elements.favoritesSection.style.display = items.length === 0 ? 'none' : 'block';
+    }
+
+    if (elements.favoritesCount) {
+        elements.favoritesCount.textContent = items.length;
+    }
+
+    // ... render grid ...
+}
+```
+
+### Key Differences from Nested Layout
+
+| Aspect | Nested Layout | Bottom Panels Layout |
+|--------|--------------|---------------------|
+| Location | Inside right panel | Below main content |
+| Width | Panel width (~60%) | Full page width (1200px) |
+| Visibility | Always visible | Hidden when empty |
+| Structure | Favorites inside History | Two separate panels |
+| Use case | Compact, always visible | Prominent, content-first |
+
+---
+
 ## Lightbox
 
 ```html
@@ -1137,6 +1615,18 @@ Before finishing a new page, verify:
 - [ ] Letter-spacing is `0` or negative (no wide tracking)
 - [ ] Font weights are 500-600 (not 700-800)
 - [ ] Label icons use muted colors (not accent)
+- [ ] Option buttons use pill shape (`--radius-pill`)
+- [ ] Toggle switches are 44x24px with Apple green when on
+- [ ] Inputs have inner shadow and double ring focus
+- [ ] Shadows are soft (low opacity, multi-layer)
+- [ ] Modal uses spring animation with scale + translate
+
+**Auto-Mode & Progressive Disclosure:**
+- [ ] Auto-mode toggle uses `.toggle-label` + `.toggle-checkbox` + `.toggle-switch` pattern
+- [ ] Auto-mode is ON by default for 30-second experience
+- [ ] Auto-mode preference persists to localStorage
+- [ ] Basic Settings uses collapsible section (collapsed by default)
+- [ ] If using Bottom Panels layout, panels are hidden when empty
 
 **JavaScript:**
 - [ ] Element access uses null checks or optional chaining (`?.`)
@@ -1165,7 +1655,7 @@ All pages include a consistent footer:
 <!-- Footer -->
 <footer class="site-footer">
     <div class="footer-content">
-        <span>NGRAPHICS</span>
+        <span>HEFAISTOS</span>
         <span class="footer-divider">•</span>
         <span>Powered by OpenRouter AI</span>
         <span class="footer-divider">•</span>
@@ -1190,7 +1680,7 @@ Place the footer after all scripts, before `</body>`.
 | `--apple-red` | `#FF3B30` | Errors |
 | `--apple-orange` | `#FF9500` | Warnings |
 | `--apple-yellow` | `#FFCC00` | Favorites |
-| `--apple-green` | `#34C759` | Success |
+| `--apple-green` | `#34C759` | Success, toggles |
 | `--apple-teal` | `#5AC8FA` | Info |
 
 ### Gradient Presets
@@ -1205,45 +1695,460 @@ Place the footer after all scripts, before `</body>`.
 |---------|----------|-------|
 | Page background | `--bg-deep` | `#09090b` |
 | Panel background | `--bg-base` | `#18181b` |
-| Elevated surface | `--bg-elevated` | `#27272a` |
-| Input/button bg | `--bg-surface` | `#3f3f46` |
-| Hover state | `--bg-hover` | `#52525b` |
+| Elevated surface | `--bg-elevated` | `#1c1c1f` |
+| Input/button bg | `--bg-surface` | `#28282c` |
+| Hover state | `--bg-hover` | `#35353a` |
 
-### Typography
-- **Font**: Inter (not Outfit)
-- **Weights**: 400 (body), 500 (labels/buttons), 600 (titles)
-- **Letter-spacing**: `0` or `-0.01em` (never wide tracking)
+### Typography Scale
+| Variable | Value | Usage |
+|----------|-------|-------|
+| `--font-size-xs` | `0.6875rem` (11px) | Tiny labels |
+| `--font-size-sm` | `0.75rem` (12px) | Small labels |
+| `--font-size-base` | `0.8125rem` (13px) | Body text |
+| `--font-size-md` | `0.875rem` (14px) | Inputs |
+| `--font-size-lg` | `0.9375rem` (15px) | Section titles |
+| `--font-size-xl` | `1.0625rem` (17px) | Panel titles |
+
+### Font Weights
+| Variable | Value | Usage |
+|----------|-------|-------|
+| `--font-weight-normal` | `400` | Body text |
+| `--font-weight-medium` | `500` | Labels, buttons |
+| `--font-weight-semibold` | `600` | Titles |
+
+### 8px Spacing Grid
+| Variable | Value | Usage |
+|----------|-------|-------|
+| `--space-1` | `4px` | Tight |
+| `--space-2` | `8px` | Compact |
+| `--space-3` | `12px` | Default |
+| `--space-4` | `16px` | Comfortable |
+| `--space-6` | `24px` | Panel padding |
+| `--space-8` | `32px` | Page margins |
+| `--space-10` | `40px` | Panel gaps |
 
 ### Border Radius
 | Variable | Value | Usage |
 |----------|-------|-------|
-| `--radius-sm` | `8px` | Buttons, badges |
-| `--radius-md` | `12px` | Inputs, cards |
-| `--radius-lg` | `16px` | Panels |
+| `--radius-xs` | `4px` | Checkboxes |
+| `--radius-sm` | `6px` | Inputs |
+| `--radius-md` | `10px` | Cards |
+| `--radius-lg` | `14px` | Panels |
+| `--radius-pill` | `9999px` | Pill buttons, toggles |
 
-### Shadows
+### Shadows (Soft)
 ```css
---shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
---shadow-md: 0 4px 12px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.1);
+--shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+--shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+--shadow-md: 0 4px 6px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+--shadow-lg: 0 10px 20px rgba(0,0,0,0.08), 0 4px 8px rgba(0,0,0,0.04);
+--shadow-primary: 0 4px 14px rgba(0,122,255,0.25);  /* Active accent buttons */
+```
+
+### Glassmorphism
+```css
+--glass-bg: rgba(28, 28, 30, 0.72);
+--glass-blur: saturate(180%) blur(20px);
+--glass-border: rgba(255, 255, 255, 0.08);
 ```
 
 ### Animations
-- **Easing**: `cubic-bezier(0.25, 0.1, 0.25, 1)` (no bounce)
-- **Duration**: 0.2s (fast), 0.3s (normal)
+- **Easing**: `--ease-out: cubic-bezier(0.25, 0.1, 0.25, 1)` (smooth)
+- **Spring**: `--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1)` (with overshoot, for toggles)
+- **Duration**: `0.15s` (fast), `0.25s` (normal), `0.4s` (slow/modals)
 - **Hover**: Use `filter: brightness(1.1)` instead of `translateY`
 - **Active**: Use `transform: scale(0.99)` for press feedback
 - **Gradient animation**: `gradientShift 8s ease infinite` for generate button
+- **Modal**: `animation: modal-enter 0.4s var(--ease-spring)` with scale + translate
+
+### Toggle Switches (Premium)
+```css
+.toggle-switch {
+    width: 44px;
+    height: 24px;
+    border-radius: var(--radius-pill);
+}
+.toggle-switch::after {
+    width: 18px;
+    height: 18px;
+    transition: transform var(--duration-normal) var(--ease-spring);
+}
+.toggle-checkbox:checked + .toggle-switch {
+    background: var(--apple-green);  /* Apple green when on */
+}
+```
+
+### Input Fields (Refined)
+```css
+.input-field {
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);  /* Inner shadow */
+}
+.input-field:focus {
+    box-shadow: 0 0 0 3px var(--accent-subtle), 0 0 0 1px var(--apple-blue);  /* Double ring */
+}
+```
+
+### Section Dividers (Fade-Edge)
+```css
+.config-section::after {
+    background: linear-gradient(90deg,
+        transparent 0%, var(--border-subtle) 20%,
+        var(--border-subtle) 80%, transparent 100%
+    );
+}
+```
+
+### Layout
+- **Max-width**: `1280px` (narrower for focus)
+- **Grid gap**: `var(--space-10)` (40px between panels)
 
 ### Anti-Patterns (Avoid)
-1. Glow/neon effects
-2. Bounce/spring animations
-3. Wide letter-spacing
-4. Font weights above 600
-5. Noise overlays
-6. Ambient orbs/blurs
-7. `translateY` hover effects
-8. Solid colors on primary CTAs (use gradients)
+1. Glow/neon effects (use soft shadows)
+2. Wide letter-spacing (keep 0 or negative)
+3. Font weights above 600
+4. Noise overlays
+5. Ambient orbs/blurs
+6. `translateY` hover effects (use brightness)
+7. Solid colors on primary CTAs (use gradients)
+8. Hard shadow edges (use multi-layer soft shadows)
 
 ---
 
-*Last updated: Jan 2026*
+## Beautiful Gradients, Animations & Decorations
+
+### Gradient Patterns
+
+**Animated Rainbow CTA**
+```css
+.btn-generate {
+    background: linear-gradient(135deg,
+        var(--apple-blue), var(--apple-indigo),
+        var(--apple-purple), var(--apple-pink),
+        var(--apple-blue));
+    background-size: 300% 300%;
+    animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+```
+
+**Active State Gradient**
+```css
+.option-btn.active,
+.toggle-checkbox:checked + .toggle-switch {
+    background: linear-gradient(135deg, var(--apple-blue), var(--apple-indigo));
+}
+```
+
+**Subtle Mesh Background**
+```css
+.panel {
+    background:
+        radial-gradient(at 40% 20%, rgba(0, 122, 255, 0.06) 0px, transparent 50%),
+        radial-gradient(at 80% 0%, rgba(175, 82, 222, 0.04) 0px, transparent 50%),
+        var(--bg-base);
+}
+```
+
+**Glass Effect**
+```css
+.modal-content {
+    background: rgba(28, 28, 30, 0.85);
+    backdrop-filter: saturate(180%) blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+```
+
+**Gradient Border**
+```css
+.featured-card {
+    border: 1px solid transparent;
+    background:
+        linear-gradient(var(--bg-base), var(--bg-base)) padding-box,
+        linear-gradient(135deg, var(--apple-blue), var(--apple-purple)) border-box;
+}
+```
+
+### Animation Patterns
+
+**Modal Entrance**
+```css
+@keyframes modal-enter {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+.modal-content { animation: modal-enter 0.4s var(--ease-spring); }
+```
+
+**Slide Up Items**
+```css
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.history-item { animation: slideUp 0.3s var(--ease-out); }
+```
+
+**Shimmer Loading**
+```css
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--bg-surface) 0%,
+        var(--bg-hover) 50%,
+        var(--bg-surface) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+```
+
+**Pulse Glow**
+```css
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(0, 122, 255, 0); }
+}
+
+.generating { animation: pulseGlow 2s ease-in-out infinite; }
+```
+
+**Spinner**
+```css
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.loading-spinner { animation: spin 1s linear infinite; }
+```
+
+**Stagger Children**
+```css
+.grid-items > * {
+    opacity: 0;
+    animation: slideUp 0.3s var(--ease-out) forwards;
+}
+.grid-items > *:nth-child(1) { animation-delay: 0.05s; }
+.grid-items > *:nth-child(2) { animation-delay: 0.1s; }
+.grid-items > *:nth-child(3) { animation-delay: 0.15s; }
+```
+
+### Decorative Elements
+
+**Section Divider (Fade Edge)**
+```css
+.section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        var(--border-subtle) 20%,
+        var(--border-subtle) 80%,
+        transparent 100%
+    );
+}
+```
+
+**Accent Top Line**
+```css
+.panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 20%;
+    height: 2px;
+    background: linear-gradient(90deg,
+        transparent,
+        var(--apple-blue),
+        var(--apple-indigo),
+        transparent
+    );
+    border-radius: 2px;
+}
+```
+
+**Corner Glow**
+```css
+.hero::after {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(
+        circle,
+        rgba(0, 122, 255, 0.1) 0%,
+        transparent 60%
+    );
+    pointer-events: none;
+}
+```
+
+**Card Shine**
+```css
+.card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.05),
+        transparent
+    );
+    pointer-events: none;
+}
+```
+
+**Dot Grid Background**
+```css
+.background-pattern {
+    background-image: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.04) 1px,
+        transparent 1px
+    );
+    background-size: 24px 24px;
+}
+```
+
+### Hover & Interactive States
+
+**Button Hover (Brightness)**
+```css
+.btn:hover {
+    filter: brightness(1.1);
+    transition: filter 0.15s ease;
+}
+
+.btn:active {
+    filter: brightness(0.95);
+    transform: scale(0.99);
+}
+```
+
+**Card Hover (Lift)**
+```css
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+```
+
+**Focus Ring (Double Ring)**
+```css
+.input:focus {
+    border-color: var(--apple-blue);
+    box-shadow:
+        0 0 0 3px var(--accent-subtle),
+        0 0 0 1px var(--apple-blue);
+    outline: none;
+}
+```
+
+**Icon Hover Glow**
+```css
+.icon-btn:hover svg {
+    filter: drop-shadow(0 0 4px var(--apple-blue));
+}
+```
+
+### Complete Examples
+
+**Premium History Item**
+```css
+.history-item {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: all 0.2s ease;
+    animation: slideUp 0.3s ease-out;
+}
+
+.history-item:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.history-item img {
+    transition: transform 0.3s ease;
+}
+
+.history-item:hover img {
+    transform: scale(1.02);
+}
+```
+
+**Glowing Upload Zone**
+```css
+.upload-zone {
+    border: 2px dashed var(--border-default);
+    border-radius: var(--radius-lg);
+    transition: all 0.2s ease;
+}
+
+.upload-zone:hover,
+.upload-zone.dragover {
+    border-color: var(--apple-blue);
+    background: rgba(0, 122, 255, 0.05);
+    box-shadow: 0 0 20px rgba(0, 122, 255, 0.1);
+}
+```
+
+**Animated Status Badge**
+```css
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    background: var(--bg-surface);
+    font-size: 0.75rem;
+}
+
+.status-badge.connected::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--apple-green);
+    animation: pulseGlow 2s ease infinite;
+}
+```
+
+---
+
+*Last updated: January 2026*

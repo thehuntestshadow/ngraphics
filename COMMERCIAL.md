@@ -1,8 +1,8 @@
-# NGRAPHICS Commercial Strategy
+# HEFAISTOS Commercial Strategy
 
 ## Executive Summary
 
-Transform NGRAPHICS from a free tool to a sustainable SaaS business while maintaining the "works without account" philosophy that makes it accessible.
+Transform HEFAISTOS from a free tool to a sustainable SaaS business while maintaining the "works without account" philosophy that makes it accessible.
 
 ---
 
@@ -224,7 +224,7 @@ serve(async (req) => {
       'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': 'https://hefaistos.xyz',
-      'X-Title': 'NGRAPHICS'
+      'X-Title': 'HEFAISTOS'
     },
     body: JSON.stringify(body)
   })

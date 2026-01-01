@@ -1,6 +1,6 @@
 ---
 name: update-docs
-description: Update NGRAPHICS documentation files (CLAUDE.md, ROADMAP.md, UI_PATTERNS.md) to reflect current codebase state.
+description: Update HEFAISTOS documentation files (CLAUDE.md, ROADMAP.md, UI_PATTERNS.md) to reflect current codebase state.
 ---
 
 # Update Documentation Skill

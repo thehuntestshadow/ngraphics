@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-NGRAPHICS - AI E-commerce Toolkit. A collection of web-based tools that e-commerce brands need and use every day. Uses the OpenRouter API with various AI models (Gemini, GPT, Flux, Recraft) for image generation and text content.
+HEFAISTOS - AI E-commerce Toolkit. A collection of web-based tools that e-commerce brands need and use every day. Uses the OpenRouter API with various AI models (Gemini, GPT, Flux, Recraft) for image generation and text content.
 
 **What we build:**
 - **Visual content tools** - Product photography, infographics, lifestyle shots, model photos
@@ -102,6 +102,130 @@ The application consists of multiple pages, each with its own JS file, sharing c
 Uses OpenRouter's `/api/v1/chat/completions` endpoint with `modalities: ['image', 'text']` for image generation. Response handling supports multiple formats (Gemini's inline_data, OpenAI's image_url, base64 responses).
 
 **Default Model:** Gemini 3 Pro - Best balance of quality and speed for image generation tasks.
+
+---
+
+## Studio Page Contract
+
+All studio pages follow a standardized structure for consistency. Use `studio-bootstrap.js` for shared initialization.
+
+### Required File Structure
+
+```javascript
+// ============================================
+// 1. CONSTANTS & CONFIG
+// ============================================
+const STUDIO_ID = 'studio-name';  // Used for storage keys
+
+// ============================================
+// 2. STATE & ELEMENTS
+// ============================================
+const state = { /* ... */ };
+let elements = {};
+
+function initElements() {
+    elements = { /* cached DOM references */ };
+}
+
+// ============================================
+// 3. LIFECYCLE
+// ============================================
+let initialized = false;
+
+async function init() {
+    if (initialized) return;
+    initialized = true;
+
+    initElements();
+
+    await StudioBootstrap.init({
+        studioId: STUDIO_ID,
+        elements: {
+            themeToggle: document.getElementById('themeToggle'),
+            accountContainer: document.getElementById('accountContainer')
+        },
+        shortcuts: {
+            generate: handleGenerate,
+            download: handleDownload,
+            escape: closeModals
+        }
+    });
+
+    StudioBootstrap.loadApiKey(state, elements.apiKey, elements.apiStatus);
+    setupEventListeners();
+    renderHistory();
+    renderFavorites();
+}
+
+// ============================================
+// 4. PROMPT GENERATION
+// ============================================
+function generatePrompt() { /* ... */ }
+
+// ============================================
+// 5. API INTEGRATION
+// ============================================
+async function handleGenerate() {
+    // Use api.generateImage() or api.analyzeImage()
+}
+
+// ============================================
+// 6. UI & RENDER FUNCTIONS
+// ============================================
+function showLoading() { /* ... */ }
+function showResult() { /* ... */ }
+function renderHistory() { /* ... */ }
+function renderFavorites() { /* ... */ }
+
+// ============================================
+// 7. EVENT BINDING
+// ============================================
+function setupEventListeners() { /* ... */ }
+
+// ============================================
+// 8. INITIALIZATION
+// ============================================
+document.addEventListener('DOMContentLoaded', init);
+if (document.readyState !== 'loading') init();
+```
+
+### Storage Key Convention
+
+All storage keys follow `{studioId}_{type}` pattern:
+
+```javascript
+const history = new SharedHistory(`${STUDIO_ID}_history`, 20);
+const favorites = new SharedFavorites(`${STUDIO_ID}_favorites`, 30);
+```
+
+### HTML Script Includes
+
+Studios must include `studio-bootstrap.js` before their main JS file:
+
+```html
+<script src="studio-bootstrap.js"></script>
+<script src="lifestyle.js"></script>
+```
+
+### API Usage
+
+Always use the unified API client instead of direct `fetch()`:
+
+```javascript
+// Image generation
+const result = await api.generateImage({
+    model: 'google/gemini-3-pro-image-preview',
+    prompt: generatePrompt(),
+    images: [state.uploadedImageBase64],
+    seed: state.seed || undefined
+});
+
+// Image analysis
+const result = await api.analyzeImage({
+    image: state.uploadedImageBase64,
+    prompt: 'Analyze this product...'
+});
+```
 
 ---
 

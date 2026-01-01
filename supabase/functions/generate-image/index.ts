@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Generate Image Edge Function
+ * HEFAISTOS - Generate Image Edge Function
  * Proxies OpenRouter API calls for paid users
  *
  * Deploy: supabase functions deploy generate-image
@@ -130,7 +130,7 @@ serve(async (req) => {
         'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': 'https://hefaistos.xyz',
-        'X-Title': 'NGRAPHICS'
+        'X-Title': 'HEFAISTOS'
       },
       body: JSON.stringify(openrouterPayload)
     })

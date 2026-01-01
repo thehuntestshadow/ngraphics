@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Configuration
+ * HEFAISTOS - Configuration
  * Environment-specific settings
  *
  * For local development: Edit values below
@@ -30,7 +30,7 @@ const CONFIG = {
 
     // App settings
     APP_URL: typeof window !== 'undefined' ? window.location.origin : 'https://hefaistos.xyz',
-    APP_NAME: 'NGRAPHICS',
+    APP_NAME: 'HEFAISTOS',
 
     // Feature flags
     FEATURES: {

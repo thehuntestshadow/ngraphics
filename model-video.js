@@ -165,6 +165,7 @@ function initElements() {
     // Output
     elements.resultPlaceholder = document.getElementById('resultPlaceholder');
     elements.loadingContainer = document.getElementById('loadingContainer');
+    elements.skeletonGrid = document.getElementById('skeletonGrid');
     elements.resultDisplay = document.getElementById('resultDisplay');
     elements.resultVideo = document.getElementById('resultVideo');
     elements.progressBar = document.getElementById('progressBar');
@@ -397,6 +398,12 @@ function updateProgress(percent) {
     elements.progressText.textContent = `${Math.round(percent)}%`;
 }
 
+function updateSkeletonGrid(count = 1) {
+    if (!elements.skeletonGrid) return;
+    elements.skeletonGrid.className = `skeleton-grid cols-1`;
+    elements.skeletonGrid.innerHTML = `<div class="skeleton-card"><div class="skeleton-image"></div></div>`;
+}
+
 // Show loading state
 function showLoading() {
     elements.resultPlaceholder.style.display = 'none';
@@ -404,6 +411,7 @@ function showLoading() {
     elements.loadingContainer.style.display = 'flex';
     elements.generateBtn.disabled = true;
     updateProgress(0);
+    updateSkeletonGrid(1);
 }
 
 // Hide loading state

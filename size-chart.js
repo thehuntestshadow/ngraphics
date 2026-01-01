@@ -1,5 +1,5 @@
 /**
- * Size Chart Generator - NGRAPHICS
+ * Size Chart Generator - HEFAISTOS
  * Generate professional size charts for product listings
  */
 
@@ -437,7 +437,7 @@ async function generateSingleChart(apiKey, prompt, seed) {
                 'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json',
                 'HTTP-Referer': window.location.origin,
-                'X-Title': 'NGRAPHICS Size Chart'
+                'X-Title': 'HEFAISTOS Size Chart'
             },
             body: JSON.stringify(body)
         });

@@ -1,11 +1,11 @@
 ---
 name: visual-test
-description: Run visual regression tests across all NGRAPHICS pages using Playwright. Captures screenshots and compares against baselines.
+description: Run visual regression tests across all HEFAISTOS pages using Playwright. Captures screenshots and compares against baselines.
 ---
 
 # Visual Test Skill
 
-Automated visual regression testing for all NGRAPHICS pages.
+Automated visual regression testing for all HEFAISTOS pages.
 
 ## Usage
 

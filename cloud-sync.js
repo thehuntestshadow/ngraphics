@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Cloud Sync Manager
+ * HEFAISTOS - Cloud Sync Manager
  * Handles bidirectional sync between local storage and Supabase
  *
  * Usage:

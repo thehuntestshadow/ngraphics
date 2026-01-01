@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Shared Utilities
+ * HEFAISTOS - Shared Utilities
  * Common functionality used across Infographics and Model Studio pages
  */
 
@@ -95,7 +95,7 @@ const SharedHeader = {
     icons: {
         logo: `<svg viewBox="0 0 40 40" fill="none">
             <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
-            <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
+            <path d="M12 28V12h4v6h8v-6h4v16h-4v-6h-8v6z" fill="currentColor"/>
         </svg>`,
         dashboard: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="9" rx="1"/>
@@ -239,14 +239,11 @@ const SharedHeader = {
             <div class="header-content">
                 <div class="logo-group">
                     ${isHome ? '' : '<a href="index.html" class="logo-link">'}
-                        <div class="logo-mark">
-                            ${this.icons.logo}
-                        </div>
-                        <div class="logo-text">
-                            <span class="logo-title">NGRAPHICS</span>
-                            <span class="logo-subtitle">${currentConfig.subtitle}</span>
-                        </div>
+                        <span class="brand-name">HEFAISTOS</span>
                     ${isHome ? '' : '</a>'}
+                </div>
+                <div class="page-title-center">
+                    <span class="page-title-text">${currentConfig.subtitle}</span>
                 </div>
                 <div class="header-controls">
                     ${navLink}
@@ -377,7 +374,7 @@ const SharedRequest = {
     /**
      * Make API request with retry logic
      */
-    async makeRequest(requestBody, apiKey, appTitle = 'NGRAPHICS', retries = 3) {
+    async makeRequest(requestBody, apiKey, appTitle = 'HEFAISTOS', retries = 3) {
         let lastError;
 
         for (let attempt = 1; attempt <= retries; attempt++) {
@@ -2717,7 +2714,7 @@ const SharedDashboard = {
         localStorage.setItem('ngraphics_last_cleanup', now.toString());
 
         if (totalRemoved > 0 || totalIndexedDb > 0) {
-            console.log(`[NGRAPHICS] Auto-cleanup: ${totalRemoved} old items, ${totalIndexedDb} IndexedDB entries`);
+            console.log(`[HEFAISTOS] Auto-cleanup: ${totalRemoved} old items, ${totalIndexedDb} IndexedDB entries`);
         }
 
         return { totalRemoved, totalIndexedDb, results };

@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Landing Page
+ * HEFAISTOS - Landing Page
  * Handles theme, scroll animations, and interactivity
  */
 

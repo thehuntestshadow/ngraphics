@@ -1,6 +1,6 @@
 # ROADMAP.md
 
-Feature ideas and future plans for NGRAPHICS. Not commitments, just possibilities.
+Feature ideas and future plans for HEFAISTOS. Not commitments, just possibilities.
 
 ---
 
@@ -8,13 +8,13 @@ Feature ideas and future plans for NGRAPHICS. Not commitments, just possibilitie
 
 **For** e-commerce sellers, marketers, and small brands
 **Who** need professional product visuals and marketing tools but lack design resources or budget
-**NGRAPHICS** is an AI-powered toolkit that generates marketing-ready content in seconds
+**HEFAISTOS** is an AI-powered toolkit that generates marketing-ready content in seconds
 **Unlike** hiring photographers, designers, or copywriters, or learning complex tools
 **We** let anyone create professional marketing materials with just a product image and a few clicks
 
 ### Core Philosophy
 
-NGRAPHICS is a collection of **tools that e-commerce brands need and use every day**. Not just image generation - any tool that helps sellers create better listings, marketing materials, and product content.
+HEFAISTOS is a collection of **tools that e-commerce brands need and use every day**. Not just image generation - any tool that helps sellers create better listings, marketing materials, and product content.
 
 **Tool categories we build:**
 - **Visual content** - Product photography, infographics, lifestyle shots, model photos
@@ -99,6 +99,8 @@ Before adding a new tool, it should:
 - Seed control for reproducibility
 - Negative prompts
 - Multiple variations (1, 2, 4)
+- Auto-generate mode (upload → result in 30 seconds)
+- Progressive disclosure (Basic/Advanced settings collapsed)
 
 ### Infrastructure (v4.0)
 - **Supabase Auth** - Optional accounts for cloud sync
@@ -278,6 +280,9 @@ See **Future Page Ideas** section below for comprehensive list of potential new 
 - [ ] ESLint/Prettier setup
 
 ### UX Improvements
+- [x] Auto-generate mode (upload → magic → result in 30 seconds)
+- [x] Progressive disclosure (Basic Settings collapsed by default)
+- [x] Bottom panels layout (History/Favorites hidden when empty)
 - [ ] Tooltips for all options
 - [ ] Drag-and-drop reordering everywhere
 - [ ] Skeleton loading states
@@ -289,37 +294,37 @@ See **Future Page Ideas** section below for comprehensive list of potential new 
 Goal: Premium, refined visual design inspired by Apple's design language.
 
 *Typography & Spacing*
-- [ ] Refined type scale with better hierarchy
-- [ ] Generous whitespace and breathing room
-- [ ] Consistent 8px grid system
-- [ ] Lighter font weights for elegance
+- [x] Refined type scale with better hierarchy
+- [x] Generous whitespace and breathing room
+- [x] Consistent 8px grid system
+- [x] Lighter font weights for elegance (500-600, not 700-800)
 
 *Visual Polish*
-- [ ] Softer shadows (layered, diffused)
-- [ ] Subtle glassmorphism effects (backdrop blur)
-- [ ] Refined border radius (more consistent)
-- [ ] Muted, sophisticated color palette
-- [ ] Smooth gradient overlays
+- [x] Softer shadows (layered, diffused)
+- [x] Subtle glassmorphism effects (backdrop blur)
+- [x] Refined border radius (more consistent)
+- [x] Muted, sophisticated color palette (Apple colors)
+- [x] Smooth gradient overlays (animated rainbow CTA)
 
 *Motion & Interaction*
-- [ ] Refined micro-animations (easing curves)
-- [ ] Smooth state transitions (hover, focus, active)
+- [x] Refined micro-animations (easing curves)
+- [x] Smooth state transitions (hover, focus, active)
 - [ ] Subtle parallax/depth effects
-- [ ] Spring-based animations for modals
+- [x] Spring-based animations for modals
 - [ ] Loading states with elegant shimmer
 
 *Component Refinement*
-- [ ] Redesigned buttons (pill shapes, subtle depth)
-- [ ] Floating card style with soft elevation
-- [ ] Refined input fields (cleaner focus states)
+- [x] Redesigned buttons (pill shapes, subtle depth)
+- [x] Floating card style with soft elevation
+- [x] Refined input fields (cleaner focus states, double ring)
 - [ ] Improved dropdown/select styling
-- [ ] Premium toggle switches
+- [x] Premium toggle switches (44x24px, Apple green)
 
 *Layout*
-- [ ] More breathing room between sections
-- [ ] Centered, narrower content width
-- [ ] Better visual grouping with subtle dividers
-- [ ] Refined panel/card structure
+- [x] More breathing room between sections
+- [x] Centered, narrower content width (1200px max)
+- [x] Better visual grouping with subtle dividers (fade-edge)
+- [x] Refined panel/card structure
 
 ### API
 - [x] Unified API client (api.js)
@@ -1073,5 +1078,5 @@ Core generation across 3 studios with history/favorites
 
 ---
 
-*Last updated: Dec 2025 (v4.1 - Usage dashboard, upgrade prompts, commercial launch)*
+*Last updated: Jan 2026 (v4.1 - Auto-generate mode, Apple design refresh, progressive disclosure)*
 *Add ideas freely - this is a living document*

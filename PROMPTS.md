@@ -1,6 +1,6 @@
 # PROMPTS.md
 
-Prompt engineering patterns for AI image generation in NGRAPHICS.
+Prompt engineering patterns for AI image generation in HEFAISTOS.
 
 ---
 

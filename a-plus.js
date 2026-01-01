@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - A+ Content Generator
+ * HEFAISTOS - A+ Content Generator
  * Generate Amazon A+ Content (Enhanced Brand Content) modules
  */
 

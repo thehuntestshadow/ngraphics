@@ -102,8 +102,16 @@
                                 </svg>
                             </span>
                             Product Image
+                            <span class="required-badge">Required</span>
                         </div>
-                        <div class="upload-zone" id="uploadArea">
+                        <div class="auto-mode-row">
+                            <span class="auto-mode-label">Auto-generate on upload</span>
+                            <label class="toggle-label">
+                                <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
+                                <span class="toggle-switch"></span>
+                            </label>
+                        </div>
+                        <div class="upload-zone" id="uploadArea" style="background: var(--bg-tertiary);">
                             <div class="upload-content">
                                 <div class="upload-icon">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -128,121 +136,104 @@
                         </div>
                     </div>
 
-                    <!-- Scene Selection -->
-                    <div class="config-section">
-                        <div class="section-label" data-tooltip="Environment where the product will be photographed. Each scene has its own atmosphere.">
-                            <span class="label-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-                                    <polyline points="9 22 9 12 15 12 15 22"/>
-                                </svg>
-                            </span>
-                            Scene
-                        </div>
-                        <div class="scene-grid">
-                            <button type="button" class="scene-btn active" data-scene="living-room">
-                                <span class="scene-icon">🛋️</span>
-                                <span>Living Room</span>
-                            </button>
-                            <button type="button" class="scene-btn" data-scene="kitchen">
-                                <span class="scene-icon">🍳</span>
-                                <span>Kitchen</span>
-                            </button>
-                            <button type="button" class="scene-btn" data-scene="bedroom">
-                                <span class="scene-icon">🛏️</span>
-                                <span>Bedroom</span>
-                            </button>
-                            <button type="button" class="scene-btn" data-scene="office">
-                                <span class="scene-icon">🏢</span>
-                                <span>Office</span>
-                            </button>
-                            <button type="button" class="scene-btn" data-scene="outdoor">
-                                <span class="scene-icon">🌳</span>
-                                <span>Outdoor</span>
-                            </button>
-                            <button type="button" class="scene-btn" data-scene="cafe">
-                                <span class="scene-icon">☕</span>
-                                <span>Café</span>
-                            </button>
-                            <button type="button" class="scene-btn" data-scene="beach">
-                                <span class="scene-icon">🏖️</span>
-                                <span>Beach</span>
-                            </button>
-                            <button type="button" class="scene-btn" data-scene="gym">
-                                <span class="scene-icon">🏋️</span>
-                                <span>Gym</span>
-                            </button>
-                            <button type="button" class="scene-btn" data-scene="garden">
-                                <span class="scene-icon">🌷</span>
-                                <span>Garden</span>
-                            </button>
-                            <button type="button" class="scene-btn" data-scene="urban">
-                                <span class="scene-icon">🌆</span>
-                                <span>Urban</span>
-                            </button>
-                        </div>
+                    <!-- Basic Settings (Collapsible) -->
+                    <div class="advanced-section" id="basicSection">
+                        <button type="button" class="advanced-toggle" id="basicToggle" aria-expanded="false" aria-controls="basicContent">
+                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                            </svg>
+                            <span>Basic Settings</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="advanced-content" id="basicContent">
+                            <!-- Scene Selection -->
+                            <div class="option-group">
+                                <div class="option-label">Scene</div>
+                                <div class="scene-grid">
+                                    <button type="button" class="scene-btn active" data-scene="living-room">
+                                        <span class="scene-icon">🛋️</span>
+                                        <span>Living Room</span>
+                                    </button>
+                                    <button type="button" class="scene-btn" data-scene="kitchen">
+                                        <span class="scene-icon">🍳</span>
+                                        <span>Kitchen</span>
+                                    </button>
+                                    <button type="button" class="scene-btn" data-scene="bedroom">
+                                        <span class="scene-icon">🛏️</span>
+                                        <span>Bedroom</span>
+                                    </button>
+                                    <button type="button" class="scene-btn" data-scene="office">
+                                        <span class="scene-icon">🏢</span>
+                                        <span>Office</span>
+                                    </button>
+                                    <button type="button" class="scene-btn" data-scene="outdoor">
+                                        <span class="scene-icon">🌳</span>
+                                        <span>Outdoor</span>
+                                    </button>
+                                    <button type="button" class="scene-btn" data-scene="cafe">
+                                        <span class="scene-icon">☕</span>
+                                        <span>Café</span>
+                                    </button>
+                                    <button type="button" class="scene-btn" data-scene="beach">
+                                        <span class="scene-icon">🏖️</span>
+                                        <span>Beach</span>
+                                    </button>
+                                    <button type="button" class="scene-btn" data-scene="gym">
+                                        <span class="scene-icon">🏋️</span>
+                                        <span>Gym</span>
+                                    </button>
+                                    <button type="button" class="scene-btn" data-scene="garden">
+                                        <span class="scene-icon">🌷</span>
+                                        <span>Garden</span>
+                                    </button>
+                                    <button type="button" class="scene-btn" data-scene="urban">
+                                        <span class="scene-icon">🌆</span>
+                                        <span>Urban</span>
+                                    </button>
+                                </div>
+                                <!-- Scene Details (optional) -->
+                                <div class="scene-details-section">
+                                    <input type="text" class="input-field" id="sceneDetails"
+                                           placeholder="Optional: Describe specific details (e.g., marble countertop, cozy armchair)" aria-label="Scene details">
+                                    <p class="scene-details-hint">Add custom details to personalize the scene</p>
+                                </div>
+                            </div>
 
-                        <!-- Scene Details (optional) -->
-                        <div class="scene-details-section">
-                            <input type="text" class="input-field" id="sceneDetails"
-                                   placeholder="Optional: Describe specific details (e.g., marble countertop, cozy armchair)" aria-label="Scene details">
-                            <p class="scene-details-hint">Add custom details to personalize the scene</p>
-                        </div>
-                    </div>
+                            <!-- Mood -->
+                            <div class="option-group">
+                                <div class="option-label">Mood</div>
+                                <div class="mood-grid">
+                                    <button type="button" class="mood-btn active" data-mood="cozy">Cozy</button>
+                                    <button type="button" class="mood-btn" data-mood="energetic">Energetic</button>
+                                    <button type="button" class="mood-btn" data-mood="calm">Calm</button>
+                                    <button type="button" class="mood-btn" data-mood="luxurious">Luxurious</button>
+                                    <button type="button" class="mood-btn" data-mood="minimal">Minimal</button>
+                                    <button type="button" class="mood-btn" data-mood="vibrant">Vibrant</button>
+                                    <button type="button" class="mood-btn" data-mood="romantic">Romantic</button>
+                                    <button type="button" class="mood-btn" data-mood="fresh">Fresh</button>
+                                </div>
+                            </div>
 
-                    <!-- Mood & Atmosphere -->
-                    <div class="config-section">
-                        <div class="section-label" data-tooltip="Overall feeling of the photo. Cozy is warm and inviting, Minimal is clean, Luxurious is upscale.">
-                            <span class="label-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="5"/>
-                                    <line x1="12" y1="1" x2="12" y2="3"/>
-                                    <line x1="12" y1="21" x2="12" y2="23"/>
-                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                                    <line x1="1" y1="12" x2="3" y2="12"/>
-                                    <line x1="21" y1="12" x2="23" y2="12"/>
-                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                                </svg>
-                            </span>
-                            Mood
-                        </div>
-                        <div class="mood-grid">
-                            <button type="button" class="mood-btn active" data-mood="cozy">Cozy</button>
-                            <button type="button" class="mood-btn" data-mood="energetic">Energetic</button>
-                            <button type="button" class="mood-btn" data-mood="calm">Calm</button>
-                            <button type="button" class="mood-btn" data-mood="luxurious">Luxurious</button>
-                            <button type="button" class="mood-btn" data-mood="minimal">Minimal</button>
-                            <button type="button" class="mood-btn" data-mood="vibrant">Vibrant</button>
-                            <button type="button" class="mood-btn" data-mood="romantic">Romantic</button>
-                            <button type="button" class="mood-btn" data-mood="fresh">Fresh</button>
-                        </div>
-                    </div>
-
-                    <!-- Time of Day -->
-                    <div class="config-section">
-                        <div class="section-label" data-tooltip="Lighting based on time. Golden Hour gives warm tones, Morning is soft, Night is moody.">
-                            <span class="label-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <polyline points="12 6 12 12 16 14"/>
-                                </svg>
-                            </span>
-                            Time of Day
-                        </div>
-                        <div class="time-grid">
-                            <button type="button" class="time-btn" data-time="morning">Morning</button>
-                            <button type="button" class="time-btn" data-time="midday">Midday</button>
-                            <button type="button" class="time-btn active" data-time="golden-hour">Golden Hour</button>
-                            <button type="button" class="time-btn" data-time="evening">Evening</button>
-                            <button type="button" class="time-btn" data-time="night">Night</button>
+                            <!-- Time of Day -->
+                            <div class="option-group">
+                                <div class="option-label">Time of Day</div>
+                                <div class="time-grid">
+                                    <button type="button" class="time-btn" data-time="morning">Morning</button>
+                                    <button type="button" class="time-btn" data-time="midday">Midday</button>
+                                    <button type="button" class="time-btn active" data-time="golden-hour">Golden Hour</button>
+                                    <button type="button" class="time-btn" data-time="evening">Evening</button>
+                                    <button type="button" class="time-btn" data-time="night">Night</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Advanced Options -->
                     <div class="advanced-section" id="advancedSection">
-                        <button type="button" class="advanced-toggle" id="advancedToggle">
+                        <button type="button" class="advanced-toggle" id="advancedToggle" aria-expanded="false" aria-controls="advancedContent">
                             <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="4" y1="21" x2="4" y2="14"/>
                                 <line x1="4" y1="10" x2="4" y2="3"/>
@@ -430,7 +421,7 @@
 
                     <!-- API Settings (Collapsible) -->
                     <div class="settings-section" id="settingsSection">
-                        <button type="button" class="settings-toggle" id="settingsToggle">
+                        <button type="button" class="settings-toggle" id="settingsToggle" aria-expanded="false" aria-controls="settingsContent">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="3"/>
                                 <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
@@ -516,10 +507,24 @@
                     </div>
 
                     <!-- Loading State -->
-                    <div class="output-loading" id="loadingContainer">
-                        <div class="loading-spinner"></div>
-                        <p class="loading-text" id="loadingStatus">Creating lifestyle photo...</p>
-                        <p class="loading-subtext" id="loadingSubtext">This may take 10-30 seconds</p>
+                    <div class="output-loading with-skeleton" id="loadingContainer" style="display: none;">
+                        <div class="skeleton-wrapper" id="skeletonWrapper">
+                            <div class="skeleton-grid cols-1" id="skeletonGrid">
+                                <div class="skeleton-card">
+                                    <div class="skeleton-image"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="loading-info">
+                            <div class="loader">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                                </svg>
+                            </div>
+                            <p class="loading-text" id="loadingStatus">Creating lifestyle photo...</p>
+                            <p class="loading-subtext" id="loadingSubtext">This may take 10-30 seconds</p>
+                            <button type="button" class="btn-secondary btn-sm" id="cancelBtn">Cancel</button>
+                        </div>
                     </div>
 
                     <!-- Result Display -->
@@ -583,61 +588,46 @@
                     </div>
                 </div>
 
-                <!-- History -->
-                <div class="history-section" id="historySection">
-                    <div class="history-header">
-                        <h3>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polyline points="12 6 12 12 16 14"/>
-                            </svg>
-                            Recent
-                            <span class="history-count" id="historyCount">0</span>
-                        </h3>
-                        <button type="button" class="btn-text" id="clearHistoryBtn">Clear</button>
-                    </div>
-                    <div class="history-grid" id="historyGrid"></div>
-                    <div class="empty-state" id="historyEmpty">
-                        <div class="empty-state-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-                                <polyline points="9 22 9 12 15 12 15 22"/>
-                            </svg>
-                        </div>
-                        <p class="empty-state-title">No images yet</p>
-                        <p class="empty-state-text">Generated photos will appear here</p>
-                    </div>
-
-                    <!-- Favorites Section -->
-                    <div class="favorites-section" id="favoritesSection">
-                        <div class="favorites-header">
-                            <div class="favorites-title-group">
-                                <h3 class="favorites-title">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                    </svg>
-                                    Favorites
-                                </h3>
-                                <span class="favorites-count" id="favoritesCount">0</span>
-                            </div>
-                            <button class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
-                        </div>
-                        <div class="favorites-grid" id="favoritesGrid"></div>
-                        <div class="empty-state" id="favoritesEmpty">
-                            <div class="empty-state-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                </svg>
-                            </div>
-                            <p class="empty-state-title">No favorites yet</p>
-                            <p class="empty-state-text">Click the star on generated images to save them</p>
-                        </div>
-                    </div>
-                </div>
             </section>
 
         </div>
     </main>
+
+    <!-- History & Favorites Section -->
+    <section class="bottom-panels-section">
+        <div class="bottom-panels-grid">
+            <!-- History Panel (hidden until items exist) -->
+            <div class="bottom-panel" id="historySection" style="display: none;">
+                <div class="bottom-panel-header">
+                    <div class="bottom-panel-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        Recent
+                        <span class="history-count" id="historyCount">0</span>
+                    </div>
+                    <button type="button" class="btn-text" id="clearHistoryBtn">Clear</button>
+                </div>
+                <div class="history-grid" id="historyGrid"></div>
+            </div>
+
+            <!-- Favorites Panel (hidden until items exist) -->
+            <div class="bottom-panel" id="favoritesSection" style="display: none;">
+                <div class="bottom-panel-header">
+                    <div class="bottom-panel-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        Favorites
+                        <span class="favorites-count" id="favoritesCount">0</span>
+                    </div>
+                    <button class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
+                </div>
+                <div class="favorites-grid" id="favoritesGrid"></div>
+            </div>
+        </div>
+    </section>
 
     <!-- Lightbox -->
     <div class="lightbox" id="lightbox">
@@ -748,6 +738,7 @@
     <script src="supabase.js"></script>
     <script src="auth-ui.js"></script>
     <script src="cloud-sync.js"></script>
+    <script src="studio-bootstrap.js"></script>
     <script src="lifestyle.js"></script>
 </body>
 </html>

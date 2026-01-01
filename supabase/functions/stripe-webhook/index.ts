@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Stripe Webhook Edge Function
+ * HEFAISTOS - Stripe Webhook Edge Function
  * Handles Stripe events for subscriptions and payments
  *
  * Deploy: supabase functions deploy stripe-webhook

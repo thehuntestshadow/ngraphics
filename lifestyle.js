@@ -1,7 +1,16 @@
 /**
- * Lifestyle Studio - NGRAPHICS
+ * Lifestyle Studio - HEFAISTOS
  * Pure product photography in lifestyle environments
+ *
+ * Follows the Studio Page Contract pattern.
+ * See CLAUDE.md for documentation.
  */
+
+// ============================================
+// CONSTANTS & CONFIG
+// ============================================
+
+const STUDIO_ID = 'lifestyle';
 
 // ============================================
 // STATE
@@ -12,6 +21,7 @@ const state = {
     apiKey: '',
     uploadedImage: null,
     uploadedImageBase64: null,
+    autoMode: true,  // Auto-generate on upload (30 seconds to fun)
     generatedImageUrl: null,
     generatedImages: [],
     history: [],
@@ -49,6 +59,63 @@ const state = {
     styleReferenceBase64: null
 };
 
+// Generation abort controller
+let abortController = null;
+
+// Friendly error message mapping (per STUDIO.md philosophy)
+const ERROR_MESSAGES = {
+    'rate_limit': 'Too many requests. Please wait a moment and try again.',
+    'rate_limit_exceeded': 'Too many requests. Please wait a moment and try again.',
+    'invalid_api_key': 'API key not recognized. Check your key in Settings.',
+    'invalid_key': 'API key not recognized. Check your key in Settings.',
+    'insufficient_credits': 'Out of credits. Add more in your OpenRouter account.',
+    'insufficient_balance': 'Out of credits. Add more in your OpenRouter account.',
+    'content_policy': 'Image couldn\'t be processed. Try a different photo.',
+    'content_filtered': 'Image couldn\'t be processed. Try a different photo.',
+    'timeout': 'Request timed out. Please try again.',
+    'network': 'Network issue. Check your connection and try again.',
+    'server_error': 'Server temporarily unavailable. Please try again.',
+    'model_unavailable': 'AI model is busy. Please try again in a moment.'
+};
+
+function mapErrorToFriendly(error) {
+    // Check for known error codes/types
+    const code = error?.code || error?.type || error?.error?.code || '';
+    const message = error?.message || error?.error?.message || '';
+
+    // Direct code match
+    if (ERROR_MESSAGES[code]) {
+        return ERROR_MESSAGES[code];
+    }
+
+    // Check message for keywords
+    const lowerMessage = message.toLowerCase();
+    if (lowerMessage.includes('rate limit') || lowerMessage.includes('429')) {
+        return ERROR_MESSAGES['rate_limit'];
+    }
+    if (lowerMessage.includes('api key') || lowerMessage.includes('unauthorized') || lowerMessage.includes('401')) {
+        return ERROR_MESSAGES['invalid_api_key'];
+    }
+    if (lowerMessage.includes('credit') || lowerMessage.includes('balance') || lowerMessage.includes('insufficient')) {
+        return ERROR_MESSAGES['insufficient_credits'];
+    }
+    if (lowerMessage.includes('content') || lowerMessage.includes('policy') || lowerMessage.includes('filtered')) {
+        return ERROR_MESSAGES['content_policy'];
+    }
+    if (lowerMessage.includes('timeout') || lowerMessage.includes('timed out')) {
+        return ERROR_MESSAGES['timeout'];
+    }
+    if (lowerMessage.includes('network') || lowerMessage.includes('fetch') || lowerMessage.includes('connection')) {
+        return ERROR_MESSAGES['network'];
+    }
+    if (lowerMessage.includes('500') || lowerMessage.includes('502') || lowerMessage.includes('503')) {
+        return ERROR_MESSAGES['server_error'];
+    }
+
+    // Fallback to original message or generic
+    return message || 'Something went wrong. Please try again.';
+}
+
 // ============================================
 // ELEMENTS
 // ============================================
@@ -66,9 +133,14 @@ function initElements() {
         imagePreview: document.getElementById('imagePreview'),
         previewImg: document.getElementById('previewImg'),
         removeImage: document.getElementById('removeImage'),
+        autoModeToggle: document.getElementById('autoModeToggle'),
 
         // Scene
         sceneDetails: document.getElementById('sceneDetails'),
+
+        // Basic Settings
+        basicSection: document.getElementById('basicSection'),
+        basicToggle: document.getElementById('basicToggle'),
 
         // Advanced
         advancedSection: document.getElementById('advancedSection'),
@@ -102,6 +174,8 @@ function initElements() {
         loadingContainer: document.getElementById('loadingContainer'),
         loadingStatus: document.getElementById('loadingStatus'),
         loadingSubtext: document.getElementById('loadingSubtext'),
+        cancelBtn: document.getElementById('cancelBtn'),
+        skeletonGrid: document.getElementById('skeletonGrid'),
         resultDisplay: document.getElementById('resultDisplay'),
         resultImage: document.getElementById('resultImage'),
         resultGrid: document.getElementById('resultGrid'),
@@ -120,14 +194,12 @@ function initElements() {
         historySection: document.getElementById('historySection'),
         historyGrid: document.getElementById('historyGrid'),
         historyCount: document.getElementById('historyCount'),
-        historyEmpty: document.getElementById('historyEmpty'),
         clearHistoryBtn: document.getElementById('clearHistoryBtn'),
 
         // Favorites
         favoritesSection: document.getElementById('favoritesSection'),
         favoritesGrid: document.getElementById('favoritesGrid'),
         favoritesCount: document.getElementById('favoritesCount'),
-        favoritesEmpty: document.getElementById('favoritesEmpty'),
         clearFavoritesBtn: document.getElementById('clearFavoritesBtn'),
 
         // Messages
@@ -268,8 +340,9 @@ const colorGradingDescriptions = {
 // HISTORY & FAVORITES
 // ============================================
 
-const history = new SharedHistory('lifestyle_studio_history', 20);
-const favorites = new SharedFavorites('lifestyle_studio_favorites', 30);
+// Storage keys follow pattern: {studioId}_{type}
+const history = new SharedHistory(`${STUDIO_ID}_history`, 20);
+const favorites = new SharedFavorites(`${STUDIO_ID}_favorites`, 30);
 
 // ============================================
 // PROMPT GENERATION
@@ -359,6 +432,17 @@ Style influence: ${styleStrength}%`;
 // API INTEGRATION
 // ============================================
 
+function handleCancel() {
+    if (abortController) {
+        abortController.abort();
+        abortController = null;
+    }
+    // Also cancel any pending API requests
+    api.cancelAllRequests?.();
+    hideLoading();
+    showSuccess('Generation cancelled');
+}
+
 async function generateLifestylePhoto() {
     if (!state.apiKey) {
         showError('Please enter your OpenRouter API key first');
@@ -369,6 +453,9 @@ async function generateLifestylePhoto() {
         showError('Please upload a product image first');
         return;
     }
+
+    // Create abort controller for this generation
+    abortController = new AbortController();
 
     showLoading();
     updateLoadingStatus('Preparing scene...');
@@ -413,57 +500,37 @@ async function generateLifestylePhoto() {
         showSuccess('Lifestyle photo generated successfully!');
 
     } catch (error) {
+        // Don't show error if cancelled by user
+        if (error.name === 'AbortError' || abortController?.signal?.aborted) {
+            return;
+        }
         hideLoading();
-        showError(error.message || 'Failed to generate image');
+        showError(mapErrorToFriendly(error));
+    } finally {
+        abortController = null;
     }
 }
 
 async function makeGenerationRequest(prompt, seed) {
-    const messageContent = [
-        { type: 'text', text: prompt },
-        { type: 'image_url', image_url: { url: state.uploadedImageBase64 } }
-    ];
+    const images = [state.uploadedImageBase64];
 
     // Add style reference image if provided
     if (state.styleReferenceBase64) {
-        messageContent.push({ type: 'image_url', image_url: { url: state.styleReferenceBase64 } });
+        images.push(state.styleReferenceBase64);
     }
 
-    const requestBody = {
+    const result = await api.generateImage({
         model: elements.aiModel?.value || 'google/gemini-3-pro-image-preview',
-        messages: [{ role: 'user', content: messageContent }],
-        modalities: ['image', 'text'],
-        max_tokens: 4096
-    };
-
-    if (seed) {
-        requestBody.seed = seed;
-    }
-
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${state.apiKey}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': window.location.origin,
-            'X-Title': 'NGRAPHICS Lifestyle Studio'
-        },
-        body: JSON.stringify(requestBody)
+        prompt,
+        images,
+        seed: seed || undefined
     });
 
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error?.message || `API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const imageUrl = SharedRequest.extractImageFromResponse(data);
-
-    if (!imageUrl) {
+    if (!result.image) {
         throw new Error('No image in response');
     }
 
-    return imageUrl;
+    return result.image;
 }
 
 async function adjustPhoto() {
@@ -496,28 +563,34 @@ Please regenerate the lifestyle photo with these specific changes applied while 
         elements.feedbackTextarea.value = '';
     } catch (error) {
         hideLoading();
-        showError(error.message || 'Failed to adjust photo');
+        showError(mapErrorToFriendly(error));
     }
 }
 
 async function analyzeProductImage() {
-    if (!state.uploadedImageBase64 || !state.apiKey) return;
+    if (!state.uploadedImageBase64) return;
+
+    // If no API key, prompt user in auto mode
+    if (!state.apiKey) {
+        if (state.autoMode) {
+            // Open settings section so user can add API key
+            elements.settingsSection?.classList.add('open');
+            elements.settingsToggle?.setAttribute('aria-expanded', 'true');
+            showError('Add your API key to enable auto-generation');
+        }
+        return;
+    }
+
+    // Show loading immediately for auto mode
+    if (state.autoMode) {
+        showLoading();
+        updateLoadingStatus('Analyzing product...');
+    }
 
     try {
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${state.apiKey}`,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': window.location.origin,
-                'X-Title': 'NGRAPHICS Lifestyle Studio'
-            },
-            body: JSON.stringify({
-                model: 'google/gemini-3-pro-image-preview',
-                messages: [{
-                    role: 'user',
-                    content: [
-                        { type: 'text', text: `Analyze this product image and suggest the best lifestyle scene and mood for photography. Return ONLY valid JSON (no markdown):
+        const result = await api.analyzeImage({
+            image: state.uploadedImageBase64,
+            prompt: `Analyze this product image and suggest the best lifestyle scene and mood for photography. Return ONLY valid JSON (no markdown):
 {
   "productType": "brief description of product type",
   "suggestedScene": "living-room|kitchen|bedroom|office|outdoor|cafe|beach|gym|garden|urban",
@@ -525,18 +598,10 @@ async function analyzeProductImage() {
   "suggestedTime": "morning|midday|golden-hour|evening|night"
 }
 
-Choose based on what would look most natural and appealing for this specific product.` },
-                        { type: 'image_url', image_url: { url: state.uploadedImageBase64 } }
-                    ]
-                }],
-                max_tokens: 200
-            })
+Choose based on what would look most natural and appealing for this specific product.`
         });
 
-        if (!response.ok) return;
-
-        const data = await response.json();
-        let content = data.choices?.[0]?.message?.content?.trim() || '';
+        let content = result.text || '';
         content = content.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
 
         const analysis = JSON.parse(content);
@@ -571,16 +636,36 @@ Choose based on what would look most natural and appealing for this specific pro
             }
         }
 
-        showSuccess('Scene settings suggested based on your product!');
+        // Auto-generate if enabled
+        if (state.autoMode) {
+            updateLoadingStatus('Generating lifestyle photo...');
+            await generateLifestylePhoto();
+        } else {
+            showSuccess('Scene settings suggested based on your product!');
+        }
     } catch (error) {
-        // Silently fail - auto-analysis is a nice-to-have
         console.log('Auto-analysis skipped:', error.message);
+        // Still try to generate with defaults if auto mode
+        if (state.autoMode) {
+            updateLoadingStatus('Generating lifestyle photo...');
+            await generateLifestylePhoto();
+        }
     }
 }
 
 // ============================================
 // UI FUNCTIONS
 // ============================================
+
+function updateSkeletonGrid(count = 1) {
+    if (!elements.skeletonGrid) return;
+    elements.skeletonGrid.className = `skeleton-grid cols-${count > 1 ? (count === 2 ? 2 : 4) : 1}`;
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        html += `<div class="skeleton-card"><div class="skeleton-image"></div></div>`;
+    }
+    elements.skeletonGrid.innerHTML = html;
+}
 
 function showLoading() {
     elements.resultPlaceholder.style.display = 'none';
@@ -589,6 +674,7 @@ function showLoading() {
     elements.loadingSubtext.textContent = 'This may take 10-30 seconds';
     elements.generateBtn.disabled = true;
     elements.generateBtn.classList.add('loading');
+    updateSkeletonGrid(state.variations || 1);
 }
 
 function hideLoading() {
@@ -696,9 +782,9 @@ function renderHistory() {
         elements.historyCount.textContent = items.length;
     }
 
-    // Show/hide empty state
-    if (elements.historyEmpty) {
-        elements.historyEmpty.style.display = items.length === 0 ? 'block' : 'none';
+    // Hide entire panel if empty
+    if (elements.historySection) {
+        elements.historySection.style.display = items.length === 0 ? 'none' : 'block';
     }
 
     if (items.length === 0) {
@@ -763,9 +849,9 @@ function renderFavorites() {
         elements.favoritesCount.textContent = items.length;
     }
 
-    // Show/hide empty state
-    if (elements.favoritesEmpty) {
-        elements.favoritesEmpty.style.display = items.length === 0 ? 'block' : 'none';
+    // Hide entire panel if empty
+    if (elements.favoritesSection) {
+        elements.favoritesSection.style.display = items.length === 0 ? 'none' : 'block';
     }
 
     if (items.length === 0) {
@@ -1037,11 +1123,24 @@ function handleStyleReferenceUpload(file) {
 // ============================================
 
 function setupEventListeners() {
+    // Auto mode toggle - load persisted preference
+    state.autoMode = localStorage.getItem('lifestyle_auto_mode') !== 'false';
+    if (elements.autoModeToggle) {
+        elements.autoModeToggle.checked = state.autoMode;
+        elements.autoModeToggle.addEventListener('change', (e) => {
+            state.autoMode = e.target.checked;
+            localStorage.setItem('lifestyle_auto_mode', state.autoMode);
+        });
+    }
+
     // Form submit
     elements.lifestyleForm?.addEventListener('submit', (e) => {
         e.preventDefault();
         generateLifestylePhoto();
     });
+
+    // Cancel generation
+    elements.cancelBtn?.addEventListener('click', handleCancel);
 
     // Image upload
     SharedUpload.setup(elements.uploadArea, elements.productPhoto, {
@@ -1107,14 +1206,22 @@ function setupEventListeners() {
         state.sceneDetails = e.target.value;
     });
 
+    // Basic Settings toggle
+    elements.basicToggle?.addEventListener('click', () => {
+        const isOpen = elements.basicSection.classList.toggle('open');
+        elements.basicToggle.setAttribute('aria-expanded', isOpen);
+    });
+
     // Advanced toggle
     elements.advancedToggle?.addEventListener('click', () => {
-        elements.advancedSection.classList.toggle('open');
+        const isOpen = elements.advancedSection.classList.toggle('open');
+        elements.advancedToggle.setAttribute('aria-expanded', isOpen);
     });
 
     // Settings toggle
     elements.settingsToggle?.addEventListener('click', () => {
-        elements.settingsSection.classList.toggle('open');
+        const isOpen = elements.settingsSection.classList.toggle('open');
+        elements.settingsToggle.setAttribute('aria-expanded', isOpen);
     });
 
     // Style Reference upload
@@ -1147,11 +1254,7 @@ function setupEventListeners() {
     // API key handling
     elements.apiKey?.addEventListener('change', () => {
         const key = elements.apiKey.value.trim();
-        if (key) {
-            state.apiKey = key;
-            SharedAPI.saveKey(key);
-            SharedUI.updateApiStatus(elements.apiStatus, true);
-        }
+        StudioBootstrap.saveApiKey(key, state, elements.apiStatus);
     });
 
     elements.toggleApiKey?.addEventListener('click', () => {
@@ -1289,102 +1392,57 @@ function setupEventListeners() {
         }
     });
 
-    // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-        // Ctrl+Enter to generate
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-            e.preventDefault();
-            generateLifestylePhoto();
-        }
-        // Ctrl+D to download
-        if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
-            e.preventDefault();
-            downloadImage();
-        }
-        // Escape to close modals
-        if (e.key === 'Escape') {
-            closeLightbox();
-            closeFavoritesModal();
-        }
-    });
+    // Note: Keyboard shortcuts (Ctrl+Enter, Ctrl+D, Escape) are handled by StudioBootstrap
 }
 
 // ============================================
 // INITIALIZATION
 // ============================================
 
-function loadApiKey() {
-    const savedKey = SharedAPI.getKey();
-    if (savedKey) {
-        state.apiKey = savedKey;
-        elements.apiKey.value = savedKey;
-        SharedUI.updateApiStatus(elements.apiStatus, true);
-    }
-}
-
-function loadHistory() {
-    history.load();
-    state.history = history.getAll();
-    renderHistory();
-}
-
 let initialized = false;
 
-function init() {
+async function init() {
     if (initialized) return;
     initialized = true;
 
-    // Header is pre-rendered in HTML to prevent flash
-    // Initialize DOM cache
+    // Cache DOM elements first
     initElements();
 
-    // Initialize theme
-    SharedTheme.init();
-    SharedTheme.setupToggle(document.getElementById('themeToggle'));
-    // Initialize account menu (Supabase auth)
-    const accountContainer = document.getElementById('accountContainer');
-    if (accountContainer && typeof AccountMenu !== 'undefined') {
-        new AccountMenu(accountContainer);
-    }
-
+    // Use StudioBootstrap for common initialization
+    await StudioBootstrap.init({
+        studioId: STUDIO_ID,
+        elements: {
+            themeToggle: document.getElementById('themeToggle'),
+            accountContainer: document.getElementById('accountContainer')
+        },
+        shortcuts: {
+            generate: generateLifestylePhoto,
+            download: downloadImage,
+            escape: () => {
+                closeLightbox();
+                closeFavoritesModal();
+            }
+        }
+    });
 
     // Load API key
-    loadApiKey();
+    StudioBootstrap.loadApiKey(state, elements.apiKey, elements.apiStatus);
 
     // Setup event listeners
     setupEventListeners();
 
-    // Load persisted data
-    loadHistory();
-    favorites.load();
+    // Load and render persisted data
+    state.history = history.getAll();
+    renderHistory();
     renderFavorites();
 
     // Initialize preset selector if available
     if (typeof SharedPresets !== 'undefined' && elements.presetSelectorContainer) {
         SharedPresets.renderSelector(
-            'lifestyle',
+            STUDIO_ID,
             (preset) => {
                 if (preset && preset.settings) {
-                    // Apply preset settings
-                    const settings = preset.settings;
-                    if (settings.scene) {
-                        state.scene = settings.scene;
-                        document.querySelectorAll('.scene-btn').forEach(btn => {
-                            btn.classList.toggle('active', btn.dataset.scene === settings.scene);
-                        });
-                    }
-                    if (settings.mood) {
-                        state.mood = settings.mood;
-                        document.querySelectorAll('.mood-btn').forEach(btn => {
-                            btn.classList.toggle('active', btn.dataset.mood === settings.mood);
-                        });
-                    }
-                    if (settings.timeOfDay) {
-                        state.timeOfDay = settings.timeOfDay;
-                        document.querySelectorAll('.time-btn').forEach(btn => {
-                            btn.classList.toggle('active', btn.dataset.time === settings.timeOfDay);
-                        });
-                    }
+                    applyPresetSettings(preset.settings);
                 }
             },
             () => captureCurrentSettings(),
@@ -1394,22 +1452,47 @@ function init() {
 
     // Initialize cost estimator if available
     if (typeof SharedCostEstimator !== 'undefined' && elements.costEstimatorContainer) {
-        const updateCostEstimator = () => {
-            SharedCostEstimator.renderDisplay(
-                elements.aiModel?.value || 'google/gemini-3-pro-image-preview',
-                state.variations,
-                500,
-                elements.costEstimatorContainer
-            );
-        };
-        updateCostEstimator();
-        elements.aiModel?.addEventListener('change', updateCostEstimator);
-        document.querySelectorAll('[data-option="variations"]').forEach(btn => {
-            btn.addEventListener('click', updateCostEstimator);
-        });
+        initCostEstimator();
     }
 
-    console.log('Lifestyle Studio: Ready!');
+    ngLog?.info?.(`${STUDIO_ID} Studio: Ready!`);
+}
+
+function applyPresetSettings(settings) {
+    if (settings.scene) {
+        state.scene = settings.scene;
+        document.querySelectorAll('.scene-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.scene === settings.scene);
+        });
+    }
+    if (settings.mood) {
+        state.mood = settings.mood;
+        document.querySelectorAll('.mood-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.mood === settings.mood);
+        });
+    }
+    if (settings.timeOfDay) {
+        state.timeOfDay = settings.timeOfDay;
+        document.querySelectorAll('.time-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.time === settings.timeOfDay);
+        });
+    }
+}
+
+function initCostEstimator() {
+    const updateCostEstimator = () => {
+        SharedCostEstimator.renderDisplay(
+            elements.aiModel?.value || 'google/gemini-3-pro-image-preview',
+            state.variations,
+            500,
+            elements.costEstimatorContainer
+        );
+    };
+    updateCostEstimator();
+    elements.aiModel?.addEventListener('change', updateCostEstimator);
+    document.querySelectorAll('[data-option="variations"]').forEach(btn => {
+        btn.addEventListener('click', updateCostEstimator);
+    });
 }
 
 // Initialize when DOM is ready

@@ -590,14 +590,23 @@
                     </div>
 
                     <!-- Loading State -->
-                    <div class="output-loading" id="loadingContainer">
-                        <div class="loader">
-                            <div class="loader-ring"></div>
-                            <div class="loader-ring"></div>
-                            <div class="loader-ring"></div>
+                    <div class="output-loading with-skeleton" id="loadingContainer">
+                        <div class="skeleton-wrapper" id="skeletonWrapper">
+                            <div class="skeleton-grid cols-1" id="skeletonGrid">
+                                <div class="skeleton-card">
+                                    <div class="skeleton-image"></div>
+                                </div>
+                            </div>
                         </div>
-                        <p class="loading-text">Generating...</p>
-                        <p class="loading-status" id="loadingStatus">Creating your packaging mockup...</p>
+                        <div class="loading-info">
+                            <div class="loader">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                                </svg>
+                            </div>
+                            <p class="loading-text">Generating...</p>
+                            <p class="loading-status" id="loadingStatus">Creating your packaging mockup...</p>
+                        </div>
                     </div>
 
                     <!-- Result Display -->

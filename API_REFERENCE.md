@@ -1,6 +1,6 @@
 # API Reference
 
-Code examples and usage patterns for NGRAPHICS shared infrastructure. See CLAUDE.md for architecture overview.
+Code examples and usage patterns for HEFAISTOS shared infrastructure. See CLAUDE.md for architecture overview.
 
 ---
 

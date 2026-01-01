@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Gallery Page
+ * HEFAISTOS - Gallery Page
  * Handles filtering, lightbox, and gallery interactions
  */
 

@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Reusable Web Components
+ * HEFAISTOS - Reusable Web Components
  * Native custom elements for common UI patterns
  */
 

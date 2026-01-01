@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS Internationalization Module
+ * HEFAISTOS Internationalization Module
  * Lightweight i18n for key UI strings
  */
 

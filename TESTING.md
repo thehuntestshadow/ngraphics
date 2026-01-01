@@ -1,12 +1,12 @@
 # TESTING.md
 
-Testing guide for NGRAPHICS - ensuring quality across all studio pages.
+Testing guide for HEFAISTOS - ensuring quality across all studio pages.
 
 ---
 
 ## Overview
 
-NGRAPHICS uses a combination of automated and manual testing approaches:
+HEFAISTOS uses a combination of automated and manual testing approaches:
 
 | Type | Tool | Purpose |
 |------|------|---------|

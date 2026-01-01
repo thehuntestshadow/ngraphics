@@ -1,5 +1,5 @@
 /**
- * FAQ Generator - NGRAPHICS
+ * FAQ Generator - HEFAISTOS
  * Generate product Q&As with text and image output
  */
 
@@ -256,7 +256,7 @@ async function generateFaqs() {
                 'Authorization': `Bearer ${state.apiKey}`,
                 'Content-Type': 'application/json',
                 'HTTP-Referer': window.location.origin,
-                'X-Title': 'NGRAPHICS FAQ Generator'
+                'X-Title': 'HEFAISTOS FAQ Generator'
             },
             body: JSON.stringify({
                 model: state.aiModel || 'google/gemini-3-pro-image-preview',
@@ -358,7 +358,7 @@ async function generateFaqImage() {
                 'Authorization': `Bearer ${state.apiKey}`,
                 'Content-Type': 'application/json',
                 'HTTP-Referer': window.location.origin,
-                'X-Title': 'NGRAPHICS FAQ Generator'
+                'X-Title': 'HEFAISTOS FAQ Generator'
             },
             body: JSON.stringify({
                 model: state.aiModel || 'google/gemini-3-pro-image-preview',

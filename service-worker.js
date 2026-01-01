@@ -1,10 +1,10 @@
 /**
- * NGRAPHICS - Service Worker
+ * HEFAISTOS - Service Worker
  * Handles caching, offline support, and background sync
  */
 
-const CACHE_VERSION = 'v3';
-const CACHE_NAME = `ngraphics-${CACHE_VERSION}`;
+const CACHE_VERSION = 'v4';
+const CACHE_NAME = `hefaistos-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
 const PRECACHE_ASSETS = [
@@ -259,7 +259,7 @@ self.addEventListener('push', event => {
     const data = event.data.json();
 
     event.waitUntil(
-        self.registration.showNotification(data.title || 'NGRAPHICS', {
+        self.registration.showNotification(data.title || 'HEFAISTOS', {
             body: data.body || '',
             icon: data.icon || '/icon-192.png',
             badge: '/badge.png',

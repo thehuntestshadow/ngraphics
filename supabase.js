@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Supabase Integration
+ * HEFAISTOS - Supabase Integration
  * Cloud sync, auth, and storage management
  *
  * Usage:

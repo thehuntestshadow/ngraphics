@@ -113,6 +113,7 @@ function initElements() {
         resultPlaceholder: document.getElementById('resultPlaceholder'),
         loadingContainer: document.getElementById('loadingContainer'),
         loadingStatus: document.getElementById('loadingStatus'),
+        skeletonGrid: document.getElementById('skeletonGrid'),
         resultContainer: document.getElementById('resultContainer'),
         resultImage: document.getElementById('resultImage'),
         resultGrid: document.getElementById('resultGrid'),
@@ -911,11 +912,22 @@ async function clearFavorites() {
 // ============================================
 // UI HELPERS
 // ============================================
+function updateSkeletonGrid(count = 1) {
+    if (!elements.skeletonGrid) return;
+    elements.skeletonGrid.className = `skeleton-grid cols-${count > 1 ? (count === 2 ? 2 : 4) : 1}`;
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        html += `<div class="skeleton-card"><div class="skeleton-image"></div></div>`;
+    }
+    elements.skeletonGrid.innerHTML = html;
+}
+
 function showLoading() {
     elements.resultPlaceholder.style.display = 'none';
     elements.loadingContainer.style.display = 'flex';
     elements.resultContainer.style.display = 'none';
     elements.generateBtn.disabled = true;
+    updateSkeletonGrid(state.variations || 1);
 }
 
 function hideLoading() {

@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Unified API Client
+ * HEFAISTOS - Unified API Client
  * Centralized OpenRouter API handling with retries, rate limiting, and response normalization
  */
 
@@ -504,7 +504,7 @@ class APIClient {
                             'Authorization': `Bearer ${this.apiKey}`,
                             'Content-Type': 'application/json',
                             'HTTP-Referer': window.location.origin,
-                            'X-Title': 'NGRAPHICS'
+                            'X-Title': 'HEFAISTOS'
                         },
                         body: JSON.stringify(body),
                         signal: controller.signal

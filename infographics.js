@@ -310,6 +310,7 @@ function initElements() {
         resultPlaceholder: document.getElementById('resultPlaceholder'),
         loadingContainer: document.getElementById('loadingContainer'),
         loadingStatus: document.getElementById('loadingStatus'),
+        skeletonGrid: document.getElementById('skeletonGrid'),
         resultContainer: document.getElementById('resultContainer'),
         resultImage: document.getElementById('resultImage'),
         resultGrid: document.getElementById('resultGrid'),
@@ -1347,11 +1348,28 @@ function updateLoadingStatus(status) {
 // ============================================
 // UI STATE MANAGEMENT
 // ============================================
+function updateSkeletonGrid(count = 1) {
+    if (!elements.skeletonGrid) return;
+
+    // Update grid class based on count
+    elements.skeletonGrid.className = `skeleton-grid cols-${count > 1 ? (count === 2 ? 2 : 4) : 1}`;
+
+    // Generate skeleton cards
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        html += `<div class="skeleton-card"><div class="skeleton-image"></div></div>`;
+    }
+    elements.skeletonGrid.innerHTML = html;
+}
+
 function showLoading() {
     elements.resultPlaceholder.style.display = 'none';
     elements.resultContainer.classList.remove('visible');
     elements.loadingContainer.classList.add('visible');
     elements.generateBtn.disabled = true;
+
+    // Update skeleton to match expected variations
+    updateSkeletonGrid(state.variations || 1);
 }
 
 function hideLoading() {

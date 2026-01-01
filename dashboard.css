@@ -51,19 +51,26 @@
     transition: color var(--duration-fast) var(--ease-out);
 }
 
-/* Unique gradient for each studio card */
-.studio-nav-card:nth-child(1) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-blue), var(--apple-teal)); }
-.studio-nav-card:nth-child(2) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-purple), var(--apple-pink)); }
-.studio-nav-card:nth-child(3) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-green), var(--apple-teal)); }
-.studio-nav-card:nth-child(4) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-orange), var(--apple-yellow)); }
-.studio-nav-card:nth-child(5) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-pink), var(--apple-red)); }
-.studio-nav-card:nth-child(6) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-indigo), var(--apple-purple)); }
-.studio-nav-card:nth-child(7) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-teal), var(--apple-green)); }
-.studio-nav-card:nth-child(8) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-red), var(--apple-orange)); }
-.studio-nav-card:nth-child(9) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-yellow), var(--apple-orange)); }
-.studio-nav-card:nth-child(10) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-pink), var(--apple-purple)); }
-.studio-nav-card:nth-child(11) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-blue), var(--apple-indigo)); }
-.studio-nav-card:nth-child(12) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-green), var(--apple-blue)); }
+/* Unique gradient for each studio card (19 total) */
+.studio-nav-card:nth-child(1) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-blue), var(--apple-teal)); }       /* Infographics */
+.studio-nav-card:nth-child(2) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-purple), var(--apple-pink)); }     /* Models */
+.studio-nav-card:nth-child(3) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-green), var(--apple-teal)); }      /* Bundle */
+.studio-nav-card:nth-child(4) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-orange), var(--apple-yellow)); }   /* Lifestyle */
+.studio-nav-card:nth-child(5) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-pink), var(--apple-red)); }        /* Copywriter */
+.studio-nav-card:nth-child(6) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-indigo), var(--apple-purple)); }   /* Packaging */
+.studio-nav-card:nth-child(7) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-teal), var(--apple-green)); }      /* Comparison */
+.studio-nav-card:nth-child(8) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-red), var(--apple-orange)); }      /* Size Visualizer */
+.studio-nav-card:nth-child(9) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-yellow), var(--apple-orange)); }   /* FAQ Generator */
+.studio-nav-card:nth-child(10) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-blue), var(--apple-indigo)); }    /* Background */
+.studio-nav-card:nth-child(11) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-yellow), var(--apple-green)); }   /* Badges */
+.studio-nav-card:nth-child(12) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-pink), var(--apple-purple)); }    /* Feature Cards */
+.studio-nav-card:nth-child(13) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-teal), var(--apple-blue)); }      /* Size Chart */
+.studio-nav-card:nth-child(14) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-orange), var(--apple-red)); }     /* A+ Content */
+.studio-nav-card:nth-child(15) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-purple), var(--apple-indigo)); }  /* Product Variants */
+.studio-nav-card:nth-child(16) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-pink), var(--apple-orange)); }    /* Social Studio */
+.studio-nav-card:nth-child(17) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-green), var(--apple-blue)); }     /* Export Center */
+.studio-nav-card:nth-child(18) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-yellow), var(--apple-red)); }     /* Ad Creative */
+.studio-nav-card:nth-child(19) .studio-nav-icon { background: linear-gradient(135deg, var(--apple-purple), var(--apple-blue)); }    /* Model Video */
 
 /* Colorful hover border based on card index */
 .studio-nav-card:nth-child(1):hover { border-color: var(--apple-blue); }
@@ -75,9 +82,16 @@
 .studio-nav-card:nth-child(7):hover { border-color: var(--apple-teal); }
 .studio-nav-card:nth-child(8):hover { border-color: var(--apple-red); }
 .studio-nav-card:nth-child(9):hover { border-color: var(--apple-yellow); }
-.studio-nav-card:nth-child(10):hover { border-color: var(--apple-pink); }
-.studio-nav-card:nth-child(11):hover { border-color: var(--apple-blue); }
-.studio-nav-card:nth-child(12):hover { border-color: var(--apple-green); }
+.studio-nav-card:nth-child(10):hover { border-color: var(--apple-blue); }
+.studio-nav-card:nth-child(11):hover { border-color: var(--apple-yellow); }
+.studio-nav-card:nth-child(12):hover { border-color: var(--apple-pink); }
+.studio-nav-card:nth-child(13):hover { border-color: var(--apple-teal); }
+.studio-nav-card:nth-child(14):hover { border-color: var(--apple-orange); }
+.studio-nav-card:nth-child(15):hover { border-color: var(--apple-purple); }
+.studio-nav-card:nth-child(16):hover { border-color: var(--apple-pink); }
+.studio-nav-card:nth-child(17):hover { border-color: var(--apple-green); }
+.studio-nav-card:nth-child(18):hover { border-color: var(--apple-yellow); }
+.studio-nav-card:nth-child(19):hover { border-color: var(--apple-purple); }
 
 .studio-nav-content {
     display: flex;

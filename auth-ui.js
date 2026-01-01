@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Authentication UI
+ * HEFAISTOS - Authentication UI
  * Login/signup modal and account management
  *
  * Usage:

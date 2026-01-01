@@ -1,5 +1,5 @@
 /**
- * Social Studio - NGRAPHICS
+ * Social Studio - HEFAISTOS
  * Create social media graphics for all platforms
  */
 
@@ -104,6 +104,7 @@ function initElements() {
         // Output
         resultPlaceholder: document.getElementById('resultPlaceholder'),
         loadingContainer: document.getElementById('loadingContainer'),
+        skeletonGrid: document.getElementById('skeletonGrid'),
         resultDisplay: document.getElementById('resultDisplay'),
         resultImage: document.getElementById('resultImage'),
         variationsGrid: document.getElementById('variationsGrid'),
@@ -353,7 +354,7 @@ async function generateSocialGraphic() {
                 'Authorization': `Bearer ${state.apiKey}`,
                 'Content-Type': 'application/json',
                 'HTTP-Referer': window.location.origin,
-                'X-Title': 'NGRAPHICS Social Studio'
+                'X-Title': 'HEFAISTOS Social Studio'
             },
             body: JSON.stringify({
                 model: state.aiModel,
@@ -441,12 +442,23 @@ function extractImageFromResponse(data) {
 // UI FUNCTIONS
 // ============================================
 
+function updateSkeletonGrid(count = 1) {
+    if (!elements.skeletonGrid) return;
+    elements.skeletonGrid.className = `skeleton-grid cols-${count > 1 ? (count === 2 ? 2 : 4) : 1}`;
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        html += `<div class="skeleton-card"><div class="skeleton-image"></div></div>`;
+    }
+    elements.skeletonGrid.innerHTML = html;
+}
+
 function showLoading() {
     elements.resultPlaceholder.style.display = 'none';
     elements.loadingContainer.style.display = 'flex';
     elements.resultDisplay.style.display = 'none';
     elements.variationsGrid.style.display = 'none';
     elements.generateBtn.disabled = true;
+    updateSkeletonGrid(state.variations || 1);
 }
 
 function hideLoading() {

@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Create Checkout Edge Function
+ * HEFAISTOS - Create Checkout Edge Function
  * Creates Stripe checkout sessions for subscriptions and credits
  *
  * Deploy: supabase functions deploy create-checkout

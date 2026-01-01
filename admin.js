@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS Admin Panel
+ * HEFAISTOS Admin Panel
  * User management, analytics, and administrative actions
  */
 

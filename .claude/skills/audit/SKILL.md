@@ -1,11 +1,11 @@
 ---
 name: audit
-description: Audit NGRAPHICS codebase for consistency issues - tooltips, UI patterns, naming conventions, and code duplication.
+description: Audit HEFAISTOS codebase for consistency issues - tooltips, UI patterns, naming conventions, and code duplication.
 ---
 
 # Code Audit Skill
 
-Performs comprehensive consistency checks across all NGRAPHICS pages.
+Performs comprehensive consistency checks across all HEFAISTOS pages.
 
 ## Usage
 
@@ -54,7 +54,7 @@ Find repeated code that could be shared:
 ## Output Format
 
 ```
-AUDIT REPORT: NGRAPHICS
+AUDIT REPORT: HEFAISTOS
 ========================
 
 TOOLTIPS

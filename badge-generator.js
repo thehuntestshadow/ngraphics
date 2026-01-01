@@ -1,5 +1,5 @@
 /**
- * Badge Generator - NGRAPHICS
+ * Badge Generator - HEFAISTOS
  * Create sale and trust badges for e-commerce products
  */
 
@@ -264,7 +264,7 @@ async function generateSingleBadge(prompt, seed, current, total) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${state.apiKey}`,
                 'HTTP-Referer': window.location.origin,
-                'X-Title': 'NGRAPHICS Badge Generator'
+                'X-Title': 'HEFAISTOS Badge Generator'
             },
             body: JSON.stringify({
                 model: state.aiModel,

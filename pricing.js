@@ -1,5 +1,5 @@
 /**
- * NGRAPHICS - Pricing Page
+ * HEFAISTOS - Pricing Page
  * Handles billing toggle, subscription management, and Stripe checkout
  */
 

@@ -1,11 +1,11 @@
 ---
 name: new-studio
-description: Scaffold a new studio page for NGRAPHICS following established patterns. Creates HTML, JS, and CSS files with correct structure.
+description: Scaffold a new studio page for HEFAISTOS following established patterns. Creates HTML, JS, and CSS files with correct structure.
 ---
 
 # New Studio Page Scaffolding
 
-This skill creates a new studio page for NGRAPHICS following all established patterns from `UI_PATTERNS.md`.
+This skill creates a new studio page for HEFAISTOS following all established patterns from `UI_PATTERNS.md`.
 
 ## Usage
 
