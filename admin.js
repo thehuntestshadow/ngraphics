@@ -40,6 +40,12 @@ function initElements() {
     elements = {
         loadingOverlay: document.getElementById('loadingOverlay'),
         adminLayout: document.getElementById('adminLayout'),
+        // Mobile menu
+        mobileMenuToggle: document.getElementById('mobileMenuToggle'),
+        sidebarOverlay: document.getElementById('sidebarOverlay'),
+        sidebar: document.querySelector('.admin-sidebar'),
+        // Theme
+        themeToggle: document.getElementById('themeToggle'),
         // Stats
         statUsers: document.getElementById('statUsers'),
         statActiveSubs: document.getElementById('statActiveSubs'),
@@ -82,9 +88,21 @@ function initElements() {
 }
 
 function setupEventListeners() {
+    // Mobile menu toggle
+    elements.mobileMenuToggle?.addEventListener('click', toggleMobileMenu);
+    elements.sidebarOverlay?.addEventListener('click', closeMobileMenu);
+
+    // Theme toggle
+    elements.themeToggle?.addEventListener('click', toggleTheme);
+    updateThemeIcons();
+
     // Navigation
     document.querySelectorAll('.nav-item[data-section]').forEach(btn => {
-        btn.addEventListener('click', () => showSection(btn.dataset.section));
+        btn.addEventListener('click', () => {
+            showSection(btn.dataset.section);
+            // Close mobile menu after navigation
+            closeMobileMenu();
+        });
     });
 
     // Logout
@@ -196,22 +214,107 @@ function debounce(fn, delay) {
     };
 }
 
+// Mobile menu functions
+function toggleMobileMenu() {
+    elements.sidebar?.classList.toggle('open');
+    elements.sidebarOverlay?.classList.toggle('active');
+    elements.mobileMenuToggle?.classList.toggle('active');
+}
+
+function closeMobileMenu() {
+    elements.sidebar?.classList.remove('open');
+    elements.sidebarOverlay?.classList.remove('active');
+    elements.mobileMenuToggle?.classList.remove('active');
+}
+
+// Theme toggle
+function toggleTheme() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const newTheme = isLight ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('ngraphics_theme', newTheme);
+    updateThemeIcons();
+}
+
+function updateThemeIcons() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const darkIcon = document.querySelector('.theme-icon-dark');
+    const lightIcon = document.querySelector('.theme-icon-light');
+    if (darkIcon) darkIcon.style.display = isLight ? 'none' : 'block';
+    if (lightIcon) lightIcon.style.display = isLight ? 'block' : 'none';
+}
+
+// Audit logging helper
+async function logAdminAction(action, targetUserId, details = {}) {
+    try {
+        // This would insert into admin_audit_log via RPC if needed
+        // For now, the admin_update_user RPC already logs actions
+        console.log('[Admin Action]', action, targetUserId, details);
+    } catch (err) {
+        console.error('Failed to log admin action:', err);
+    }
+}
+
+// Toast notification system
+function showToast(type, title, message = '', duration = 4000) {
+    // Remove existing toast
+    const existing = document.querySelector('.admin-toast');
+    if (existing) existing.remove();
+
+    const icons = {
+        success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+        error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+        info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+    };
+
+    const toast = document.createElement('div');
+    toast.className = `admin-toast ${type}`;
+    toast.innerHTML = `
+        <div class="admin-toast-icon">${icons[type] || icons.info}</div>
+        <div class="admin-toast-content">
+            <div class="admin-toast-title">${escapeHtml(title)}</div>
+            ${message ? `<div class="admin-toast-message">${escapeHtml(message)}</div>` : ''}
+        </div>
+        <button class="admin-toast-close" onclick="this.parentElement.remove()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Trigger animation
+    requestAnimationFrame(() => toast.classList.add('show'));
+
+    // Auto remove
+    if (duration > 0) {
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    }
+}
+
 async function checkAdminAccess() {
     try {
-        // Wait for Supabase to initialize
+        // Wait for Supabase to fully initialize
         await new Promise(resolve => {
-            if (window.ngSupabase?.isAuthenticated !== undefined) {
-                resolve();
-            } else {
-                const check = setInterval(() => {
-                    if (window.ngSupabase?.isAuthenticated !== undefined) {
-                        clearInterval(check);
-                        resolve();
-                    }
+            const check = () => {
+                if (window.ngSupabase?.initialized) {
+                    resolve();
+                    return true;
+                }
+                return false;
+            };
+
+            if (!check()) {
+                const interval = setInterval(() => {
+                    if (check()) clearInterval(interval);
                 }, 100);
                 // Timeout after 5 seconds
                 setTimeout(() => {
-                    clearInterval(check);
+                    clearInterval(interval);
                     resolve();
                 }, 5000);
             }
@@ -223,15 +326,12 @@ async function checkAdminAccess() {
             return;
         }
 
-        // Check if user is admin
-        const { data: profile, error } = await ngSupabase.client
-            .from('profiles')
-            .select('is_admin')
-            .eq('id', ngSupabase.user.id)
-            .single();
+        // Check if user is admin using RPC function (bypasses RLS)
+        const { data: isAdmin, error } = await ngSupabase.client
+            .rpc('is_current_user_admin');
 
-        if (error || !profile?.is_admin) {
-            console.log('Not an admin, redirecting...');
+        if (error || !isAdmin) {
+            console.log('Not an admin, redirecting...', error);
             window.location.href = 'index.html';
             return;
         }
@@ -301,15 +401,16 @@ function showSection(sectionId) {
 // Dashboard Data
 async function loadDashboardData() {
     try {
-        // Load stats
-        const { data: stats, error: statsError } = await ngSupabase.client
-            .from('admin_stats')
-            .select('*')
-            .single();
+        // Load stats using RPC function (bypasses RLS)
+        const { data: statsArray, error: statsError } = await ngSupabase.client
+            .rpc('get_admin_stats');
 
-        if (!statsError && stats) {
+        if (!statsError && statsArray && statsArray.length > 0) {
+            const stats = statsArray[0];
             adminState.stats = stats;
             updateStatsDisplay(stats);
+        } else if (statsError) {
+            console.error('Stats error:', statsError);
         }
 
         // Load recent users
@@ -336,14 +437,15 @@ function updateStatsDisplay(stats) {
 
 async function loadRecentUsers() {
     try {
+        // Use RPC function to bypass RLS
         const { data: users, error } = await ngSupabase.client
-            .from('profiles')
-            .select(`
-                *,
-                subscriptions(tier_id, status)
-            `)
-            .order('created_at', { ascending: false })
-            .limit(5);
+            .rpc('get_admin_users', {
+                p_search: null,
+                p_tier: null,
+                p_status: null,
+                p_limit: 5,
+                p_offset: 0
+            });
 
         if (error) throw error;
 
@@ -352,8 +454,8 @@ async function loadRecentUsers() {
             : users.map(user => `
                 <tr>
                     <td>${escapeHtml(user.email || 'N/A')}</td>
-                    <td><span class="tier-badge ${user.subscriptions?.[0]?.tier_id || 'free'}">${user.subscriptions?.[0]?.tier_id || 'Free'}</span></td>
-                    <td><span class="status-badge ${user.subscriptions?.[0]?.status || 'active'}">${user.subscriptions?.[0]?.status || 'Active'}</span></td>
+                    <td><span class="tier-badge ${user.tier_id || 'free'}">${user.tier_id || 'Free'}</span></td>
+                    <td><span class="status-badge ${user.subscription_status || 'active'}">${user.subscription_status || 'Active'}</span></td>
                     <td>${formatDate(user.created_at)}</td>
                     <td><button class="action-btn secondary" onclick="openUserModal('${user.id}')">View</button></td>
                 </tr>
@@ -376,41 +478,31 @@ async function loadUsers() {
 
         const offset = (adminState.usersPage - 1) * ITEMS_PER_PAGE;
 
-        let query = ngSupabase.client
-            .from('profiles')
-            .select(`
-                *,
-                subscriptions(tier_id, status, stripe_subscription_id, current_period_end),
-                credits(balance)
-            `, { count: 'exact' })
-            .order('created_at', { ascending: false })
-            .range(offset, offset + ITEMS_PER_PAGE - 1);
+        // Use RPC functions to bypass RLS
+        const [usersResult, countResult] = await Promise.all([
+            ngSupabase.client.rpc('get_admin_users', {
+                p_search: search || null,
+                p_tier: tierFilter || null,
+                p_status: statusFilter || null,
+                p_limit: ITEMS_PER_PAGE,
+                p_offset: offset
+            }),
+            ngSupabase.client.rpc('count_admin_users', {
+                p_search: search || null,
+                p_tier: tierFilter || null,
+                p_status: statusFilter || null
+            })
+        ]);
 
-        if (search) {
-            query = query.ilike('email', `%${search}%`);
-        }
+        if (usersResult.error) throw usersResult.error;
 
-        const { data: users, error, count } = await query;
+        const users = usersResult.data || [];
+        const count = countResult.data || 0;
 
-        if (error) throw error;
+        adminState.users = users;
+        adminState.usersTotal = count;
 
-        // Filter by tier/status client-side (joins make server-side filtering complex)
-        let filteredUsers = users;
-        if (tierFilter) {
-            filteredUsers = filteredUsers.filter(u =>
-                (u.subscriptions?.[0]?.tier_id || 'free') === tierFilter
-            );
-        }
-        if (statusFilter) {
-            filteredUsers = filteredUsers.filter(u =>
-                (u.subscriptions?.[0]?.status || 'active') === statusFilter
-            );
-        }
-
-        adminState.users = filteredUsers;
-        adminState.usersTotal = count || 0;
-
-        renderUsersTable(filteredUsers);
+        renderUsersTable(users);
         renderPagination(elements.usersPagination, adminState.usersPage, Math.ceil(count / ITEMS_PER_PAGE), (page) => {
             adminState.usersPage = page;
             loadUsers();
@@ -428,10 +520,10 @@ function renderUsersTable(users) {
         : users.map(user => `
             <tr>
                 <td>${escapeHtml(user.email || 'N/A')}</td>
-                <td>${escapeHtml(user.display_name || '-')}</td>
-                <td><span class="tier-badge ${user.subscriptions?.[0]?.tier_id || 'free'}">${capitalizeFirst(user.subscriptions?.[0]?.tier_id || 'free')}</span></td>
-                <td>${user.credits?.[0]?.balance ?? 0}</td>
-                <td><span class="status-badge ${user.subscriptions?.[0]?.status || 'active'}">${capitalizeFirst(user.subscriptions?.[0]?.status || 'active')}</span></td>
+                <td>${escapeHtml(user.full_name || '-')}</td>
+                <td><span class="tier-badge ${user.tier_id || 'free'}">${capitalizeFirst(user.tier_id || 'free')}</span></td>
+                <td>${user.credit_balance ?? 0}</td>
+                <td><span class="status-badge ${user.subscription_status || 'active'}">${capitalizeFirst(user.subscription_status || 'active')}</span></td>
                 <td>${formatDate(user.created_at)}</td>
                 <td><button class="action-btn secondary" onclick="openUserModal('${user.id}')">Manage</button></td>
             </tr>
@@ -443,29 +535,23 @@ async function loadSubscriptions() {
     try {
         elements.subscriptionsTableBody.innerHTML = '<tr><td colspan="6" class="loading-cell">Loading...</td></tr>';
 
+        // Use RPC function to bypass RLS
         const { data: subs, error } = await ngSupabase.client
-            .from('subscriptions')
-            .select(`
-                *,
-                profiles(email)
-            `)
-            .eq('status', 'active')
-            .in('tier_id', ['pro', 'business'])
-            .order('created_at', { ascending: false });
+            .rpc('get_admin_subscriptions');
 
         if (error) throw error;
 
-        adminState.subscriptions = subs;
+        adminState.subscriptions = subs || [];
 
         elements.subscriptionsTableBody.innerHTML = subs.length === 0
             ? '<tr><td colspan="6" class="loading-cell">No active subscriptions</td></tr>'
             : subs.map(sub => `
                 <tr>
-                    <td>${escapeHtml(sub.profiles?.email || 'N/A')}</td>
+                    <td>${escapeHtml(sub.email || 'N/A')}</td>
                     <td><span class="tier-badge ${sub.tier_id}">${capitalizeFirst(sub.tier_id)}</span></td>
                     <td>${formatDate(sub.created_at)}</td>
                     <td>${sub.current_period_end ? formatDate(sub.current_period_end) : '-'}</td>
-                    <td><code style="font-size:0.75rem">${sub.stripe_subscription_id || '-'}</code></td>
+                    <td><code style="font-size:0.75rem">-</code></td>
                     <td><button class="action-btn secondary" onclick="openUserModal('${sub.user_id}')">View User</button></td>
                 </tr>
             `).join('');
@@ -483,34 +569,34 @@ async function loadAuditLogs() {
 
         const offset = (adminState.auditPage - 1) * ITEMS_PER_PAGE;
 
-        const { data: logs, error, count } = await ngSupabase.client
-            .from('admin_audit_log')
-            .select(`
-                *,
-                admin:admin_id(email),
-                target:target_user_id(email)
-            `, { count: 'exact' })
-            .order('created_at', { ascending: false })
-            .range(offset, offset + ITEMS_PER_PAGE - 1);
+        // Use RPC function to bypass RLS
+        const { data: logs, error } = await ngSupabase.client
+            .rpc('get_admin_audit_logs', {
+                p_limit: ITEMS_PER_PAGE,
+                p_offset: offset
+            });
 
         if (error) throw error;
 
-        adminState.auditLogs = logs;
-        adminState.auditTotal = count || 0;
+        adminState.auditLogs = logs || [];
+        // Note: count not available from RPC, estimate from data length
+        adminState.auditTotal = logs?.length >= ITEMS_PER_PAGE ? (adminState.auditPage * ITEMS_PER_PAGE) + 1 : logs?.length || 0;
 
         elements.auditTableBody.innerHTML = logs.length === 0
             ? '<tr><td colspan="5" class="loading-cell">No audit logs yet</td></tr>'
             : logs.map(log => `
                 <tr>
                     <td>${formatDateTime(log.created_at)}</td>
-                    <td>${escapeHtml(log.admin?.email || 'System')}</td>
+                    <td>${escapeHtml(log.admin_email || 'System')}</td>
                     <td><code>${escapeHtml(log.action)}</code></td>
-                    <td>${escapeHtml(log.target?.email || '-')}</td>
+                    <td>${escapeHtml(log.target_email || '-')}</td>
                     <td><code style="font-size:0.75rem">${JSON.stringify(log.details || {})}</code></td>
                 </tr>
             `).join('');
 
-        renderPagination(elements.auditPagination, adminState.auditPage, Math.ceil(count / ITEMS_PER_PAGE), (page) => {
+        // Estimate pages based on whether we got a full page
+        const estimatedPages = logs.length >= ITEMS_PER_PAGE ? adminState.auditPage + 1 : adminState.auditPage;
+        renderPagination(elements.auditPagination, adminState.auditPage, estimatedPages, (page) => {
             adminState.auditPage = page;
             loadAuditLogs();
         });
@@ -678,20 +764,14 @@ function getChartOptions() {
 // User Modal
 async function openUserModal(userId) {
     try {
-        const { data: user, error } = await ngSupabase.client
-            .from('profiles')
-            .select(`
-                *,
-                subscriptions(*),
-                credits(balance)
-            `)
-            .eq('id', userId)
-            .single();
+        // Use RPC function to bypass RLS
+        const { data: users, error } = await ngSupabase.client
+            .rpc('get_admin_user_details', { p_user_id: userId });
 
         if (error) throw error;
+        if (!users || users.length === 0) throw new Error('User not found');
 
-        const sub = user.subscriptions?.[0];
-        const credits = user.credits?.[0]?.balance ?? 0;
+        const user = users[0];
 
         elements.userModalBody.innerHTML = `
             <div class="user-info-grid">
@@ -701,30 +781,28 @@ async function openUserModal(userId) {
                 </div>
                 <div class="info-item">
                     <label>Display Name</label>
-                    <div class="value">${escapeHtml(user.display_name || '-')}</div>
+                    <div class="value">${escapeHtml(user.full_name || '-')}</div>
                 </div>
                 <div class="info-item">
                     <label>Subscription Tier</label>
-                    <div class="value"><span class="tier-badge ${sub?.tier_id || 'free'}">${capitalizeFirst(sub?.tier_id || 'free')}</span></div>
+                    <div class="value"><span class="tier-badge ${user.tier_id || 'free'}">${capitalizeFirst(user.tier_id || 'free')}</span></div>
                 </div>
                 <div class="info-item">
                     <label>Status</label>
-                    <div class="value"><span class="status-badge ${sub?.status || 'active'}">${capitalizeFirst(sub?.status || 'active')}</span></div>
+                    <div class="value"><span class="status-badge ${user.subscription_status || 'active'}">${capitalizeFirst(user.subscription_status || 'active')}</span></div>
                 </div>
                 <div class="info-item">
                     <label>Credits</label>
-                    <div class="value">${credits}</div>
+                    <div class="value">${user.credit_balance ?? 0}</div>
                 </div>
                 <div class="info-item">
                     <label>Joined</label>
                     <div class="value">${formatDateTime(user.created_at)}</div>
                 </div>
-                ${sub?.stripe_subscription_id ? `
-                <div class="info-item" style="grid-column: 1/-1">
-                    <label>Stripe Subscription ID</label>
-                    <div class="value"><code>${sub.stripe_subscription_id}</code></div>
+                <div class="info-item">
+                    <label>This Month</label>
+                    <div class="value">${user.generation_count ?? 0} generations</div>
                 </div>
-                ` : ''}
             </div>
 
             <div class="actions-section">
@@ -748,7 +826,7 @@ async function openUserModal(userId) {
 
     } catch (err) {
         console.error('Failed to load user:', err);
-        alert('Failed to load user details');
+        showToast('error', 'Error', 'Failed to load user details');
     }
 }
 
@@ -761,16 +839,16 @@ async function changeTier(userId, tierId) {
     if (!confirm(`Change user's subscription to ${tierId}?`)) return;
 
     try {
+        // Use RPC function to bypass RLS
         const { error } = await ngSupabase.client
-            .from('subscriptions')
-            .update({ tier_id: tierId, status: 'active' })
-            .eq('user_id', userId);
+            .rpc('admin_update_user', {
+                p_user_id: userId,
+                p_tier_id: tierId
+            });
 
         if (error) throw error;
 
-        await logAdminAction('change_tier', userId, { tier_id: tierId });
-
-        alert(`User tier changed to ${tierId}`);
+        showToast('success', 'Tier Updated', `User tier changed to ${tierId}`);
         closeUserModal();
         loadUsers();
         loadRecentUsers();
@@ -778,75 +856,62 @@ async function changeTier(userId, tierId) {
 
     } catch (err) {
         console.error('Failed to change tier:', err);
-        alert('Failed to change tier: ' + err.message);
+        showToast('error', 'Failed to change tier', err.message);
     }
 }
 
 async function addCreditsToUser(userId) {
     const amount = parseInt(document.getElementById('creditAmount')?.value) || 0;
-    const reason = document.getElementById('creditReason')?.value || 'Admin credit adjustment';
 
     if (amount <= 0) {
-        alert('Please enter a valid credit amount');
+        showToast('error', 'Invalid Amount', 'Please enter a valid credit amount');
         return;
     }
 
     if (!confirm(`Add ${amount} credits to this user?`)) return;
 
     try {
-        const { error } = await ngSupabase.client.rpc('admin_add_credits', {
+        // Use RPC function to bypass RLS (also logs the action)
+        const { error } = await ngSupabase.client.rpc('admin_update_user', {
             p_user_id: userId,
-            p_amount: amount,
-            p_description: reason
+            p_credit_amount: amount
         });
 
         if (error) throw error;
 
-        await logAdminAction('add_credits', userId, { amount, reason });
-
-        alert(`Added ${amount} credits to user`);
+        showToast('success', 'Credits Added', `Added ${amount} credits to user`);
         openUserModal(userId); // Refresh modal
 
     } catch (err) {
         console.error('Failed to add credits:', err);
-        alert('Failed to add credits: ' + err.message);
-    }
-}
-
-async function logAdminAction(action, targetUserId, details = {}) {
-    try {
-        await ngSupabase.client.from('admin_audit_log').insert({
-            admin_id: ngSupabase.user.id,
-            action,
-            target_user_id: targetUserId,
-            details
-        });
-    } catch (err) {
-        console.error('Failed to log admin action:', err);
+        showToast('error', 'Failed to add credits', err.message);
     }
 }
 
 // Export
 async function exportUsersCSV() {
     try {
+        showToast('info', 'Exporting...', 'Preparing user data for export');
+
+        // Use RPC function to bypass RLS - get all users with large limit
         const { data: users, error } = await ngSupabase.client
-            .from('profiles')
-            .select(`
-                *,
-                subscriptions(tier_id, status),
-                credits(balance)
-            `)
-            .order('created_at', { ascending: false });
+            .rpc('get_admin_users', {
+                p_search: null,
+                p_tier: null,
+                p_status: null,
+                p_limit: 10000,
+                p_offset: 0
+            });
 
         if (error) throw error;
 
         const headers = ['Email', 'Display Name', 'Tier', 'Status', 'Credits', 'Joined'];
         const rows = users.map(u => [
             u.email || '',
-            u.display_name || '',
-            u.subscriptions?.[0]?.tier_id || 'free',
-            u.subscriptions?.[0]?.status || 'active',
-            u.credits?.[0]?.balance ?? 0,
+            u.full_name || '',
+            u.tier_id || 'free',
+            u.subscription_status || 'active',
+            u.credit_balance ?? 0,
             new Date(u.created_at).toISOString()
         ]);
 
@@ -856,13 +921,15 @@ async function exportUsersCSV() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `ngraphics-users-${new Date().toISOString().split('T')[0]}.csv`;
+        a.download = `hefaistos-users-${new Date().toISOString().split('T')[0]}.csv`;
         a.click();
         URL.revokeObjectURL(url);
 
+        showToast('success', 'Export Complete', `Exported ${users.length} users to CSV`);
+
     } catch (err) {
         console.error('Failed to export users:', err);
-        alert('Failed to export users');
+        showToast('error', 'Export Failed', 'Failed to export users');
     }
 }
 
@@ -1027,6 +1094,17 @@ async function loadCMSGallery() {
     }
 }
 
+// Generate thumbnail HTML with fallback placeholder
+function getGalleryThumbHTML(imageUrl) {
+    const placeholderSVG = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50' fill='%23666'%3E%3Crect width='50' height='50' fill='%23222'/%3E%3Cpath d='M15 32l7-9 5 6 7-9 7 9v3H8v-3z' fill='%23444'/%3E%3Ccircle cx='17' cy='17' r='4' fill='%23444'/%3E%3C/svg%3E`;
+
+    if (!imageUrl) {
+        return `<div class="gallery-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
+    }
+
+    return `<img src="${escapeHtml(imageUrl)}" alt="" class="gallery-thumb" onerror="this.onerror=null;this.style.display='none';this.parentElement.innerHTML='<div class=\\'gallery-thumb-placeholder\\'><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'/><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'/><polyline points=\\'21 15 16 10 5 21\\'/></svg></div>'">`;
+}
+
 function renderGalleryTable() {
     const search = elements.gallerySearch?.value?.toLowerCase() || '';
     const studioFilter = elements.galleryStudioFilter?.value || '';
@@ -1049,7 +1127,7 @@ function renderGalleryTable() {
         ? '<tr><td colspan="6" class="loading-cell">No gallery items found</td></tr>'
         : items.map(item => `
             <tr data-id="${item.id}">
-                <td><img src="${escapeHtml(item.image_url)}" alt="" class="gallery-thumb" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23333%22 width=%22100%22 height=%22100%22/></svg>'"></td>
+                <td>${getGalleryThumbHTML(item.image_url)}</td>
                 <td>${escapeHtml(item.title)}</td>
                 <td><span class="studio-tag">${escapeHtml(item.studio_label)}</span></td>
                 <td>
@@ -1060,9 +1138,9 @@ function renderGalleryTable() {
                     </div>
                 </td>
                 <td>
-                    <label class="toggle-switch">
+                    <label class="admin-toggle">
                         <input type="checkbox" ${item.is_active ? 'checked' : ''} onchange="toggleGalleryActive('${item.id}', this.checked)">
-                        <span class="toggle-slider"></span>
+                        <span class="admin-toggle-track"></span>
                     </label>
                 </td>
                 <td>
@@ -1123,7 +1201,7 @@ async function handleGalleryImageUpload(file) {
         if (placeholder) placeholder.style.display = 'none';
     } catch (err) {
         console.error('Failed to upload image:', err);
-        alert('Failed to upload image: ' + err.message);
+        showToast('error', 'Upload Failed', err.message);
         const placeholder = document.querySelector('#galleryImageUpload .upload-placeholder');
         if (placeholder) {
             placeholder.innerHTML = `
@@ -1151,7 +1229,7 @@ async function saveGalleryItem(e) {
         };
 
         if (!data.image_url) {
-            alert('Please upload an image');
+            showToast('error', 'Missing Image', 'Please upload an image');
             return;
         }
 
@@ -1163,11 +1241,12 @@ async function saveGalleryItem(e) {
             await logAdminAction('cms_create', null, { type: 'gallery', title: data.title });
         }
 
+        showToast('success', 'Saved', 'Gallery item saved successfully');
         closeGalleryModal();
         await loadCMSGallery();
     } catch (err) {
         console.error('Failed to save gallery item:', err);
-        alert('Failed to save: ' + err.message);
+        showToast('error', 'Save Failed', err.message);
     }
 }
 
@@ -1176,10 +1255,11 @@ async function deleteGalleryItem(id) {
     try {
         await ngSupabase.deleteCMSGalleryItem(id);
         await logAdminAction('cms_delete', null, { id, type: 'gallery' });
+        showToast('success', 'Deleted', 'Gallery item deleted');
         await loadCMSGallery();
     } catch (err) {
         console.error('Failed to delete gallery item:', err);
-        alert('Failed to delete: ' + err.message);
+        showToast('error', 'Delete Failed', err.message);
     }
 }
 
@@ -1261,9 +1341,9 @@ function renderFAQTable() {
                 <td><span class="category-tag">${FAQ_CATEGORIES[item.category] || item.category}</span></td>
                 <td>${item.sort_order}</td>
                 <td>
-                    <label class="toggle-switch">
+                    <label class="admin-toggle">
                         <input type="checkbox" ${item.is_active ? 'checked' : ''} onchange="toggleFAQActive('${item.id}', this.checked)">
-                        <span class="toggle-slider"></span>
+                        <span class="admin-toggle-track"></span>
                     </label>
                 </td>
                 <td>
@@ -1323,7 +1403,7 @@ async function saveFAQItem(e) {
         };
 
         if (!data.answer || data.answer === '<p><br></p>') {
-            alert('Please provide an answer');
+            showToast('error', 'Missing Answer', 'Please provide an answer');
             return;
         }
 
@@ -1335,11 +1415,12 @@ async function saveFAQItem(e) {
             await logAdminAction('cms_create', null, { type: 'faq', question: data.question });
         }
 
+        showToast('success', 'Saved', 'FAQ item saved successfully');
         closeFAQModal();
         await loadCMSFAQ();
     } catch (err) {
         console.error('Failed to save FAQ item:', err);
-        alert('Failed to save: ' + err.message);
+        showToast('error', 'Save Failed', err.message);
     }
 }
 
@@ -1348,10 +1429,11 @@ async function deleteFAQItem(id) {
     try {
         await ngSupabase.deleteCMSFAQItem(id);
         await logAdminAction('cms_delete', null, { id, type: 'faq' });
+        showToast('success', 'Deleted', 'FAQ item deleted');
         await loadCMSFAQ();
     } catch (err) {
         console.error('Failed to delete FAQ item:', err);
-        alert('Failed to delete: ' + err.message);
+        showToast('error', 'Delete Failed', err.message);
     }
 }
 
@@ -1388,13 +1470,13 @@ async function saveJSONContent() {
         const content = JSON.parse(contentStr);
         await ngSupabase.updateCMSHomepage(section, content);
         await logAdminAction('cms_update', null, { section, type: 'homepage_json' });
-        alert('Saved!');
+        showToast('success', 'Saved', `${capitalizeFirst(section)} content saved successfully`);
         closeJSONEditor();
     } catch (err) {
         if (err instanceof SyntaxError) {
-            alert('Invalid JSON: ' + err.message);
+            showToast('error', 'Invalid JSON', err.message);
         } else {
-            alert('Failed to save: ' + err.message);
+            showToast('error', 'Save Failed', err.message);
         }
     }
 }

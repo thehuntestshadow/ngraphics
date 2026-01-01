@@ -140,10 +140,14 @@ The application consists of multiple pages, each with its own JS file, sharing c
 ### Documentation Files
 - `DESIGN.md` - Design system (Apple color palette, gradients, spacing, components)
 - `PROMPTS.md` - Prompt engineering patterns for AI image generation
-- `ROADMAP.md` - Feature ideas & plans
+- `ROADMAP.md` - Active roadmap (current sprint, quarterly goals, metrics)
+- `BACKLOG.md` - Prioritized feature backlog with effort estimates
+- `IDEAS.md` - Unvalidated ideas parking lot
+- `CHANGELOG.md` - Version history and completed features
 - `UI_PATTERNS.md` - HTML/CSS patterns for consistent UI
 - `API_REFERENCE.md` - Code examples for shared infrastructure
 - `TESTING.md` - Testing guide (visual tests, performance, hooks)
+- `ADMIN_PAGE.md` - Admin panel documentation and future improvements
 
 ## API Integration
 

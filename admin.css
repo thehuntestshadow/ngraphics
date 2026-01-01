@@ -1,5 +1,36 @@
 /* Admin Panel Styles */
 
+/* Variable mappings - map to existing styles.css variables */
+:root {
+    /* Background colors */
+    --bg-primary: var(--bg-base);
+    --bg-secondary: var(--bg-elevated, #1a1a1a);
+    --bg-tertiary: var(--bg-hover, #2a2a2a);
+
+    /* Accent colors */
+    --accent-primary: var(--accent, #6366f1);
+    --accent-hover: var(--accent-light, #818cf8);
+
+    /* Text colors */
+    --text-primary: var(--text, #f5f5f5);
+    --text-secondary: var(--text-dim, #a0a0a0);
+    --text-muted: var(--text-muted, #666);
+
+    /* Border */
+    --border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+
+/* Light theme overrides */
+[data-theme="light"] {
+    --bg-primary: var(--bg-base, #f5f5f7);
+    --bg-secondary: var(--bg-elevated, #ffffff);
+    --bg-tertiary: var(--bg-hover, #e5e5e5);
+    --text-primary: var(--text, #1d1d1f);
+    --text-secondary: var(--text-dim, #6e6e73);
+    --text-muted: var(--text-muted, #999);
+    --border-color: var(--border, rgba(0, 0, 0, 0.1));
+}
+
 /* Admin-specific body */
 .admin-body {
     background: var(--bg-primary);
@@ -39,8 +70,7 @@
 
 /* Admin Layout */
 .admin-layout {
-    display: grid;
-    grid-template-columns: 260px 1fr;
+    display: flex;
     min-height: 100vh;
 }
 
@@ -151,11 +181,28 @@
     font-size: 0.85rem;
 }
 
+/* Theme toggle icons */
+#themeToggle .theme-icon-dark,
+#themeToggle .theme-icon-light {
+    width: 20px;
+    height: 20px;
+}
+
+[data-theme="light"] #themeToggle .theme-icon-dark {
+    display: none !important;
+}
+
+[data-theme="light"] #themeToggle .theme-icon-light {
+    display: block !important;
+}
+
 /* Main Content */
 .admin-main {
+    flex: 1;
     margin-left: 260px;
     padding: 2rem;
     max-width: 1400px;
+    min-width: 0;
 }
 
 /* Sections */
@@ -695,15 +742,73 @@
     border-color: var(--accent-primary);
 }
 
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 200;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+.mobile-menu-toggle:hover {
+    background: var(--bg-tertiary);
+}
+
+.mobile-menu-toggle svg {
+    width: 24px;
+    height: 24px;
+}
+
+.mobile-menu-toggle .menu-close {
+    display: none;
+}
+
+.mobile-menu-toggle.active .menu-open {
+    display: none;
+}
+
+.mobile-menu-toggle.active .menu-close {
+    display: block;
+}
+
+/* Sidebar overlay for mobile */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 90;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
-    .admin-layout {
-        grid-template-columns: 1fr;
+    .mobile-menu-toggle {
+        display: flex;
     }
 
     .admin-sidebar {
         transform: translateX(-100%);
         transition: transform 0.3s ease;
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
     }
 
     .admin-sidebar.open {
@@ -713,6 +818,11 @@
     .admin-main {
         margin-left: 0;
         padding: 1.5rem;
+        padding-top: 5rem;
+    }
+
+    .section-header {
+        margin-top: 0;
     }
 
     .charts-grid {
@@ -999,6 +1109,24 @@
     background: var(--bg-tertiary);
 }
 
+.gallery-thumb-placeholder {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border: 1px dashed var(--border-color);
+    border-radius: 6px;
+    color: var(--text-muted);
+}
+
+.gallery-thumb-placeholder svg {
+    width: 24px;
+    height: 24px;
+    opacity: 0.5;
+}
+
 .studio-tag,
 .category-tag {
     display: inline-block;
@@ -1037,21 +1165,21 @@
     color: white;
 }
 
-/* Toggle Switch */
-.toggle-switch {
+/* Admin Toggle Switch */
+.admin-toggle {
     position: relative;
     display: inline-block;
     width: 44px;
     height: 24px;
 }
 
-.toggle-switch input {
+.admin-toggle input {
     opacity: 0;
     width: 0;
     height: 0;
 }
 
-.toggle-slider {
+.admin-toggle-track {
     position: absolute;
     cursor: pointer;
     inset: 0;
@@ -1061,7 +1189,7 @@
     transition: all 0.2s ease;
 }
 
-.toggle-slider::before {
+.admin-toggle-track::before {
     position: absolute;
     content: '';
     height: 18px;
@@ -1073,12 +1201,12 @@
     transition: all 0.2s ease;
 }
 
-.toggle-switch input:checked + .toggle-slider {
+.admin-toggle input:checked + .admin-toggle-track {
     background: var(--accent-primary);
     border-color: var(--accent-primary);
 }
 
-.toggle-switch input:checked + .toggle-slider::before {
+.admin-toggle input:checked + .admin-toggle-track::before {
     background: white;
     transform: translateX(20px);
 }
@@ -1153,6 +1281,162 @@
     border-top: 1px solid var(--border-color);
 }
 
+/* Toast Notifications */
+.admin-toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 2000;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 400px;
+}
+
+.admin-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.admin-toast.success {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.admin-toast.error {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.admin-toast.info {
+    border-color: var(--accent-primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.admin-toast-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.admin-toast.success .admin-toast-icon {
+    color: #10b981;
+}
+
+.admin-toast.error .admin-toast-icon {
+    color: #ef4444;
+}
+
+.admin-toast.info .admin-toast-icon {
+    color: var(--accent-primary);
+}
+
+.admin-toast-content {
+    flex: 1;
+}
+
+.admin-toast-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.admin-toast-message {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.admin-toast-close {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.admin-toast-close:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+/* Empty States */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-secondary);
+}
+
+.empty-state svg {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.empty-state h3 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.empty-state p {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+/* Loading Skeleton */
+.skeleton {
+    background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-secondary) 50%, var(--bg-tertiary) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Improved Action Button States */
+.action-btn:focus {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+.action-btn:active {
+    transform: scale(0.95);
+}
+
+/* Better badge styling */
+.tier-badge, .status-badge {
+    text-transform: capitalize;
+}
+
+/* Improved stat cards hover */
+.stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 /* Responsive CMS */
 @media (max-width: 768px) {
     .cms-form-grid {
@@ -1161,5 +1445,12 @@
 
     .cms-modal .form-row {
         grid-template-columns: 1fr;
+    }
+
+    .admin-toast {
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+        max-width: none;
     }
 }
