@@ -1401,9 +1401,6 @@ async function init() {
         }
     });
 
-    // Load API key
-    StudioBootstrap.loadApiKey(state, elements.apiKey, elements.apiStatus);
-
     // Setup event listeners
     setupEventListeners();
 
