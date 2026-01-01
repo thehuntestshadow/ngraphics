@@ -69,6 +69,7 @@
     width: 16px;
     height: 16px;
     color: var(--accent);
+    stroke: var(--accent); /* Safari fix */
 }
 
 .hero-title {
@@ -138,6 +139,7 @@
 .hero-cta svg {
     width: 20px;
     height: 20px;
+    stroke: currentColor; /* Safari fix */
 }
 
 .hero-cta-secondary {
@@ -257,6 +259,7 @@
 .section-label svg {
     width: 18px;
     height: 18px;
+    stroke: currentColor; /* Safari fix */
 }
 
 .section-title {
@@ -360,6 +363,7 @@
     width: 24px;
     height: 24px;
     color: white;
+    stroke: white; /* Safari fix - doesn't inherit color into currentColor */
 }
 
 .studio-card:hover .studio-icon {
@@ -430,6 +434,7 @@
     width: 32px;
     height: 32px;
     color: white;
+    stroke: white; /* Safari fix */
 }
 
 .feature-card:hover .feature-icon {
