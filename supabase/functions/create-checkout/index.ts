@@ -15,14 +15,14 @@ const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY')!
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-// TODO: Create these prices in Stripe Dashboard and update IDs
+// Stripe price IDs (from Stripe Dashboard)
 const PRICES: Record<string, string> = {
-  pro_monthly: 'price_REPLACE_WITH_STRIPE_PRICE_ID',
-  pro_yearly: 'price_REPLACE_WITH_STRIPE_PRICE_ID',
-  business_monthly: 'price_REPLACE_WITH_STRIPE_PRICE_ID',
-  business_yearly: 'price_REPLACE_WITH_STRIPE_PRICE_ID',
-  credits_50: 'price_REPLACE_WITH_STRIPE_PRICE_ID',
-  credits_200: 'price_REPLACE_WITH_STRIPE_PRICE_ID',
+  pro_monthly: 'price_1SkTw4G8e7fqKTguuqHpJEqi',
+  pro_yearly: 'price_1SkTw4G8e7fqKTgu5E1GyYiZ',
+  business_monthly: 'price_1SkTw5G8e7fqKTguRra3rgMg',
+  business_yearly: 'price_1SkTw5G8e7fqKTguHURNx22O',
+  credits_50: 'price_1SkU9OG8e7fqKTgu5SxHWtd7',
+  credits_200: 'price_1SkU9VG8e7fqKTguXNRnQxmu',
 }
 
 const corsHeaders = {

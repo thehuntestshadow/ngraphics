@@ -162,7 +162,7 @@ class AuthUI {
                         </button>
                     </p>
                     <p class="auth-note">
-                        Accounts are optional. The app works fully offline without signing in.
+                        Sign in and subscribe to generate AI images.
                     </p>
                 </div>
             </div>
@@ -498,12 +498,14 @@ class AccountMenu {
             const statusClass = percentage >= 100 ? 'danger' : percentage >= 80 ? 'warning' : '';
 
             // Render usage section
-            if (usage.isUnlimited) {
+            if (usage.tier === 'free') {
                 usageContainer.innerHTML = `
                     <div class="usage-tier">
                         <span class="usage-tier-badge free">${usage.tierLabel}</span>
                     </div>
-                    <div class="usage-unlimited">Unlimited with your API key</div>
+                    <div class="usage-upgrade-prompt">
+                        <a href="/pricing.html" class="usage-upgrade-link">Upgrade to generate images</a>
+                    </div>
                 `;
             } else {
                 usageContainer.innerHTML = `
@@ -660,38 +662,20 @@ class SettingsModal {
                     </div>
                     ` : ''}
 
-                    <!-- API Keys Section -->
-                    <div class="settings-section open" data-section="api-keys">
+                    <!-- API Keys Section (Luma only - OpenRouter handled by subscription) -->
+                    <div class="settings-section" data-section="api-keys">
                         <button class="settings-section-header">
                             <span class="settings-section-title">
                                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
                                 </svg>
-                                API Keys
+                                Video API Key
                             </span>
                             <svg class="settings-chevron" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="6 9 12 15 18 9"/>
                             </svg>
                         </button>
                         <div class="settings-section-content">
-                            <div class="settings-row">
-                                <label>OpenRouter API Key</label>
-                                <div class="settings-input-group">
-                                    <input type="password" id="settingsOpenRouterKey" placeholder="sk-or-v1-..." autocomplete="off">
-                                    <button class="settings-icon-btn" id="toggleOpenRouterKey" title="Show/hide">
-                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                            <circle cx="12" cy="12" r="3"/>
-                                        </svg>
-                                    </button>
-                                    <button class="settings-icon-btn" id="testOpenRouterKey" title="Test key">
-                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                                <span class="settings-hint">Used for image generation in all studios. <a href="https://openrouter.ai/keys" target="_blank">Get key</a></span>
-                            </div>
                             <div class="settings-row">
                                 <label>Luma AI API Key</label>
                                 <div class="settings-input-group">
@@ -708,10 +692,10 @@ class SettingsModal {
                                         </svg>
                                     </button>
                                 </div>
-                                <span class="settings-hint">Used for Model Video studio. <a href="https://lumalabs.ai/dream-machine/api" target="_blank">Get key</a></span>
+                                <span class="settings-hint">Required for Model Video studio. <a href="https://lumalabs.ai/dream-machine/api" target="_blank">Get key</a></span>
                             </div>
                             <div class="settings-row">
-                                <button class="settings-btn settings-btn-primary" id="saveApiKeysBtn">Save API Keys</button>
+                                <button class="settings-btn settings-btn-primary" id="saveApiKeysBtn">Save API Key</button>
                             </div>
                         </div>
                     </div>
@@ -962,12 +946,10 @@ class SettingsModal {
             });
         }
 
-        // API key visibility toggles
-        this._setupKeyToggle('OpenRouter');
+        // Luma API key visibility toggle
         this._setupKeyToggle('Luma');
 
-        // Test API keys
-        this._modal.querySelector('#testOpenRouterKey')?.addEventListener('click', () => this._testApiKey('openrouter'));
+        // Test Luma API key
         this._modal.querySelector('#testLumaKey')?.addEventListener('click', () => this._testApiKey('luma'));
 
         // Save API keys
@@ -997,14 +979,9 @@ class SettingsModal {
     }
 
     _loadSettings() {
-        // Load API keys
-        const openRouterKey = localStorage.getItem('openrouter_api_key') || '';
+        // Load Luma API key (OpenRouter no longer needed - handled by subscription)
         const lumaKey = localStorage.getItem('video_api_key') || '';
-
-        const openRouterInput = this._modal.querySelector('#settingsOpenRouterKey');
         const lumaInput = this._modal.querySelector('#settingsLumaKey');
-
-        if (openRouterInput) openRouterInput.value = openRouterKey;
         if (lumaInput) lumaInput.value = lumaKey;
 
         // Load theme
@@ -1060,18 +1037,18 @@ class SettingsModal {
             const percentage = usage.isUnlimited ? 0 : Math.min(100, (usage.generationsUsed / usage.generationsLimit) * 100);
             const statusClass = percentage >= 100 ? 'danger' : percentage >= 80 ? 'warning' : '';
 
-            if (usage.isUnlimited) {
+            if (usage.tier === 'free') {
                 usageContainer.innerHTML = `
                     <div class="settings-usage-card">
                         <div class="settings-usage-header">
                             <span class="usage-tier-badge free">${usage.tierLabel}</span>
                         </div>
                         <div class="settings-usage-info">
-                            <p class="settings-usage-unlimited">Unlimited generations with your own API key</p>
-                            <p class="settings-usage-hint">You're using the free tier with your personal OpenRouter API key. No limits apply.</p>
+                            <p class="settings-usage-upgrade">Subscription required to generate images</p>
+                            <p class="settings-usage-hint">Upgrade to Pro or Business to start generating AI images.</p>
                         </div>
                         <div class="settings-usage-actions">
-                            <a href="/pricing.html" class="settings-btn settings-btn-outline">View Plans</a>
+                            <a href="/pricing.html" class="settings-btn settings-btn-primary">View Plans</a>
                         </div>
                     </div>
                 `;
@@ -1152,7 +1129,7 @@ class SettingsModal {
     }
 
     async _testApiKey(provider) {
-        const input = this._modal.querySelector(provider === 'openrouter' ? '#settingsOpenRouterKey' : '#settingsLumaKey');
+        const input = this._modal.querySelector('#settingsLumaKey');
         const key = input?.value?.trim();
 
         if (!key) {
@@ -1160,26 +1137,17 @@ class SettingsModal {
             return;
         }
 
-        const testBtn = this._modal.querySelector(provider === 'openrouter' ? '#testOpenRouterKey' : '#testLumaKey');
+        const testBtn = this._modal.querySelector('#testLumaKey');
         testBtn.disabled = true;
 
         try {
-            let isValid = false;
-
-            if (provider === 'openrouter') {
-                const response = await fetch('https://openrouter.ai/api/v1/models', {
-                    headers: { 'Authorization': `Bearer ${key}` }
-                });
-                isValid = response.ok;
-            } else {
-                // Luma API test - just check if key format looks valid
-                isValid = key.startsWith('luma-') || key.length > 20;
-            }
+            // Luma API test - just check if key format looks valid
+            const isValid = key.startsWith('luma-') || key.length > 20;
 
             if (isValid) {
-                this._showToast(`${provider === 'openrouter' ? 'OpenRouter' : 'Luma'} API key is valid!`, 'success');
+                this._showToast('Luma API key looks valid!', 'success');
             } else {
-                this._showToast('Invalid API key', 'error');
+                this._showToast('Invalid API key format', 'error');
             }
         } catch (error) {
             this._showToast('Failed to test API key', 'error');
@@ -1189,14 +1157,7 @@ class SettingsModal {
     }
 
     _saveApiKeys() {
-        const openRouterKey = this._modal.querySelector('#settingsOpenRouterKey')?.value?.trim() || '';
         const lumaKey = this._modal.querySelector('#settingsLumaKey')?.value?.trim() || '';
-
-        if (openRouterKey) {
-            localStorage.setItem('openrouter_api_key', openRouterKey);
-        } else {
-            localStorage.removeItem('openrouter_api_key');
-        }
 
         if (lumaKey) {
             localStorage.setItem('video_api_key', lumaKey);
@@ -1204,7 +1165,7 @@ class SettingsModal {
             localStorage.removeItem('video_api_key');
         }
 
-        this._showToast('API keys saved', 'success');
+        this._showToast('API key saved', 'success');
     }
 
     async _saveProfile() {

@@ -57,13 +57,14 @@ serve(async (req) => {
     const tierId = sub?.tier_id || 'free'
     const isActive = sub?.status === 'active' || !sub // No sub means free
 
-    // Free tier must use BYOK (their own API key)
+    // Subscription required - no free tier
     if (tierId === 'free') {
       return new Response(
         JSON.stringify({
-          error: 'Free tier requires your own API key',
-          code: 'BYOK_REQUIRED',
-          tier: 'free'
+          error: 'Subscription required. Upgrade to Pro or Business to generate images.',
+          code: 'SUBSCRIPTION_REQUIRED',
+          tier: 'free',
+          upgradeUrl: 'https://hefaistos.xyz/pricing.html'
         }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )

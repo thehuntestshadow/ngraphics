@@ -63,7 +63,13 @@
       "mcp__playwright__browser_press_key",
       "mcp__playwright__browser_snapshot",
       "Bash(git checkout:*)",
-      "Bash(lsof:*)"
+      "Bash(lsof:*)",
+      "Bash(supabase functions list:*)",
+      "Bash(supabase secrets list:*)",
+      "Bash(supabase link:*)",
+      "Bash(supabase functions deploy:*)",
+      "Bash(supabase secrets set:*)",
+      "Bash(supabase db execute:*)"
     ]
   }
 }

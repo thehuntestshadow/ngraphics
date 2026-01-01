@@ -23,12 +23,15 @@ class APIError extends Error {
             'RATE_LIMITED': 'Too many requests. Please wait a moment and try again.',
             'TIMEOUT': 'Request timed out. The server is taking too long to respond.',
             'NETWORK_ERROR': 'Network error. Please check your internet connection.',
-            'AUTH_ERROR': 'Invalid API key. Please check your OpenRouter API key.',
+            'AUTH_REQUIRED': 'Please sign in to generate images.',
+            'SUBSCRIPTION_REQUIRED': 'A subscription is required. Upgrade to Pro or Business.',
+            'AUTH_ERROR': 'Authentication error. Please sign in again.',
             'INVALID_REQUEST': 'Invalid request. Please check your inputs.',
             'MODEL_ERROR': 'The AI model encountered an error. Try a different model.',
             'CONTENT_FILTERED': 'Content was filtered. Try adjusting your prompt.',
-            'QUOTA_EXCEEDED': 'API quota exceeded. Please check your OpenRouter account.',
-            'LIMIT_REACHED': 'Monthly generation limit reached. Upgrade your plan or use credits.',
+            'QUOTA_EXCEEDED': 'API quota exceeded.',
+            'LIMIT_REACHED': 'Monthly generation limit reached. Upgrade your plan or buy credits.',
+            'SUBSCRIPTION_INACTIVE': 'Your subscription is inactive. Please check your billing.',
             'SERVER_ERROR': 'Server error. Please try again later.',
             'EMPTY_RESPONSE': 'No response received from the API.',
             'PARSE_ERROR': 'Failed to parse API response.',
@@ -81,6 +84,19 @@ class APIClient {
         this._cachedUsage = null;
         this._usageCacheTime = 0;
         this._usageCacheTTL = 30000; // 30 seconds
+
+        // Proxy configuration
+        this._proxyUrl = (typeof CONFIG !== 'undefined' && CONFIG.SUPABASE_URL)
+            ? `${CONFIG.SUPABASE_URL}/functions/v1/generate-image`
+            : 'https://rodzatuqkfqcdqgntdnd.supabase.co/functions/v1/generate-image';
+        this._currentStudio = 'unknown';
+    }
+
+    /**
+     * Set the current studio name for usage tracking
+     */
+    setStudio(studioName) {
+        this._currentStudio = studioName;
     }
 
     // ========================================
@@ -262,6 +278,63 @@ class APIClient {
     invalidateUsageCache() {
         this._cachedUsage = null;
         this._usageCacheTime = 0;
+    }
+
+    // ========================================
+    // PROXY ROUTING (PAID USERS)
+    // ========================================
+
+    /**
+     * Check if current user can use the API
+     * All users must be authenticated with a paid subscription
+     * @returns {Promise<{canUse: boolean, reason?: string}>}
+     */
+    async _checkAccess() {
+        // Must be authenticated
+        if (typeof ngSupabase === 'undefined' || !ngSupabase.isAuthenticated) {
+            return { canUse: false, reason: 'AUTH_REQUIRED' };
+        }
+
+        // Get usage data (includes tier info)
+        const usage = await this._getUsageWithCache();
+        if (!usage) {
+            return { canUse: false, reason: 'USAGE_CHECK_FAILED' };
+        }
+
+        // Must have paid subscription
+        if (usage.tier === 'free') {
+            return { canUse: false, reason: 'SUBSCRIPTION_REQUIRED' };
+        }
+
+        return { canUse: true };
+    }
+
+    /**
+     * Make request through edge function proxy
+     * @param {Object} body - Request body for OpenRouter
+     * @param {AbortSignal} signal - Abort signal
+     * @returns {Promise<Response>}
+     */
+    async _makeProxyRequest(body, signal) {
+        const accessToken = ngSupabase.session?.access_token;
+        if (!accessToken) {
+            throw new APIError('Not authenticated', 'AUTH_ERROR', { retryable: false });
+        }
+
+        const response = await fetch(this._proxyUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ...body,
+                studio: this._currentStudio
+            }),
+            signal
+        });
+
+        return response;
     }
 
     // ========================================
@@ -450,16 +523,19 @@ class APIClient {
             skipRetry = false
         } = options;
 
-        // Check API key
-        if (!this.apiKey) {
-            throw new APIError('API key not configured', 'AUTH_ERROR');
+        // Check access - must be authenticated with paid subscription
+        const access = await this._checkAccess();
+        if (!access.canUse) {
+            if (access.reason === 'AUTH_REQUIRED') {
+                throw new APIError('Please sign in to generate images', 'AUTH_REQUIRED', { retryable: false });
+            }
+            if (access.reason === 'SUBSCRIPTION_REQUIRED') {
+                throw new APIError('Subscription required to generate images', 'SUBSCRIPTION_REQUIRED', { retryable: false });
+            }
+            throw new APIError('Access denied', 'AUTH_ERROR', { retryable: false });
         }
 
-        // Check usage limits (for authenticated paid users)
-        const canProceed = await this._checkUsageLimit();
-        if (!canProceed) {
-            throw new APIError('Generation limit reached', 'LIMIT_REACHED', { retryable: false });
-        }
+        // Usage limits are handled by the edge function
 
         // Check cache
         if (cache) {
@@ -498,17 +574,8 @@ class APIClient {
                         controller.abort();
                     }, this.timeout);
 
-                    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${this.apiKey}`,
-                            'Content-Type': 'application/json',
-                            'HTTP-Referer': window.location.origin,
-                            'X-Title': 'HEFAISTOS'
-                        },
-                        body: JSON.stringify(body),
-                        signal: controller.signal
-                    });
+                    // All requests go through edge function proxy
+                    const response = await this._makeProxyRequest(body, controller.signal);
 
                     clearTimeout(timeoutId);
 
@@ -691,8 +758,15 @@ class APIClient {
 
     getErrorCodeFromStatus(status, data = {}) {
         const errorType = data.error?.type || data.error?.code || '';
+        const errorCode = data.code || '';
 
-        if (status === 401 || status === 403) return 'AUTH_ERROR';
+        // Handle proxy-specific error codes
+        if (errorCode === 'SUBSCRIPTION_INACTIVE') return 'SUBSCRIPTION_INACTIVE';
+        if (errorCode === 'LIMIT_REACHED') return 'LIMIT_REACHED';
+        if (errorCode === 'AUTH_ERROR') return 'AUTH_ERROR';
+
+        if (status === 401) return 'AUTH_REQUIRED';
+        if (status === 403) return 'SUBSCRIPTION_REQUIRED';
         if (status === 429) return 'RATE_LIMITED';
         if (status === 400) {
             if (errorType.includes('content')) return 'CONTENT_FILTERED';
