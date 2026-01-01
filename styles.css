@@ -9,9 +9,14 @@
     /* Core colors - Unified dark palette with subtle blue undertone (Ive-inspired) */
     --bg-deep: #000000;
     --bg-base: #1c1c1e;
+    --bg-secondary: #252528;
+    --bg-tertiary: #2c2c2e;
     --bg-elevated: #2c2c2e;
     --bg-surface: #3a3a3c;
     --bg-hover: #48484a;
+
+    /* Border aliases */
+    --border-color: var(--border-default);
 
     /* Surface highlights - subtle top edge glow for depth */
     --surface-highlight: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 50%);
