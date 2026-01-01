@@ -454,7 +454,7 @@ function updateSkeletonGrid(count = 1) {
     elements.skeletonGrid.className = `skeleton-grid cols-${count > 1 ? (count === 2 ? 2 : 4) : 1}`;
     let html = '';
     for (let i = 0; i < count; i++) {
-        html += `<div class="skeleton-card"><div class="skeleton-image"></div></div>`;
+        html += '<div class="skeleton-card"><div class="skeleton-image"></div></div>';
     }
     elements.skeletonGrid.innerHTML = html;
 }
@@ -1154,6 +1154,11 @@ function init() {
 
     // Initialize context visibility
     updateContextOptionsVisibility();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('size-visualizer');
+    }
 
     console.log('Size Visualizer: Ready!');
 }

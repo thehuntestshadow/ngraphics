@@ -626,7 +626,7 @@ function handleImageUpload(file) {
 
     const reader = new FileReader();
     reader.onload = (e) => {
-        let imageData = e.target.result;
+        const imageData = e.target.result;
 
         // Auto-enhance if enabled
         if (elements.autoEnhance && elements.autoEnhance.checked) {
@@ -1310,7 +1310,7 @@ function updateSkeletonGrid(count = 1) {
     // Generate skeleton cards
     let html = '';
     for (let i = 0; i < count; i++) {
-        html += `<div class="skeleton-card"><div class="skeleton-image"></div></div>`;
+        html += '<div class="skeleton-card"><div class="skeleton-image"></div></div>';
     }
     elements.skeletonGrid.innerHTML = html;
 }
@@ -1489,7 +1489,7 @@ function renderHistory() {
     const count = elements.historyCount;
 
     // Filter items based on search query
-    let items = state.historySearchQuery
+    const items = state.historySearchQuery
         ? history.search(state.historySearchQuery)
         : state.history;
 
@@ -1796,7 +1796,7 @@ function renderFavorites() {
     const allItems = favorites.getAll();
 
     // Apply filters
-    let items = favorites.filter({
+    const items = favorites.filter({
         folder: state.favoritesActiveFolder === 'null' ? null : (state.favoritesActiveFolder || undefined),
         tag: state.favoritesActiveTag || undefined,
         query: state.favoritesSearchQuery || undefined
@@ -2420,15 +2420,15 @@ DESIGN REQUIREMENTS:
     }
 
     // Add features with emphasis info
-    prompt += `PRODUCT FEATURES:\nDisplay each feature with an icon. Use the EXACT text provided - do not expand, rephrase, or add words.\n\n`;
+    prompt += 'PRODUCT FEATURES:\nDisplay each feature with an icon. Use the EXACT text provided - do not expand, rephrase, or add words.\n\n';
 
     if (primaryFeatures.length > 0) {
-        prompt += `PRIMARY FEATURES (display larger/more prominent):\n`;
+        prompt += 'PRIMARY FEATURES (display larger/more prominent):\n';
         primaryFeatures.forEach(f => {
             const iconHint = f.icon !== 'auto' && f.icon !== 'none' ? ` [icon: ${f.icon}]` : '';
             prompt += `★ "${f.text}"${iconHint}\n`;
         });
-        prompt += `\nSECONDARY FEATURES:\n`;
+        prompt += '\nSECONDARY FEATURES:\n';
     }
 
     characteristics.filter(c => !c.isPrimary).forEach(c => {
@@ -2436,7 +2436,7 @@ DESIGN REQUIREMENTS:
         prompt += `• "${c.text}"${iconHint}\n`;
     });
 
-    prompt += `\n`;
+    prompt += '\n';
 
     // Get benefits
     const benefitItems = elements.benefitsList.querySelectorAll('.benefit-item');
@@ -2451,11 +2451,11 @@ DESIGN REQUIREMENTS:
 
     // Add benefits to prompt if any
     if (benefits.length > 0) {
-        prompt += `PRODUCT BENEFITS (customer value propositions - display these separately from features):\n`;
+        prompt += 'PRODUCT BENEFITS (customer value propositions - display these separately from features):\n';
         benefits.forEach(b => {
             prompt += `✓ "${b}"\n`;
         });
-        prompt += `\n`;
+        prompt += '\n';
     }
 
     // Add language instruction for non-English
@@ -2546,8 +2546,8 @@ STYLE RULES:
     // Add style reference with strength
     if (state.styleReferenceBase64) {
         const strengthText = styleStrength < 40 ? 'subtle inspiration from' :
-                            styleStrength < 70 ? 'moderately match' :
-                            'strongly match';
+            styleStrength < 70 ? 'moderately match' :
+                'strongly match';
         prompt += `\n\nSTYLE REFERENCE: I'm providing a style reference image. ${strengthText.charAt(0).toUpperCase() + strengthText.slice(1)} the visual style, color palette, and design aesthetic of that reference (${styleStrength}% influence).`;
     }
 
@@ -3144,7 +3144,7 @@ Highlight the most important features with clear labels and visual explanations.
     // Style instructions
     let stylePrompt = '';
     if (style === 'match') {
-        stylePrompt = `IMPORTANT: Match the visual style of the main product infographic. Use similar colors, typography, and design elements for consistency.`;
+        stylePrompt = 'IMPORTANT: Match the visual style of the main product infographic. Use similar colors, typography, and design elements for consistency.';
 
         // Add details from the main style if available
         if (mainStyle === 'light') {
@@ -3157,11 +3157,11 @@ Highlight the most important features with clear labels and visual explanations.
             stylePrompt += ' Use rich callouts, colorful accents, and detailed visual elements.';
         }
     } else if (style === 'variation') {
-        stylePrompt = `Create a creative variation with a different perspective or artistic interpretation. Maintain product accuracy but experiment with lighting, angles, or artistic effects.`;
+        stylePrompt = 'Create a creative variation with a different perspective or artistic interpretation. Maintain product accuracy but experiment with lighting, angles, or artistic effects.';
     } else if (style === 'clean') {
-        stylePrompt = `Create a clean, isolated product shot on a pure white or neutral background. Professional e-commerce style with minimal distractions. Focus on crisp, clear product presentation.`;
+        stylePrompt = 'Create a clean, isolated product shot on a pure white or neutral background. Professional e-commerce style with minimal distractions. Focus on crisp, clear product presentation.';
     } else {
-        stylePrompt = `Create a clean, professional image that could work as a standalone product shot. Use neutral styling that would fit various marketing contexts.`;
+        stylePrompt = 'Create a clean, professional image that could work as a standalone product shot. Use neutral styling that would fit various marketing contexts.';
     }
 
     // Language
@@ -3731,7 +3731,7 @@ function buildSmartRegenerationPrompt() {
     const locks = state.lockSettings;
     const strength = state.variationStrength;
 
-    let lockInstructions = [];
+    const lockInstructions = [];
     if (locks.layout) lockInstructions.push('KEEP THE SAME LAYOUT and composition');
     if (locks.colors) lockInstructions.push('KEEP THE SAME COLOR SCHEME');
     if (locks.background) lockInstructions.push('KEEP THE SAME BACKGROUND style and type');
@@ -4997,6 +4997,11 @@ async function init() {
 
     // Initialize option examples
     initOptionExamples();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('infographics');
+    }
 
     console.log('HEFAISTOS: Ready!');
 }

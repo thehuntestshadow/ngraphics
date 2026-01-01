@@ -2,21 +2,20 @@
 # Pre-commit audit hook for HEFAISTOS
 # Runs basic checks before allowing commits
 
-set -e
-
-# Get project directory
-PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
-
-# Only run for git commit commands
+# Check if this is a git commit command
 TOOL_INPUT="${1:-}"
 if [ -n "$TOOL_INPUT" ]; then
   COMMAND=$(echo "$TOOL_INPUT" | jq -r '.tool_input.command' 2>/dev/null || echo "")
   if [[ ! "$COMMAND" =~ ^git\ commit ]]; then
-    # Silent exit for non-commit commands
-    exec >/dev/null 2>&1
+    echo "skip" >&2
     exit 0
   fi
 fi
+
+set -e
+
+# Get project directory
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 
 echo "🔍 Running pre-commit audit..."
 

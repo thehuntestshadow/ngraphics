@@ -91,8 +91,8 @@ class AuthUI {
                     <h2 class="auth-modal-title">${isLogin ? 'Welcome Back' : 'Create Account'}</h2>
                     <p class="auth-modal-subtitle">
                         ${isLogin
-                            ? 'Sign in to sync your work across devices'
-                            : 'Start syncing your creations to the cloud'}
+        ? 'Sign in to sync your work across devices'
+        : 'Start syncing your creations to the cloud'}
                     </p>
                 </div>
 
@@ -155,8 +155,8 @@ class AuthUI {
                 <div class="auth-modal-footer">
                     <p>
                         ${isLogin
-                            ? "Don't have an account?"
-                            : "Already have an account?"}
+        ? "Don't have an account?"
+        : 'Already have an account?'}
                         <button class="auth-switch-btn" data-mode="${isLogin ? 'signup' : 'login'}">
                             ${isLogin ? 'Sign Up' : 'Sign In'}
                         </button>
@@ -1094,11 +1094,11 @@ class SettingsModal {
                     </div>
                 `;
 
-            // Attach event listener for manage subscription button
-            const manageBtn = usageContainer.querySelector('#manageSubscriptionBtn');
-            if (manageBtn) {
-                manageBtn.addEventListener('click', () => this._openBillingPortal());
-            }
+                // Attach event listener for manage subscription button
+                const manageBtn = usageContainer.querySelector('#manageSubscriptionBtn');
+                if (manageBtn) {
+                    manageBtn.addEventListener('click', () => this._openBillingPortal());
+                }
             }
         } catch (error) {
             console.error('[SettingsModal] Error loading usage:', error);

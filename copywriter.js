@@ -152,6 +152,11 @@ async function init() {
 
     // Update language toggle
     updateLanguageUI();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('copywriter');
+    }
 }
 
 // ============================================

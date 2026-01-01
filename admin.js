@@ -883,7 +883,7 @@ function renderPagination(container, currentPage, totalPages, onPageChange) {
     const end = Math.min(totalPages, currentPage + 2);
 
     if (start > 1) {
-        html += `<button onclick="arguments[0].stopPropagation()">1</button>`;
+        html += '<button onclick="arguments[0].stopPropagation()">1</button>';
         if (start > 2) html += '<span>...</span>';
     }
 

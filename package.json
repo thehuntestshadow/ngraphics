@@ -1,0 +1,22 @@
+{
+  "name": "hefaistos",
+  "version": "4.1.0",
+  "description": "AI E-commerce Toolkit",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint *.js",
+    "lint:fix": "eslint *.js --fix",
+    "format": "prettier --write \"*.{js,css,html}\"",
+    "format:check": "prettier --check \"*.{js,css,html}\""
+  },
+  "devDependencies": {
+    "vitest": "^2.0.0",
+    "jsdom": "^24.0.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.0"
+  }
+}

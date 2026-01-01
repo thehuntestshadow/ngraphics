@@ -54,17 +54,17 @@ const favorites = new SharedFavorites('bundle_studio_favorites', 30);
 // LAYOUT DESCRIPTIONS
 // ============================================
 const layoutDescriptions = {
-    'flat-lay': `Arrange the products in a flat lay composition, photographed from directly above (bird's eye view). Products should be artfully scattered with intentional spacing, as seen in lifestyle flat lay photography.`,
+    'flat-lay': 'Arrange the products in a flat lay composition, photographed from directly above (bird\'s eye view). Products should be artfully scattered with intentional spacing, as seen in lifestyle flat lay photography.',
 
-    'grouped': `Arrange the products in a natural grouping, as if casually placed together on a surface. Products can slightly overlap or lean against each other to create depth. The arrangement should feel organic and inviting.`,
+    'grouped': 'Arrange the products in a natural grouping, as if casually placed together on a surface. Products can slightly overlap or lean against each other to create depth. The arrangement should feel organic and inviting.',
 
-    'grid': `Arrange the products in a clean, organized grid pattern with equal spacing. Each product should be clearly separated with consistent margins. This is a clinical, e-commerce style arrangement prioritizing clarity.`,
+    'grid': 'Arrange the products in a clean, organized grid pattern with equal spacing. Each product should be clearly separated with consistent margins. This is a clinical, e-commerce style arrangement prioritizing clarity.',
 
-    'hero': `Feature the first/main product prominently (larger, centered or foreground). Arrange the supporting products smaller, around or behind the hero product. The main product should be the clear focal point.`,
+    'hero': 'Feature the first/main product prominently (larger, centered or foreground). Arrange the supporting products smaller, around or behind the hero product. The main product should be the clear focal point.',
 
-    'unboxing': `Show the products arranged in and around an open container/box. Some items inside the container, some spilling out or placed beside it. Create the feeling of a gift being unwrapped or subscription box being opened. Include tissue paper or appropriate packing material.`,
+    'unboxing': 'Show the products arranged in and around an open container/box. Some items inside the container, some spilling out or placed beside it. Create the feeling of a gift being unwrapped or subscription box being opened. Include tissue paper or appropriate packing material.',
 
-    'numbered': `Arrange products in a clear sequence (left to right or in a pattern). Each product should have a visible number indicator (1, 2, 3...) near it. The numbering suggests order of use or what's included.`
+    'numbered': 'Arrange products in a clear sequence (left to right or in a pattern). Each product should have a visible number indicator (1, 2, 3...) near it. The numbering suggests order of use or what\'s included.'
 };
 
 const containerDescriptions = {
@@ -501,9 +501,9 @@ ${productDescriptions}
 
     // Background
     if (state.background === 'white') {
-        prompt += `BACKGROUND: Clean white or very light gray background.\n\n`;
+        prompt += 'BACKGROUND: Clean white or very light gray background.\n\n';
     } else if (state.background === 'gradient') {
-        prompt += `BACKGROUND: Subtle gradient background that complements the products.\n\n`;
+        prompt += 'BACKGROUND: Subtle gradient background that complements the products.\n\n';
     } else if (state.background === 'surface') {
         if (state.surface === 'custom' && state.customSurface) {
             prompt += `SURFACE: ${state.customSurface}\n\n`;
@@ -515,7 +515,7 @@ ${productDescriptions}
     }
 
     // Labels & Numbering
-    let overlayInstructions = [];
+    const overlayInstructions = [];
     if (state.showLabels) {
         overlayInstructions.push('Include small, elegant labels showing each product name');
     }
@@ -1585,6 +1585,11 @@ async function init() {
     // Initialize preset selector and cost estimator
     initPresetSelector();
     initCostEstimator();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('bundle');
+    }
 }
 
 // Start when DOM is ready

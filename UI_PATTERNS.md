@@ -29,7 +29,9 @@ Reference file for consistent UI patterns across HEFAISTOS pages. **COPY THESE E
 21. [Footer](#footer)
 22. [JavaScript Element Caching Pattern](#javascript-element-caching-pattern)
 23. [JavaScript Safety Patterns](#javascript-safety-patterns)
-24. [Apple Design System Quick Reference](#apple-design-system-quick-reference)
+24. [Onboarding Tour](#onboarding-tour)
+25. [Mobile Optimization](#mobile-optimization)
+26. [Apple Design System Quick Reference](#apple-design-system-quick-reference)
 
 ---
 
@@ -2038,6 +2040,124 @@ Place the footer after all scripts, before `</body>`.
     border-radius: 50%;
     background: var(--apple-green);
     animation: pulseGlow 2s ease infinite;
+}
+```
+
+---
+
+## Onboarding Tour
+
+First-time user guidance with spotlight highlighting. Implemented in `onboarding.js`.
+
+### Tour Types
+
+| Tour | Trigger | Steps |
+|------|---------|-------|
+| `landing` | First visit to index.html | Studio grid → CTA button |
+| `studio` | First visit to any studio | Upload zone → Config form → Generate button → Result panel |
+
+### Initialization
+
+```javascript
+// In init() function of each page
+if (typeof OnboardingTour !== 'undefined') {
+    OnboardingTour.init('landing');  // or 'studio' for studio pages
+}
+```
+
+### HTML Script Tag
+
+Add to all HTML files before `</body>`:
+```html
+<script src="onboarding.js"></script>
+```
+
+### CSS Classes
+
+```css
+.onboarding-overlay { position: fixed; inset: 0; z-index: 10000; }
+.onboarding-highlight { box-shadow: 0 0 0 4px var(--accent), 0 0 0 9999px rgba(0,0,0,0.75); }
+.onboarding-tooltip { position: fixed; width: 320px; background: var(--bg-elevated); }
+```
+
+### Storage Keys
+
+| Key | Purpose |
+|-----|---------|
+| `ngraphics_onboarding.landing_tour_complete` | Landing tour completed |
+| `ngraphics_onboarding.studio_tour_complete` | Studio tour completed |
+| `ngraphics_onboarding.dismissed_at` | Last skip timestamp (24h cooldown) |
+
+---
+
+## Mobile Optimization
+
+CSS patterns for mobile devices. Implemented in `styles.css` (lines 9330+).
+
+### Small Screens (<360px)
+
+```css
+@media (max-width: 360px) {
+    .header-content { padding: 8px 10px; }
+    .brand-name { font-size: 0.8rem; }
+    .option-btn { font-size: 0.7rem; padding: 8px 10px; }
+}
+```
+
+### Landscape Orientation
+
+```css
+@media (max-height: 500px) and (orientation: landscape) {
+    .site-header { padding: 8px 16px; }
+    .modal-content { max-height: 100vh; border-radius: 0; }
+    .upload-zone { min-height: 100px; }
+}
+```
+
+### Safe Area Insets (iPhone X+)
+
+```css
+@supports (padding: env(safe-area-inset-top)) {
+    .site-header {
+        padding-top: max(12px, env(safe-area-inset-top));
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+    }
+    .site-footer {
+        padding-bottom: max(16px, env(safe-area-inset-bottom));
+    }
+}
+```
+
+### Touch Improvements
+
+```css
+/* Prevent double-tap zoom on interactive elements */
+button, a, .option-btn, .studio-card {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth scrolling in modals */
+.modal-body, .panel-config {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+/* Prevent text selection on buttons */
+.option-btn, .btn-generate {
+    user-select: none;
+    -webkit-user-select: none;
+}
+```
+
+### Minimum Tap Targets (44px)
+
+```css
+@media (max-width: 768px) {
+    .option-btn { min-height: 44px; }
+    .modal-close { width: 44px; height: 44px; }
+    .account-dropdown-item { min-height: 48px; }
 }
 ```
 

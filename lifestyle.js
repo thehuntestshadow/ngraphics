@@ -407,15 +407,15 @@ CRITICAL REQUIREMENTS:
     if (state.styleReferenceBase64) {
         const styleStrength = parseInt(elements.styleStrength?.value || 70);
         const strengthText = styleStrength < 40 ? 'subtle inspiration from' :
-                            styleStrength < 70 ? 'moderately match' :
-                            'strongly match';
+            styleStrength < 70 ? 'moderately match' :
+                'strongly match';
         prompt += `\n\nSTYLE REFERENCE:
 I am providing a style reference image. Please ${strengthText} the visual style, color palette, lighting style, and overall mood of the reference image.
 Style influence: ${styleStrength}%`;
     }
 
     // Final emphasis
-    prompt += `\n\nIMPORTANT: Pure photography only. No graphics, text, watermarks, or marketing elements. The product should feel naturally placed in a real lifestyle setting.`;
+    prompt += '\n\nIMPORTANT: Pure photography only. No graphics, text, watermarks, or marketing elements. The product should feel naturally placed in a real lifestyle setting.';
 
     return prompt;
 }
@@ -638,7 +638,7 @@ function updateSkeletonGrid(count = 1) {
     elements.skeletonGrid.className = `skeleton-grid cols-${count > 1 ? (count === 2 ? 2 : 4) : 1}`;
     let html = '';
     for (let i = 0; i < count; i++) {
-        html += `<div class="skeleton-card"><div class="skeleton-image"></div></div>`;
+        html += '<div class="skeleton-card"><div class="skeleton-image"></div></div>';
     }
     elements.skeletonGrid.innerHTML = html;
 }
@@ -1432,6 +1432,11 @@ async function init() {
     }
 
     ngLog?.info?.(`${STUDIO_ID} Studio: Ready!`);
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('lifestyle');
+    }
 }
 
 function applyPresetSettings(settings) {

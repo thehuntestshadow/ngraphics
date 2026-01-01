@@ -10,9 +10,10 @@ HEFAISTOS uses a combination of automated and manual testing approaches:
 
 | Type | Tool | Purpose |
 |------|------|---------|
+| Unit Tests | Vitest | Test shared utilities (EventBus, API, etc.) |
 | Visual Regression | Playwright + `/visual-test` | Catch UI layout shifts |
 | Performance | Lighthouse + `/perf` | Monitor load times, accessibility |
-| Code Quality | Pre-commit hooks | Syntax validation, pattern compliance |
+| Code Quality | Pre-commit hooks + ESLint | Syntax validation, pattern compliance |
 | Manual | Browser testing | Feature verification |
 
 ---
@@ -21,6 +22,10 @@ HEFAISTOS uses a combination of automated and manual testing approaches:
 
 ### Run All Checks
 ```bash
+# NPM scripts
+npm test            # Unit tests (vitest)
+npm run lint        # Code style (eslint)
+
 # In Claude Code
 /audit              # Code quality audit
 /visual-test compare # Visual regression
@@ -33,6 +38,62 @@ The pre-commit hook runs automatically when you commit via Claude Code.
 To run manually:
 ```bash
 .claude/hooks/pre-commit-audit.sh
+```
+
+---
+
+## Unit Testing
+
+### Setup
+
+Unit tests use Vitest with jsdom for a browser-like environment.
+
+```bash
+npm install         # Install dependencies
+npm test            # Run tests once
+npm run test:watch  # Run in watch mode
+```
+
+### Test Files
+
+| File | Tests |
+|------|-------|
+| `tests/setup.js` | Test environment (localStorage mock, fetch mock) |
+| `tests/core.test.js` | EventBus, ReactiveState |
+| `tests/api.test.js` | APIError, error classification, response normalization, retry logic, cache |
+
+### Configuration
+
+`vitest.config.js`:
+```javascript
+export default defineConfig({
+    test: {
+        environment: 'jsdom',
+        globals: true,
+        include: ['tests/**/*.test.js'],
+        setupFiles: ['tests/setup.js']
+    }
+});
+```
+
+### Writing Tests
+
+```javascript
+import { describe, it, expect, vi } from 'vitest';
+
+describe('MyFeature', () => {
+    it('should do something', () => {
+        const result = myFunction();
+        expect(result).toBe(expected);
+    });
+});
+```
+
+### Test Coverage
+
+Run with coverage:
+```bash
+npm test -- --coverage
 ```
 
 ---
@@ -331,4 +392,4 @@ jobs:
 
 ---
 
-*Last updated: Dec 2024*
+*Last updated: Jan 2026*

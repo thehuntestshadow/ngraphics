@@ -247,7 +247,7 @@ CRITICAL REQUIREMENTS:
 - Maintain professional product photography standards`;
 
     // Add background description based on type
-    prompt += `\n\nBACKGROUND:`;
+    prompt += '\n\nBACKGROUND:';
 
     switch (state.backgroundType) {
         case 'solid':
@@ -259,15 +259,15 @@ CRITICAL REQUIREMENTS:
 
         case 'gradient':
             const directionText = state.gradientDirection === 'radial' ? 'radial gradient from center' :
-                                  state.gradientDirection === 'horizontal' ? 'horizontal gradient from left to right' :
-                                  'vertical gradient from top to bottom';
+                state.gradientDirection === 'horizontal' ? 'horizontal gradient from left to right' :
+                    'vertical gradient from top to bottom';
             prompt += `\nSmooth ${directionText}, transitioning from ${state.gradientColor1} to ${state.gradientColor2}. Subtle, professional gradient suitable for product photography.`;
             break;
 
         case 'scene':
             const sceneDesc = state.sceneType === 'custom-scene' ?
-                              state.customSceneDescription :
-                              sceneDescriptions[state.sceneType] || sceneDescriptions['white-studio'];
+                state.customSceneDescription :
+                sceneDescriptions[state.sceneType] || sceneDescriptions['white-studio'];
             prompt += `\n${sceneDesc}`;
             prompt += '\nThe product should look naturally placed in this environment.';
             break;
@@ -297,7 +297,7 @@ CRITICAL REQUIREMENTS:
     if (state.negativePrompt && state.negativePrompt.trim()) {
         prompt += `\n\nAVOID:\n${state.negativePrompt.trim()}`;
     } else {
-        prompt += `\n\nAVOID:\nBlurry edges, artifacts around product edges, distorted product, incorrect colors, floating shadows, unnatural lighting, text overlays, watermarks`;
+        prompt += '\n\nAVOID:\nBlurry edges, artifacts around product edges, distorted product, incorrect colors, floating shadows, unnatural lighting, text overlays, watermarks';
     }
 
     return prompt;
@@ -461,7 +461,7 @@ function updateSkeletonGrid(count = 1) {
     elements.skeletonGrid.className = `skeleton-grid cols-${count > 1 ? (count === 2 ? 2 : 4) : 1}`;
     let html = '';
     for (let i = 0; i < count; i++) {
-        html += `<div class="skeleton-card"><div class="skeleton-image"></div></div>`;
+        html += '<div class="skeleton-card"><div class="skeleton-image"></div></div>';
     }
     elements.skeletonGrid.innerHTML = html;
 }
@@ -1369,6 +1369,11 @@ function init() {
 
     // Initialize gradient preview
     updateGradientPreview();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('background');
+    }
 
     console.log('Background Studio: Ready!');
 }

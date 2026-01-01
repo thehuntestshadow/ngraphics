@@ -267,7 +267,7 @@ REQUIREMENTS:
 - Balanced composition with proper spacing`;
 
     if (state.productImage) {
-        prompt += `\n\nIncorporate the uploaded product image naturally into the card design.`;
+        prompt += '\n\nIncorporate the uploaded product image naturally into the card design.';
     }
 
     if (state.negativePrompt) {
@@ -371,7 +371,7 @@ async function generateSingleCard(apiKey, prompt, seed) {
                 ? [
                     { type: 'text', text: prompt },
                     { type: 'image_url', image_url: { url: state.productImage } }
-                  ]
+                ]
                 : prompt
         }];
 
@@ -1048,6 +1048,11 @@ async function init() {
 
     // Initialize theme
     SharedTheme.init();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('feature-cards');
+    }
 }
 
 // Start app

@@ -400,8 +400,8 @@ function updateProgress(percent) {
 
 function updateSkeletonGrid(count = 1) {
     if (!elements.skeletonGrid) return;
-    elements.skeletonGrid.className = `skeleton-grid cols-1`;
-    elements.skeletonGrid.innerHTML = `<div class="skeleton-card"><div class="skeleton-image"></div></div>`;
+    elements.skeletonGrid.className = 'skeleton-grid cols-1';
+    elements.skeletonGrid.innerHTML = '<div class="skeleton-card"><div class="skeleton-image"></div></div>';
 }
 
 // Show loading state
@@ -964,6 +964,11 @@ async function init() {
 
     // Initial motion type state
     switchMotionType('model');
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('studio');
+    }
 }
 
 // Start

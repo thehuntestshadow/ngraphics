@@ -374,7 +374,7 @@ function updateSkeletonGrid(count = 1) {
     elements.skeletonGrid.className = `skeleton-grid cols-${count > 1 ? (count === 2 ? 2 : 4) : 1}`;
     let html = '';
     for (let i = 0; i < count; i++) {
-        html += `<div class="skeleton-card"><div class="skeleton-image"></div></div>`;
+        html += '<div class="skeleton-card"><div class="skeleton-image"></div></div>';
     }
     elements.skeletonGrid.innerHTML = html;
 }
@@ -932,6 +932,11 @@ async function init() {
 
     // Setup event listeners
     setupEventListeners();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('social-studio');
+    }
 }
 
 document.addEventListener('DOMContentLoaded', init);

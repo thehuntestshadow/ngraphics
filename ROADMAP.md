@@ -222,17 +222,22 @@ Before adding a new tool, it should:
 - **Implemented**: `admin.html` CMS tabs, `cms_homepage/cms_gallery/cms_faq` tables, `supabase.js` CMS methods, `gallery.js` + `faq.js` dynamic loading
 - Difficulty: Hard (complete)
 
-**Onboarding Tour**
+**Onboarding Tour** ✅ DONE
 - Step-by-step first-time guide
-- Highlight key features
-- Skip/resume capability
-- Difficulty: Medium
+- Highlight key features with spotlight effect
+- Skip/resume capability (24h cooldown on skip)
+- Two tours: landing page and studio pages
+- **Implemented**: `onboarding.js` with CSS in `styles.css`
+- Difficulty: Medium (complete)
 
-**Mobile Optimization**
-- Touch-friendly controls
-- Responsive layouts
-- Swipe gestures
-- Difficulty: Hard
+**Mobile Optimization** ✅ DONE
+- Touch-friendly controls (44px tap targets)
+- Responsive layouts for small screens (<360px)
+- iPhone X+ safe area insets
+- Landscape orientation fixes
+- Touch improvements (overscroll-behavior, -webkit-tap-highlight)
+- **Implemented**: CSS in `styles.css` (lines 9330-9482)
+- Difficulty: Hard (complete)
 
 ### Lower Priority / Exploratory
 
@@ -286,9 +291,9 @@ See **Future Page Ideas** section below for comprehensive list of potential new 
 - [x] Visual regression testing (/visual-test skill)
 - [x] Performance auditing (/perf skill)
 - [x] TypeScript via JSDoc (jsconfig.json, types.js, @ts-check in core files)
-- [ ] Unit tests for shared utilities
+- [x] Unit tests for shared utilities (vitest, tests/*.test.js)
 - [ ] E2E tests for critical flows
-- [ ] ESLint/Prettier setup
+- [x] ESLint/Prettier setup (eslint.config.js, .prettierrc)
 
 ### UX Improvements
 - [x] Auto-generate mode (upload → magic → result in 30 seconds)
@@ -1090,5 +1095,5 @@ Core generation across 3 studios with history/favorites
 
 ---
 
-*Last updated: Jan 2026 (v4.1 - Subscription-required, edge function proxy, BYOK removed)*
+*Last updated: Jan 2026 (v4.2 - Unit tests, ESLint/Prettier, onboarding tour, mobile optimization)*
 *Add ideas freely - this is a living document*

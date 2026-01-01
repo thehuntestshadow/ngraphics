@@ -315,12 +315,12 @@ function renderComparisonProducts() {
         <div class="comparison-product-slot ${product.isMain ? 'main' : ''}" data-id="${product.id}">
             <div class="comparison-product-upload" data-index="${index}">
                 ${product.thumbnail
-                    ? `<img src="${product.thumbnail}" alt="${product.name}">`
-                    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        ? `<img src="${product.thumbnail}" alt="${product.name}">`
+        : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="12" y1="5" x2="12" y2="19"/>
                         <line x1="5" y1="12" x2="19" y2="12"/>
                     </svg>`
-                }
+}
             </div>
             <input type="file" class="comparison-file-input" accept="image/*" hidden data-index="${index}">
             <div class="comparison-product-info">
@@ -411,18 +411,18 @@ function renderComparisonFeatures() {
             <input type="text" class="input-field feature-name" value="${feature.name}" placeholder="Feature name" data-id="${feature.id}">
             <div class="feature-values">
                 ${state.comparisonProducts.map((_, i) => {
-                    const val = feature.values[i];
-                    let className = 'checked';
-                    let display = '✓';
-                    if (val === false) {
-                        className = 'unchecked';
-                        display = '✗';
-                    } else if (typeof val === 'string') {
-                        className = 'text';
-                        display = val;
-                    }
-                    return `<button type="button" class="feature-value-btn ${className}" data-feature-id="${feature.id}" data-product-index="${i}">${display}</button>`;
-                }).join('')}
+        const val = feature.values[i];
+        let className = 'checked';
+        let display = '✓';
+        if (val === false) {
+            className = 'unchecked';
+            display = '✗';
+        } else if (typeof val === 'string') {
+            className = 'text';
+            display = val;
+        }
+        return `<button type="button" class="feature-value-btn ${className}" data-feature-id="${feature.id}" data-product-index="${i}">${display}</button>`;
+    }).join('')}
             </div>
             <button type="button" class="btn-remove-feature" data-id="${feature.id}" title="Remove">&times;</button>
         </div>
@@ -1707,6 +1707,11 @@ async function init() {
 
     // Initial button state
     updateGenerateButton();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('a-plus');
+    }
 }
 
 document.addEventListener('DOMContentLoaded', init);

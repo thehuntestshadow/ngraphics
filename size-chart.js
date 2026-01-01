@@ -288,14 +288,14 @@ Primary color: ${state.color}
 ${bgDesc}`;
 
     if (state.chartStyle === 'visual') {
-        prompt += `\n\nInclude a body/garment outline diagram with measurement arrows pointing to:`;
+        prompt += '\n\nInclude a body/garment outline diagram with measurement arrows pointing to:';
         state.headers.slice(1).forEach(h => {
             prompt += `\n- ${h}`;
         });
     }
 
     if (state.chartStyle === 'comparison') {
-        prompt += `\n\nShow international size equivalents clearly with country flags or labels for each region (US, UK, EU, etc.)`;
+        prompt += '\n\nShow international size equivalents clearly with country flags or labels for each region (US, UK, EU, etc.)';
     }
 
     if (state.includeInstructions) {
@@ -315,7 +315,7 @@ ${bgDesc}`;
 - Suitable for Amazon, Etsy, or Shopify product listings`;
 
     if (state.brandLogo) {
-        prompt += `\n\nIncorporate the uploaded brand logo in a subtle position (corner or header).`;
+        prompt += '\n\nIncorporate the uploaded brand logo in a subtle position (corner or header).';
     }
 
     // Add language instruction for non-English
@@ -416,7 +416,7 @@ async function generateSingleChart(apiKey, prompt, seed) {
                 ? [
                     { type: 'text', text: prompt },
                     { type: 'image_url', image_url: { url: state.brandLogo } }
-                  ]
+                ]
                 : prompt
         }];
 
@@ -1024,6 +1024,11 @@ async function init() {
 
     // Initialize theme
     SharedTheme.init();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('size-chart');
+    }
 }
 
 // Start app

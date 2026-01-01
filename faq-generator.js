@@ -284,7 +284,7 @@ function buildImagePrompt() {
     const typeDesc = imageTypeDescriptions[state.imageType];
     const topFaqs = state.faqs.slice(0, 5);
 
-    let faqContent = topFaqs.map((faq, i) => `Q${i + 1}: ${faq.question}\nA${i + 1}: ${faq.answer}`).join('\n\n');
+    const faqContent = topFaqs.map((faq, i) => `Q${i + 1}: ${faq.question}\nA${i + 1}: ${faq.answer}`).join('\n\n');
 
     let prompt = `Create a professional FAQ infographic image.
 
@@ -359,14 +359,14 @@ function generateSchemaJsonLd() {
     if (!state.faqs || state.faqs.length === 0) return '';
 
     const schema = {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": state.faqs.map(faq => ({
-            "@type": "Question",
-            "name": faq.question,
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": faq.answer
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': state.faqs.map(faq => ({
+            '@type': 'Question',
+            'name': faq.question,
+            'acceptedAnswer': {
+                '@type': 'Answer',
+                'text': faq.answer
             }
         }))
     };
@@ -1029,6 +1029,11 @@ function init() {
     loadHistory();
     favorites.load();
     renderFavorites();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('faq-generator');
+    }
 
     console.log('FAQ Generator: Ready!');
 }

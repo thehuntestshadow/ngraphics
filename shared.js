@@ -1102,8 +1102,8 @@ const SharedComponents = {
             inputHTML = `
                 <select id="${id}" class="form-select">
                     ${options.map(opt =>
-                        `<option value="${opt.value}"${opt.value === value ? ' selected' : ''}>${opt.label}</option>`
-                    ).join('')}
+        `<option value="${opt.value}"${opt.value === value ? ' selected' : ''}>${opt.label}</option>`
+    ).join('')}
                 </select>
             `;
         } else if (type === 'textarea') {

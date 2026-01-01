@@ -826,7 +826,7 @@ VISUAL STYLE: ${styleDesc}
 - Right product: "${state.productBName}"
 `;
             if (state.compareFeatures.length > 0) {
-                prompt += `- Feature comparison with checkmarks:\n`;
+                prompt += '- Feature comparison with checkmarks:\n';
                 state.compareFeatures.forEach(f => {
                     if (f.name) {
                         const aSymbol = f.hasA ? '[check]' : '[x]';
@@ -1789,6 +1789,11 @@ async function init() {
     history.load();
     renderHistory();
     renderFavorites();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('comparison');
+    }
 
     console.log('Comparison Generator: Ready!');
 }

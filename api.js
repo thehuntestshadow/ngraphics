@@ -636,16 +636,16 @@ class APIClient {
                 aspectRatio,
                 requestId: `variation-${index}`
             })
-            .then(result => {
-                results.push({ index, ...result });
-                if (onProgress) onProgress(results.length, count);
-                return result;
-            })
-            .catch(err => {
-                errors.push({ index, error: err });
-                if (onProgress) onProgress(results.length, count);
-                return null;
-            })
+                .then(result => {
+                    results.push({ index, ...result });
+                    if (onProgress) onProgress(results.length, count);
+                    return result;
+                })
+                .catch(err => {
+                    errors.push({ index, error: err });
+                    if (onProgress) onProgress(results.length, count);
+                    return null;
+                })
         );
 
         await Promise.all(requests);
@@ -843,23 +843,19 @@ class APIClient {
                     const imageUrl = `data:${part.inline_data.mime_type};base64,${part.inline_data.data}`;
                     result.images.push(imageUrl);
                     if (!result.image) result.image = imageUrl;
-                }
-                // OpenAI image_url format
-                else if (part.type === 'image_url' && part.image_url?.url) {
+                } else if (part.type === 'image_url' && part.image_url?.url) {
+                    // OpenAI image_url format
                     result.images.push(part.image_url.url);
                     if (!result.image) result.image = part.image_url.url;
-                }
-                // Text content
-                else if (part.type === 'text' && part.text) {
+                } else if (part.type === 'text' && part.text) {
+                    // Text content
                     result.text += part.text;
-                }
-                else if (typeof part === 'string') {
+                } else if (typeof part === 'string') {
                     result.text += part;
                 }
             }
-        }
-        // Handle string content
-        else if (typeof content === 'string') {
+        } else if (typeof content === 'string') {
+            // Handle string content
             // Check if it's a base64 image
             if (content.startsWith('data:image')) {
                 result.image = content;

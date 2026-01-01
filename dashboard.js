@@ -94,6 +94,11 @@ async function init() {
 
     // Setup event listeners
     setupEventListeners();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('studio');
+    }
 }
 
 // ============================================
@@ -346,14 +351,14 @@ function renderTrash() {
     elements.trashContent.innerHTML = `
         <div class="trash-grid">
             ${trashItems.map(item => {
-                const thumbnail = item.thumbnail || item.imageUrl || '';
-                const title = item.title || 'Untitled';
-                const studioLabel = studioLabels[item.page] || item.page;
-                const studioClass = studioClasses[item.page] || '';
-                const deletedAt = SharedTrash.formatDeletedAt(item.deletedAt);
-                const daysRemaining = SharedTrash.getDaysRemaining(item.deletedAt);
+        const thumbnail = item.thumbnail || item.imageUrl || '';
+        const title = item.title || 'Untitled';
+        const studioLabel = studioLabels[item.page] || item.page;
+        const studioClass = studioClasses[item.page] || '';
+        const deletedAt = SharedTrash.formatDeletedAt(item.deletedAt);
+        const daysRemaining = SharedTrash.getDaysRemaining(item.deletedAt);
 
-                return `
+        return `
                     <div class="trash-item" data-id="${item.id}">
                         <div class="trash-item-preview">
                             ${thumbnail ? `<img src="${thumbnail}" alt="${escapeHtml(title)}" onclick="openLightbox('${thumbnail}')">` : ''}
@@ -384,7 +389,7 @@ function renderTrash() {
                         </div>
                     </div>
                 `;
-            }).join('')}
+    }).join('')}
         </div>
     `;
 

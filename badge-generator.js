@@ -857,6 +857,11 @@ async function init() {
     renderHistory();
     renderFavorites();
     setupEventListeners();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('badge-generator');
+    }
 }
 
 // Start

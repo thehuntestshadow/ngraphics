@@ -40,6 +40,22 @@ No build process required. To run locally:
 - For auth testing, use `http://localhost:8000` (configured in Supabase)
 - Direct file open (`file://`) won't work with Supabase auth redirects
 
+### NPM Scripts
+
+```bash
+npm install       # Install dev dependencies (vitest, eslint, prettier)
+npm test          # Run unit tests (vitest)
+npm run test:watch # Run tests in watch mode
+npm run lint      # Check code style (eslint)
+npm run format    # Format code (prettier)
+```
+
+### Testing
+
+- `tests/setup.js` - Test environment with localStorage and fetch mocks
+- `tests/core.test.js` - EventBus and ReactiveState tests
+- `tests/api.test.js` - APIError, response normalization, retry logic tests
+
 ### TypeScript (Optional)
 
 Type checking via JSDoc annotations - no build step required.
@@ -106,7 +122,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 | Documentation | `docs.html`, `docs.css` | User documentation |
 
 ### Shared Resources
-- `styles.css` - Base styles, CSS variables, theming, common components
+- `styles.css` - Base styles, CSS variables, theming, common components, mobile optimization
 - `core.js` - Core infrastructure: Reactive State, Event Bus, Image Compression, Virtual Scrolling, Lazy Loading
 - `i18n.js` - Internationalization module with 10 languages, interface/generation language settings
 - `shared.js` - Shared utilities: API handling, history, favorites, UI helpers, upload handling, lightbox, keyboard shortcuts, upgrade prompts, language helpers
@@ -118,6 +134,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `supabase.js` - Supabase client wrapper (auth, profiles, usage tracking, CMS)
 - `auth-ui.js` - Authentication UI (login/signup modal, account menu, settings modal with language settings, usage display)
 - `cloud-sync.js` - Cloud sync manager (history/favorites sync to Supabase)
+- `onboarding.js` - First-time user guidance tour (landing and studio tours)
 - `types.js` - JSDoc type definitions for TypeScript checking
 
 ### Documentation Files

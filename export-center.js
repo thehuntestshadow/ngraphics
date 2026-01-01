@@ -317,7 +317,7 @@ async function processImage(imageData) {
 
     if (state.currentTool === 'convert') {
         format = state.outputFormat === 'png' ? 'image/png' :
-                 state.outputFormat === 'webp' ? 'image/webp' : 'image/jpeg';
+            state.outputFormat === 'webp' ? 'image/webp' : 'image/jpeg';
     }
 
     if (state.currentTool === 'compress') {
@@ -468,7 +468,7 @@ async function applyWatermark(ctx, canvas) {
 function generateFilename(originalName, width, height) {
     const baseName = originalName.replace(/\.[^/.]+$/, '');
     const date = new Date().toISOString().split('T')[0];
-    let extension = state.currentTool === 'convert' ? state.outputFormat : 'jpg';
+    const extension = state.currentTool === 'convert' ? state.outputFormat : 'jpg';
 
     let pattern = state.namingPattern || '{name}';
     pattern = pattern
@@ -812,6 +812,11 @@ async function init() {
 
     // Render history
     renderHistory();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('export-center');
+    }
 }
 
 document.addEventListener('DOMContentLoaded', init);

@@ -1,0 +1,5 @@
+node_modules/
+.visual-tests/
+supabase/
+*.min.js
+*.min.css

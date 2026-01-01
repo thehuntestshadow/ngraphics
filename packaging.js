@@ -288,6 +288,11 @@ async function init() {
 
     // Setup upload
     setupUpload();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('packaging');
+    }
 }
 
 // ============================================
@@ -457,7 +462,7 @@ function updatePackagingTypeUI() {
 // ============================================
 function generatePrompt() {
     const productName = state.productName || 'product';
-    let prompt = `Create a professional product packaging mockup photograph. `;
+    let prompt = 'Create a professional product packaging mockup photograph. ';
 
     // Packaging type
     if (state.packagingType === 'box') {
@@ -493,7 +498,7 @@ function generatePrompt() {
     prompt += `${backgroundDescriptions[state.background]}. `;
 
     // Quality
-    prompt += `High-end commercial product photography, sharp focus on packaging, professional quality, realistic materials and textures.`;
+    prompt += 'High-end commercial product photography, sharp focus on packaging, professional quality, realistic materials and textures.';
 
     // Negative prompt
     if (state.negativePrompt) {
@@ -882,7 +887,7 @@ function updateSkeletonGrid(count = 1) {
     elements.skeletonGrid.className = `skeleton-grid cols-${count > 1 ? (count === 2 ? 2 : 4) : 1}`;
     let html = '';
     for (let i = 0; i < count; i++) {
-        html += `<div class="skeleton-card"><div class="skeleton-image"></div></div>`;
+        html += '<div class="skeleton-card"><div class="skeleton-image"></div></div>';
     }
     elements.skeletonGrid.innerHTML = html;
 }

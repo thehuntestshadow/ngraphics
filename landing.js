@@ -41,6 +41,11 @@ async function init() {
 
     // Setup gallery preview lightbox
     setupGalleryPreview();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('landing');
+    }
 }
 
 // ============================================

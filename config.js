@@ -17,7 +17,7 @@ const CONFIG = {
         PRO_MONTHLY: 'price_1SkTw4G8e7fqKTguuqHpJEqi',
         PRO_YEARLY: 'price_1SkTw4G8e7fqKTgu5E1GyYiZ',
         BUSINESS_MONTHLY: 'price_1SkTw5G8e7fqKTguRra3rgMg',
-        BUSINESS_YEARLY: 'price_1SkTw5G8e7fqKTguHURNx22O',
+        BUSINESS_YEARLY: 'price_1SkTw5G8e7fqKTguHURNx22O'
     },
     STRIPE_PAYMENT_LINKS: {
         PRO_MONTHLY: 'https://buy.stripe.com/5kQ4gz6ZzdlabxEbjufAc00',
@@ -25,7 +25,7 @@ const CONFIG = {
         BUSINESS_MONTHLY: 'https://buy.stripe.com/aFa3cvdnXepedFM2MYfAc02',
         BUSINESS_YEARLY: 'https://buy.stripe.com/7sY28r1Ff3KAcBI1IUfAc03',
         CREDITS_50: 'https://buy.stripe.com/00w7sL1Ff4OEeJQevGfAc04',
-        CREDITS_200: 'https://buy.stripe.com/eVqdR92Jj0yo45ccnyfAc05',
+        CREDITS_200: 'https://buy.stripe.com/eVqdR92Jj0yo45ccnyfAc05'
     },
 
     // App settings
@@ -36,14 +36,14 @@ const CONFIG = {
     FEATURES: {
         CLOUD_SYNC: true,
         PAYMENTS: true,
-        WATERMARK_FREE: false,  // Watermark exports for free users
+        WATERMARK_FREE: false  // Watermark exports for free users
     },
 
     // API defaults
     API: {
         OPENROUTER_BASE_URL: 'https://openrouter.ai/api/v1',
         DEFAULT_MODEL: 'google/gemini-2.0-flash-exp:free',
-        TIMEOUT_MS: 120000,
+        TIMEOUT_MS: 120000
     },
 
     // Environment detection

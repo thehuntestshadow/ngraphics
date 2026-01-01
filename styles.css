@@ -9083,3 +9083,400 @@ textarea:focus-visible {
         width: 100%;
     }
 }
+
+/* ==========================================================================
+   ONBOARDING TOUR
+   ========================================================================== */
+
+.onboarding-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.onboarding-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.onboarding-backdrop {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    pointer-events: auto;
+}
+
+.onboarding-highlight {
+    position: absolute;
+    border-radius: var(--radius-lg);
+    box-shadow:
+        0 0 0 4px var(--accent),
+        0 0 0 9999px rgba(0, 0, 0, 0.75);
+    transition: all 0.4s ease;
+    pointer-events: none;
+}
+
+.onboarding-tooltip {
+    position: fixed;
+    width: 320px;
+    max-width: calc(100vw - 32px);
+    z-index: 10001;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.onboarding-tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.onboarding-tooltip-content {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    padding: 20px;
+    box-shadow: var(--shadow-lg);
+}
+
+.onboarding-tooltip-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.onboarding-tooltip-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.onboarding-close {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.onboarding-close:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.onboarding-tooltip-content p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+
+.onboarding-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.onboarding-progress {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    transition: all 0.2s ease;
+}
+
+.progress-dot.active {
+    background: var(--accent);
+    transform: scale(1.25);
+}
+
+.progress-dot.complete {
+    background: var(--success);
+}
+
+.onboarding-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.onboarding-prev,
+.onboarding-next,
+.onboarding-finish {
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.onboarding-prev {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+}
+
+.onboarding-prev:hover {
+    color: var(--text-primary);
+}
+
+.onboarding-next,
+.onboarding-finish {
+    background: var(--gradient-primary);
+    border: none;
+    color: var(--bg-deep);
+}
+
+.onboarding-next:hover,
+.onboarding-finish:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
+}
+
+/* Tooltip arrow positions */
+.onboarding-tooltip.position-top::before,
+.onboarding-tooltip.position-bottom::before,
+.onboarding-tooltip.position-left::before,
+.onboarding-tooltip.position-right::before {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    transform: rotate(45deg);
+}
+
+.onboarding-tooltip.position-top::before {
+    bottom: -7px;
+    left: 50%;
+    margin-left: -6px;
+    border-top: none;
+    border-left: none;
+}
+
+.onboarding-tooltip.position-bottom::before {
+    top: -7px;
+    left: 50%;
+    margin-left: -6px;
+    border-bottom: none;
+    border-right: none;
+}
+
+.onboarding-tooltip.position-left::before {
+    right: -7px;
+    top: 50%;
+    margin-top: -6px;
+    border-bottom: none;
+    border-left: none;
+}
+
+.onboarding-tooltip.position-right::before {
+    left: -7px;
+    top: 50%;
+    margin-top: -6px;
+    border-top: none;
+    border-right: none;
+}
+
+/* Onboarding mobile adjustments */
+@media (max-width: 480px) {
+    .onboarding-tooltip {
+        width: calc(100vw - 24px);
+        left: 12px !important;
+        right: 12px !important;
+    }
+
+    .onboarding-tooltip-content {
+        padding: 16px;
+    }
+
+    .onboarding-footer {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .onboarding-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+/* ==========================================================================
+   MOBILE OPTIMIZATION
+   ========================================================================== */
+
+/* Small screens (<360px) */
+@media (max-width: 360px) {
+    .header-content {
+        padding: 8px 10px;
+    }
+
+    .brand-name {
+        font-size: 0.8rem;
+    }
+
+    .option-btn {
+        font-size: 0.7rem;
+        padding: 8px 10px;
+    }
+
+    .btn-generate {
+        padding: 12px 16px;
+        font-size: 0.9rem;
+    }
+
+    .panel-config,
+    .panel-output {
+        padding: 12px;
+    }
+
+    .form-group label {
+        font-size: 0.8rem;
+    }
+
+    .studio-card {
+        padding: 16px;
+    }
+
+    .studio-card h3 {
+        font-size: 0.95rem;
+    }
+
+    .studio-card p {
+        font-size: 0.8rem;
+    }
+}
+
+/* Landscape orientation */
+@media (max-height: 500px) and (orientation: landscape) {
+    .site-header {
+        padding: 8px 16px;
+    }
+
+    .modal-content {
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .upload-zone {
+        min-height: 100px;
+    }
+
+    .hero-section {
+        min-height: auto;
+        padding: 40px 20px;
+    }
+
+    .main-layout {
+        padding-top: 60px;
+    }
+
+    .panel-upload {
+        min-height: auto;
+    }
+}
+
+/* Safe area insets (iPhone X+) */
+@supports (padding: env(safe-area-inset-top)) {
+    .site-header {
+        padding-top: max(12px, env(safe-area-inset-top));
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+    }
+
+    .site-footer {
+        padding-bottom: max(16px, env(safe-area-inset-bottom));
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+    }
+
+    .main-layout {
+        padding-left: max(0px, env(safe-area-inset-left));
+        padding-right: max(0px, env(safe-area-inset-right));
+    }
+
+    .modal-content {
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+
+    .onboarding-tooltip {
+        margin-bottom: max(16px, env(safe-area-inset-bottom));
+    }
+}
+
+/* Touch improvements */
+button,
+a,
+.option-btn,
+.studio-card,
+.history-item,
+.favorite-item {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.modal-body,
+.panel-config,
+.panel-output,
+.history-modal-content,
+.favorites-modal-content {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+/* Prevent text selection on interactive elements */
+.option-btn,
+.btn-generate,
+.btn-primary,
+.btn-secondary,
+.studio-card {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Larger tap targets on mobile */
+@media (max-width: 768px) {
+    .option-btn {
+        min-height: 44px;
+    }
+
+    .history-item,
+    .favorite-item {
+        min-height: 44px;
+    }
+
+    .modal-close {
+        width: 44px;
+        height: 44px;
+    }
+
+    .account-dropdown-item {
+        min-height: 48px;
+    }
+}

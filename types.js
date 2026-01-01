@@ -1,6 +1,6 @@
 /**
  * HEFAISTOS - Shared Type Definitions
- * 
+ *
  * This file contains JSDoc type definitions used across the codebase.
  * Import types using: @type {import('./types.js').TypeName}
  */

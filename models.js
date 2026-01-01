@@ -211,7 +211,7 @@ function updateSkeletonGrid(count = 1) {
     // Generate skeleton cards
     let html = '';
     for (let i = 0; i < count; i++) {
-        html += `<div class="skeleton-card"><div class="skeleton-image"></div></div>`;
+        html += '<div class="skeleton-card"><div class="skeleton-image"></div></div>';
     }
     elements.skeletonGrid.innerHTML = html;
 }
@@ -435,7 +435,7 @@ function generatePrompt() {
     };
 
     // Build scene description with optional custom details
-    let sceneDesc = {};
+    const sceneDesc = {};
     for (const [key, value] of Object.entries(sceneDescBase)) {
         if (state.sceneDetailMode === 'custom' && state.sceneDetailText?.trim() && key === state.scene) {
             sceneDesc[key] = `${value}, specifically: ${state.sceneDetailText.trim()}`;
@@ -627,7 +627,7 @@ function generatePrompt() {
     const currentProductEnhancement = elements.productEnhancement?.value || 'auto';
 
     // Build quality enhancements section
-    let qualityItems = [];
+    const qualityItems = [];
 
     // Only include realism if not auto
     if (currentRealism !== 'auto' && realismDesc[currentRealism]) {
@@ -804,8 +804,8 @@ ${negativePromptText}`;
     if (state.styleReferenceBase64) {
         const styleStrength = parseInt(elements.styleStrength?.value || 70);
         const strengthText = styleStrength < 40 ? 'subtle inspiration from' :
-                            styleStrength < 70 ? 'moderately match' :
-                            'strongly match';
+            styleStrength < 70 ? 'moderately match' :
+                'strongly match';
         prompt += `\n\nSTYLE REFERENCE:
 I am providing a style reference image. Please ${strengthText} the visual style, color palette, lighting style, and overall mood of the reference image.
 Style influence: ${styleStrength}%`;
@@ -2082,6 +2082,11 @@ async function init() {
     // Initialize preset selector and cost estimator
     initPresetSelector();
     initCostEstimator();
+
+    // Initialize onboarding tour for first-time visitors
+    if (typeof OnboardingTour !== 'undefined') {
+        OnboardingTour.init('models');
+    }
 
     console.log('Model Studio: Ready!');
 }
