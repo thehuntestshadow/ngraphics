@@ -109,12 +109,14 @@ function initElements() {
         regenerateBtn: document.getElementById('regenerateBtn'),
 
         // History
+        historyPanel: document.getElementById('historyPanel'),
         historyGrid: document.getElementById('historyGrid'),
         historyCount: document.getElementById('historyCount'),
         historyEmpty: document.getElementById('historyEmpty'),
         clearHistory: document.getElementById('clearHistory'),
 
         // Favorites
+        favoritesPanel: document.getElementById('favoritesPanel'),
         favoritesGrid: document.getElementById('favoritesGrid'),
         favoritesCount: document.getElementById('favoritesCount'),
         favoritesEmpty: document.getElementById('favoritesEmpty'),
@@ -499,17 +501,20 @@ async function addToHistory(imageUrl, allImages) {
 }
 
 async function renderHistory() {
+    const panel = elements.historyPanel;
     const items = await history.getAll();
     elements.historyCount.textContent = items.length;
 
     if (items.length === 0) {
-        elements.historyEmpty.style.display = 'flex';
+        panel.classList.remove('has-items');
+        if (elements.historyEmpty) {
+            elements.historyEmpty.style.display = 'none';
+        }
         elements.historyGrid.innerHTML = '';
-        elements.historyGrid.appendChild(elements.historyEmpty);
         return;
     }
 
-    elements.historyEmpty.style.display = 'none';
+    panel.classList.add('has-items');
     elements.historyGrid.innerHTML = items.map(item => `
         <div class="history-item" data-id="${item.id}">
             <img src="${item.thumbnail}" alt="History item" loading="lazy">
@@ -544,17 +549,20 @@ async function saveFavorite() {
 }
 
 async function renderFavorites() {
+    const panel = elements.favoritesPanel;
     const items = await favorites.getAll();
     elements.favoritesCount.textContent = items.length;
 
     if (items.length === 0) {
-        elements.favoritesEmpty.style.display = 'flex';
+        panel.classList.remove('has-items');
+        if (elements.favoritesEmpty) {
+            elements.favoritesEmpty.style.display = 'none';
+        }
         elements.favoritesGrid.innerHTML = '';
-        elements.favoritesGrid.appendChild(elements.favoritesEmpty);
         return;
     }
 
-    elements.favoritesEmpty.style.display = 'none';
+    panel.classList.add('has-items');
     elements.favoritesGrid.innerHTML = items.map(item => `
         <div class="favorite-item" data-id="${item.id}">
             <img src="${item.thumbnail}" alt="Favorite item" loading="lazy">

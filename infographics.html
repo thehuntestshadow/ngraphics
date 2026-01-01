@@ -103,6 +103,15 @@
                             </span>
                             Product Photo
                             <span class="label-hint">Reference image</span>
+                        </div>
+                        <div class="auto-mode-row">
+                            <span class="auto-mode-label">Auto-generate on upload</span>
+                            <label class="toggle-label">
+                                <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
+                                <span class="toggle-switch"></span>
+                            </label>
+                        </div>
+                        <div class="batch-mode-row">
                             <button type="button" class="batch-mode-toggle" id="batchModeToggle" title="Switch to batch mode">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="3" width="7" height="7"/>
@@ -222,10 +231,19 @@
                         </div>
                     </div>
 
-                    <!-- Quick Start Templates -->
-                    <div class="config-section">
-                        <div id="templateSelectorContainer"></div>
-                    </div>
+                    <!-- Basic Settings (Collapsible) -->
+                    <div class="advanced-section" id="basicSection">
+                        <button type="button" class="advanced-toggle" id="basicToggle" aria-expanded="false" aria-controls="basicContent">
+                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                            </svg>
+                            <span>Basic Settings</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="advanced-content" id="basicContent">
 
                     <!-- Product Title -->
                     <div class="config-section">
@@ -433,6 +451,9 @@
                             <option value="gradient">Gradient</option>
                         </select>
                     </div>
+
+                        </div><!-- /basicContent -->
+                    </div><!-- /basicSection -->
 
                     <!-- Advanced Options -->
                     <div class="advanced-section" id="advancedSection">
@@ -1190,68 +1211,71 @@
         </div>
     </main>
 
-    <!-- History Section -->
+    <!-- History & Favorites Section -->
     <section class="history-section" id="historySection">
-        <div class="history-container">
-            <div class="history-header">
-                <div class="history-title-group">
-                    <h3 class="history-title">History</h3>
-                    <span class="history-count" id="historyCount"></span>
+        <div class="history-favorites-grid">
+            <!-- History Panel -->
+            <div class="history-container" id="historyPanel">
+                <div class="history-header">
+                    <div class="history-title-group">
+                        <h3 class="history-title">History</h3>
+                        <span class="history-count" id="historyCount"></span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn-text" id="bulkModeBtn" title="Select multiple">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"/>
+                                <rect x="14" y="3" width="7" height="7"/>
+                                <rect x="3" y="14" width="7" height="7"/>
+                                <rect x="14" y="14" width="7" height="7"/>
+                            </svg>
+                        </button>
+                        <button class="btn-text-danger" id="clearHistoryBtn">Clear All</button>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn-text" id="bulkModeBtn" title="Select multiple">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="7" height="7"/>
-                            <rect x="14" y="3" width="7" height="7"/>
-                            <rect x="3" y="14" width="7" height="7"/>
-                            <rect x="14" y="14" width="7" height="7"/>
+                <!-- Search & Bulk Actions -->
+                <div class="org-search">
+                    <input type="text" class="org-search-input" id="historySearch" placeholder="Search history..." aria-label="Search history">
+                </div>
+                <div class="bulk-actions-bar" id="historyBulkBar">
+                    <label class="bulk-select-all">
+                        <input type="checkbox" id="historySelectAll">
+                        Select all
+                    </label>
+                    <span class="bulk-selected-count"><strong id="historySelectedCount">0</strong> selected</span>
+                    <div class="bulk-actions">
+                        <button class="bulk-btn" id="bulkDownloadBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Download
+                        </button>
+                        <button class="bulk-btn danger" id="bulkDeleteBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3,6 5,6 21,6"/>
+                                <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/>
+                            </svg>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+                <div class="history-grid" id="historyGrid"></div>
+                <div class="history-empty empty-state" id="historyEmpty">
+                    <div class="empty-state-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
                         </svg>
-                    </button>
-                    <button class="btn-text-danger" id="clearHistoryBtn">Clear All</button>
+                    </div>
+                    <div class="empty-state-title">No History Yet</div>
+                    <p class="empty-state-text">Generated images will appear here. Start by uploading a product image.</p>
                 </div>
-            </div>
-            <!-- Search & Bulk Actions -->
-            <div class="org-search">
-                <input type="text" class="org-search-input" id="historySearch" placeholder="Search history..." aria-label="Search history">
-            </div>
-            <div class="bulk-actions-bar" id="historyBulkBar">
-                <label class="bulk-select-all">
-                    <input type="checkbox" id="historySelectAll">
-                    Select all
-                </label>
-                <span class="bulk-selected-count"><strong id="historySelectedCount">0</strong> selected</span>
-                <div class="bulk-actions">
-                    <button class="bulk-btn" id="bulkDownloadBtn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                            <polyline points="7,10 12,15 17,10"/>
-                            <line x1="12" y1="15" x2="12" y2="3"/>
-                        </svg>
-                        Download
-                    </button>
-                    <button class="bulk-btn danger" id="bulkDeleteBtn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="3,6 5,6 21,6"/>
-                            <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/>
-                        </svg>
-                        Delete
-                    </button>
-                </div>
-            </div>
-            <div class="history-grid" id="historyGrid"></div>
-            <div class="history-empty empty-state" id="historyEmpty">
-                <div class="empty-state-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12,6 12,12 16,14"/>
-                    </svg>
-                </div>
-                <div class="empty-state-title">No History Yet</div>
-                <p class="empty-state-text">Generated images will appear here. Start by uploading a product image.</p>
             </div>
 
-            <!-- Favorites Section -->
-            <div class="favorites-section" id="favoritesSection">
+            <!-- Favorites Panel -->
+            <div class="history-container" id="favoritesPanel">
                 <div class="favorites-header">
                     <div class="favorites-title-group">
                         <h3 class="favorites-title">

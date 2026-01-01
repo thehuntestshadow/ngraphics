@@ -77,10 +77,12 @@ function initElements() {
         tabContents: document.querySelectorAll('.tab-content'),
 
         // History & Favorites
+        historyPanel: document.getElementById('historyPanel'),
         historyList: document.getElementById('historyList'),
         historyCount: document.getElementById('historyCount'),
         historyEmpty: document.getElementById('historyEmpty'),
         clearHistoryBtn: document.getElementById('clearHistoryBtn'),
+        favoritesPanel: document.getElementById('favoritesPanel'),
         favoritesList: document.getElementById('favoritesList'),
         favoritesCount: document.getElementById('favoritesCount'),
         favoritesEmpty: document.getElementById('favoritesEmpty'),
@@ -1032,10 +1034,21 @@ async function saveToFavorites() {
 }
 
 function loadHistory() {
+    const panel = elements.historyPanel;
     const items = history.getAll();
 
     elements.historyCount.textContent = items.length;
-    elements.historyEmpty.style.display = items.length === 0 ? 'block' : 'none';
+
+    if (items.length === 0) {
+        panel.classList.remove('has-items');
+        elements.historyList.style.display = 'none';
+        elements.historyEmpty.style.display = 'none';
+        return;
+    }
+
+    panel.classList.add('has-items');
+    elements.historyList.style.display = 'block';
+    elements.historyEmpty.style.display = 'none';
 
     elements.historyList.innerHTML = items.map(item => `
         <div class="history-item" data-id="${item.id}">
@@ -1094,10 +1107,21 @@ async function clearHistory() {
 }
 
 function loadFavorites() {
+    const panel = elements.favoritesPanel;
     const items = favorites.getAll();
 
     elements.favoritesCount.textContent = items.length;
-    elements.favoritesEmpty.style.display = items.length === 0 ? 'block' : 'none';
+
+    if (items.length === 0) {
+        panel.classList.remove('has-items');
+        elements.favoritesList.style.display = 'none';
+        elements.favoritesEmpty.style.display = 'none';
+        return;
+    }
+
+    panel.classList.add('has-items');
+    elements.favoritesList.style.display = 'block';
+    elements.favoritesEmpty.style.display = 'none';
 
     elements.favoritesList.innerHTML = items.map(item => `
         <div class="favorite-item" data-id="${item.id}">

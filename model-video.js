@@ -179,10 +179,12 @@ function initElements() {
     elements.regenerateBtn = document.getElementById('regenerateBtn');
 
     // History & Favorites
+    elements.historyPanel = document.getElementById('historyPanel');
     elements.historyGrid = document.getElementById('historyGrid');
     elements.historyCount = document.getElementById('historyCount');
     elements.historyEmpty = document.getElementById('historyEmpty');
     elements.clearHistory = document.getElementById('clearHistory');
+    elements.favoritesPanel = document.getElementById('favoritesPanel');
     elements.favoritesGrid = document.getElementById('favoritesGrid');
     elements.favoritesCount = document.getElementById('favoritesCount');
     elements.favoritesEmpty = document.getElementById('favoritesEmpty');
@@ -476,15 +478,20 @@ async function addToHistory(videoUrl) {
 
 // Render history
 async function renderHistory() {
+    const panel = elements.historyPanel;
     const items = await history.getAll();
     elements.historyCount.textContent = items.length;
 
     if (items.length === 0) {
-        elements.historyEmpty.style.display = 'flex';
+        panel.classList.remove('has-items');
+        elements.historyGrid.style.display = 'none';
+        elements.historyEmpty.style.display = 'none';
         elements.historyGrid.querySelectorAll('.history-item').forEach(el => el.remove());
         return;
     }
 
+    panel.classList.add('has-items');
+    elements.historyGrid.style.display = 'grid';
     elements.historyEmpty.style.display = 'none';
 
     // Clear existing items except empty state
@@ -547,15 +554,20 @@ async function saveFavorite() {
 
 // Render favorites
 async function renderFavorites() {
+    const panel = elements.favoritesPanel;
     const items = await favorites.getAll();
     elements.favoritesCount.textContent = items.length;
 
     if (items.length === 0) {
-        elements.favoritesEmpty.style.display = 'flex';
+        panel.classList.remove('has-items');
+        elements.favoritesGrid.style.display = 'none';
+        elements.favoritesEmpty.style.display = 'none';
         elements.favoritesGrid.querySelectorAll('.favorites-item').forEach(el => el.remove());
         return;
     }
 
+    panel.classList.add('has-items');
+    elements.favoritesGrid.style.display = 'grid';
     elements.favoritesEmpty.style.display = 'none';
 
     // Clear existing items except empty state

@@ -586,34 +586,35 @@
                     </div>
                 </div>
 
-                <!-- History Section -->
-                <div class="history-section" id="historySection">
-                    <div class="history-header">
-                        <h3>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polyline points="12 6 12 12 16 14"/>
-                            </svg>
-                            Recent
-                            <span class="history-count" id="historyCount">0</span>
-                        </h3>
-                        <button type="button" class="btn-text" id="clearHistoryBtn">Clear</button>
-                    </div>
-                    <div class="history-grid" id="historyGrid"></div>
-                    <div class="empty-state" id="historyEmpty">
-                        <div class="empty-state-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                                <path d="M2 17l10 5 10-5"/>
-                                <path d="M2 12l10 5 10-5"/>
-                            </svg>
+                <!-- History & Favorites Grid -->
+                <div class="history-favorites-grid">
+                    <div class="history-container" id="historyPanel">
+                        <div class="history-header">
+                            <h3>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                Recent
+                                <span class="history-count" id="historyCount">0</span>
+                            </h3>
+                            <button type="button" class="btn-text" id="clearHistoryBtn">Clear</button>
                         </div>
-                        <p class="empty-state-title">No content yet</p>
-                        <p class="empty-state-text">Generated A+ content will appear here</p>
+                        <div class="history-grid" id="historyGrid"></div>
+                        <div class="history-empty" id="historyEmpty">
+                            <div class="empty-state-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                    <path d="M2 17l10 5 10-5"/>
+                                    <path d="M2 12l10 5 10-5"/>
+                                </svg>
+                            </div>
+                            <p class="empty-state-title">No content yet</p>
+                            <p class="empty-state-text">Generated A+ content will appear here</p>
+                        </div>
                     </div>
 
-                    <!-- Favorites Section -->
-                    <div class="favorites-section" id="favoritesSection">
+                    <div class="history-container" id="favoritesPanel">
                         <div class="favorites-header">
                             <div class="favorites-title-group">
                                 <h3 class="favorites-title">
@@ -627,7 +628,7 @@
                             <button type="button" class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
                         </div>
                         <div class="favorites-grid" id="favoritesGrid"></div>
-                        <div class="empty-state" id="favoritesEmpty">
+                        <div class="favorites-empty" id="favoritesEmpty">
                             <div class="empty-state-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>

@@ -219,11 +219,9 @@
 
 .material-group-title,
 .pattern-group-title {
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
     margin-bottom: 10px;
 }
 

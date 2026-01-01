@@ -117,10 +117,12 @@ function initElements() {
         adjustBtn: document.getElementById('adjustBtn'),
 
         // History & Favorites
+        historyPanel: document.getElementById('historyPanel'),
         historyGrid: document.getElementById('historyGrid'),
         historyCount: document.getElementById('historyCount'),
         historyEmpty: document.getElementById('historyEmpty'),
         clearHistoryBtn: document.getElementById('clearHistoryBtn'),
+        favoritesPanel: document.getElementById('favoritesPanel'),
         favoritesGrid: document.getElementById('favoritesGrid'),
         favoritesCount: document.getElementById('favoritesCount'),
         favoritesEmpty: document.getElementById('favoritesEmpty'),
@@ -759,9 +761,20 @@ async function saveToFavorites() {
 }
 
 function loadHistory() {
+    const panel = elements.historyPanel;
     const items = history.getAll();
     elements.historyCount.textContent = items.length;
-    elements.historyEmpty.style.display = items.length === 0 ? 'block' : 'none';
+
+    if (items.length === 0) {
+        panel.classList.remove('has-items');
+        elements.historyGrid.style.display = 'none';
+        elements.historyEmpty.style.display = 'none';
+        return;
+    }
+
+    panel.classList.add('has-items');
+    elements.historyGrid.style.display = 'grid';
+    elements.historyEmpty.style.display = 'none';
 
     elements.historyGrid.innerHTML = items.map(item => `
         <div class="history-item" onclick="loadHistoryItem('${item.id}')">
@@ -790,9 +803,20 @@ async function loadHistoryItem(id) {
 }
 
 function loadFavorites() {
+    const panel = elements.favoritesPanel;
     const items = favorites.getAll();
     elements.favoritesCount.textContent = items.length;
-    elements.favoritesEmpty.style.display = items.length === 0 ? 'block' : 'none';
+
+    if (items.length === 0) {
+        panel.classList.remove('has-items');
+        elements.favoritesGrid.style.display = 'none';
+        elements.favoritesEmpty.style.display = 'none';
+        return;
+    }
+
+    panel.classList.add('has-items');
+    elements.favoritesGrid.style.display = 'grid';
+    elements.favoritesEmpty.style.display = 'none';
 
     elements.favoritesGrid.innerHTML = items.map(item => `
         <div class="history-item favorite-item" onclick="loadFavoriteItem('${item.id}')">

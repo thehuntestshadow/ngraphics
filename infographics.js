@@ -243,8 +243,7 @@ function initElements() {
         multiAngleInput: document.getElementById('multiAngleInput'),
         multiAngleCount: document.getElementById('multiAngleCount'),
 
-        // Templates and rating
-        templateSelectorContainer: document.getElementById('templateSelectorContainer'),
+        // Rating
         ratingContainer: document.getElementById('ratingContainer'),
 
         productTitle: document.getElementById('productTitle'),
@@ -255,6 +254,11 @@ function initElements() {
         infographicStyle: document.getElementById('infographicStyle'),
         styleRadios: document.querySelectorAll('input[name="style"]'),
         generateBtn: document.getElementById('generateBtn'),
+
+        // Basic Settings (Collapsible)
+        basicSection: document.getElementById('basicSection'),
+        basicToggle: document.getElementById('basicToggle'),
+        autoModeToggle: document.getElementById('autoModeToggle'),
 
         // Advanced Options
         advancedSection: document.getElementById('advancedSection'),
@@ -357,6 +361,7 @@ function initElements() {
 
         // History
         historySection: document.getElementById('historySection'),
+        historyPanel: document.getElementById('historyPanel'),
         historyGrid: document.getElementById('historyGrid'),
         historyCount: document.getElementById('historyCount'),
         historyEmpty: document.getElementById('historyEmpty'),
@@ -395,7 +400,7 @@ function initElements() {
 
         // Favorites
         favoriteBtn: document.getElementById('favoriteBtn'),
-        favoritesSection: document.getElementById('favoritesSection'),
+        favoritesPanel: document.getElementById('favoritesPanel'),
         favoritesGrid: document.getElementById('favoritesGrid'),
         favoritesCount: document.getElementById('favoritesCount'),
         favoritesEmpty: document.getElementById('favoritesEmpty'),
@@ -628,27 +633,29 @@ function handleImageUpload(file) {
     reader.onload = (e) => {
         const imageData = e.target.result;
 
-        // Auto-enhance if enabled
-        if (elements.autoEnhance && elements.autoEnhance.checked) {
-            enhanceImage(imageData).then(enhanced => {
-                state.uploadedImageBase64 = enhanced;
-                elements.previewImg.src = enhanced;
-                elements.imagePreview.classList.add('visible');
-                elements.uploadArea.style.display = 'none';
-                // Show AI analyze button
-                if (elements.analyzeImageBtn) {
-                    elements.analyzeImageBtn.style.display = 'flex';
-                }
-            });
-        } else {
-            state.uploadedImageBase64 = imageData;
-            elements.previewImg.src = imageData;
+        const finishUpload = (finalImageData) => {
+            state.uploadedImageBase64 = finalImageData;
+            elements.previewImg.src = finalImageData;
             elements.imagePreview.classList.add('visible');
             elements.uploadArea.style.display = 'none';
             // Show AI analyze button
             if (elements.analyzeImageBtn) {
                 elements.analyzeImageBtn.style.display = 'flex';
             }
+            // Auto-generate if enabled
+            if (elements.autoModeToggle && elements.autoModeToggle.checked) {
+                // Small delay to let the UI update
+                setTimeout(() => {
+                    generateInfographic();
+                }, 100);
+            }
+        };
+
+        // Auto-enhance if enabled
+        if (elements.autoEnhance && elements.autoEnhance.checked) {
+            enhanceImage(imageData).then(finishUpload);
+        } else {
+            finishUpload(imageData);
         }
     };
     reader.readAsDataURL(file);
@@ -841,6 +848,34 @@ async function enhanceImage(base64Image) {
 // ADVANCED OPTIONS HANDLING
 // ============================================
 function setupAdvancedOptionsHandlers() {
+    // Basic Settings toggle (collapsed by default)
+    if (elements.basicToggle && elements.basicSection) {
+        elements.basicToggle.addEventListener('click', () => {
+            elements.basicSection.classList.toggle('open');
+            const isOpen = elements.basicSection.classList.contains('open');
+            elements.basicToggle.setAttribute('aria-expanded', isOpen);
+            localStorage.setItem('ngraphics_basicSettingsOpen', isOpen);
+        });
+
+        // Start collapsed unless explicitly opened before
+        if (localStorage.getItem('ngraphics_basicSettingsOpen') === 'true') {
+            elements.basicSection.classList.add('open');
+            elements.basicToggle.setAttribute('aria-expanded', 'true');
+        }
+    }
+
+    // Auto-generate mode toggle
+    if (elements.autoModeToggle) {
+        const savedAutoMode = localStorage.getItem('ngraphics_autoGenerate');
+        if (savedAutoMode !== null) {
+            elements.autoModeToggle.checked = savedAutoMode === 'true';
+        }
+        elements.autoModeToggle.addEventListener('change', () => {
+            localStorage.setItem('ngraphics_autoGenerate', elements.autoModeToggle.checked);
+        });
+    }
+
+    // Advanced Options toggle
     elements.advancedToggle.addEventListener('click', () => {
         elements.advancedSection.classList.toggle('open');
         localStorage.setItem('advancedOptionsOpen', elements.advancedSection.classList.contains('open'));
@@ -1484,6 +1519,7 @@ async function clearHistory() {
 }
 
 function renderHistory() {
+    const panel = elements.historyPanel;
     const grid = elements.historyGrid;
     const empty = elements.historyEmpty;
     const count = elements.historyCount;
@@ -1495,16 +1531,23 @@ function renderHistory() {
 
     count.textContent = state.history.length > 0 ? `(${state.history.length})` : '';
 
-    if (items.length === 0) {
+    // Hide panel if no history at all
+    if (state.history.length === 0) {
+        panel.classList.remove('has-items');
         grid.style.display = 'none';
-        empty.style.display = 'block';
-        if (state.historySearchQuery && state.history.length > 0) {
-            empty.querySelector('.empty-state-title').textContent = 'No Results';
-            empty.querySelector('.empty-state-text').textContent = 'No history items match your search.';
-        } else {
-            empty.querySelector('.empty-state-title').textContent = 'No History Yet';
-            empty.querySelector('.empty-state-text').textContent = 'Generated images will appear here. Start by uploading a product image.';
-        }
+        empty.style.display = 'none';
+        return;
+    }
+
+    // Show panel when has items
+    panel.classList.add('has-items');
+
+    if (items.length === 0) {
+        // Has history but filtered to empty (search with no results)
+        grid.style.display = 'none';
+        empty.style.display = 'flex';
+        empty.querySelector('.empty-state-title').textContent = 'No Results';
+        empty.querySelector('.empty-state-text').textContent = 'No history items match your search.';
         return;
     }
 
@@ -1790,6 +1833,7 @@ async function saveFavorite() {
 }
 
 function renderFavorites() {
+    const panel = elements.favoritesPanel;
     const grid = elements.favoritesGrid;
     const empty = elements.favoritesEmpty;
     const count = elements.favoritesCount;
@@ -1804,20 +1848,27 @@ function renderFavorites() {
 
     count.textContent = allItems.length;
 
+    // Hide panel if no favorites at all
+    if (allItems.length === 0) {
+        panel.classList.remove('has-items');
+        grid.style.display = 'none';
+        empty.style.display = 'none';
+        return;
+    }
+
+    // Show panel when has items
+    panel.classList.add('has-items');
+
     // Update folder navigation
     renderFolderNav();
     renderTagFilters();
 
     if (items.length === 0) {
+        // Has favorites but filtered to empty
         grid.style.display = 'none';
         empty.style.display = 'flex';
-        if ((state.favoritesSearchQuery || state.favoritesActiveFolder || state.favoritesActiveTag) && allItems.length > 0) {
-            empty.querySelector('.empty-state-title').textContent = 'No Results';
-            empty.querySelector('.empty-state-text').textContent = 'No favorites match your current filters.';
-        } else {
-            empty.querySelector('.empty-state-title').textContent = 'No Favorites';
-            empty.querySelector('.empty-state-text').textContent = 'Star your best generations to save them here for easy style reuse.';
-        }
+        empty.querySelector('.empty-state-title').textContent = 'No Results';
+        empty.querySelector('.empty-state-text').textContent = 'No favorites match your current filters.';
         return;
     }
 
@@ -4872,58 +4923,6 @@ window.removeBatchItem = removeBatchItem;
 window.viewBatchResult = viewBatchResult;
 
 // ============================================
-// QUICK START TEMPLATES
-// ============================================
-function initTemplateSelector() {
-    const container = elements.templateSelectorContainer;
-    if (!container) return;
-
-    SharedTemplates.render(container, 'infographics', applyTemplate, getCurrentSettings);
-}
-
-function applyTemplate(template) {
-    const settings = template.settings;
-
-    // Apply each setting
-    if (settings.infographicStyle && elements.infographicStyle) {
-        elements.infographicStyle.value = settings.infographicStyle;
-    }
-    if (settings.layoutTemplate && elements.layoutTemplate) {
-        elements.layoutTemplate.value = settings.layoutTemplate;
-        elements.layoutTemplate.dispatchEvent(new Event('change'));
-    }
-    if (settings.visualDensity && elements.visualDensity) {
-        elements.visualDensity.value = settings.visualDensity;
-        elements.visualDensity.dispatchEvent(new Event('input'));
-    }
-    if (settings.fontStyle && elements.fontStyle) {
-        elements.fontStyle.value = settings.fontStyle;
-    }
-    if (settings.iconStyle && elements.iconStyle) {
-        elements.iconStyle.value = settings.iconStyle;
-        elements.iconStyle.dispatchEvent(new Event('change'));
-    }
-    if (settings.colorHarmony && elements.colorHarmony) {
-        elements.colorHarmony.value = settings.colorHarmony;
-    }
-    if (settings.productFocus && elements.productFocus) {
-        elements.productFocus.value = settings.productFocus;
-    }
-}
-
-function getCurrentSettings() {
-    return {
-        infographicStyle: elements.infographicStyle?.value,
-        layoutTemplate: elements.layoutTemplate?.value,
-        visualDensity: elements.visualDensity?.value,
-        fontStyle: elements.fontStyle?.value,
-        iconStyle: elements.iconStyle?.value,
-        colorHarmony: elements.colorHarmony?.value,
-        productFocus: elements.productFocus?.value
-    };
-}
-
-// ============================================
 // OPTION EXAMPLES
 // ============================================
 function initOptionExamples() {
@@ -4991,9 +4990,6 @@ async function init() {
 
     // Initialize cost estimator
     initCostEstimator();
-
-    // Initialize quick start templates
-    initTemplateSelector();
 
     // Initialize option examples
     initOptionExamples();

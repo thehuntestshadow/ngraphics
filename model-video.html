@@ -458,48 +458,51 @@
                     </div>
                 </form>
 
-                <!-- History Section -->
-                <div class="history-section">
-                    <div class="history-header">
-                        <div class="history-title">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polyline points="12 6 12 12 16 14"/>
-                            </svg>
-                            Recent
-                            <span class="count-badge" id="historyCount">0</span>
+                <!-- History & Favorites Grid -->
+                <div class="history-favorites-grid">
+                    <div class="history-container" id="historyPanel">
+                        <div class="history-header">
+                            <div class="history-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                Recent
+                                <span class="count-badge" id="historyCount">0</span>
+                            </div>
+                            <button type="button" class="btn-text" id="clearHistory">Clear</button>
                         </div>
-                        <button type="button" class="btn-text" id="clearHistory">Clear</button>
-                    </div>
-                    <div class="history-grid" id="historyGrid">
-                        <div class="empty-state" id="historyEmpty">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polyline points="12 6 12 12 16 14"/>
-                            </svg>
-                            <span class="empty-title">No history yet</span>
-                            <span class="empty-text">Generated videos will appear here</span>
+                        <div class="history-grid" id="historyGrid">
+                            <div class="history-empty" id="historyEmpty">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                <span class="empty-title">No history yet</span>
+                                <span class="empty-text">Generated videos will appear here</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Favorites Section (nested) -->
-                    <div class="favorites-header">
-                        <div class="favorites-title">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                            </svg>
-                            Favorites
-                            <span class="count-badge" id="favoritesCount">0</span>
+                    <div class="history-container" id="favoritesPanel">
+                        <div class="favorites-header">
+                            <div class="favorites-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                                Favorites
+                                <span class="count-badge" id="favoritesCount">0</span>
+                            </div>
+                            <button type="button" class="btn-text-danger" id="clearFavorites">Clear All</button>
                         </div>
-                        <button type="button" class="btn-text-danger" id="clearFavorites">Clear All</button>
-                    </div>
-                    <div class="favorites-grid" id="favoritesGrid">
-                        <div class="empty-state" id="favoritesEmpty">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                            </svg>
-                            <span class="empty-title">No favorites</span>
-                            <span class="empty-text">Save videos you love</span>
+                        <div class="favorites-grid" id="favoritesGrid">
+                            <div class="favorites-empty" id="favoritesEmpty">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                                <span class="empty-title">No favorites</span>
+                                <span class="empty-text">Save videos you love</span>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -163,8 +163,10 @@ function initElements() {
         favoriteBtn: document.getElementById('favoriteBtn'),
 
         // History & Favorites
+        historyPanel: document.getElementById('historyPanel'),
         historyGrid: document.getElementById('historyGrid'),
         clearHistoryBtn: document.getElementById('clearHistoryBtn'),
+        favoritesPanel: document.getElementById('favoritesPanel'),
         favoritesGrid: document.getElementById('favoritesGrid'),
         viewFavoritesBtn: document.getElementById('viewFavoritesBtn'),
         favoritesModal: document.getElementById('favoritesModal'),
@@ -589,13 +591,16 @@ function updateInboxFromDOM() {
 // HISTORY & FAVORITES
 // ============================================
 function renderHistory() {
+    const panel = elements.historyPanel;
     const items = history.getAll();
 
     if (items.length === 0) {
-        elements.historyGrid.innerHTML = '<div class="history-empty">No cards generated yet</div>';
+        panel.classList.remove('has-items');
+        elements.historyGrid.innerHTML = '<div class="history-empty" style="display: none;">No cards generated yet</div>';
         return;
     }
 
+    panel.classList.add('has-items');
     elements.historyGrid.innerHTML = items.map(item => `
         <div class="history-item" data-id="${item.id}">
             <img src="${item.thumbnail}" alt="${item.title || 'Card'}" loading="lazy">
@@ -617,13 +622,16 @@ function renderHistory() {
 }
 
 function renderFavorites() {
+    const panel = elements.favoritesPanel;
     const items = favorites.getAll();
 
     if (items.length === 0) {
-        elements.favoritesGrid.innerHTML = '<div class="favorites-empty">No favorites saved</div>';
+        panel.classList.remove('has-items');
+        elements.favoritesGrid.innerHTML = '<div class="favorites-empty" style="display: none;">No favorites saved</div>';
         return;
     }
 
+    panel.classList.add('has-items');
     elements.favoritesGrid.innerHTML = items.slice(0, 6).map(item => `
         <div class="favorite-item" data-id="${item.id}">
             <img src="${item.thumbnail}" alt="${item.name || 'Favorite'}" loading="lazy">

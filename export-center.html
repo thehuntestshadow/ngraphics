@@ -430,28 +430,30 @@
                     <div class="shortcut-hint">Press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to process</div>
                 </form>
 
-                <!-- Recent Exports -->
-                <div class="history-section">
-                    <div class="history-header">
-                        <div class="history-title">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polyline points="12 6 12 12 16 14"/>
-                            </svg>
-                            Recent Exports
-                            <span class="count-badge" id="historyCount">0</span>
+                <!-- History & Favorites Grid -->
+                <div class="history-favorites-grid">
+                    <div class="history-container" id="historyPanel">
+                        <div class="history-header">
+                            <div class="history-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                Recent Exports
+                                <span class="count-badge" id="historyCount">0</span>
+                            </div>
+                            <button type="button" class="btn-text" id="clearHistory">Clear</button>
                         </div>
-                        <button type="button" class="btn-text" id="clearHistory">Clear</button>
-                    </div>
-                    <div class="history-grid" id="historyGrid">
-                        <div class="empty-state" id="historyEmpty">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                                <polyline points="7 10 12 15 17 10"/>
-                                <line x1="12" y1="15" x2="12" y2="3"/>
-                            </svg>
-                            <span class="empty-title">No exports yet</span>
-                            <span class="empty-text">Processed images will appear here</span>
+                        <div class="history-grid" id="historyGrid">
+                            <div class="history-empty" id="historyEmpty">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                <span class="empty-title">No exports yet</span>
+                                <span class="empty-text">Processed images will appear here</span>
+                            </div>
                         </div>
                     </div>
                 </div>

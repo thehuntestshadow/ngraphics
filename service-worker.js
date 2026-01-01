@@ -3,7 +3,7 @@
  * Handles caching, offline support, and background sync
  */
 
-const CACHE_VERSION = 'v5';
+const CACHE_VERSION = 'v13';
 const CACHE_NAME = `hefaistos-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install

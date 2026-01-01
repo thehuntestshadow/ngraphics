@@ -269,28 +269,30 @@
                 <div class="panel-header">
                     <h2 class="panel-title"><span class="title-number">04</span>History</h2>
                 </div>
-                <div class="history-section" id="historySection">
-                    <div class="history-header">
-                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Recent<span class="history-count" id="historyCount">0</span></h3>
-                        <button type="button" class="btn-text" id="clearHistoryBtn">Clear</button>
+                <div class="history-favorites-grid">
+                    <div class="history-container" id="historyPanel">
+                        <div class="history-header">
+                            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Recent<span class="history-count" id="historyCount">0</span></h3>
+                            <button type="button" class="btn-text" id="clearHistoryBtn">Clear</button>
+                        </div>
+                        <div class="history-grid" id="historyGrid"></div>
+                        <div class="history-empty" id="historyEmpty">
+                            <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><text x="12" y="17" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="currentColor">?</text></svg></div>
+                            <p class="empty-state-title">No FAQs yet</p>
+                            <p class="empty-state-text">Generated FAQs will appear here</p>
+                        </div>
                     </div>
-                    <div class="history-grid" id="historyGrid"></div>
-                    <div class="empty-state" id="historyEmpty">
-                        <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><text x="12" y="17" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="currentColor">?</text></svg></div>
-                        <p class="empty-state-title">No FAQs yet</p>
-                        <p class="empty-state-text">Generated FAQs will appear here</p>
-                    </div>
-                </div>
-                <div class="favorites-section" id="favoritesSection">
-                    <div class="favorites-header">
-                        <div class="favorites-title-group"><h3 class="favorites-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Favorites</h3><span class="favorites-count" id="favoritesCount">0</span></div>
-                        <button class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
-                    </div>
-                    <div class="favorites-grid" id="favoritesGrid"></div>
-                    <div class="empty-state" id="favoritesEmpty">
-                        <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-                        <p class="empty-state-title">No favorites yet</p>
-                        <p class="empty-state-text">Click the star to save FAQs</p>
+                    <div class="history-container" id="favoritesPanel">
+                        <div class="favorites-header">
+                            <div class="favorites-title-group"><h3 class="favorites-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Favorites</h3><span class="favorites-count" id="favoritesCount">0</span></div>
+                            <button class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
+                        </div>
+                        <div class="favorites-grid" id="favoritesGrid"></div>
+                        <div class="favorites-empty" id="favoritesEmpty">
+                            <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                            <p class="empty-state-title">No favorites yet</p>
+                            <p class="empty-state-text">Click the star to save FAQs</p>
+                        </div>
                     </div>
                 </div>
             </section>

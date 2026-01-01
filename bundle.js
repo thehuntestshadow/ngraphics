@@ -182,12 +182,14 @@ function initElements() {
         adjustBtn: document.getElementById('adjustBtn'),
 
         // History
+        historyPanel: document.getElementById('historyPanel'),
         historyGrid: document.getElementById('historyGrid'),
         historyCount: document.getElementById('historyCount'),
         historyEmpty: document.getElementById('historyEmpty'),
         clearHistoryBtn: document.getElementById('clearHistoryBtn'),
 
         // Favorites
+        favoritesPanel: document.getElementById('favoritesPanel'),
         favoritesGrid: document.getElementById('favoritesGrid'),
         favoritesCount: document.getElementById('favoritesCount'),
         favoritesEmpty: document.getElementById('favoritesEmpty'),
@@ -820,15 +822,18 @@ async function addToHistory(imageUrl) {
 }
 
 function renderHistory() {
+    const panel = elements.historyPanel;
     const count = history.count;
     elements.historyCount.textContent = count;
 
     if (count === 0) {
+        panel.classList.remove('has-items');
         elements.historyGrid.style.display = 'none';
-        elements.historyEmpty.style.display = 'flex';
+        elements.historyEmpty.style.display = 'none';
         return;
     }
 
+    panel.classList.add('has-items');
     elements.historyGrid.style.display = 'grid';
     elements.historyEmpty.style.display = 'none';
 
@@ -918,15 +923,18 @@ function captureCurrentSettings() {
 }
 
 function renderFavorites() {
+    const panel = elements.favoritesPanel;
     const items = favorites.getAll();
     elements.favoritesCount.textContent = items.length;
 
     if (items.length === 0) {
+        panel.classList.remove('has-items');
         elements.favoritesGrid.style.display = 'none';
-        elements.favoritesEmpty.style.display = 'flex';
+        elements.favoritesEmpty.style.display = 'none';
         return;
     }
 
+    panel.classList.add('has-items');
     elements.favoritesGrid.style.display = 'grid';
     elements.favoritesEmpty.style.display = 'none';
 

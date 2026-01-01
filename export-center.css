@@ -330,9 +330,8 @@
 .preview-original h4,
 .preview-result h4 {
     font-size: 0.75rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-weight: 500;
+    color: var(--text-secondary);
     margin-bottom: 12px;
 }
 

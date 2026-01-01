@@ -2767,10 +2767,8 @@ button:disabled,
 
 .alt-text-label {
     font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-weight: 500;
+    color: var(--text-secondary);
 }
 
 .alt-text-content {
@@ -3050,7 +3048,7 @@ button:disabled,
 .history-section {
     position: relative;
     z-index: 1;
-    max-width: 1280px;
+    max-width: 1200px;
     margin: 0 auto;
     margin-top: 0;
     padding: 0 var(--space-8) var(--space-8);
@@ -3242,6 +3240,7 @@ button:disabled,
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    min-height: 200px;
     padding: 32px;
     text-align: center;
     color: var(--text-muted);
@@ -3261,12 +3260,27 @@ button:disabled,
 }
 
 /* ============================================
+   HISTORY & FAVORITES LAYOUT
+   ============================================ */
+.history-favorites-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.history-favorites-grid > .history-container {
+    display: none; /* Hidden by default, shown via JS when has items */
+}
+
+.history-favorites-grid > .history-container.has-items {
+    display: block;
+}
+
+/* ============================================
    FAVORITES SECTION
    ============================================ */
 .favorites-section {
-    margin-top: 24px;
-    padding-top: 24px;
-    border-top: 1px solid var(--border-subtle);
+    /* Standalone section - no longer nested */
 }
 
 .favorites-header {
@@ -4807,10 +4821,8 @@ button:disabled,
 
 .copy-block-label {
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--accent);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
 }
 
 .btn-copy-sm {
@@ -4936,11 +4948,9 @@ button:disabled,
 
 .seo-field-label {
     display: block;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
     margin-bottom: 6px;
 }
 

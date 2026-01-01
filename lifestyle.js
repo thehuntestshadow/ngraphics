@@ -183,13 +183,13 @@ function initElements() {
         adjustBtn: document.getElementById('adjustBtn'),
 
         // History
-        historySection: document.getElementById('historySection'),
+        historyPanel: document.getElementById('historyPanel'),
         historyGrid: document.getElementById('historyGrid'),
         historyCount: document.getElementById('historyCount'),
         clearHistoryBtn: document.getElementById('clearHistoryBtn'),
 
         // Favorites
-        favoritesSection: document.getElementById('favoritesSection'),
+        favoritesPanel: document.getElementById('favoritesPanel'),
         favoritesGrid: document.getElementById('favoritesGrid'),
         favoritesCount: document.getElementById('favoritesCount'),
         clearFavoritesBtn: document.getElementById('clearFavoritesBtn'),
@@ -751,6 +751,7 @@ async function addToHistory(imageUrl, allImages = null) {
 }
 
 function renderHistory() {
+    const panel = elements.historyPanel;
     const items = history.getAll();
 
     // Update count
@@ -759,14 +760,13 @@ function renderHistory() {
     }
 
     // Hide entire panel if empty
-    if (elements.historySection) {
-        elements.historySection.style.display = items.length === 0 ? 'none' : 'block';
-    }
-
     if (items.length === 0) {
+        panel.classList.remove('has-items');
         elements.historyGrid.innerHTML = '';
         return;
     }
+
+    panel.classList.add('has-items');
 
     elements.historyGrid.innerHTML = items.map(item => `
         <div class="history-item" data-id="${item.id}">
@@ -818,6 +818,7 @@ async function saveFavorite() {
 }
 
 function renderFavorites() {
+    const panel = elements.favoritesPanel;
     const items = favorites.getAll();
 
     // Update count
@@ -826,14 +827,13 @@ function renderFavorites() {
     }
 
     // Hide entire panel if empty
-    if (elements.favoritesSection) {
-        elements.favoritesSection.style.display = items.length === 0 ? 'none' : 'block';
-    }
-
     if (items.length === 0) {
+        panel.classList.remove('has-items');
         elements.favoritesGrid.innerHTML = '';
         return;
     }
+
+    panel.classList.add('has-items');
 
     elements.favoritesGrid.innerHTML = items.map(item => `
         <div class="favorite-item" data-id="${item.id}">

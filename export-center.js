@@ -112,6 +112,7 @@ function initElements() {
     elements.downloadAllBtn = document.getElementById('downloadAllBtn');
 
     // History elements
+    elements.historyPanel = document.getElementById('historyPanel');
     elements.historyGrid = document.getElementById('historyGrid');
     elements.historyCount = document.getElementById('historyCount');
     elements.historyEmpty = document.getElementById('historyEmpty');
@@ -580,15 +581,19 @@ function addToHistory() {
 }
 
 function renderHistory() {
+    const panel = elements.historyPanel;
     const items = history.getAll();
     elements.historyCount.textContent = items.length;
 
     if (items.length === 0) {
-        elements.historyEmpty.style.display = 'flex';
+        panel.classList.remove('has-items');
+        if (elements.historyEmpty) {
+            elements.historyEmpty.style.display = 'none';
+        }
         return;
     }
 
-    elements.historyEmpty.style.display = 'none';
+    panel.classList.add('has-items');
     elements.historyGrid.innerHTML = items.map(item => `
         <div class="history-item" data-id="${item.id}">
             <img src="${item.thumbnail}" alt="Export" loading="lazy">
