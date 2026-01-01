@@ -91,12 +91,14 @@
     width: 18px;
     height: 18px;
     color: var(--text-muted);
+    stroke: var(--text-muted); /* Safari fix */
     pointer-events: none;
-    transition: color var(--duration-fast) var(--ease-standard);
+    transition: color var(--duration-fast) var(--ease-standard), stroke var(--duration-fast) var(--ease-standard);
 }
 
 .faq-search:focus-within .faq-search-icon {
     color: var(--apple-blue);
+    stroke: var(--apple-blue); /* Safari fix */
 }
 
 /* ============================================
@@ -212,13 +214,15 @@
     width: 18px;
     height: 18px;
     color: var(--text-muted);
+    stroke: var(--text-muted); /* Safari fix */
     flex-shrink: 0;
-    transition: transform var(--duration-normal) var(--ease-spring), color var(--duration-fast);
+    transition: transform var(--duration-normal) var(--ease-spring), color var(--duration-fast), stroke var(--duration-fast);
 }
 
 .faq-item.open .faq-chevron {
     transform: rotate(180deg);
     color: var(--apple-blue);
+    stroke: var(--apple-blue); /* Safari fix */
 }
 
 .faq-answer {
@@ -333,6 +337,7 @@
 }
 
 .faq-cta-btn svg {
+    stroke: currentColor; /* Safari fix */
     transition: transform var(--duration-fast) var(--ease-standard);
 }
 
