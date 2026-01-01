@@ -3,7 +3,7 @@
  * Handles caching, offline support, and background sync
  */
 
-const CACHE_VERSION = 'v15';
+const CACHE_VERSION = 'v16';
 const CACHE_NAME = `hefaistos-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
@@ -70,11 +70,12 @@ const CACHE_STRATEGIES = {
     staleWhileRevalidate: async (request, cacheName) => {
         const cached = await caches.match(request);
 
-        const fetchPromise = fetch(request).then(response => {
+        const fetchPromise = fetch(request).then(async response => {
             if (response.ok) {
-                caches.open(cacheName).then(cache => {
-                    cache.put(request, response.clone());
-                });
+                // Clone immediately before body is consumed
+                const responseToCache = response.clone();
+                const cache = await caches.open(cacheName);
+                cache.put(request, responseToCache);
             }
             return response;
         }).catch(() => null);
