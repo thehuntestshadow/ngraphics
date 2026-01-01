@@ -26,7 +26,7 @@ HEFAISTOS is a collection of **tools that e-commerce brands need and use every d
 
 **Guiding principles:**
 - Each tool solves one specific problem well
-- Works fully offline - accounts optional for cloud sync
+- Subscription-based with cloud sync included
 - AI-powered but user-controlled
 - Fast iteration: upload → configure → generate → download
 - Platform-agnostic but platform-aware (export for specific marketplaces)
@@ -90,8 +90,8 @@ Before adding a new tool, it should:
 - **Documentation** - User docs
 
 ### Core Features (All Pages)
-- OpenRouter API integration
-- Multiple AI model support (Gemini, GPT)
+- Edge function API proxy (subscription-authenticated)
+- Multiple AI model support (Gemini, GPT) via OpenRouter
 - Generation history (localStorage + IndexedDB)
 - Favorites with settings/seed preservation (IndexedDB)
 - Keyboard shortcuts (Ctrl+Enter, Ctrl+D, Escape)
@@ -210,6 +210,15 @@ Before adding a new tool, it should:
 - Restore accidentally deleted items
 - Accessible from Dashboard
 - Difficulty: Easy
+
+**Admin CMS**
+- Manage Homepage content (hero text, features, testimonials)
+- Manage Gallery (add/remove/reorder showcase images, categories)
+- Manage FAQ (add/edit/delete questions, categories, search keywords)
+- WYSIWYG or markdown editor for rich content
+- Image upload with optimization
+- Preview before publish
+- Difficulty: Hard
 
 **Onboarding Tour**
 - Step-by-step first-time guide
@@ -871,7 +880,7 @@ Things explicitly out of scope:
 - [x] Landing page with pricing teaser
 - [x] Usage dashboard in account menu
 - [x] Upgrade prompts
-- [ ] Billing portal integration
+- [x] Billing portal integration (Stripe Customer Portal)
 
 ### Files Reference
 
@@ -948,14 +957,15 @@ Core generation across 3 studios with history/favorites
 ### v4.1 (Commercial Launch) ✅ Complete
 - [x] Stripe Integration - Products, prices, payment links
 - [x] Edge Function: stripe-webhook - Subscription/credit handling
+- [x] Edge Function: generate-image - API proxy for subscribers
+- [x] Edge Function: create-portal-session - Billing portal access
 - [x] Pricing Page - Tier comparison, checkout buttons
 - [x] Landing Page - Marketing site with galleries
 - [x] Gallery Page - Curated demo showcase
 - [x] FAQ Page - Product FAQ with categories
 - [x] Usage Dashboard - Show usage/limits in account menu
 - [x] Upgrade Prompts - Contextual upgrade CTAs
-- [ ] Edge Function: generate-image - API proxy for paid users
-- [ ] Watermark System - Optional for free tier
+- [x] Billing Portal - Self-service subscription management
 
 ### v4.5 (Polish & Advanced)
 - [ ] Template Library - Cross-studio templates
@@ -1078,5 +1088,5 @@ Core generation across 3 studios with history/favorites
 
 ---
 
-*Last updated: Jan 2026 (v4.1 - Auto-generate mode, Apple design refresh, progressive disclosure)*
+*Last updated: Jan 2026 (v4.1 - Subscription-required, edge function proxy, BYOK removed)*
 *Add ideas freely - this is a living document*

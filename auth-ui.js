@@ -1082,11 +1082,23 @@ class SettingsModal {
                         </div>
                         ` : ''}
                         <div class="settings-usage-actions">
+                            <button class="settings-btn settings-btn-secondary" id="manageSubscriptionBtn">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                    <line x1="1" y1="10" x2="23" y2="10"/>
+                                </svg>
+                                Manage Subscription
+                            </button>
                             <a href="/pricing.html?action=buy-credits" class="settings-btn settings-btn-outline">Buy Credits</a>
-                            <a href="/pricing.html?action=upgrade" class="settings-btn settings-btn-primary">Upgrade Plan</a>
                         </div>
                     </div>
                 `;
+
+            // Attach event listener for manage subscription button
+            const manageBtn = usageContainer.querySelector('#manageSubscriptionBtn');
+            if (manageBtn) {
+                manageBtn.addEventListener('click', () => this._openBillingPortal());
+            }
             }
         } catch (error) {
             console.error('[SettingsModal] Error loading usage:', error);
@@ -1226,6 +1238,64 @@ class SettingsModal {
             this._showToast('Sync failed', 'error');
         } finally {
             if (btn) btn.disabled = false;
+        }
+    }
+
+    async _openBillingPortal() {
+        const btn = this._modal.querySelector('#manageSubscriptionBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `
+                <svg class="btn-spinner" viewBox="0 0 24 24" width="16" height="16">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="60" stroke-linecap="round"/>
+                </svg>
+                Opening...
+            `;
+        }
+
+        try {
+            const session = ngSupabase.session;
+            if (!session?.access_token) {
+                this._showToast('Please log in to manage your subscription', 'error');
+                return;
+            }
+
+            const response = await fetch(`${CONFIG.SUPABASE_URL}/functions/v1/create-portal-session`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${session.access_token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    returnUrl: window.location.href
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to open billing portal');
+            }
+
+            if (data.url) {
+                window.location.href = data.url;
+            } else {
+                throw new Error('No portal URL returned');
+            }
+        } catch (error) {
+            console.error('[SettingsModal] Billing portal error:', error);
+            this._showToast(error.message || 'Failed to open billing portal', 'error');
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = `
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                        <line x1="1" y1="10" x2="23" y2="10"/>
+                    </svg>
+                    Manage Subscription
+                `;
+            }
         }
     }
 
