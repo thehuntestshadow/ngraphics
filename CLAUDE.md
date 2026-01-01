@@ -40,6 +40,36 @@ No build process required. To run locally:
 - For auth testing, use `http://localhost:8000` (configured in Supabase)
 - Direct file open (`file://`) won't work with Supabase auth redirects
 
+### TypeScript (Optional)
+
+Type checking via JSDoc annotations - no build step required.
+
+**Setup:**
+- `jsconfig.json` - TypeScript config with `checkJs: false` (opt-in per file)
+- `types.js` - Shared type definitions (API, User, CMS, UI types)
+- TypeScript installed as dev dependency
+
+**Usage:**
+```javascript
+// Add at top of file to enable type checking:
+// @ts-check
+
+/** @type {string} */
+let name = "test";
+
+/** @param {import('./types.js').GenerateImageOptions} options */
+function generate(options) { ... }
+```
+
+**Type-checked files:**
+- `api.js` - Fully typed (APIClient, APIError, all methods)
+- `core.js` - Fully typed (EventBus, ReactiveState, ImageCompressor)
+
+**Run type check:**
+```bash
+npx tsc -p jsconfig.json --noEmit
+```
+
 ## Architecture
 
 The application consists of multiple pages, each with its own JS file, sharing common styles:
@@ -50,7 +80,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 |------|-------|---------|
 | Landing | `index.html`, `landing.js`, `landing.css` | Marketing landing page with product showcase |
 | Gallery | `gallery.html`, `gallery.js`, `gallery.css` | Curated showcase of AI-generated examples |
-| FAQ | `faq.html`, `faq.css` | Frequently asked questions |
+| FAQ | `faq.html`, `faq.js`, `faq.css` | Frequently asked questions (CMS-enabled) |
 | Pricing | `pricing.html`, `pricing.js`, `pricing.css` | Subscription plans and pricing |
 | Infographics | `infographics.html`, `infographics.js` | Generate product infographics with features/callouts |
 | Model Studio | `models.html`, `models.js`, `models.css` | Generate AI model photos wearing/holding products |
@@ -85,9 +115,10 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `workers.js` - Web Worker and Service Worker managers
 - `image-worker.js` - Web Worker for image processing (compression, thumbnails, enhancement)
 - `service-worker.js` - Service Worker for caching and offline support
-- `supabase.js` - Supabase client wrapper (auth, profiles, usage tracking)
+- `supabase.js` - Supabase client wrapper (auth, profiles, usage tracking, CMS)
 - `auth-ui.js` - Authentication UI (login/signup modal, account menu, settings modal with language settings, usage display)
 - `cloud-sync.js` - Cloud sync manager (history/favorites sync to Supabase)
+- `types.js` - JSDoc type definitions for TypeScript checking
 
 ### Documentation Files
 - `DESIGN.md` - Design system (Apple color palette, gradients, spacing, components)

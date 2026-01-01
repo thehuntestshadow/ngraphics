@@ -1,13 +1,14 @@
 /**
  * HEFAISTOS - Gallery Page
  * Handles filtering, lightbox, and gallery interactions
+ * Loads from CMS (Supabase) with fallback to hardcoded data
  */
 
 // ============================================
-// GALLERY DATA
+// GALLERY DATA (Fallback)
 // ============================================
 
-const galleryImages = [
+let galleryImages = [
     {
         id: 'inf-001',
         src: 'assets/gallery/infographic-1.jpg',
@@ -141,7 +142,7 @@ let elements = {};
 
 document.addEventListener('DOMContentLoaded', init);
 
-function init() {
+async function init() {
     // Cache DOM elements
     elements = {
         filterBar: document.getElementById('filterBar'),
@@ -167,6 +168,9 @@ function init() {
         new AccountMenu(accountContainer);
     }
 
+    // Try loading gallery from CMS
+    await loadGalleryFromCMS();
+
     // Calculate filter counts
     calculateFilterCounts();
 
@@ -181,6 +185,41 @@ function init() {
 
     // Setup keyboard navigation
     setupKeyboard();
+}
+
+/**
+ * Load gallery images from Supabase CMS
+ * Falls back to hardcoded data if unavailable
+ */
+async function loadGalleryFromCMS() {
+    try {
+        // Wait for ngSupabase to be available
+        if (typeof ngSupabase === 'undefined') {
+            console.log('[Gallery] Supabase not available, using fallback data');
+            return;
+        }
+
+        await ngSupabase.init();
+
+        const cmsData = await ngSupabase.getCMSGallery({ activeOnly: true });
+
+        if (cmsData && cmsData.length > 0) {
+            // Transform CMS data to gallery format
+            galleryImages = cmsData.map(item => ({
+                id: item.id,
+                src: item.image_url,
+                studio: item.studio_key,
+                studioLabel: item.studio_label,
+                title: item.title,
+                description: item.description || ''
+            }));
+            console.log(`[Gallery] Loaded ${galleryImages.length} images from CMS`);
+        } else {
+            console.log('[Gallery] No CMS data, using fallback');
+        }
+    } catch (err) {
+        console.warn('[Gallery] Failed to load from CMS, using fallback:', err.message);
+    }
 }
 
 // ============================================

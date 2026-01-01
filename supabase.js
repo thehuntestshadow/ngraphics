@@ -445,6 +445,302 @@ class SupabaseClient {
         }
     }
 
+    // ==================== CMS Methods ====================
+
+    /**
+     * Get homepage content section
+     * @param {string} sectionId - 'hero', 'features', 'pricing', 'studios', 'cta'
+     * @returns {Promise<Object|null>} Section content
+     */
+    async getCMSHomepage(sectionId = null) {
+        await this.init();
+        try {
+            if (sectionId) {
+                const { data, error } = await this._client
+                    .from('cms_homepage')
+                    .select('*')
+                    .eq('id', sectionId)
+                    .single();
+                if (error) return null;
+                return data?.content || null;
+            } else {
+                const { data, error } = await this._client
+                    .from('cms_homepage')
+                    .select('*');
+                if (error) return null;
+                // Return as object keyed by id
+                return data?.reduce((acc, row) => {
+                    acc[row.id] = row.content;
+                    return acc;
+                }, {}) || null;
+            }
+        } catch {
+            return null;
+        }
+    }
+
+    /**
+     * Update homepage content section (admin only)
+     * @param {string} sectionId - Section ID
+     * @param {Object} content - New content
+     */
+    async updateCMSHomepage(sectionId, content) {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        const { data, error } = await this._client
+            .from('cms_homepage')
+            .upsert({
+                id: sectionId,
+                content,
+                updated_by: this._user.id,
+                updated_at: new Date().toISOString()
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    }
+
+    /**
+     * Get gallery items
+     * @param {Object} options - { studioKey?, activeOnly? }
+     * @returns {Promise<Array>} Gallery items
+     */
+    async getCMSGallery(options = {}) {
+        await this.init();
+        try {
+            let query = this._client
+                .from('cms_gallery')
+                .select('*')
+                .order('sort_order', { ascending: true });
+
+            if (options.activeOnly !== false) {
+                query = query.eq('is_active', true);
+            }
+            if (options.studioKey) {
+                query = query.eq('studio_key', options.studioKey);
+            }
+
+            const { data, error } = await query;
+            if (error) return [];
+            return data || [];
+        } catch {
+            return [];
+        }
+    }
+
+    /**
+     * Add gallery item (admin only)
+     * @param {Object} item - { title, description, image_url, studio_key, studio_label }
+     */
+    async addCMSGalleryItem(item) {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        // Get max sort_order
+        const { data: existing } = await this._client
+            .from('cms_gallery')
+            .select('sort_order')
+            .order('sort_order', { ascending: false })
+            .limit(1);
+
+        const maxOrder = existing?.[0]?.sort_order || 0;
+
+        const { data, error } = await this._client
+            .from('cms_gallery')
+            .insert({
+                ...item,
+                sort_order: maxOrder + 1,
+                is_active: true
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    }
+
+    /**
+     * Update gallery item (admin only)
+     */
+    async updateCMSGalleryItem(id, updates) {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        const { data, error } = await this._client
+            .from('cms_gallery')
+            .update({
+                ...updates,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    }
+
+    /**
+     * Delete gallery item (admin only)
+     */
+    async deleteCMSGalleryItem(id) {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        const { error } = await this._client
+            .from('cms_gallery')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+    }
+
+    /**
+     * Reorder gallery items (admin only)
+     * @param {Array} orderedIds - Array of IDs in new order
+     */
+    async reorderCMSGallery(orderedIds) {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        const updates = orderedIds.map((id, index) => ({
+            id,
+            sort_order: index + 1
+        }));
+
+        for (const update of updates) {
+            await this._client
+                .from('cms_gallery')
+                .update({ sort_order: update.sort_order })
+                .eq('id', update.id);
+        }
+    }
+
+    /**
+     * Get FAQ items
+     * @param {Object} options - { category?, activeOnly? }
+     * @returns {Promise<Array>} FAQ items
+     */
+    async getCMSFAQ(options = {}) {
+        await this.init();
+        try {
+            let query = this._client
+                .from('cms_faq')
+                .select('*')
+                .order('category')
+                .order('sort_order', { ascending: true });
+
+            if (options.activeOnly !== false) {
+                query = query.eq('is_active', true);
+            }
+            if (options.category) {
+                query = query.eq('category', options.category);
+            }
+
+            const { data, error } = await query;
+            if (error) return [];
+            return data || [];
+        } catch {
+            return [];
+        }
+    }
+
+    /**
+     * Add FAQ item (admin only)
+     */
+    async addCMSFAQItem(item) {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        // Get max sort_order for category
+        const { data: existing } = await this._client
+            .from('cms_faq')
+            .select('sort_order')
+            .eq('category', item.category)
+            .order('sort_order', { ascending: false })
+            .limit(1);
+
+        const maxOrder = existing?.[0]?.sort_order || 0;
+
+        const { data, error } = await this._client
+            .from('cms_faq')
+            .insert({
+                ...item,
+                sort_order: maxOrder + 1,
+                is_active: true
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    }
+
+    /**
+     * Update FAQ item (admin only)
+     */
+    async updateCMSFAQItem(id, updates) {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        const { data, error } = await this._client
+            .from('cms_faq')
+            .update({
+                ...updates,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    }
+
+    /**
+     * Delete FAQ item (admin only)
+     */
+    async deleteCMSFAQItem(id) {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        const { error } = await this._client
+            .from('cms_faq')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+    }
+
+    /**
+     * Upload CMS image to storage
+     * @param {File} file - Image file
+     * @param {string} folder - 'gallery' | 'homepage'
+     * @returns {Promise<string>} Public URL
+     */
+    async uploadCMSImage(file, folder = 'gallery') {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        const ext = file.name.split('.').pop();
+        const filename = `${folder}/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+        const { error: uploadError } = await this._client.storage
+            .from('cms-images')
+            .upload(filename, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = this._client.storage
+            .from('cms-images')
+            .getPublicUrl(filename);
+
+        return publicUrl;
+    }
+
     // ==================== Database Helpers ====================
 
     /**

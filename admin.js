@@ -15,7 +15,14 @@ const adminState = {
     auditTotal: 0,
     stats: null,
     searchDebounce: null,
-    charts: {}
+    charts: {},
+    // CMS state
+    cmsHomepage: null,
+    cmsGallery: [],
+    cmsFaq: [],
+    editingGalleryItem: null,
+    editingFaqItem: null,
+    quillEditor: null
 };
 
 const ITEMS_PER_PAGE = 20;
@@ -57,6 +64,16 @@ function initElements() {
         // Modal
         userModal: document.getElementById('userModal'),
         userModalBody: document.getElementById('userModalBody'),
+        // CMS Elements
+        galleryTableBody: document.getElementById('galleryTableBody'),
+        gallerySearch: document.getElementById('gallerySearch'),
+        galleryStudioFilter: document.getElementById('galleryStudioFilter'),
+        galleryModal: document.getElementById('galleryModal'),
+        faqTableBody: document.getElementById('faqTableBody'),
+        faqSearch: document.getElementById('faqSearch'),
+        faqCategoryFilter: document.getElementById('faqCategoryFilter'),
+        faqModal: document.getElementById('faqModal'),
+        jsonModal: document.getElementById('jsonModal'),
         // Buttons
         logoutBtn: document.getElementById('logoutBtn')
     };
@@ -103,8 +120,80 @@ function setupEventListeners() {
 
     // Escape to close modal
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeUserModal();
+        if (e.key === 'Escape') {
+            closeUserModal();
+            closeGalleryModal();
+            closeFAQModal();
+            closeJSONEditor();
+        }
     });
+
+    // CMS Gallery filters
+    elements.gallerySearch?.addEventListener('input', debounce(() => renderGalleryTable(), 300));
+    elements.galleryStudioFilter?.addEventListener('change', () => renderGalleryTable());
+
+    // CMS FAQ filters
+    elements.faqSearch?.addEventListener('input', debounce(() => renderFAQTable(), 300));
+    elements.faqCategoryFilter?.addEventListener('change', () => renderFAQTable());
+
+    // Gallery image upload
+    const galleryUpload = document.getElementById('galleryImageUpload');
+    const galleryInput = document.getElementById('galleryImageInput');
+    if (galleryUpload && galleryInput) {
+        galleryUpload.addEventListener('click', () => galleryInput.click());
+        galleryUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            galleryUpload.classList.add('dragover');
+        });
+        galleryUpload.addEventListener('dragleave', () => {
+            galleryUpload.classList.remove('dragover');
+        });
+        galleryUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            galleryUpload.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleGalleryImageUpload(file);
+            }
+        });
+        galleryInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                handleGalleryImageUpload(e.target.files[0]);
+            }
+        });
+    }
+
+    // CMS modal close on backdrop click
+    elements.galleryModal?.addEventListener('click', (e) => {
+        if (e.target === elements.galleryModal) closeGalleryModal();
+    });
+    elements.faqModal?.addEventListener('click', (e) => {
+        if (e.target === elements.faqModal) closeFAQModal();
+    });
+    elements.jsonModal?.addEventListener('click', (e) => {
+        if (e.target === elements.jsonModal) closeJSONEditor();
+    });
+
+    // Collapsible sections
+    document.querySelectorAll('[data-collapse]').forEach(header => {
+        header.addEventListener('click', () => {
+            const targetId = header.dataset.collapse;
+            const target = document.getElementById(targetId);
+            if (target) {
+                target.classList.toggle('collapsed');
+                header.classList.toggle('collapsed');
+            }
+        });
+    });
+}
+
+// Debounce helper
+function debounce(fn, delay) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn.apply(this, args), delay);
+    };
 }
 
 async function checkAdminAccess() {
@@ -196,6 +285,15 @@ function showSection(sectionId) {
             break;
         case 'audit':
             if (adminState.auditLogs.length === 0) loadAuditLogs();
+            break;
+        case 'cms-homepage':
+            loadCMSHomepage();
+            break;
+        case 'cms-gallery':
+            loadCMSGallery();
+            break;
+        case 'cms-faq':
+            loadCMSFAQ();
             break;
     }
 }
@@ -860,9 +958,468 @@ function escapeHtml(str) {
     })[char]);
 }
 
+// ==================== CMS Functions ====================
+
+// Homepage CMS
+async function loadCMSHomepage() {
+    try {
+        adminState.cmsHomepage = await ngSupabase.getCMSHomepage();
+        if (adminState.cmsHomepage?.hero) {
+            const hero = adminState.cmsHomepage.hero;
+            document.getElementById('hero-badge').value = hero.badge || '';
+            document.getElementById('hero-title').value = hero.title || '';
+            document.getElementById('hero-subtitle').value = hero.subtitle || '';
+            document.getElementById('hero-cta1-text').value = hero.cta1_text || '';
+            document.getElementById('hero-cta1-link').value = hero.cta1_link || '';
+            document.getElementById('hero-cta2-text').value = hero.cta2_text || '';
+            document.getElementById('hero-cta2-link').value = hero.cta2_link || '';
+        }
+    } catch (err) {
+        console.error('Failed to load homepage CMS:', err);
+    }
+}
+
+async function saveHomepageSection(section) {
+    const statusEl = document.getElementById(`${section}-status`);
+    try {
+        statusEl.textContent = 'Saving...';
+        statusEl.className = 'cms-save-status saving';
+
+        let content;
+        if (section === 'hero') {
+            content = {
+                badge: document.getElementById('hero-badge').value,
+                title: document.getElementById('hero-title').value,
+                subtitle: document.getElementById('hero-subtitle').value,
+                cta1_text: document.getElementById('hero-cta1-text').value,
+                cta1_link: document.getElementById('hero-cta1-link').value,
+                cta2_text: document.getElementById('hero-cta2-text').value,
+                cta2_link: document.getElementById('hero-cta2-link').value
+            };
+        }
+
+        await ngSupabase.updateCMSHomepage(section, content);
+        await logAdminAction('cms_update', null, { section, type: 'homepage' });
+
+        statusEl.textContent = 'Saved!';
+        statusEl.className = 'cms-save-status success';
+        setTimeout(() => { statusEl.textContent = ''; }, 3000);
+    } catch (err) {
+        console.error('Failed to save homepage section:', err);
+        statusEl.textContent = 'Failed to save';
+        statusEl.className = 'cms-save-status error';
+    }
+}
+
+// Gallery CMS
+async function loadCMSGallery() {
+    try {
+        if (elements.galleryTableBody) {
+            elements.galleryTableBody.innerHTML = '<tr><td colspan="6" class="loading-cell">Loading...</td></tr>';
+        }
+        adminState.cmsGallery = await ngSupabase.getCMSGallery({ activeOnly: false });
+        renderGalleryTable();
+    } catch (err) {
+        console.error('Failed to load gallery:', err);
+        if (elements.galleryTableBody) {
+            elements.galleryTableBody.innerHTML = '<tr><td colspan="6" class="loading-cell">Failed to load gallery</td></tr>';
+        }
+    }
+}
+
+function renderGalleryTable() {
+    const search = elements.gallerySearch?.value?.toLowerCase() || '';
+    const studioFilter = elements.galleryStudioFilter?.value || '';
+
+    let items = adminState.cmsGallery;
+
+    if (search) {
+        items = items.filter(item =>
+            item.title?.toLowerCase().includes(search) ||
+            item.description?.toLowerCase().includes(search)
+        );
+    }
+    if (studioFilter) {
+        items = items.filter(item => item.studio_key === studioFilter);
+    }
+
+    if (!elements.galleryTableBody) return;
+
+    elements.galleryTableBody.innerHTML = items.length === 0
+        ? '<tr><td colspan="6" class="loading-cell">No gallery items found</td></tr>'
+        : items.map(item => `
+            <tr data-id="${item.id}">
+                <td><img src="${escapeHtml(item.image_url)}" alt="" class="gallery-thumb" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23333%22 width=%22100%22 height=%22100%22/></svg>'"></td>
+                <td>${escapeHtml(item.title)}</td>
+                <td><span class="studio-tag">${escapeHtml(item.studio_label)}</span></td>
+                <td>
+                    <div class="order-controls">
+                        <button class="order-btn" onclick="moveGalleryItem('${item.id}', 'up')" title="Move up">↑</button>
+                        <span>${item.sort_order}</span>
+                        <button class="order-btn" onclick="moveGalleryItem('${item.id}', 'down')" title="Move down">↓</button>
+                    </div>
+                </td>
+                <td>
+                    <label class="toggle-switch">
+                        <input type="checkbox" ${item.is_active ? 'checked' : ''} onchange="toggleGalleryActive('${item.id}', this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </td>
+                <td>
+                    <button class="action-btn secondary" onclick="editGalleryItem('${item.id}')">Edit</button>
+                    <button class="action-btn danger" onclick="deleteGalleryItem('${item.id}')">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+}
+
+function openGalleryModal(item = null) {
+    adminState.editingGalleryItem = item;
+    document.getElementById('galleryModalTitle').textContent = item ? 'Edit Gallery Image' : 'Add Gallery Image';
+    document.getElementById('galleryItemId').value = item?.id || '';
+    document.getElementById('galleryTitle').value = item?.title || '';
+    document.getElementById('galleryDescription').value = item?.description || '';
+    document.getElementById('galleryStudio').value = item?.studio_key || '';
+    document.getElementById('galleryStudioLabel').value = item?.studio_label || '';
+    document.getElementById('galleryImageUrl').value = item?.image_url || '';
+
+    const preview = document.getElementById('galleryImagePreview');
+    const placeholder = document.querySelector('#galleryImageUpload .upload-placeholder');
+    if (item?.image_url) {
+        preview.src = item.image_url;
+        preview.style.display = 'block';
+        if (placeholder) placeholder.style.display = 'none';
+    } else {
+        preview.style.display = 'none';
+        if (placeholder) placeholder.style.display = 'flex';
+    }
+
+    elements.galleryModal?.classList.add('active');
+}
+
+function closeGalleryModal() {
+    elements.galleryModal?.classList.remove('active');
+    adminState.editingGalleryItem = null;
+}
+
+function editGalleryItem(id) {
+    const item = adminState.cmsGallery.find(i => i.id === id);
+    if (item) openGalleryModal(item);
+}
+
+async function handleGalleryImageUpload(file) {
+    try {
+        const preview = document.getElementById('galleryImagePreview');
+        const placeholder = document.querySelector('#galleryImageUpload .upload-placeholder');
+
+        // Show loading state
+        if (placeholder) placeholder.innerHTML = '<span>Uploading...</span>';
+
+        const url = await ngSupabase.uploadCMSImage(file, 'gallery');
+        document.getElementById('galleryImageUrl').value = url;
+
+        preview.src = url;
+        preview.style.display = 'block';
+        if (placeholder) placeholder.style.display = 'none';
+    } catch (err) {
+        console.error('Failed to upload image:', err);
+        alert('Failed to upload image: ' + err.message);
+        const placeholder = document.querySelector('#galleryImageUpload .upload-placeholder');
+        if (placeholder) {
+            placeholder.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <span>Click or drag to upload</span>
+            `;
+        }
+    }
+}
+
+async function saveGalleryItem(e) {
+    e.preventDefault();
+    try {
+        const id = document.getElementById('galleryItemId').value;
+        const data = {
+            title: document.getElementById('galleryTitle').value,
+            description: document.getElementById('galleryDescription').value,
+            studio_key: document.getElementById('galleryStudio').value,
+            studio_label: document.getElementById('galleryStudioLabel').value,
+            image_url: document.getElementById('galleryImageUrl').value
+        };
+
+        if (!data.image_url) {
+            alert('Please upload an image');
+            return;
+        }
+
+        if (id) {
+            await ngSupabase.updateCMSGalleryItem(id, data);
+            await logAdminAction('cms_update', null, { id, type: 'gallery' });
+        } else {
+            await ngSupabase.addCMSGalleryItem(data);
+            await logAdminAction('cms_create', null, { type: 'gallery', title: data.title });
+        }
+
+        closeGalleryModal();
+        await loadCMSGallery();
+    } catch (err) {
+        console.error('Failed to save gallery item:', err);
+        alert('Failed to save: ' + err.message);
+    }
+}
+
+async function deleteGalleryItem(id) {
+    if (!confirm('Delete this gallery item?')) return;
+    try {
+        await ngSupabase.deleteCMSGalleryItem(id);
+        await logAdminAction('cms_delete', null, { id, type: 'gallery' });
+        await loadCMSGallery();
+    } catch (err) {
+        console.error('Failed to delete gallery item:', err);
+        alert('Failed to delete: ' + err.message);
+    }
+}
+
+async function toggleGalleryActive(id, isActive) {
+    try {
+        await ngSupabase.updateCMSGalleryItem(id, { is_active: isActive });
+    } catch (err) {
+        console.error('Failed to toggle gallery item:', err);
+        await loadCMSGallery(); // Reload to reset state
+    }
+}
+
+async function moveGalleryItem(id, direction) {
+    const items = [...adminState.cmsGallery].sort((a, b) => a.sort_order - b.sort_order);
+    const index = items.findIndex(i => i.id === id);
+    if (index === -1) return;
+
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= items.length) return;
+
+    // Swap positions
+    [items[index], items[newIndex]] = [items[newIndex], items[index]];
+
+    try {
+        await ngSupabase.reorderCMSGallery(items.map(i => i.id));
+        await loadCMSGallery();
+    } catch (err) {
+        console.error('Failed to reorder gallery:', err);
+    }
+}
+
+// FAQ CMS
+async function loadCMSFAQ() {
+    try {
+        if (elements.faqTableBody) {
+            elements.faqTableBody.innerHTML = '<tr><td colspan="5" class="loading-cell">Loading...</td></tr>';
+        }
+        adminState.cmsFaq = await ngSupabase.getCMSFAQ({ activeOnly: false });
+        renderFAQTable();
+    } catch (err) {
+        console.error('Failed to load FAQ:', err);
+        if (elements.faqTableBody) {
+            elements.faqTableBody.innerHTML = '<tr><td colspan="5" class="loading-cell">Failed to load FAQ</td></tr>';
+        }
+    }
+}
+
+const FAQ_CATEGORIES = {
+    'getting-started': 'Getting Started',
+    'billing': 'Billing',
+    'features': 'Features',
+    'technical': 'Technical',
+    'support': 'Support'
+};
+
+function renderFAQTable() {
+    const search = elements.faqSearch?.value?.toLowerCase() || '';
+    const categoryFilter = elements.faqCategoryFilter?.value || '';
+
+    let items = adminState.cmsFaq;
+
+    if (search) {
+        items = items.filter(item =>
+            item.question?.toLowerCase().includes(search) ||
+            item.answer?.toLowerCase().includes(search)
+        );
+    }
+    if (categoryFilter) {
+        items = items.filter(item => item.category === categoryFilter);
+    }
+
+    if (!elements.faqTableBody) return;
+
+    elements.faqTableBody.innerHTML = items.length === 0
+        ? '<tr><td colspan="5" class="loading-cell">No FAQ items found</td></tr>'
+        : items.map(item => `
+            <tr data-id="${item.id}">
+                <td class="question-cell">${escapeHtml(item.question)}</td>
+                <td><span class="category-tag">${FAQ_CATEGORIES[item.category] || item.category}</span></td>
+                <td>${item.sort_order}</td>
+                <td>
+                    <label class="toggle-switch">
+                        <input type="checkbox" ${item.is_active ? 'checked' : ''} onchange="toggleFAQActive('${item.id}', this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </td>
+                <td>
+                    <button class="action-btn secondary" onclick="editFAQItem('${item.id}')">Edit</button>
+                    <button class="action-btn danger" onclick="deleteFAQItem('${item.id}')">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+}
+
+function openFAQModal(item = null) {
+    adminState.editingFaqItem = item;
+    document.getElementById('faqModalTitle').textContent = item ? 'Edit FAQ Item' : 'Add FAQ Item';
+    document.getElementById('faqItemId').value = item?.id || '';
+    document.getElementById('faqCategory').value = item?.category || '';
+    document.getElementById('faqQuestion').value = item?.question || '';
+
+    // Initialize Quill if not already
+    if (!adminState.quillEditor) {
+        adminState.quillEditor = new Quill('#faqAnswerEditor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline'],
+                    ['link'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['clean']
+                ]
+            }
+        });
+    }
+
+    // Set content
+    adminState.quillEditor.root.innerHTML = item?.answer || '';
+
+    elements.faqModal?.classList.add('active');
+}
+
+function closeFAQModal() {
+    elements.faqModal?.classList.remove('active');
+    adminState.editingFaqItem = null;
+}
+
+function editFAQItem(id) {
+    const item = adminState.cmsFaq.find(i => i.id === id);
+    if (item) openFAQModal(item);
+}
+
+async function saveFAQItem(e) {
+    e.preventDefault();
+    try {
+        const id = document.getElementById('faqItemId').value;
+        const data = {
+            category: document.getElementById('faqCategory').value,
+            question: document.getElementById('faqQuestion').value,
+            answer: adminState.quillEditor?.root.innerHTML || ''
+        };
+
+        if (!data.answer || data.answer === '<p><br></p>') {
+            alert('Please provide an answer');
+            return;
+        }
+
+        if (id) {
+            await ngSupabase.updateCMSFAQItem(id, data);
+            await logAdminAction('cms_update', null, { id, type: 'faq' });
+        } else {
+            await ngSupabase.addCMSFAQItem(data);
+            await logAdminAction('cms_create', null, { type: 'faq', question: data.question });
+        }
+
+        closeFAQModal();
+        await loadCMSFAQ();
+    } catch (err) {
+        console.error('Failed to save FAQ item:', err);
+        alert('Failed to save: ' + err.message);
+    }
+}
+
+async function deleteFAQItem(id) {
+    if (!confirm('Delete this FAQ item?')) return;
+    try {
+        await ngSupabase.deleteCMSFAQItem(id);
+        await logAdminAction('cms_delete', null, { id, type: 'faq' });
+        await loadCMSFAQ();
+    } catch (err) {
+        console.error('Failed to delete FAQ item:', err);
+        alert('Failed to delete: ' + err.message);
+    }
+}
+
+async function toggleFAQActive(id, isActive) {
+    try {
+        await ngSupabase.updateCMSFAQItem(id, { is_active: isActive });
+    } catch (err) {
+        console.error('Failed to toggle FAQ item:', err);
+        await loadCMSFAQ();
+    }
+}
+
+// JSON Editor
+async function openJSONEditor() {
+    const section = document.getElementById('jsonSection').value || 'features';
+    try {
+        const content = await ngSupabase.getCMSHomepage(section);
+        document.getElementById('jsonContent').value = JSON.stringify(content || [], null, 2);
+        elements.jsonModal?.classList.add('active');
+    } catch (err) {
+        console.error('Failed to load JSON content:', err);
+    }
+}
+
+function closeJSONEditor() {
+    elements.jsonModal?.classList.remove('active');
+}
+
+async function saveJSONContent() {
+    const section = document.getElementById('jsonSection').value;
+    const contentStr = document.getElementById('jsonContent').value;
+
+    try {
+        const content = JSON.parse(contentStr);
+        await ngSupabase.updateCMSHomepage(section, content);
+        await logAdminAction('cms_update', null, { section, type: 'homepage_json' });
+        alert('Saved!');
+        closeJSONEditor();
+    } catch (err) {
+        if (err instanceof SyntaxError) {
+            alert('Invalid JSON: ' + err.message);
+        } else {
+            alert('Failed to save: ' + err.message);
+        }
+    }
+}
+
 // Make functions available globally
 window.showSection = showSection;
 window.openUserModal = openUserModal;
 window.closeUserModal = closeUserModal;
 window.changeTier = changeTier;
 window.addCreditsToUser = addCreditsToUser;
+// CMS functions
+window.saveHomepageSection = saveHomepageSection;
+window.openGalleryModal = openGalleryModal;
+window.closeGalleryModal = closeGalleryModal;
+window.saveGalleryItem = saveGalleryItem;
+window.editGalleryItem = editGalleryItem;
+window.deleteGalleryItem = deleteGalleryItem;
+window.toggleGalleryActive = toggleGalleryActive;
+window.moveGalleryItem = moveGalleryItem;
+window.openFAQModal = openFAQModal;
+window.closeFAQModal = closeFAQModal;
+window.saveFAQItem = saveFAQItem;
+window.editFAQItem = editFAQItem;
+window.deleteFAQItem = deleteFAQItem;
+window.toggleFAQActive = toggleFAQActive;
+window.openJSONEditor = openJSONEditor;
+window.closeJSONEditor = closeJSONEditor;
+window.saveJSONContent = saveJSONContent;

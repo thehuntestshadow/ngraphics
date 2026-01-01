@@ -1,7 +1,17 @@
 /**
  * HEFAISTOS - Landing Page
  * Handles theme, scroll animations, and interactivity
+ * Loads content from CMS (Supabase) with fallback to static HTML
  */
+
+// ============================================
+// STATE
+// ============================================
+
+const state = {
+    homepageContent: null,
+    loaded: false
+};
 
 // ============================================
 // INITIALIZATION
@@ -9,7 +19,7 @@
 
 document.addEventListener('DOMContentLoaded', init);
 
-function init() {
+async function init() {
     // Initialize theme
     SharedTheme.init();
     SharedTheme.setupToggle(document.getElementById('themeToggle'));
@@ -20,6 +30,9 @@ function init() {
         new AccountMenu(accountContainer);
     }
 
+    // Try loading content from CMS
+    await loadHomepageFromCMS();
+
     // Setup scroll animations
     setupScrollAnimations();
 
@@ -28,6 +41,197 @@ function init() {
 
     // Setup gallery preview lightbox
     setupGalleryPreview();
+}
+
+// ============================================
+// CMS LOADING
+// ============================================
+
+/**
+ * Load homepage content from Supabase CMS
+ * Falls back to existing static HTML if unavailable
+ */
+async function loadHomepageFromCMS() {
+    try {
+        if (typeof ngSupabase === 'undefined') {
+            console.log('[Landing] Supabase not available, using static HTML');
+            return;
+        }
+
+        await ngSupabase.init();
+
+        const cmsData = await ngSupabase.getCMSHomepage();
+
+        if (cmsData && Object.keys(cmsData).length > 0) {
+            state.homepageContent = cmsData;
+            state.loaded = true;
+
+            // Apply CMS content to page sections
+            if (cmsData.hero) renderHeroSection(cmsData.hero);
+            if (cmsData.pricing) renderPricingSection(cmsData.pricing);
+            if (cmsData.cta) renderCTASection(cmsData.cta);
+
+            console.log('[Landing] Loaded content from CMS');
+        } else {
+            console.log('[Landing] No CMS data, using static HTML');
+        }
+    } catch (err) {
+        console.warn('[Landing] Failed to load from CMS, using static HTML:', err.message);
+    }
+}
+
+/**
+ * Render hero section from CMS data
+ */
+function renderHeroSection(hero) {
+    // Update badge
+    const badge = document.querySelector('.hero-badge span');
+    if (badge && hero.badge) {
+        badge.textContent = hero.badge;
+    }
+
+    // Update title
+    const title = document.querySelector('.hero-title');
+    if (title && hero.title) {
+        title.textContent = hero.title;
+    }
+
+    // Update subtitle
+    const subtitle = document.querySelector('.hero-subtitle');
+    if (subtitle && hero.subtitle) {
+        subtitle.textContent = hero.subtitle;
+    }
+
+    // Update CTAs
+    const cta1 = document.querySelector('.hero-cta span');
+    if (cta1 && hero.cta1_text) {
+        cta1.textContent = hero.cta1_text;
+    }
+    const cta1Link = document.querySelector('.hero-cta');
+    if (cta1Link && hero.cta1_link) {
+        cta1Link.setAttribute('href', hero.cta1_link);
+    }
+
+    const cta2 = document.querySelector('.hero-cta-secondary span');
+    if (cta2 && hero.cta2_text) {
+        cta2.textContent = hero.cta2_text;
+    }
+    const cta2Link = document.querySelector('.hero-actions .hero-cta-secondary');
+    if (cta2Link && hero.cta2_link) {
+        cta2Link.setAttribute('href', hero.cta2_link);
+    }
+
+    // Update showcase images
+    if (hero.images && Array.isArray(hero.images)) {
+        const showcaseImages = document.querySelectorAll('.showcase-image');
+        hero.images.forEach((imgUrl, index) => {
+            if (showcaseImages[index] && imgUrl) {
+                showcaseImages[index].src = imgUrl;
+            }
+        });
+    }
+}
+
+/**
+ * Render pricing preview section from CMS data
+ */
+function renderPricingSection(pricing) {
+    // Update section title
+    const sectionTitle = document.querySelector('.pricing-preview .section-title');
+    if (sectionTitle && pricing.title) {
+        sectionTitle.textContent = pricing.title;
+    }
+
+    // Update section subtitle
+    const sectionSubtitle = document.querySelector('.pricing-preview .section-subtitle');
+    if (sectionSubtitle && pricing.subtitle) {
+        sectionSubtitle.textContent = pricing.subtitle;
+    }
+
+    // Update pricing cards if plans provided
+    if (pricing.plans && Array.isArray(pricing.plans)) {
+        const cards = document.querySelectorAll('.price-card');
+        pricing.plans.forEach((plan, index) => {
+            const card = cards[index];
+            if (!card) return;
+
+            const name = card.querySelector('.price-card-name');
+            if (name && plan.name) name.textContent = plan.name;
+
+            const price = card.querySelector('.price-card-price');
+            if (price && plan.price !== undefined) price.textContent = plan.price;
+
+            const period = card.querySelector('.price-card-period');
+            if (period && plan.period) period.textContent = plan.period;
+
+            // Update features
+            if (plan.features && Array.isArray(plan.features)) {
+                const featureEls = card.querySelectorAll('.price-card-feature');
+                plan.features.forEach((feature, fIndex) => {
+                    if (featureEls[fIndex]) {
+                        featureEls[fIndex].textContent = feature;
+                    }
+                });
+            }
+
+            // Update badge if present
+            const badge = card.querySelector('.price-card-badge');
+            if (plan.badge) {
+                if (badge) {
+                    badge.textContent = plan.badge;
+                } else if (!card.classList.contains('featured')) {
+                    // Add badge if specified but doesn't exist
+                    card.classList.add('featured');
+                    const newBadge = document.createElement('span');
+                    newBadge.className = 'price-card-badge';
+                    newBadge.textContent = plan.badge;
+                    card.insertBefore(newBadge, card.firstChild);
+                }
+            } else if (badge) {
+                badge.remove();
+                card.classList.remove('featured');
+            }
+        });
+    }
+}
+
+/**
+ * Render final CTA section from CMS data
+ */
+function renderCTASection(cta) {
+    const ctaTitle = document.querySelector('.cta-title');
+    if (ctaTitle && cta.title) {
+        ctaTitle.textContent = cta.title;
+    }
+
+    const ctaSubtitle = document.querySelector('.cta-subtitle');
+    if (ctaSubtitle && cta.subtitle) {
+        ctaSubtitle.textContent = cta.subtitle;
+    }
+
+    const ctaButton = document.querySelector('.final-cta .hero-cta span');
+    if (ctaButton && cta.button_text) {
+        ctaButton.textContent = cta.button_text;
+    }
+
+    const ctaLink = document.querySelector('.final-cta .hero-cta');
+    if (ctaLink && cta.button_link) {
+        ctaLink.setAttribute('href', cta.button_link);
+    }
+}
+
+/**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[char]);
 }
 
 // ============================================

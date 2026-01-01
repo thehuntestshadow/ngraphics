@@ -1,19 +1,136 @@
+// @ts-check
 /**
  * HEFAISTOS - Unified API Client
  * Centralized OpenRouter API handling with retries, rate limiting, and response normalization
  */
 
 // ============================================
+// TYPE DEFINITIONS
+// ============================================
+
+/**
+ * @typedef {'RATE_LIMITED' | 'TIMEOUT' | 'NETWORK_ERROR' | 'AUTH_REQUIRED' | 'SUBSCRIPTION_REQUIRED' | 'AUTH_ERROR' | 'INVALID_REQUEST' | 'MODEL_ERROR' | 'CONTENT_FILTERED' | 'QUOTA_EXCEEDED' | 'LIMIT_REACHED' | 'SUBSCRIPTION_INACTIVE' | 'SERVER_ERROR' | 'EMPTY_RESPONSE' | 'PARSE_ERROR' | 'CANCELLED' | 'UNKNOWN'} APIErrorCode
+ */
+
+/**
+ * @typedef {Object} APIErrorDetails
+ * @property {number} [status] - HTTP status code
+ * @property {boolean} [retryable] - Whether the request can be retried
+ * @property {number} [retryAfter] - Milliseconds to wait before retry
+ * @property {Error} [originalError] - Original error if wrapped
+ */
+
+/**
+ * @typedef {Object} APIClientOptions
+ * @property {string} [baseUrl] - Base URL for API
+ * @property {number} [maxRetries] - Maximum retry attempts
+ * @property {number} [timeout] - Request timeout in ms
+ * @property {number} [maxConcurrent] - Max concurrent requests
+ * @property {number} [retryBaseDelay] - Base delay for retry backoff
+ * @property {number} [rateLimitDelay] - Delay between rate limited requests
+ * @property {number} [cacheMaxAge] - Cache TTL in ms
+ * @property {function} [onRequestStart] - Callback on request start
+ * @property {function} [onRequestEnd] - Callback on request end
+ * @property {function} [onError] - Callback on error
+ */
+
+/**
+ * @typedef {Object} GenerateImageOptions
+ * @property {string} model - Model ID to use
+ * @property {string} prompt - Generation prompt
+ * @property {string[]} [images] - Base64 images for multimodal
+ * @property {number} [seed] - Seed for reproducibility
+ * @property {string} [negativePrompt] - Negative prompt
+ * @property {string} [aspectRatio] - Aspect ratio
+ * @property {string} [quality] - Quality level
+ * @property {string} [style] - Style preset
+ * @property {string} [requestId] - Request ID for tracking/cancellation
+ */
+
+/**
+ * @typedef {Object} GenerateImageResult
+ * @property {string} image - Primary generated image URL/base64
+ * @property {string[]} images - All generated images
+ * @property {string} text - Any text in response
+ * @property {number} [seed] - Seed used
+ * @property {string} model - Model used
+ */
+
+/**
+ * @typedef {Object} AnalyzeImageOptions
+ * @property {string} image - Image to analyze (URL or base64)
+ * @property {string} prompt - Analysis prompt
+ * @property {string} [model] - Vision model to use
+ * @property {string} [requestId] - Request ID for tracking
+ */
+
+/**
+ * @typedef {Object} GenerateTextOptions
+ * @property {string} [model] - Model to use
+ * @property {string} prompt - Text prompt
+ * @property {string} [systemPrompt] - System prompt
+ * @property {number} [maxTokens] - Max tokens
+ * @property {number} [temperature] - Temperature
+ * @property {string} [requestId] - Request ID
+ */
+
+/**
+ * @typedef {Object} GenerateVariationsOptions
+ * @property {string} model - Model ID
+ * @property {string} prompt - Prompt
+ * @property {string[]} [images] - Source images
+ * @property {number} [count] - Number of variations
+ * @property {number[]} [seeds] - Seeds for each variation
+ * @property {string} [negativePrompt] - Negative prompt
+ * @property {string} [aspectRatio] - Aspect ratio
+ * @property {function} [onProgress] - Progress callback
+ */
+
+/**
+ * @typedef {Object} NormalizedResponse
+ * @property {string} text - Text content
+ * @property {string|null} image - Primary image
+ * @property {string[]} images - All images
+ * @property {number} [seed] - Seed if present
+ */
+
+/**
+ * @typedef {Object} UsageData
+ * @property {string} tier - Subscription tier
+ * @property {boolean} isUnlimited - Whether usage is unlimited
+ * @property {number} generationsUsed - Generations used this period
+ * @property {number} generationsLimit - Monthly limit
+ * @property {number} creditsBalance - Extra credits balance
+ */
+
+/**
+ * @typedef {Object} AccessCheckResult
+ * @property {boolean} canUse - Whether user can make requests
+ * @property {string} [reason] - Reason if denied
+ */
+
+// ============================================
 // API ERROR CLASS
 // ============================================
 class APIError extends Error {
+    /**
+     * @param {string} message - Error message
+     * @param {APIErrorCode} code - Error code
+     * @param {APIErrorDetails} [details] - Additional error details
+     */
     constructor(message, code, details = {}) {
         super(message);
+        /** @type {string} */
         this.name = 'APIError';
+        /** @type {APIErrorCode} */
         this.code = code;
+        /** @type {number|null} */
         this.status = details.status || null;
+        /** @type {boolean} */
         this.retryable = details.retryable || false;
+        /** @type {number|null} */
         this.retryAfter = details.retryAfter || null;
+        /** @type {Error|null} */
         this.originalError = details.originalError || null;
     }
 
@@ -46,23 +163,38 @@ class APIError extends Error {
 // API CLIENT CLASS
 // ============================================
 class APIClient {
+    /**
+     * @param {APIClientOptions} [options] - Client configuration
+     */
     constructor(options = {}) {
         // Configuration
+        /** @type {string} */
         this.baseUrl = options.baseUrl || 'https://openrouter.ai/api/v1';
+        /** @type {number} */
         this.maxRetries = options.maxRetries ?? 3;
+        /** @type {number} */
         this.timeout = options.timeout || 120000; // 2 minutes default
+        /** @type {number} */
         this.maxConcurrent = options.maxConcurrent || 3;
+        /** @type {number} */
         this.retryBaseDelay = options.retryBaseDelay || 1000;
+        /** @type {number} */
         this.rateLimitDelay = options.rateLimitDelay || 500;
 
         // State
+        /** @type {number} */
         this.activeRequests = 0;
+        /** @type {Array<(value?: any) => void>} */
         this.queue = [];
+        /** @type {Map<string, {data: any, expires: number}>} */
         this.cache = new Map();
+        /** @type {number} */
         this.cacheMaxAge = options.cacheMaxAge || 5 * 60 * 1000; // 5 minutes
+        /** @type {Map<string, AbortController>} */
         this.abortControllers = new Map();
 
         // Stats
+        /** @type {{totalRequests: number, successfulRequests: number, failedRequests: number, retriedRequests: number, cachedResponses: number}} */
         this.stats = {
             totalRequests: 0,
             successfulRequests: 0,
@@ -72,28 +204,40 @@ class APIClient {
         };
 
         // Event callbacks
+        /** @type {function|null} */
         this.onRequestStart = options.onRequestStart || null;
+        /** @type {function|null} */
         this.onRequestEnd = options.onRequestEnd || null;
+        /** @type {function|null} */
         this.onError = options.onError || null;
 
         // Cloud API key cache
+        /** @type {string|null} */
         this._cloudApiKey = null;
+        /** @type {boolean} */
         this._cloudApiKeyLoaded = false;
 
         // Usage limit cache (30 second TTL to avoid repeated API calls)
+        /** @type {UsageData|null} */
         this._cachedUsage = null;
+        /** @type {number} */
         this._usageCacheTime = 0;
+        /** @type {number} */
         this._usageCacheTTL = 30000; // 30 seconds
 
         // Proxy configuration
+        /** @type {string} */
         this._proxyUrl = (typeof CONFIG !== 'undefined' && CONFIG.SUPABASE_URL)
             ? `${CONFIG.SUPABASE_URL}/functions/v1/generate-image`
             : 'https://rodzatuqkfqcdqgntdnd.supabase.co/functions/v1/generate-image';
+        /** @type {string} */
         this._currentStudio = 'unknown';
     }
 
     /**
      * Set the current studio name for usage tracking
+     * @param {string} studioName - Studio identifier
+     * @returns {void}
      */
     setStudio(studioName) {
         this._currentStudio = studioName;
@@ -343,6 +487,8 @@ class APIClient {
 
     /**
      * Generate an image using the specified model
+     * @param {GenerateImageOptions} options - Generation options
+     * @returns {Promise<GenerateImageResult>} Generated image result
      */
     async generateImage({
         model,
@@ -388,6 +534,8 @@ class APIClient {
 
     /**
      * Analyze an image with vision model
+     * @param {AnalyzeImageOptions} options - Analysis options
+     * @returns {Promise<{text: string, model: string}>} Analysis result
      */
     async analyzeImage({
         image,
@@ -422,6 +570,8 @@ class APIClient {
 
     /**
      * Generate text completion
+     * @param {GenerateTextOptions} options - Text generation options
+     * @returns {Promise<{text: string, model: string}>} Generated text result
      */
     async generateText({
         model = 'google/gemini-2.0-flash-001',
@@ -453,6 +603,8 @@ class APIClient {
 
     /**
      * Generate multiple image variations in parallel
+     * @param {GenerateVariationsOptions} options - Variation options
+     * @returns {Promise<{results: Array<{image: string, seed: number, model: string}>, errors: Array<{index: number, error: Error}>, seeds: number[]}>}
      */
     async generateVariations({
         model,
@@ -660,6 +812,11 @@ class APIClient {
     // ========================================
     // RESPONSE NORMALIZATION
     // ========================================
+    /**
+     * Normalize API response to consistent format
+     * @param {Object} data - Raw API response
+     * @returns {NormalizedResponse} Normalized response
+     */
     normalizeResponse(data) {
         // Check for API error in response
         if (data.error) {
@@ -735,6 +892,11 @@ class APIClient {
     // ========================================
     // ERROR HANDLING
     // ========================================
+    /**
+     * Parse error response into APIError
+     * @param {Response} response - Fetch Response object
+     * @returns {Promise<APIError>} Parsed error
+     */
     async parseErrorResponse(response) {
         let data = {};
         try {
@@ -940,6 +1102,10 @@ const api = new APIClient();
 
 /**
  * Quick image generation
+ * @param {string} model - Model ID
+ * @param {string} prompt - Generation prompt
+ * @param {Omit<GenerateImageOptions, 'model' | 'prompt'>} [options] - Additional options
+ * @returns {Promise<GenerateImageResult>}
  */
 async function generateImage(model, prompt, options = {}) {
     return api.generateImage({ model, prompt, ...options });
@@ -947,6 +1113,10 @@ async function generateImage(model, prompt, options = {}) {
 
 /**
  * Quick image analysis
+ * @param {string} image - Image URL or base64
+ * @param {string} prompt - Analysis prompt
+ * @param {Omit<AnalyzeImageOptions, 'image' | 'prompt'>} [options] - Additional options
+ * @returns {Promise<{text: string, model: string}>}
  */
 async function analyzeImage(image, prompt, options = {}) {
     return api.analyzeImage({ image, prompt, ...options });
@@ -954,6 +1124,9 @@ async function analyzeImage(image, prompt, options = {}) {
 
 /**
  * Quick text generation
+ * @param {string} prompt - Text prompt
+ * @param {Omit<GenerateTextOptions, 'prompt'>} [options] - Additional options
+ * @returns {Promise<{text: string, model: string}>}
  */
 async function generateText(prompt, options = {}) {
     return api.generateText({ prompt, ...options });
@@ -962,9 +1135,15 @@ async function generateText(prompt, options = {}) {
 // ============================================
 // EXPORTS
 // ============================================
+// @ts-ignore - Global exports for browser
 window.APIClient = APIClient;
+// @ts-ignore
 window.APIError = APIError;
+// @ts-ignore
 window.api = api;
+// @ts-ignore
 window.generateImage = generateImage;
+// @ts-ignore
 window.analyzeImage = analyzeImage;
+// @ts-ignore
 window.generateText = generateText;

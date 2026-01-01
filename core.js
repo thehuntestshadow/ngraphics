@@ -1,6 +1,46 @@
+// @ts-check
 /**
  * HEFAISTOS - Core Infrastructure
  * Reactive State, Event Bus, and foundational utilities
+ */
+
+// ============================================
+// TYPE DEFINITIONS
+// ============================================
+
+/**
+ * @typedef {Object} WatcherOptions
+ * @property {boolean} [immediate] - Call handler immediately with current value
+ * @property {boolean} [deep] - Watch nested changes
+ * @property {number} [debounce] - Debounce delay in ms
+ */
+
+/**
+ * @typedef {Object} ReactiveStateOptions
+ * @property {string} [persistKey] - localStorage key for persistence
+ * @property {string[]} [persistFields] - Fields to persist
+ */
+
+/**
+ * @typedef {Object} CompressionResult
+ * @property {Blob} blob - Compressed blob
+ * @property {string} base64 - Base64 data URL
+ * @property {number} width - Output width
+ * @property {number} height - Output height
+ * @property {number} originalSize - Original file size
+ * @property {number} compressedSize - Compressed size
+ * @property {string} compressionRatio - Compression ratio as percentage
+ */
+
+/**
+ * @typedef {Object} VirtualScrollerOptions
+ * @property {number} [itemHeight] - Item height in pixels
+ * @property {number} [itemWidth] - Item width in pixels
+ * @property {number} [gap] - Gap between items
+ * @property {number} [buffer] - Extra rows to render
+ * @property {number|'auto'} [columns] - Number of columns
+ * @property {function(any, number): string} [renderItem] - Item renderer
+ * @property {function(any, number): void} [onItemClick] - Click handler
  */
 
 // ============================================
@@ -49,6 +89,7 @@ const ngLog = {
 
 // Initialize logging
 ngLog.init();
+// @ts-ignore - Global export
 window.ngLog = ngLog;
 
 // ============================================
@@ -56,7 +97,9 @@ window.ngLog = ngLog;
 // ============================================
 class EventBus {
     constructor() {
+        /** @type {Map<string, Set<Function>>} */
         this.listeners = new Map();
+        /** @type {Map<string, Set<Function>>} */
         this.onceListeners = new Map();
     }
 
@@ -203,13 +246,24 @@ const events = new EventBus();
 // REACTIVE STATE
 // ============================================
 class ReactiveState {
+    /**
+     * @param {Object} [initialState] - Initial state object
+     * @param {ReactiveStateOptions} [options] - Configuration options
+     */
     constructor(initialState = {}, options = {}) {
+        /** @type {Map<string, Set<{callback: Function, options: WatcherOptions}>>} */
         this._watchers = new Map();
+        /** @type {Map<string, {getter: Function, deps: string[], value: any, dirty: boolean}>} */
         this._computedCache = new Map();
+        /** @type {string|null} */
         this._persistKey = options.persistKey || null;
+        /** @type {string[]} */
         this._persistFields = options.persistFields || [];
+        /** @type {Map<string, ReturnType<typeof setTimeout>>} */
         this._debounceTimers = new Map();
+        /** @type {boolean} */
         this._batchUpdates = false;
+        /** @type {Map<string, {oldValue: any, newValue: any}>} */
         this._pendingUpdates = new Map();
 
         // Load persisted state
@@ -244,7 +298,8 @@ class ReactiveState {
 
                 // Return nested proxy for objects
                 if (value && typeof value === 'object' && !value._isProxy) {
-                    const nestedPath = path ? `${path}.${prop}` : prop;
+                    // @ts-ignore - prop is always string in our usage
+                    const nestedPath = path ? `${path}.${String(prop)}` : String(prop);
                     target[prop] = self._createProxy(value, nestedPath);
                     return target[prop];
                 }
@@ -260,7 +315,8 @@ class ReactiveState {
 
                 target[prop] = value;
 
-                const fullPath = path ? `${path}.${prop}` : prop;
+                // @ts-ignore - prop is always string in our usage
+                const fullPath = path ? `${path}.${String(prop)}` : String(prop);
 
                 if (self._batchUpdates) {
                     self._pendingUpdates.set(fullPath, { oldValue, newValue: value });
@@ -282,7 +338,8 @@ class ReactiveState {
                 const oldValue = target[prop];
                 delete target[prop];
 
-                const fullPath = path ? `${path}.${prop}` : prop;
+                // @ts-ignore - prop is always string in our usage
+                const fullPath = path ? `${path}.${String(prop)}` : String(prop);
                 self._notifyWatchers(fullPath, undefined, oldValue);
 
                 return true;
@@ -514,19 +571,31 @@ class ReactiveState {
 // IMAGE COMPRESSION
 // ============================================
 class ImageCompressor {
+    /**
+     * @param {Object} [options] - Compressor options
+     * @param {number} [options.maxWidth] - Maximum output width
+     * @param {number} [options.maxHeight] - Maximum output height
+     * @param {number} [options.quality] - JPEG/WebP quality (0-1)
+     * @param {string} [options.format] - Output format (image/webp, image/jpeg)
+     */
     constructor(options = {}) {
+        /** @type {number} */
         this.maxWidth = options.maxWidth || 1920;
+        /** @type {number} */
         this.maxHeight = options.maxHeight || 1920;
+        /** @type {number} */
         this.quality = options.quality || 0.85;
+        /** @type {string} */
         this.format = options.format || 'image/webp';
+        /** @type {string} */
         this.fallbackFormat = 'image/jpeg';
     }
 
     /**
      * Compress an image file
      * @param {File|Blob} file - Image file to compress
-     * @param {Object} options - Override default options
-     * @returns {Promise<{blob: Blob, base64: string, originalSize: number, compressedSize: number}>}
+     * @param {Object} [options] - Override default options
+     * @returns {Promise<CompressionResult>}
      */
     async compress(file, options = {}) {
         const opts = {
@@ -574,21 +643,28 @@ class ImageCompressor {
         ctx.drawImage(img, 0, 0, width, height);
 
         // Try preferred format, fall back if not supported
+        /** @type {Blob} */
         let blob;
         try {
+            // @ts-ignore - convertToBlob exists on OffscreenCanvas
             if (canvas.convertToBlob) {
+                // @ts-ignore
                 blob = await canvas.convertToBlob({ type: opts.format, quality: opts.quality });
             } else {
                 blob = await new Promise(resolve => {
+                    // @ts-ignore - toBlob exists on HTMLCanvasElement
                     canvas.toBlob(resolve, opts.format, opts.quality);
                 });
             }
         } catch (e) {
             // Fallback to JPEG
+            // @ts-ignore
             if (canvas.convertToBlob) {
+                // @ts-ignore
                 blob = await canvas.convertToBlob({ type: this.fallbackFormat, quality: opts.quality });
             } else {
                 blob = await new Promise(resolve => {
+                    // @ts-ignore
                     canvas.toBlob(resolve, this.fallbackFormat, opts.quality);
                 });
             }
@@ -1011,15 +1087,27 @@ function throttle(fn, limit) {
 // ============================================
 // EXPORTS
 // ============================================
+// @ts-ignore - Global exports for browser
 window.EventBus = EventBus;
+// @ts-ignore
 window.events = events;
+// @ts-ignore
 window.ReactiveState = ReactiveState;
+// @ts-ignore
 window.ImageCompressor = ImageCompressor;
+// @ts-ignore
 window.imageCompressor = imageCompressor;
+// @ts-ignore
 window.RequestDeduplicator = RequestDeduplicator;
+// @ts-ignore
 window.requestDeduplicator = requestDeduplicator;
+// @ts-ignore
 window.VirtualScroller = VirtualScroller;
+// @ts-ignore
 window.LazyLoader = LazyLoader;
+// @ts-ignore
 window.lazyLoader = lazyLoader;
+// @ts-ignore
 window.debounce = debounce;
+// @ts-ignore
 window.throttle = throttle;

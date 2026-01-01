@@ -11,6 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="admin.css">
+    <!-- Quill.js for rich text editing -->
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
 </head>
 <body class="admin-body">
     <!-- Loading overlay -->
@@ -75,6 +77,33 @@
                         <polyline points="10 9 9 9 8 9"/>
                     </svg>
                     <span>Audit Log</span>
+                </button>
+
+                <div class="nav-divider"></div>
+                <span class="nav-label">Content</span>
+
+                <button class="nav-item" data-section="cms-homepage">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                    <span>Homepage</span>
+                </button>
+                <button class="nav-item" data-section="cms-gallery">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                    <span>Gallery</span>
+                </button>
+                <button class="nav-item" data-section="cms-faq">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <span>FAQ</span>
                 </button>
             </nav>
 
@@ -360,6 +389,196 @@
                     <div class="pagination" id="auditPagination"></div>
                 </div>
             </section>
+
+            <!-- CMS Homepage Section -->
+            <section class="admin-section" id="section-cms-homepage">
+                <header class="section-header">
+                    <h1>Homepage Content</h1>
+                    <p>Edit landing page sections - changes appear immediately</p>
+                </header>
+
+                <!-- Hero Section Editor -->
+                <div class="cms-card">
+                    <div class="cms-card-header" data-collapse="hero-editor">
+                        <h3>Hero Section</h3>
+                        <svg class="collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </div>
+                    <div class="cms-card-body" id="hero-editor">
+                        <div class="cms-form-grid">
+                            <div class="form-group">
+                                <label>Badge Text</label>
+                                <input type="text" id="hero-badge" placeholder="e.g., AI-Powered E-commerce Toolkit">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Main Title</label>
+                                <input type="text" id="hero-title" placeholder="Main headline">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Subtitle</label>
+                                <textarea id="hero-subtitle" rows="2" placeholder="Supporting text"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Primary CTA Text</label>
+                                <input type="text" id="hero-cta1-text" placeholder="e.g., Start Creating">
+                            </div>
+                            <div class="form-group">
+                                <label>Primary CTA Link</label>
+                                <input type="text" id="hero-cta1-link" placeholder="e.g., #studios">
+                            </div>
+                            <div class="form-group">
+                                <label>Secondary CTA Text</label>
+                                <input type="text" id="hero-cta2-text" placeholder="e.g., View Gallery">
+                            </div>
+                            <div class="form-group">
+                                <label>Secondary CTA Link</label>
+                                <input type="text" id="hero-cta2-link" placeholder="e.g., gallery.html">
+                            </div>
+                        </div>
+                        <div class="cms-actions">
+                            <button class="btn btn-primary" onclick="saveHomepageSection('hero')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                    <polyline points="17 21 17 13 7 13 7 21"/>
+                                    <polyline points="7 3 7 8 15 8"/>
+                                </svg>
+                                Save Hero
+                            </button>
+                            <span class="cms-save-status" id="hero-status"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Section Info -->
+                <div class="cms-card">
+                    <div class="cms-card-header">
+                        <h3>Features & Pricing</h3>
+                    </div>
+                    <div class="cms-card-body">
+                        <p class="cms-info">Features, pricing tiers, and studio cards are complex structures. Edit these sections directly in the code or use the JSON editor below.</p>
+                        <button class="btn btn-secondary" onclick="openJSONEditor()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="16 18 22 12 16 6"/>
+                                <polyline points="8 6 2 12 8 18"/>
+                            </svg>
+                            Open JSON Editor
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CMS Gallery Section -->
+            <section class="admin-section" id="section-cms-gallery">
+                <header class="section-header">
+                    <h1>Gallery Management</h1>
+                    <p>Manage showcase images displayed on the gallery page</p>
+                </header>
+
+                <div class="filters-bar">
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <input type="text" id="gallerySearch" placeholder="Search gallery...">
+                    </div>
+                    <div class="filter-group">
+                        <select id="galleryStudioFilter">
+                            <option value="">All Studios</option>
+                            <option value="infographics">Infographics</option>
+                            <option value="models">Model Photos</option>
+                            <option value="lifestyle">Lifestyle</option>
+                            <option value="bundles">Bundles</option>
+                            <option value="background">Background</option>
+                            <option value="packaging">Packaging</option>
+                            <option value="comparison">Comparison</option>
+                            <option value="size">Size Charts</option>
+                            <option value="social">Social Media</option>
+                            <option value="ads">Ad Creative</option>
+                            <option value="features">Feature Cards</option>
+                            <option value="aplus">A+ Content</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="openGalleryModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Add Image
+                    </button>
+                </div>
+
+                <div class="table-card">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px">Image</th>
+                                <th>Title</th>
+                                <th>Studio</th>
+                                <th style="width: 80px">Order</th>
+                                <th style="width: 80px">Active</th>
+                                <th style="width: 120px">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="galleryTableBody">
+                            <tr><td colspan="6" class="loading-cell">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- CMS FAQ Section -->
+            <section class="admin-section" id="section-cms-faq">
+                <header class="section-header">
+                    <h1>FAQ Management</h1>
+                    <p>Manage frequently asked questions</p>
+                </header>
+
+                <div class="filters-bar">
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <input type="text" id="faqSearch" placeholder="Search FAQ...">
+                    </div>
+                    <div class="filter-group">
+                        <select id="faqCategoryFilter">
+                            <option value="">All Categories</option>
+                            <option value="getting-started">Getting Started</option>
+                            <option value="billing">Billing</option>
+                            <option value="features">Features</option>
+                            <option value="technical">Technical</option>
+                            <option value="support">Support</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="openFAQModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Add FAQ
+                    </button>
+                </div>
+
+                <div class="table-card">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Question</th>
+                                <th style="width: 120px">Category</th>
+                                <th style="width: 80px">Order</th>
+                                <th style="width: 80px">Active</th>
+                                <th style="width: 120px">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="faqTableBody">
+                            <tr><td colspan="5" class="loading-cell">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -376,8 +595,152 @@
         </div>
     </div>
 
+    <!-- Gallery Item Modal -->
+    <div class="modal-overlay" id="galleryModal">
+        <div class="modal-content cms-modal">
+            <button class="modal-close" onclick="closeGalleryModal()">&times;</button>
+            <div class="modal-header">
+                <h2 id="galleryModalTitle">Add Gallery Image</h2>
+            </div>
+            <div class="modal-body">
+                <form id="galleryForm" onsubmit="saveGalleryItem(event)">
+                    <input type="hidden" id="galleryItemId">
+
+                    <div class="form-group">
+                        <label>Title *</label>
+                        <input type="text" id="galleryTitle" required placeholder="Image title">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="galleryDescription" rows="2" placeholder="Brief description"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Studio *</label>
+                            <select id="galleryStudio" required>
+                                <option value="">Select studio...</option>
+                                <option value="infographics">Infographics</option>
+                                <option value="models">Model Photos</option>
+                                <option value="lifestyle">Lifestyle</option>
+                                <option value="bundles">Bundles</option>
+                                <option value="background">Background</option>
+                                <option value="packaging">Packaging</option>
+                                <option value="comparison">Comparison</option>
+                                <option value="size">Size Charts</option>
+                                <option value="social">Social Media</option>
+                                <option value="ads">Ad Creative</option>
+                                <option value="features">Feature Cards</option>
+                                <option value="aplus">A+ Content</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Studio Label *</label>
+                            <input type="text" id="galleryStudioLabel" required placeholder="e.g., Infographics">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Image</label>
+                        <div class="image-upload-area" id="galleryImageUpload">
+                            <div class="upload-placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <polyline points="21 15 16 10 5 21"/>
+                                </svg>
+                                <span>Click or drag to upload</span>
+                            </div>
+                            <img class="upload-preview" id="galleryImagePreview" style="display: none;">
+                            <input type="file" id="galleryImageInput" accept="image/*" hidden>
+                        </div>
+                        <input type="hidden" id="galleryImageUrl">
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeGalleryModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Item Modal -->
+    <div class="modal-overlay" id="faqModal">
+        <div class="modal-content cms-modal cms-modal-large">
+            <button class="modal-close" onclick="closeFAQModal()">&times;</button>
+            <div class="modal-header">
+                <h2 id="faqModalTitle">Add FAQ Item</h2>
+            </div>
+            <div class="modal-body">
+                <form id="faqForm" onsubmit="saveFAQItem(event)">
+                    <input type="hidden" id="faqItemId">
+
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="faqCategory" required>
+                            <option value="">Select category...</option>
+                            <option value="getting-started">Getting Started</option>
+                            <option value="billing">Billing</option>
+                            <option value="features">Features</option>
+                            <option value="technical">Technical</option>
+                            <option value="support">Support</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Question *</label>
+                        <input type="text" id="faqQuestion" required placeholder="The question users ask">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Answer *</label>
+                        <div id="faqAnswerEditor"></div>
+                        <input type="hidden" id="faqAnswer">
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeFAQModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JSON Editor Modal -->
+    <div class="modal-overlay" id="jsonModal">
+        <div class="modal-content cms-modal cms-modal-large">
+            <button class="modal-close" onclick="closeJSONEditor()">&times;</button>
+            <div class="modal-header">
+                <h2>JSON Editor</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Section</label>
+                    <select id="jsonSection">
+                        <option value="features">Features</option>
+                        <option value="pricing">Pricing</option>
+                        <option value="studios">Studios</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Content (JSON)</label>
+                    <textarea id="jsonContent" class="json-editor" rows="20" placeholder="Paste JSON here..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeJSONEditor()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveJSONContent()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <script src="config.js"></script>
     <script src="supabase.js"></script>
     <script src="i18n.js"></script>

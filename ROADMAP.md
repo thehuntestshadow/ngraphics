@@ -110,6 +110,8 @@ Before adding a new tool, it should:
 - **Commercial Ready** - Subscription tiers, usage tracking schema
 - **Settings Modal** - User preferences, appearance, danger zone actions
 - **Admin Panel** - User management, system analytics, role management
+- **Admin CMS** - Content management for Homepage, Gallery, FAQ pages
+- **TypeScript (JSDoc)** - Type checking via JSDoc annotations, no build step
 
 ---
 
@@ -211,14 +213,14 @@ Before adding a new tool, it should:
 - Accessible from Dashboard
 - Difficulty: Easy
 
-**Admin CMS**
-- Manage Homepage content (hero text, features, testimonials)
-- Manage Gallery (add/remove/reorder showcase images, categories)
-- Manage FAQ (add/edit/delete questions, categories, search keywords)
-- WYSIWYG or markdown editor for rich content
-- Image upload with optimization
-- Preview before publish
-- Difficulty: Hard
+**Admin CMS** ✅ DONE
+- Manage Homepage content (hero text, CTAs, pricing)
+- Manage Gallery (add/remove/reorder showcase images)
+- Manage FAQ (add/edit/delete questions, categories)
+- Rich text editor for FAQ answers
+- Image URL or upload support
+- **Implemented**: `admin.html` CMS tabs, `cms_homepage/cms_gallery/cms_faq` tables, `supabase.js` CMS methods, `gallery.js` + `faq.js` dynamic loading
+- Difficulty: Hard (complete)
 
 **Onboarding Tour**
 - Step-by-step first-time guide
@@ -283,7 +285,7 @@ See **Future Page Ideas** section below for comprehensive list of potential new 
 - [x] Pre-commit hooks for validation (.claude/hooks/)
 - [x] Visual regression testing (/visual-test skill)
 - [x] Performance auditing (/perf skill)
-- [ ] TypeScript migration (optional)
+- [x] TypeScript via JSDoc (jsconfig.json, types.js, @ts-check in core files)
 - [ ] Unit tests for shared utilities
 - [ ] E2E tests for critical flows
 - [ ] ESLint/Prettier setup

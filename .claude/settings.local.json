@@ -69,7 +69,12 @@
       "Bash(supabase link:*)",
       "Bash(supabase functions deploy:*)",
       "Bash(supabase secrets set:*)",
-      "Bash(supabase db execute:*)"
+      "Bash(supabase db execute:*)",
+      "Bash(node --check:*)",
+      "Bash(do node -c \"$f\")",
+      "Bash(echo:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm install:*)"
     ]
   }
 }
