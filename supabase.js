@@ -320,6 +320,21 @@ class SupabaseClient {
             return this._isAdmin;
         }
 
+        // Hardcoded admin emails as fallback (when database query fails)
+        const ADMIN_EMAILS = [
+            'auerbach.impex@gmail.com'
+        ];
+
+        // Check hardcoded list first (instant, no database needed)
+        const userEmail = this._user?.email?.toLowerCase();
+        if (userEmail && ADMIN_EMAILS.includes(userEmail)) {
+            this._isAdmin = true;
+            this._adminCheckTime = now;
+            console.log('[Supabase] Admin verified via email whitelist');
+            return true;
+        }
+
+        // Try database check as secondary verification
         try {
             await this.init();
             const { data, error } = await this._client
@@ -328,11 +343,21 @@ class SupabaseClient {
                 .eq('id', this._user.id)
                 .single();
 
-            this._isAdmin = !error && data?.is_admin === true;
+            if (!error && data?.is_admin === true) {
+                this._isAdmin = true;
+                this._adminCheckTime = now;
+                console.log('[Supabase] Admin verified via database');
+                return true;
+            }
+
+            this._isAdmin = false;
             this._adminCheckTime = now;
-            return this._isAdmin;
+            return false;
         } catch (error) {
-            console.warn('[Supabase] Admin check failed:', error.message);
+            console.warn('[Supabase] Admin database check failed:', error.message);
+            // Already checked hardcoded list above, so return false
+            this._isAdmin = false;
+            this._adminCheckTime = now;
             return false;
         }
     }
