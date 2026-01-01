@@ -309,6 +309,7 @@ class SupabaseClient {
 
     /**
      * Check if current user is an admin (cached)
+     * Admin status is verified server-side via database
      * @returns {Promise<boolean>} True if user is admin
      */
     async isAdmin() {
@@ -320,21 +321,6 @@ class SupabaseClient {
             return this._isAdmin;
         }
 
-        // Hardcoded admin emails as fallback (when database query fails)
-        const ADMIN_EMAILS = [
-            'auerbach.impex@gmail.com'
-        ];
-
-        // Check hardcoded list first (instant, no database needed)
-        const userEmail = this._user?.email?.toLowerCase();
-        if (userEmail && ADMIN_EMAILS.includes(userEmail)) {
-            this._isAdmin = true;
-            this._adminCheckTime = now;
-            console.log('[Supabase] Admin verified via email whitelist');
-            return true;
-        }
-
-        // Try database check as secondary verification
         try {
             await this.init();
             const { data, error } = await this._client
@@ -343,19 +329,11 @@ class SupabaseClient {
                 .eq('id', this._user.id)
                 .single();
 
-            if (!error && data?.is_admin === true) {
-                this._isAdmin = true;
-                this._adminCheckTime = now;
-                console.log('[Supabase] Admin verified via database');
-                return true;
-            }
-
-            this._isAdmin = false;
+            this._isAdmin = !error && data?.is_admin === true;
             this._adminCheckTime = now;
-            return false;
+            return this._isAdmin;
         } catch (error) {
-            console.warn('[Supabase] Admin database check failed:', error.message);
-            // Already checked hardcoded list above, so return false
+            console.warn('[Supabase] Admin check failed:', error.message);
             this._isAdmin = false;
             this._adminCheckTime = now;
             return false;
