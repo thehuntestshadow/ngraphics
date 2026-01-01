@@ -4,6 +4,7 @@
  */
 
 const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+const STUDIO_ID = 'social-studio';
 
 // ============================================
 // STATE
@@ -11,6 +12,7 @@ const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
 
 const state = {
     // Core
+    autoMode: true,
     uploadedImage: null,
     uploadedImageBase64: null,
     generatedImageUrl: null,
@@ -57,6 +59,9 @@ let elements = {};
 
 function initElements() {
     elements = {
+        // Auto Mode
+        autoModeToggle: document.getElementById('autoModeToggle'),
+
         // Form
         socialForm: document.getElementById('socialForm'),
 
@@ -681,6 +686,16 @@ function downloadImage() {
 // ============================================
 
 function setupEventListeners() {
+    // Auto mode toggle
+    state.autoMode = localStorage.getItem(`${STUDIO_ID}_auto_mode`) !== 'false';
+    if (elements.autoModeToggle) {
+        elements.autoModeToggle.checked = state.autoMode;
+        elements.autoModeToggle.addEventListener('change', (e) => {
+            state.autoMode = e.target.checked;
+            localStorage.setItem(`${STUDIO_ID}_auto_mode`, state.autoMode);
+        });
+    }
+
     // Form submit
     elements.socialForm?.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -911,6 +926,11 @@ function handleImageUpload(file) {
         elements.previewImg.src = e.target.result;
         elements.imagePreview.style.display = 'block';
         elements.uploadArea.style.display = 'none';
+
+        // Auto-generate if enabled
+        if (state.autoMode) {
+            generateSocialGraphic();
+        }
     };
     reader.readAsDataURL(file);
 }
@@ -940,6 +960,16 @@ async function init() {
 
     // Setup event listeners
     setupEventListeners();
+
+    // Setup keyboard shortcuts
+    SharedKeyboard.setup({
+        generate: generateSocialGraphic,
+        download: downloadImage,
+        escape: () => {
+            closeLightbox();
+            closeFavoritesModal();
+        }
+    });
 
     // Initialize onboarding tour for first-time visitors
     if (typeof OnboardingTour !== 'undefined') {

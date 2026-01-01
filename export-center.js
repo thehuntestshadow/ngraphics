@@ -1,5 +1,7 @@
 // Export Center - JavaScript
 
+const STUDIO_ID = 'export-center';
+
 // State
 const state = {
     currentTool: 'resize',

@@ -5,11 +5,14 @@
 
 const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
 
+const STUDIO_ID = 'comparison';
+
 // ============================================
 // APPLICATION STATE
 // ============================================
 const state = {
     comparisonType: 'before-after', // before-after, vs-competitor, feature-table, size-lineup, multi-product
+    autoMode: true,
 
     // Before/After images
     beforeImage: null,
@@ -106,6 +109,7 @@ function initElements() {
     elements = {
         // Form
         form: document.getElementById('comparisonForm'),
+        autoModeToggle: document.getElementById('autoModeToggle'),
 
         // Comparison Type
         comparisonTypeTabs: document.getElementById('comparisonTypeTabs'),
@@ -1451,6 +1455,16 @@ async function deleteFavorite() {
 // EVENT LISTENERS
 // ============================================
 function setupEventListeners() {
+    // Auto mode toggle
+    state.autoMode = localStorage.getItem(`${STUDIO_ID}_auto_mode`) !== 'false';
+    if (elements.autoModeToggle) {
+        elements.autoModeToggle.checked = state.autoMode;
+        elements.autoModeToggle.addEventListener('change', (e) => {
+            state.autoMode = e.target.checked;
+            localStorage.setItem(`${STUDIO_ID}_auto_mode`, state.autoMode);
+        });
+    }
+
     // Form submit
     elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -1473,6 +1487,10 @@ function setupEventListeners() {
         (image, thumbnail) => {
             state.beforeImage = image;
             state.beforeThumbnail = thumbnail;
+            // Auto-generate when both images are ready
+            if (state.autoMode && state.beforeImage && state.afterImage) {
+                generateComparison();
+            }
         }
     );
 
@@ -1484,6 +1502,10 @@ function setupEventListeners() {
         (image, thumbnail) => {
             state.afterImage = image;
             state.afterThumbnail = thumbnail;
+            // Auto-generate when both images are ready
+            if (state.autoMode && state.beforeImage && state.afterImage) {
+                generateComparison();
+            }
         }
     );
 
@@ -1517,6 +1539,10 @@ function setupEventListeners() {
         (image, thumbnail) => {
             state.productAImage = image;
             state.productAThumbnail = thumbnail;
+            // Auto-generate when both product images are ready
+            if (state.autoMode && state.productAImage && state.productBImage) {
+                generateComparison();
+            }
         }
     );
 
@@ -1528,6 +1554,10 @@ function setupEventListeners() {
         (image, thumbnail) => {
             state.productBImage = image;
             state.productBThumbnail = thumbnail;
+            // Auto-generate when both product images are ready
+            if (state.autoMode && state.productAImage && state.productBImage) {
+                generateComparison();
+            }
         }
     );
 
@@ -1552,6 +1582,10 @@ function setupEventListeners() {
         (image, thumbnail) => {
             state.tableProductImage = image;
             state.tableProductThumbnail = thumbnail;
+            // Auto-generate when product image is uploaded for feature table
+            if (state.autoMode && state.tableProductImage) {
+                generateComparison();
+            }
         }
     );
 
@@ -1781,6 +1815,14 @@ async function init() {
     }
 
     setupEventListeners();
+
+    // Setup keyboard shortcuts
+    SharedKeyboard.setup({
+        generate: generateComparison,
+        download: () => elements.downloadBtn?.click(),
+        escape: closeFavoritesModal
+    });
+
     updateGenerateButton();
 
     // Initialize default features

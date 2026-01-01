@@ -6,10 +6,13 @@
 // Default model for image generation (handled by edge function)
 const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
 
+const STUDIO_ID = 'models';
+
 // ============================================
 // APPLICATION STATE
 // ============================================
 const state = {
+    autoMode: true,
     uploadedImage: null,
     uploadedImageBase64: null,
     generatedImageUrl: null,
@@ -71,6 +74,8 @@ let elements = {};
 
 function initElements() {
     elements = {
+        // Auto mode
+        autoModeToggle: document.getElementById('autoModeToggle'),
         // Form
         form: document.getElementById('modelForm'),
         uploadArea: document.getElementById('uploadArea'),
@@ -242,6 +247,11 @@ function setupImageUpload() {
             elements.imagePreview.style.display = 'block';
             elements.uploadArea.style.display = 'none';
             analyzeProductImage();
+
+            // Auto-generate if enabled
+            if (state.autoMode) {
+                setTimeout(() => generateModelPhoto(), 100);
+            }
         }
     });
 
@@ -1570,6 +1580,17 @@ function handleStyleReferenceUpload(file) {
 // EVENT LISTENERS
 // ============================================
 function setupEventListeners() {
+    // Auto mode toggle
+    const savedAutoMode = localStorage.getItem(`${STUDIO_ID}_auto_mode`);
+    if (savedAutoMode !== null) {
+        state.autoMode = savedAutoMode === 'true';
+        elements.autoModeToggle.checked = state.autoMode;
+    }
+    elements.autoModeToggle.addEventListener('change', (e) => {
+        state.autoMode = e.target.checked;
+        localStorage.setItem(`${STUDIO_ID}_auto_mode`, state.autoMode);
+    });
+
     // Form submission
     elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -2076,6 +2097,16 @@ async function init() {
 
     setupImageUpload();
     setupEventListeners();
+
+    // Setup keyboard shortcuts
+    SharedKeyboard.setup({
+        generate: generateModelPhoto,
+        download: downloadImage,
+        escape: () => {
+            closeLightbox();
+            closeFavoritesModal();
+        }
+    });
 
     // Initialize stores
     await imageStore.init();

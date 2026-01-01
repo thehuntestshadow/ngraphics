@@ -3,6 +3,8 @@
  * Generate individual feature cards for product listing galleries
  */
 
+const STUDIO_ID = 'feature-cards';
+
 // ============================================
 // STATE
 // ============================================
@@ -14,6 +16,7 @@ const state = {
     background: 'white',
     variations: 1,
     productImage: null,
+    autoMode: true,
     seed: null,
     negativePrompt: '',
     model: 'google/gemini-2.0-flash-exp:free',
@@ -131,6 +134,7 @@ function initElements() {
         previewImage: document.getElementById('previewImage'),
         removeImage: document.getElementById('removeImage'),
         fileInput: document.getElementById('fileInput'),
+        autoModeToggle: document.getElementById('autoModeToggle'),
 
         // Advanced
         advancedToggle: document.getElementById('advancedToggle'),
@@ -763,6 +767,9 @@ function handleFile(file) {
         elements.previewImage.src = e.target.result;
         elements.uploadPlaceholder.classList.add('hidden');
         elements.uploadPreview.classList.remove('hidden');
+        if (state.autoMode) {
+            generateCard();
+        }
     };
     reader.readAsDataURL(file);
 }
@@ -788,6 +795,16 @@ function updateApiStatus() {
 // EVENT LISTENERS
 // ============================================
 function setupEventListeners() {
+    // Auto mode toggle
+    state.autoMode = localStorage.getItem(`${STUDIO_ID}_auto_mode`) !== 'false';
+    if (elements.autoModeToggle) {
+        elements.autoModeToggle.checked = state.autoMode;
+        elements.autoModeToggle.addEventListener('change', (e) => {
+            state.autoMode = e.target.checked;
+            localStorage.setItem(`${STUDIO_ID}_auto_mode`, state.autoMode);
+        });
+    }
+
     // Card type selection
     elements.cardTypeGrid.querySelectorAll('.card-type-btn').forEach(btn => {
         btn.onclick = () => updateCardType(btn.dataset.type);
@@ -975,9 +992,9 @@ function setupEventListeners() {
 
     // Keyboard shortcuts
     SharedKeyboard.setup({
-        onGenerate: generateCard,
-        onDownload: () => elements.downloadBtn.click(),
-        onEscape: () => {
+        generate: generateCard,
+        download: () => elements.downloadBtn.click(),
+        escape: () => {
             closeLightbox();
             elements.favoritesModal.classList.add('hidden');
         }

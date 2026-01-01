@@ -4,6 +4,7 @@
  */
 
 const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+const STUDIO_ID = 'faq-generator';
 
 // ============================================
 // STATE
@@ -11,6 +12,7 @@ const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
 
 const state = {
     // Core
+    autoMode: true,
     uploadedImage: null,
     uploadedImageBase64: null,
     generatedImageUrl: null,
@@ -50,6 +52,7 @@ function initElements() {
     elements = {
         // Form
         faqGeneratorForm: document.getElementById('faqGeneratorForm'),
+        autoModeToggle: document.getElementById('autoModeToggle'),
 
         // Upload
         uploadArea: document.getElementById('uploadArea'),
@@ -818,6 +821,16 @@ function downloadImage() {
 // ============================================
 
 function setupEventListeners() {
+    // Auto mode toggle
+    state.autoMode = localStorage.getItem(`${STUDIO_ID}_auto_mode`) !== 'false';
+    if (elements.autoModeToggle) {
+        elements.autoModeToggle.checked = state.autoMode;
+        elements.autoModeToggle.addEventListener('change', (e) => {
+            state.autoMode = e.target.checked;
+            localStorage.setItem(`${STUDIO_ID}_auto_mode`, state.autoMode);
+        });
+    }
+
     // Form submit
     elements.faqGeneratorForm?.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -833,6 +846,9 @@ function setupEventListeners() {
             elements.previewImg.src = base64;
             elements.imagePreview.style.display = 'block';
             elements.uploadArea.style.display = 'none';
+            if (state.autoMode) {
+                generateFaqs();
+            }
         }
     });
 
@@ -1032,6 +1048,16 @@ function init() {
 
     // Setup event listeners
     setupEventListeners();
+
+    // Setup keyboard shortcuts
+    SharedKeyboard.setup({
+        generate: generateFaqs,
+        download: downloadImage,
+        escape: () => {
+            closeLightbox();
+            closeFavoritesModal();
+        }
+    });
 
     // Load persisted data
     loadHistory();

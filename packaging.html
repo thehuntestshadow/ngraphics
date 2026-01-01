@@ -99,6 +99,13 @@
                             </span>
                             Product Image
                         </div>
+                        <div class="auto-mode-row">
+                            <span class="auto-mode-label">Auto-generate on upload</span>
+                            <label class="toggle-label">
+                                <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
+                                <span class="toggle-switch"></span>
+                            </label>
+                        </div>
                         <div class="upload-zone" id="uploadArea">
                             <div class="upload-content">
                                 <div class="upload-icon">
@@ -240,7 +247,7 @@
                         </div>
                         <div class="option-grid">
                             <div class="option-group">
-                                <label class="option-label">Type</label>
+                                <label class="option-label" data-tooltip="Product box for retail, shipping box for delivery, gift box with ribbon, display for stores, mailer for e-commerce, sleeve for sliding covers.">Type</label>
                                 <select class="select-field" id="boxType">
                                     <option value="product-box">Product Box</option>
                                     <option value="shipping-box">Shipping Box</option>
@@ -251,7 +258,7 @@
                                 </select>
                             </div>
                             <div class="option-group">
-                                <label class="option-label">Material</label>
+                                <label class="option-label" data-tooltip="Cardboard for standard boxes, kraft for eco-friendly look, glossy for premium shine, matte for soft finish, textured for tactile appeal, luxury rigid for high-end products.">Material</label>
                                 <select class="select-field" id="boxMaterial">
                                     <option value="cardboard">Cardboard</option>
                                     <option value="kraft">Kraft Paper</option>
@@ -276,7 +283,7 @@
                         </div>
                         <div class="option-grid">
                             <div class="option-group">
-                                <label class="option-label">Shape</label>
+                                <label class="option-label" data-tooltip="Cylinder for standard bottles, square for modern look, dropper for serums, pump for dispensers, spray for mists, wine style for beverages.">Shape</label>
                                 <select class="select-field" id="bottleShape">
                                     <option value="cylinder">Cylinder</option>
                                     <option value="square">Square</option>
@@ -287,7 +294,7 @@
                                 </select>
                             </div>
                             <div class="option-group">
-                                <label class="option-label">Material</label>
+                                <label class="option-label" data-tooltip="Clear glass for transparency, amber for UV protection, frosted for diffused look, clear plastic for lightweight, opaque for solid colors, metal for premium feel.">Material</label>
                                 <select class="select-field" id="bottleMaterial">
                                     <option value="glass-clear">Clear Glass</option>
                                     <option value="glass-amber">Amber Glass</option>
@@ -376,7 +383,7 @@
                         </div>
                         <div class="branding-options">
                             <div class="option-group">
-                                <label class="option-label">Color Scheme</label>
+                                <label class="option-label" data-tooltip="Match Product extracts colors from your image. Presets offer ready-made palettes. Custom lets you pick a specific brand color.">Color Scheme</label>
                                 <select class="select-field" id="colorScheme">
                                     <option value="auto">Match Product</option>
                                     <option value="minimal">Minimal White</option>
@@ -388,11 +395,11 @@
                                 </select>
                             </div>
                             <div class="option-group" id="customColorGroup" style="display: none;">
-                                <label class="option-label">Custom Color</label>
+                                <label class="option-label" data-tooltip="Click to open color picker and select your exact brand color.">Custom Color</label>
                                 <input type="color" class="color-input" id="customColor" value="#6366f1" aria-label="Custom color picker">
                             </div>
                             <div class="option-group">
-                                <label class="option-label">Design Style</label>
+                                <label class="option-label" data-tooltip="Modern for clean minimal look, luxury for premium elegance, organic for natural eco-friendly feel, playful for fun bright designs, vintage for retro nostalgia, tech for futuristic edge.">Design Style</label>
                                 <select class="select-field" id="designStyle">
                                     <option value="modern">Modern / Minimal</option>
                                     <option value="luxury">Luxury / Premium</option>
@@ -418,7 +425,7 @@
                         </div>
                         <div class="option-grid">
                             <div class="option-group">
-                                <label class="option-label">Aspect Ratio</label>
+                                <label class="option-label" data-tooltip="1:1 for Instagram feed and e-commerce. 4:5 or 3:4 for Instagram portrait. 16:9 for website banners. 9:16 for Stories and Reels.">Aspect Ratio</label>
                                 <select class="select-field" id="aspectRatio">
                                     <option value="1:1" selected>1:1 (Square)</option>
                                     <option value="4:5">4:5 (Portrait)</option>
@@ -428,7 +435,7 @@
                                 </select>
                             </div>
                             <div class="option-group">
-                                <label class="option-label">Variations</label>
+                                <label class="option-label" data-tooltip="Generate multiple mockup variations at once. More variations = more options to choose from, but takes longer.">Variations</label>
                                 <div class="option-buttons" role="group" aria-label="Variations">
                                     <button type="button" class="option-btn active" data-option="variations" data-value="1">1</button>
                                     <button type="button" class="option-btn" data-option="variations" data-value="2">2</button>
@@ -460,7 +467,7 @@
                         <div class="advanced-content">
                             <!-- Lighting -->
                             <div class="option-group">
-                                <label class="option-label">Lighting</label>
+                                <label class="option-label" data-tooltip="Studio for professional even lighting. Natural for window light look. Soft for gentle diffused glow. Dramatic for bold shadows. Bright for airy feel.">Lighting</label>
                                 <select class="select-field" id="lighting">
                                     <option value="studio" selected>Studio</option>
                                     <option value="natural">Natural</option>
@@ -472,7 +479,7 @@
 
                             <!-- Background -->
                             <div class="option-group">
-                                <label class="option-label">Background</label>
+                                <label class="option-label" data-tooltip="White for clean e-commerce look. Gradient for soft color transitions. Surface adds textures like marble or wood. Contextual places in a scene. Transparent for PNG with no background.">Background</label>
                                 <select class="select-field" id="background">
                                     <option value="white" selected>White</option>
                                     <option value="gradient">Soft Gradient</option>
@@ -484,7 +491,7 @@
 
                             <!-- Seed -->
                             <div class="option-group">
-                                <label class="option-label">Seed</label>
+                                <label class="option-label" data-tooltip="Use the same seed number to reproduce similar results. Uncheck Random and enter a specific number to recreate a favorite style.">Seed</label>
                                 <div class="seed-controls">
                                     <label class="checkbox-label">
                                         <input type="checkbox" id="randomSeedCheck" checked>
@@ -496,7 +503,7 @@
 
                             <!-- Negative Prompt -->
                             <div class="option-group option-group-full">
-                                <label class="option-label">Things to Avoid</label>
+                                <label class="option-label" data-tooltip="List elements you don't want in the result. Common: blurry, distorted text, unrealistic shadows, wrong colors, extra objects.">Things to Avoid</label>
                                 <textarea class="input-field textarea-field" id="negativePrompt" placeholder="e.g., blurry, distorted text, unrealistic shadows..." rows="2" aria-label="Negative prompts"></textarea>
                             </div>
                         </div>

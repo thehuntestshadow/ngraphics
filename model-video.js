@@ -1,5 +1,7 @@
 // Model Video Generator - JavaScript
 
+const STUDIO_ID = 'model-video';
+
 // State
 const state = {
     // Core
@@ -9,6 +11,7 @@ const state = {
     generatedVideoUrl: null,
     generatedVideos: [],
     currentGenerationId: null,
+    autoMode: true,
 
     // Motion
     motionType: 'model',  // model, camera, combined
@@ -200,6 +203,9 @@ function initElements() {
     elements.closeFavoritesModal = document.getElementById('closeFavoritesModal');
     elements.loadFavoriteSettings = document.getElementById('loadFavoriteSettings');
     elements.deleteFavorite = document.getElementById('deleteFavorite');
+
+    // Auto mode
+    elements.autoModeToggle = document.getElementById('autoModeToggle');
 }
 
 // Switch motion type tab
@@ -743,6 +749,11 @@ function handleImageUpload(file) {
         elements.previewImg.src = e.target.result;
         elements.uploadArea.style.display = 'none';
         elements.imagePreview.style.display = 'block';
+
+        // Auto-generate if enabled
+        if (state.autoMode) {
+            generateVideo();
+        }
     };
     reader.readAsDataURL(file);
 }
@@ -763,6 +774,16 @@ function setupEventListeners() {
         e.preventDefault();
         generateVideo();
     });
+
+    // Auto mode toggle
+    state.autoMode = localStorage.getItem(`${STUDIO_ID}_auto_mode`) !== 'false';
+    if (elements.autoModeToggle) {
+        elements.autoModeToggle.checked = state.autoMode;
+        elements.autoModeToggle.addEventListener('change', (e) => {
+            state.autoMode = e.target.checked;
+            localStorage.setItem(`${STUDIO_ID}_auto_mode`, state.autoMode);
+        });
+    }
 
     // Image upload
     elements.uploadArea.addEventListener('click', () => {
@@ -973,6 +994,13 @@ async function init() {
 
     // Setup event listeners
     setupEventListeners();
+
+    // Setup keyboard shortcuts
+    SharedKeyboard.setup({
+        generate: generateVideo,
+        download: downloadMp4,
+        escape: closeFavoritesModal
+    });
 
     // Initial motion type state
     switchMotionType('model');

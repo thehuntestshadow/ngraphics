@@ -4,6 +4,7 @@
  */
 
 const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+const STUDIO_ID = 'background';
 
 // ============================================
 // STATE
@@ -13,6 +14,7 @@ const state = {
     // Core
     uploadedImage: null,
     uploadedImageBase64: null,
+    autoMode: true,
     generatedImageUrl: null,
     generatedImages: [],
     lastPrompt: null,
@@ -72,6 +74,7 @@ function initElements() {
         imagePreview: document.getElementById('imagePreview'),
         previewImg: document.getElementById('previewImg'),
         removeImage: document.getElementById('removeImage'),
+        autoModeToggle: document.getElementById('autoModeToggle'),
 
         // Background Type
         bgTypeButtons: document.querySelectorAll('.bg-type-btn'),
@@ -998,6 +1001,16 @@ function downloadImage() {
 // ============================================
 
 function setupEventListeners() {
+    // Auto mode toggle
+    state.autoMode = localStorage.getItem(`${STUDIO_ID}_auto_mode`) !== 'false';
+    if (elements.autoModeToggle) {
+        elements.autoModeToggle.checked = state.autoMode;
+        elements.autoModeToggle.addEventListener('change', (e) => {
+            state.autoMode = e.target.checked;
+            localStorage.setItem(`${STUDIO_ID}_auto_mode`, state.autoMode);
+        });
+    }
+
     // Form submit
     elements.backgroundForm?.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -1013,6 +1026,9 @@ function setupEventListeners() {
             elements.previewImg.src = base64;
             elements.imagePreview.style.display = 'block';
             elements.uploadArea.style.display = 'none';
+            if (state.autoMode) {
+                generateBackground();
+            }
         }
     });
 
@@ -1369,6 +1385,16 @@ function init() {
 
     // Setup event listeners
     setupEventListeners();
+
+    // Setup keyboard shortcuts
+    SharedKeyboard.setup({
+        generate: generateBackground,
+        download: downloadImage,
+        escape: () => {
+            closeLightbox();
+            closeFavoritesModal();
+        }
+    });
 
     // Load persisted data
     loadHistory();

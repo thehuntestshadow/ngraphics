@@ -50,6 +50,20 @@ const translations = {
         'msg.syncing': 'Syncing...',
         'msg.synced': 'Synced!',
 
+        // Loading Phases
+        'msg.preparing': 'Preparing...',
+        'msg.connecting': 'Connecting to AI...',
+        'msg.processing': 'Processing results...',
+        'msg.durationShort': 'This may take 10-30 seconds',
+        'msg.durationMedium': 'This may take 30-60 seconds',
+        'msg.durationLong': 'This may take 1-2 minutes',
+
+        // Empty States
+        'msg.noHistory': 'No history yet',
+        'msg.noFavorites': 'No favorites yet',
+        'msg.noResults': 'No results found',
+        'msg.uploadToStart': 'Upload an image to get started',
+
         // Settings Modal
         'settings.title': 'Settings',
         'settings.profile': 'Profile',
@@ -122,6 +136,20 @@ const translations = {
         'msg.downloading': 'Se descarcă...',
         'msg.syncing': 'Se sincronizează...',
         'msg.synced': 'Sincronizat!',
+
+        // Loading Phases
+        'msg.preparing': 'Se pregătește...',
+        'msg.connecting': 'Se conectează la AI...',
+        'msg.processing': 'Se procesează rezultatele...',
+        'msg.durationShort': 'Poate dura 10-30 secunde',
+        'msg.durationMedium': 'Poate dura 30-60 secunde',
+        'msg.durationLong': 'Poate dura 1-2 minute',
+
+        // Empty States
+        'msg.noHistory': 'Niciun istoric',
+        'msg.noFavorites': 'Niciun favorit',
+        'msg.noResults': 'Niciun rezultat găsit',
+        'msg.uploadToStart': 'Încarcă o imagine pentru a începe',
 
         // Settings Modal
         'settings.title': 'Setări',
@@ -196,6 +224,20 @@ const translations = {
         'msg.syncing': 'Wird synchronisiert...',
         'msg.synced': 'Synchronisiert!',
 
+        // Loading Phases
+        'msg.preparing': 'Wird vorbereitet...',
+        'msg.connecting': 'Verbindung zu AI...',
+        'msg.processing': 'Ergebnisse werden verarbeitet...',
+        'msg.durationShort': 'Dies kann 10-30 Sekunden dauern',
+        'msg.durationMedium': 'Dies kann 30-60 Sekunden dauern',
+        'msg.durationLong': 'Dies kann 1-2 Minuten dauern',
+
+        // Empty States
+        'msg.noHistory': 'Noch kein Verlauf',
+        'msg.noFavorites': 'Noch keine Favoriten',
+        'msg.noResults': 'Keine Ergebnisse gefunden',
+        'msg.uploadToStart': 'Laden Sie ein Bild hoch, um zu beginnen',
+
         // Settings Modal
         'settings.title': 'Einstellungen',
         'settings.profile': 'Profil',
@@ -268,6 +310,20 @@ const translations = {
         'msg.downloading': 'Téléchargement...',
         'msg.syncing': 'Synchronisation...',
         'msg.synced': 'Synchronisé !',
+
+        // Loading Phases
+        'msg.preparing': 'Préparation...',
+        'msg.connecting': 'Connexion à l\'IA...',
+        'msg.processing': 'Traitement des résultats...',
+        'msg.durationShort': 'Cela peut prendre 10-30 secondes',
+        'msg.durationMedium': 'Cela peut prendre 30-60 secondes',
+        'msg.durationLong': 'Cela peut prendre 1-2 minutes',
+
+        // Empty States
+        'msg.noHistory': 'Pas encore d\'historique',
+        'msg.noFavorites': 'Pas encore de favoris',
+        'msg.noResults': 'Aucun résultat trouvé',
+        'msg.uploadToStart': 'Téléversez une image pour commencer',
 
         // Settings Modal
         'settings.title': 'Paramètres',
@@ -342,6 +398,20 @@ const translations = {
         'msg.syncing': 'Sincronizando...',
         'msg.synced': '¡Sincronizado!',
 
+        // Loading Phases
+        'msg.preparing': 'Preparando...',
+        'msg.connecting': 'Conectando con la IA...',
+        'msg.processing': 'Procesando resultados...',
+        'msg.durationShort': 'Esto puede tardar 10-30 segundos',
+        'msg.durationMedium': 'Esto puede tardar 30-60 segundos',
+        'msg.durationLong': 'Esto puede tardar 1-2 minutos',
+
+        // Empty States
+        'msg.noHistory': 'Sin historial aún',
+        'msg.noFavorites': 'Sin favoritos aún',
+        'msg.noResults': 'No se encontraron resultados',
+        'msg.uploadToStart': 'Sube una imagen para comenzar',
+
         // Settings Modal
         'settings.title': 'Configuración',
         'settings.profile': 'Perfil',
@@ -414,6 +484,20 @@ const translations = {
         'msg.downloading': 'Download in corso...',
         'msg.syncing': 'Sincronizzazione...',
         'msg.synced': 'Sincronizzato!',
+
+        // Loading Phases
+        'msg.preparing': 'Preparazione...',
+        'msg.connecting': 'Connessione all\'IA...',
+        'msg.processing': 'Elaborazione risultati...',
+        'msg.durationShort': 'Potrebbe richiedere 10-30 secondi',
+        'msg.durationMedium': 'Potrebbe richiedere 30-60 secondi',
+        'msg.durationLong': 'Potrebbe richiedere 1-2 minuti',
+
+        // Empty States
+        'msg.noHistory': 'Nessuna cronologia',
+        'msg.noFavorites': 'Nessun preferito',
+        'msg.noResults': 'Nessun risultato trovato',
+        'msg.uploadToStart': 'Carica un\'immagine per iniziare',
 
         // Settings Modal
         'settings.title': 'Impostazioni',
@@ -488,6 +572,20 @@ const translations = {
         'msg.syncing': 'Sincronizando...',
         'msg.synced': 'Sincronizado!',
 
+        // Loading Phases
+        'msg.preparing': 'Preparando...',
+        'msg.connecting': 'Conectando à IA...',
+        'msg.processing': 'Processando resultados...',
+        'msg.durationShort': 'Pode levar 10-30 segundos',
+        'msg.durationMedium': 'Pode levar 30-60 segundos',
+        'msg.durationLong': 'Pode levar 1-2 minutos',
+
+        // Empty States
+        'msg.noHistory': 'Nenhum histórico ainda',
+        'msg.noFavorites': 'Nenhum favorito ainda',
+        'msg.noResults': 'Nenhum resultado encontrado',
+        'msg.uploadToStart': 'Carregue uma imagem para começar',
+
         // Settings Modal
         'settings.title': 'Configurações',
         'settings.profile': 'Perfil',
@@ -560,6 +658,20 @@ const translations = {
         'msg.downloading': 'Downloaden...',
         'msg.syncing': 'Synchroniseren...',
         'msg.synced': 'Gesynchroniseerd!',
+
+        // Loading Phases
+        'msg.preparing': 'Voorbereiden...',
+        'msg.connecting': 'Verbinden met AI...',
+        'msg.processing': 'Resultaten verwerken...',
+        'msg.durationShort': 'Dit kan 10-30 seconden duren',
+        'msg.durationMedium': 'Dit kan 30-60 seconden duren',
+        'msg.durationLong': 'Dit kan 1-2 minuten duren',
+
+        // Empty States
+        'msg.noHistory': 'Nog geen geschiedenis',
+        'msg.noFavorites': 'Nog geen favorieten',
+        'msg.noResults': 'Geen resultaten gevonden',
+        'msg.uploadToStart': 'Upload een afbeelding om te beginnen',
 
         // Settings Modal
         'settings.title': 'Instellingen',
@@ -634,6 +746,20 @@ const translations = {
         'msg.syncing': 'Synchronizacja...',
         'msg.synced': 'Zsynchronizowano!',
 
+        // Loading Phases
+        'msg.preparing': 'Przygotowywanie...',
+        'msg.connecting': 'Łączenie z AI...',
+        'msg.processing': 'Przetwarzanie wyników...',
+        'msg.durationShort': 'To może potrwać 10-30 sekund',
+        'msg.durationMedium': 'To może potrwać 30-60 sekund',
+        'msg.durationLong': 'To może potrwać 1-2 minuty',
+
+        // Empty States
+        'msg.noHistory': 'Brak historii',
+        'msg.noFavorites': 'Brak ulubionych',
+        'msg.noResults': 'Nie znaleziono wyników',
+        'msg.uploadToStart': 'Prześlij obraz, aby rozpocząć',
+
         // Settings Modal
         'settings.title': 'Ustawienia',
         'settings.profile': 'Profil',
@@ -706,6 +832,20 @@ const translations = {
         'msg.downloading': 'Stahování...',
         'msg.syncing': 'Synchronizace...',
         'msg.synced': 'Synchronizováno!',
+
+        // Loading Phases
+        'msg.preparing': 'Příprava...',
+        'msg.connecting': 'Připojování k AI...',
+        'msg.processing': 'Zpracování výsledků...',
+        'msg.durationShort': 'Může to trvat 10-30 sekund',
+        'msg.durationMedium': 'Může to trvat 30-60 sekund',
+        'msg.durationLong': 'Může to trvat 1-2 minuty',
+
+        // Empty States
+        'msg.noHistory': 'Zatím žádná historie',
+        'msg.noFavorites': 'Zatím žádné oblíbené',
+        'msg.noResults': 'Nenalezeny žádné výsledky',
+        'msg.uploadToStart': 'Nahrajte obrázek pro začátek',
 
         // Settings Modal
         'settings.title': 'Nastavení',

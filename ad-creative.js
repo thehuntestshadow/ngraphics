@@ -3,6 +3,8 @@
  * Create banner ads for Google, Facebook, Amazon & Instagram
  */
 
+const STUDIO_ID = 'ad-creative';
+
 // ============================================
 // STATE
 // ============================================
@@ -16,6 +18,7 @@ const state = {
     generatedImages: [],
     lastPrompt: null,
     lastSeed: null,
+    autoMode: true,
 
     // Platform & Size
     platform: 'google',
@@ -143,7 +146,10 @@ function initElements() {
         deleteFavorite: document.getElementById('deleteFavorite'),
 
         // Custom color
-        customColor: document.getElementById('customColor')
+        customColor: document.getElementById('customColor'),
+
+        // Auto mode
+        autoModeToggle: document.getElementById('autoModeToggle')
     };
 }
 
@@ -809,6 +815,16 @@ function setupEventListeners() {
         generateAdCreative();
     });
 
+    // Auto mode toggle
+    state.autoMode = localStorage.getItem(`${STUDIO_ID}_auto_mode`) !== 'false';
+    if (elements.autoModeToggle) {
+        elements.autoModeToggle.checked = state.autoMode;
+        elements.autoModeToggle.addEventListener('change', (e) => {
+            state.autoMode = e.target.checked;
+            localStorage.setItem(`${STUDIO_ID}_auto_mode`, state.autoMode);
+        });
+    }
+
     // Platform tabs
     elements.platformTabs?.querySelectorAll('.platform-tab').forEach(tab => {
         tab.addEventListener('click', () => switchPlatform(tab.dataset.platform));
@@ -1064,6 +1080,11 @@ function handleImageUpload(file) {
         // Extract base64
         const base64 = e.target.result.split(',')[1];
         state.uploadedImageBase64 = base64;
+
+        // Auto-generate if enabled
+        if (state.autoMode) {
+            generateAdCreative();
+        }
     };
     reader.readAsDataURL(file);
 }
@@ -1094,6 +1115,16 @@ async function init() {
 
     // Setup event listeners
     setupEventListeners();
+
+    // Setup keyboard shortcuts
+    SharedKeyboard.setup({
+        generate: generateAdCreative,
+        download: downloadImage,
+        escape: () => {
+            closeLightbox();
+            closeFavoritesModal();
+        }
+    });
 
     // Render history and favorites
     renderHistory();

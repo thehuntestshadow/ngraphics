@@ -100,6 +100,13 @@
                             </span>
                             Product Image
                         </div>
+                        <div class="auto-mode-row">
+                            <span class="auto-mode-label">Auto-generate on upload</span>
+                            <label class="toggle-label">
+                                <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
+                                <span class="toggle-switch"></span>
+                            </label>
+                        </div>
                         <div class="upload-zone" id="uploadArea">
                             <div class="upload-content">
                                 <div class="upload-icon">
@@ -372,7 +379,7 @@
                         </div>
 
                         <div class="pattern-scale-section">
-                            <label class="option-label">Pattern Scale</label>
+                            <label class="option-label" data-tooltip="Size of the pattern relative to product. Small for dense repeating patterns, large for bold statement designs.">Pattern Scale</label>
                             <div class="option-buttons" role="group" aria-label="Pattern Scale">
                                 <button type="button" class="option-btn" data-option="patternScale" data-value="small">Small</button>
                                 <button type="button" class="option-btn active" data-option="patternScale" data-value="medium">Medium</button>
@@ -414,7 +421,7 @@
                         </div>
                         <div class="output-options">
                             <div class="model-option">
-                                <label class="option-label">Aspect Ratio</label>
+                                <label class="option-label" data-tooltip="1:1 for e-commerce and Instagram. 4:5 for Instagram portrait. 16:9 for website banners.">Aspect Ratio</label>
                                 <div class="option-buttons" role="group" aria-label="Aspect Ratio">
                                     <button type="button" class="option-btn active" data-option="aspectRatio" data-value="1:1">1:1</button>
                                     <button type="button" class="option-btn" data-option="aspectRatio" data-value="4:5">4:5</button>
@@ -453,7 +460,7 @@
                         <div class="advanced-content">
                             <!-- Quality -->
                             <div class="option-group">
-                                <label class="option-label">Quality</label>
+                                <label class="option-label" data-tooltip="Higher quality = more detail and sharper results, but takes longer to generate.">Quality</label>
                                 <select class="select-field select-sm" id="outputQuality">
                                     <option value="standard">Standard</option>
                                     <option value="high" selected>High</option>
@@ -463,13 +470,13 @@
 
                             <!-- Seed -->
                             <div class="option-group">
-                                <label class="option-label">Seed (optional)</label>
+                                <label class="option-label" data-tooltip="Enter a specific number to reproduce similar results. Leave empty for random variations each time.">Seed (optional)</label>
                                 <input type="number" class="input-field input-sm" id="seedInput" placeholder="Random">
                             </div>
 
                             <!-- Negative Prompt -->
                             <div class="option-group">
-                                <label class="option-label">Negative Prompt</label>
+                                <label class="option-label" data-tooltip="List things you don't want in the variants. Common: different shapes, inconsistent sizes, wrong proportions.">Negative Prompt</label>
                                 <textarea class="input-field textarea-field" id="negativePrompt" rows="2"
                                           placeholder="Things to avoid (e.g., different shapes, inconsistent sizes)"></textarea>
                             </div>

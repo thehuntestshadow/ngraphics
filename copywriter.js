@@ -4,6 +4,8 @@
 
 const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
 
+const STUDIO_ID = 'copywriter';
+
 // ============================================
 // STATE
 // ============================================
@@ -141,8 +143,8 @@ async function init() {
 
     // Setup keyboard shortcuts
     SharedKeyboard.setup({
-        onGenerate: () => elements.generateBtn.click(),
-        onDownload: null
+        generate: () => elements.generateBtn.click(),
+        download: null
     });
 
     // Setup upload area

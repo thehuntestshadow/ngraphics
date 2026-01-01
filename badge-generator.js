@@ -3,6 +3,8 @@
  * Create sale and trust badges for e-commerce products
  */
 
+const STUDIO_ID = 'badge-generator';
+
 // ============================================
 // STATE
 // ============================================
@@ -881,6 +883,13 @@ async function init() {
     renderHistory();
     renderFavorites();
     setupEventListeners();
+
+    // Setup keyboard shortcuts
+    SharedKeyboard.setup({
+        generate: generateBadge,
+        download: downloadCurrentImage,
+        escape: closeLightbox
+    });
 
     // Initialize onboarding tour for first-time visitors
     if (typeof OnboardingTour !== 'undefined') {

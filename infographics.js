@@ -6,6 +6,8 @@
 // Default model for image generation (handled by edge function)
 const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
 
+const STUDIO_ID = 'infographics';
+
 // ============================================
 // APPLICATION STATE
 // ============================================
@@ -4974,6 +4976,17 @@ async function init() {
     setupCharacteristicsHandlers();
     setupBenefitsHandlers();
     setupEventListeners();
+
+    // Setup keyboard shortcuts
+    SharedKeyboard.setup({
+        generate: generateInfographic,
+        download: downloadImage,
+        escape: () => {
+            closeLightbox();
+            closeFavoritesModal();
+        }
+    });
+
     updateLanguage('ro');
 
     // Initialize stores

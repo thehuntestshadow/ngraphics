@@ -4,10 +4,13 @@
 
 const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
 
+const STUDIO_ID = 'packaging';
+
 // ============================================
 // STATE
 // ============================================
 const state = {
+    autoMode: true,
     // Product
     productImage: null,
     productName: '',
@@ -53,6 +56,8 @@ let elements = {};
 
 function initElements() {
     elements = {
+        // Auto mode
+        autoModeToggle: document.getElementById('autoModeToggle'),
         // Form
         form: document.getElementById('packagingForm'),
         uploadArea: document.getElementById('uploadArea'),
@@ -278,8 +283,8 @@ async function init() {
 
     // Setup keyboard shortcuts
     SharedKeyboard.setup({
-        onGenerate: () => elements.generateBtn.click(),
-        onDownload: () => downloadCurrentImage()
+        generate: () => elements.generateBtn.click(),
+        download: () => downloadCurrentImage()
     });
 
     // Setup collapsible sections
@@ -301,6 +306,17 @@ async function init() {
 // EVENT LISTENERS
 // ============================================
 function setupEventListeners() {
+    // Auto mode toggle
+    const savedAutoMode = localStorage.getItem(`${STUDIO_ID}_auto_mode`);
+    if (savedAutoMode !== null) {
+        state.autoMode = savedAutoMode === 'true';
+        elements.autoModeToggle.checked = state.autoMode;
+    }
+    elements.autoModeToggle.addEventListener('change', (e) => {
+        state.autoMode = e.target.checked;
+        localStorage.setItem(`${STUDIO_ID}_auto_mode`, state.autoMode);
+    });
+
     // Form submission
     elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -420,6 +436,11 @@ function setupUpload() {
             // Auto-analyze product name if empty
             if (!state.productName) {
                 analyzeProduct();
+            }
+
+            // Auto-generate if enabled
+            if (state.autoMode) {
+                setTimeout(() => generateMockup(), 100);
             }
         },
         onError: (error) => {

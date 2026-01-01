@@ -3,12 +3,15 @@
  * Generate color, material, and pattern variations from a single product photo
  */
 
+const STUDIO_ID = 'product-variants';
+
 // ============================================
 // STATE
 // ============================================
 
 const state = {
     // Core
+    autoMode: true,
     apiKey: '',
     uploadedImage: null,
     uploadedImageBase64: null,
@@ -55,6 +58,9 @@ let elements = {};
 
 function initElements() {
     elements = {
+        // Auto Mode
+        autoModeToggle: document.getElementById('autoModeToggle'),
+
         // Form
         variantsForm: document.getElementById('variantsForm'),
 
@@ -1064,6 +1070,16 @@ async function downloadAllAsZip() {
 // ============================================
 
 function setupEventListeners() {
+    // Auto mode toggle
+    state.autoMode = localStorage.getItem(`${STUDIO_ID}_auto_mode`) !== 'false';
+    if (elements.autoModeToggle) {
+        elements.autoModeToggle.checked = state.autoMode;
+        elements.autoModeToggle.addEventListener('change', (e) => {
+            state.autoMode = e.target.checked;
+            localStorage.setItem(`${STUDIO_ID}_auto_mode`, state.autoMode);
+        });
+    }
+
     // Form submit
     elements.variantsForm?.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -1079,6 +1095,11 @@ function setupEventListeners() {
             elements.previewImg.src = base64;
             elements.imagePreview.style.display = 'block';
             elements.uploadArea.style.display = 'none';
+
+            // Auto-generate if enabled
+            if (state.autoMode) {
+                generateVariants();
+            }
         }
     });
 
@@ -1330,6 +1351,16 @@ function init() {
 
     // Setup event listeners
     setupEventListeners();
+
+    // Setup keyboard shortcuts
+    SharedKeyboard.setup({
+        generate: generateVariants,
+        download: downloadImage,
+        escape: () => {
+            closeLightbox();
+            closeFavoritesModal();
+        }
+    });
 
     // Load persisted data
     loadHistory();

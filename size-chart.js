@@ -3,6 +3,8 @@
  * Generate professional size charts for product listings
  */
 
+const STUDIO_ID = 'size-chart';
+
 // ============================================
 // STATE
 // ============================================

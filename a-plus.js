@@ -3,12 +3,15 @@
  * Generate Amazon A+ Content (Enhanced Brand Content) modules
  */
 
+const STUDIO_ID = 'a-plus';
+
 // ============================================
 // STATE
 // ============================================
 const state = {
     apiKey: '',
     moduleType: 'image-text',
+    autoMode: true,
 
     // Shared
     productImage: null,
@@ -111,6 +114,9 @@ let elements = {};
 
 function initElements() {
     elements = {
+        // Auto Mode
+        autoModeToggle: document.getElementById('autoModeToggle'),
+
         // Module Tabs
         moduleTypeTabs: document.getElementById('moduleTypeTabs'),
 
@@ -1387,6 +1393,16 @@ function updateCharCount(input, countEl, max) {
 // EVENT LISTENERS
 // ============================================
 function setupEventListeners() {
+    // Auto mode toggle
+    state.autoMode = localStorage.getItem(`${STUDIO_ID}_auto_mode`) !== 'false';
+    if (elements.autoModeToggle) {
+        elements.autoModeToggle.checked = state.autoMode;
+        elements.autoModeToggle.addEventListener('change', (e) => {
+            state.autoMode = e.target.checked;
+            localStorage.setItem(`${STUDIO_ID}_auto_mode`, state.autoMode);
+        });
+    }
+
     // Module type tabs
     if (elements.moduleTypeTabs) {
         elements.moduleTypeTabs.querySelectorAll('.module-type-tab').forEach(tab => {
@@ -1414,6 +1430,11 @@ function setupEventListeners() {
                 }
 
                 updateGenerateButton();
+
+                // Auto-generate if enabled
+                if (state.autoMode) {
+                    generateContent();
+                }
             }
         });
     }
@@ -1659,15 +1680,15 @@ function setupEventListeners() {
 
     // Keyboard shortcuts
     SharedKeyboard.setup({
-        onGenerate: () => {
+        generate: () => {
             if (elements.generateBtn && !elements.generateBtn.disabled) generateContent();
         },
-        onDownload: () => {
+        download: () => {
             if (state.generatedImages.length > 0) {
                 SharedDownload.downloadImage(state.generatedImages[0].imageUrl, 'aplus-content');
             }
         },
-        onEscape: () => {
+        escape: () => {
             if (elements.lightbox && !elements.lightbox.classList.contains('hidden')) closeLightbox();
             if (elements.favoritesModal && !elements.favoritesModal.classList.contains('hidden')) closeFavoritesModal();
         }

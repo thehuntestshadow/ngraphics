@@ -5,10 +5,13 @@
 
 const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
 
+const STUDIO_ID = 'bundle';
+
 // ============================================
 // APPLICATION STATE
 // ============================================
 const state = {
+    autoMode: true,
     products: [], // Array of { id, imageBase64, thumbnail, name, description, analyzed }
     nextProductId: 1,
 
@@ -115,6 +118,8 @@ let elements = {};
 
 function initElements() {
     elements = {
+        // Auto mode
+        autoModeToggle: document.getElementById('autoModeToggle'),
         // Form
         form: document.getElementById('bundleForm'),
 
@@ -290,6 +295,11 @@ function addProduct(file, slotIndex) {
 
         // Auto-analyze
         await analyzeProduct(product.id);
+
+        // Auto-generate if enabled and we have at least 2 products
+        if (state.autoMode && state.products.length >= 2) {
+            setTimeout(() => generateBundle(), 100);
+        }
     };
     reader.readAsDataURL(file);
 }
@@ -1109,6 +1119,17 @@ async function deleteFavorite() {
 // EVENT LISTENERS
 // ============================================
 function setupEventListeners() {
+    // Auto mode toggle
+    const savedAutoMode = localStorage.getItem(`${STUDIO_ID}_auto_mode`);
+    if (savedAutoMode !== null) {
+        state.autoMode = savedAutoMode === 'true';
+        elements.autoModeToggle.checked = state.autoMode;
+    }
+    elements.autoModeToggle.addEventListener('change', (e) => {
+        state.autoMode = e.target.checked;
+        localStorage.setItem(`${STUDIO_ID}_auto_mode`, state.autoMode);
+    });
+
     // Form submit
     elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -1579,6 +1600,14 @@ async function init() {
     }
 
     setupEventListeners();
+
+    // Setup keyboard shortcuts
+    SharedKeyboard.setup({
+        generate: generateBundle,
+        download: () => elements.downloadBtn?.click(),
+        escape: closeFavoritesModal
+    });
+
     updateConditionalRows();
     updateGenerateButton();
 
