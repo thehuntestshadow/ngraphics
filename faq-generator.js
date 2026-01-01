@@ -3,13 +3,14 @@
  * Generate product Q&As with text and image output
  */
 
+const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+
 // ============================================
 // STATE
 // ============================================
 
 const state = {
     // Core
-    apiKey: '',
     uploadedImage: null,
     uploadedImageBase64: null,
     generatedImageUrl: null,
@@ -30,7 +31,6 @@ const state = {
     // Advanced
     includeSchema: true,
     customInstructions: '',
-    aiModel: 'google/gemini-3-pro-image-preview',
 
     // Image settings
     imageType: 'infographic',
@@ -65,16 +65,8 @@ function initElements() {
         // Advanced
         advancedSection: document.getElementById('advancedSection'),
         advancedToggle: document.getElementById('advancedToggle'),
-        aiModel: document.getElementById('aiModel'),
         includeSchema: document.getElementById('includeSchema'),
         customInstructions: document.getElementById('customInstructions'),
-
-        // API Settings
-        settingsSection: document.getElementById('settingsSection'),
-        settingsToggle: document.getElementById('settingsToggle'),
-        apiKey: document.getElementById('apiKey'),
-        toggleApiKey: document.getElementById('toggleApiKey'),
-        saveApiKey: document.getElementById('saveApiKey'),
 
         // Generate
         generateBtn: document.getElementById('generateBtn'),
@@ -221,11 +213,6 @@ REQUIREMENTS:
 }
 
 async function generateFaqs() {
-    if (!state.apiKey) {
-        showError('Please enter your OpenRouter API key first');
-        return;
-    }
-
     // Gather selected categories
     const categoryCheckboxes = document.querySelectorAll('input[name="category"]:checked');
     state.categories = Array.from(categoryCheckboxes).map(cb => cb.value);
@@ -242,42 +229,35 @@ async function generateFaqs() {
     state.lastPrompt = prompt;
 
     try {
-        const messageContent = [{ type: 'text', text: prompt }];
-
-        if (state.uploadedImageBase64) {
-            messageContent.push({ type: 'image_url', image_url: { url: state.uploadedImageBase64 } });
-        }
-
         updateFaqLoadingStatus('Generating FAQs...');
 
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${state.apiKey}`,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': window.location.origin,
-                'X-Title': 'HEFAISTOS FAQ Generator'
-            },
-            body: JSON.stringify({
-                model: state.aiModel || 'google/gemini-3-pro-image-preview',
-                messages: [{ role: 'user', content: messageContent }],
-                max_tokens: 4096
-            })
-        });
+        // Set studio for usage tracking
+        api.setStudio('faq-generator');
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error?.message || `API error: ${response.status}`);
+        let result;
+        if (state.uploadedImageBase64) {
+            // Use analyzeImage when we have a product image
+            result = await api.analyzeImage({
+                image: state.uploadedImageBase64,
+                prompt: prompt,
+                model: DEFAULT_MODEL
+            });
+        } else {
+            // Use generateText when no image provided
+            result = await api.generateText({
+                prompt: prompt,
+                model: DEFAULT_MODEL,
+                maxTokens: 4096
+            });
         }
 
-        const data = await response.json();
-        let content = data.choices?.[0]?.message?.content?.trim() || '';
+        let content = result.text?.trim() || '';
 
         // Parse JSON from response
         content = content.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
-        const result = JSON.parse(content);
+        const parsed = JSON.parse(content);
 
-        state.faqs = result.faqs || [];
+        state.faqs = parsed.faqs || [];
         renderFaqs();
         showFaqResults();
         showSuccess('FAQs generated successfully!');
@@ -291,7 +271,8 @@ async function generateFaqs() {
 
     } catch (error) {
         hideFaqLoading();
-        showError(error.message || 'Failed to generate FAQs');
+        const message = error.toUserMessage ? error.toUserMessage() : (error.message || 'Failed to generate FAQs');
+        showError(message);
     }
 }
 
@@ -336,7 +317,7 @@ OUTPUT: Create a visually appealing infographic-style image that displays these 
 }
 
 async function generateFaqImage() {
-    if (!state.apiKey || state.faqs.length === 0) return;
+    if (state.faqs.length === 0) return;
 
     showImageLoading();
     updateImageLoadingStatus('Creating FAQ visual...');
@@ -346,43 +327,22 @@ async function generateFaqImage() {
     state.lastSeed = seed;
 
     try {
-        const messageContent = [{ type: 'text', text: prompt }];
+        // Set studio for usage tracking
+        api.setStudio('faq-generator');
 
-        if (state.uploadedImageBase64) {
-            messageContent.push({ type: 'image_url', image_url: { url: state.uploadedImageBase64 } });
-        }
-
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${state.apiKey}`,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': window.location.origin,
-                'X-Title': 'HEFAISTOS FAQ Generator'
-            },
-            body: JSON.stringify({
-                model: state.aiModel || 'google/gemini-3-pro-image-preview',
-                messages: [{ role: 'user', content: messageContent }],
-                modalities: ['image', 'text'],
-                max_tokens: 4096,
-                seed: seed
-            })
+        const result = await api.generateImage({
+            model: DEFAULT_MODEL,
+            prompt: prompt,
+            images: state.uploadedImageBase64 ? [state.uploadedImageBase64] : [],
+            seed: seed
         });
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error?.message || `API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const imageUrl = SharedRequest.extractImageFromResponse(data);
-
-        if (!imageUrl) {
+        if (!result.image) {
             throw new Error('No image in response');
         }
 
-        state.generatedImageUrl = imageUrl;
-        showImageResult(imageUrl);
+        state.generatedImageUrl = result.image;
+        showImageResult(result.image);
 
     } catch (error) {
         hideImageLoading();
@@ -927,16 +887,6 @@ function setupEventListeners() {
         elements.advancedSection.classList.toggle('open');
     });
 
-    // Settings toggle
-    elements.settingsToggle?.addEventListener('click', () => {
-        elements.settingsSection.classList.toggle('open');
-    });
-
-    // AI Model selection
-    elements.aiModel?.addEventListener('change', (e) => {
-        state.aiModel = e.target.value;
-    });
-
     // Include Schema checkbox
     elements.includeSchema?.addEventListener('change', (e) => {
         state.includeSchema = e.target.checked;
@@ -945,29 +895,6 @@ function setupEventListeners() {
     // Custom instructions
     elements.customInstructions?.addEventListener('input', (e) => {
         state.customInstructions = e.target.value;
-    });
-
-    // API key handling
-    elements.apiKey?.addEventListener('change', () => {
-        const key = elements.apiKey.value.trim();
-        if (key) {
-            state.apiKey = key;
-            SharedAPI.saveKey(key);
-        }
-    });
-
-    elements.saveApiKey?.addEventListener('click', () => {
-        const key = elements.apiKey?.value.trim();
-        if (key) {
-            state.apiKey = key;
-            SharedAPI.saveKey(key);
-            showSuccess('API key saved!');
-        }
-    });
-
-    elements.toggleApiKey?.addEventListener('click', () => {
-        const type = elements.apiKey.type === 'password' ? 'text' : 'password';
-        elements.apiKey.type = type;
     });
 
     // Copy buttons
@@ -1071,16 +998,6 @@ function closeFavoritesModal() {
 // INITIALIZATION
 // ============================================
 
-function loadApiKey() {
-    const savedKey = SharedAPI.getKey();
-    if (savedKey) {
-        state.apiKey = savedKey;
-        if (elements.apiKey) {
-            elements.apiKey.value = savedKey;
-        }
-    }
-}
-
 function loadHistory() {
     history.load();
     renderHistory();
@@ -1104,10 +1021,6 @@ function init() {
     if (accountContainer && typeof AccountMenu !== 'undefined') {
         new AccountMenu(accountContainer);
     }
-
-
-    // Load API key
-    loadApiKey();
 
     // Setup event listeners
     setupEventListeners();

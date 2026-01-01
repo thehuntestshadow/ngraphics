@@ -3,13 +3,14 @@
  * Create social media graphics for all platforms
  */
 
+const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+
 // ============================================
 // STATE
 // ============================================
 
 const state = {
     // Core
-    apiKey: '',
     uploadedImage: null,
     uploadedImageBase64: null,
     generatedImageUrl: null,
@@ -90,13 +91,6 @@ function initElements() {
         includeLogo: document.getElementById('includeLogo'),
         includePrice: document.getElementById('includePrice'),
         includeBadge: document.getElementById('includeBadge'),
-
-        // API Settings
-        settingsToggle: document.getElementById('settingsToggle'),
-        settingsContent: document.getElementById('settingsContent'),
-        apiKey: document.getElementById('apiKey'),
-        toggleApiKey: document.getElementById('toggleApiKey'),
-        saveApiKey: document.getElementById('saveApiKey'),
 
         // Generate
         generateBtn: document.getElementById('generateBtn'),
@@ -334,11 +328,6 @@ async function generateSocialGraphic() {
         return;
     }
 
-    if (!state.apiKey) {
-        showError('Please add your OpenRouter API key in settings');
-        return;
-    }
-
     showLoading();
 
     const prompt = generatePrompt();
@@ -348,52 +337,19 @@ async function generateSocialGraphic() {
     state.lastSeed = seed;
 
     try {
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${state.apiKey}`,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': window.location.origin,
-                'X-Title': 'HEFAISTOS Social Studio'
-            },
-            body: JSON.stringify({
-                model: state.aiModel,
-                messages: [
-                    {
-                        role: 'user',
-                        content: [
-                            {
-                                type: 'text',
-                                text: prompt + `\n\nSeed: ${seed}`
-                            },
-                            {
-                                type: 'image_url',
-                                image_url: {
-                                    url: `data:image/jpeg;base64,${state.uploadedImageBase64}`
-                                }
-                            }
-                        ]
-                    }
-                ],
-                max_tokens: 4096,
-                temperature: 0.7,
-                modalities: ['text', 'image'],
-                response_format: { type: 'text' }
-            })
+        const result = await api.generateImage({
+            model: DEFAULT_MODEL,
+            prompt,
+            images: [state.uploadedImageBase64],
+            aspectRatio: state.aspectRatio,
+            seed
         });
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error?.message || 'API request failed');
-        }
-
-        const data = await response.json();
-        const imageUrl = extractImageFromResponse(data);
-
-        if (!imageUrl) {
+        if (!result.image) {
             throw new Error('No image was generated. The model may not support image generation.');
         }
 
+        const imageUrl = result.image;
         state.generatedImageUrl = imageUrl;
         state.generatedImages = [imageUrl];
 
@@ -407,35 +363,6 @@ async function generateSocialGraphic() {
         hideLoading();
         showError(error.message || 'Failed to generate graphic');
     }
-}
-
-function extractImageFromResponse(data) {
-    const message = data.choices?.[0]?.message;
-    if (!message) return null;
-
-    // Check for inline_data (Gemini format)
-    if (message.content && Array.isArray(message.content)) {
-        for (const part of message.content) {
-            if (part.type === 'image' && part.image?.base64) {
-                return `data:image/png;base64,${part.image.base64}`;
-            }
-            if (part.inline_data?.data) {
-                const mimeType = part.inline_data.mime_type || 'image/png';
-                return `data:${mimeType};base64,${part.inline_data.data}`;
-            }
-        }
-    }
-
-    // Check for image_url format
-    if (message.content && Array.isArray(message.content)) {
-        for (const part of message.content) {
-            if (part.type === 'image_url' && part.image_url?.url) {
-                return part.image_url.url;
-            }
-        }
-    }
-
-    return null;
 }
 
 // ============================================
@@ -846,27 +773,6 @@ function setupEventListeners() {
         elements.advancedToggle?.classList.toggle('expanded');
     });
 
-    // Settings toggle
-    elements.settingsToggle?.addEventListener('click', () => {
-        elements.settingsContent?.classList.toggle('expanded');
-        elements.settingsToggle?.classList.toggle('expanded');
-    });
-
-    // API Key
-    elements.toggleApiKey?.addEventListener('click', () => {
-        const type = elements.apiKey.type === 'password' ? 'text' : 'password';
-        elements.apiKey.type = type;
-    });
-
-    elements.saveApiKey?.addEventListener('click', () => {
-        const key = elements.apiKey.value.trim();
-        if (key) {
-            SharedAPI.saveKey(key);
-            state.apiKey = key;
-            showSuccess('API key saved');
-        }
-    });
-
     // Actions
     elements.downloadBtn?.addEventListener('click', downloadImage);
     elements.favoriteBtn?.addEventListener('click', saveFavorite);
@@ -1015,13 +921,6 @@ async function init() {
     const accountContainer = document.getElementById('accountContainer');
     if (accountContainer && typeof AccountMenu !== 'undefined') {
         new AccountMenu(accountContainer);
-    }
-
-
-    // API key
-    state.apiKey = SharedAPI.getKey();
-    if (elements.apiKey && state.apiKey) {
-        elements.apiKey.value = state.apiKey;
     }
 
     // Initialize format and platforms

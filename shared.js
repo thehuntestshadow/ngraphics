@@ -4,29 +4,6 @@
  */
 
 // ============================================
-// API KEY MANAGEMENT
-// ============================================
-const API_KEY_STORAGE = 'openrouter_api_key';
-
-const SharedAPI = {
-    getKey() {
-        return localStorage.getItem(API_KEY_STORAGE) || '';
-    },
-
-    saveKey(key) {
-        if (key) {
-            localStorage.setItem(API_KEY_STORAGE, key);
-            return true;
-        }
-        return false;
-    },
-
-    hasKey() {
-        return !!this.getKey();
-    }
-};
-
-// ============================================
 // SECURITY UTILITIES
 // ============================================
 

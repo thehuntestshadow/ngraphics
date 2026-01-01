@@ -3,13 +3,14 @@
  * Show product scale with reference objects
  */
 
+const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+
 // ============================================
 // STATE
 // ============================================
 
 const state = {
     // Core
-    apiKey: '',
     uploadedImage: null,
     uploadedImageBase64: null,
     generatedImageUrl: null,
@@ -81,7 +82,6 @@ function initElements() {
         // Advanced
         advancedSection: document.getElementById('advancedSection'),
         advancedToggle: document.getElementById('advancedToggle'),
-        aiModel: document.getElementById('aiModel'),
         multiAngle: document.getElementById('multiAngle'),
         seedInput: document.getElementById('seedInput'),
         randomSeedCheck: document.getElementById('randomSeedCheck'),
@@ -96,13 +96,6 @@ function initElements() {
         showDimensions: document.getElementById('showDimensions'),
         showScale: document.getElementById('showScale'),
         showGrid: document.getElementById('showGrid'),
-
-        // API Settings
-        settingsSection: document.getElementById('settingsSection'),
-        settingsToggle: document.getElementById('settingsToggle'),
-        apiKey: document.getElementById('apiKey'),
-        toggleApiKey: document.getElementById('toggleApiKey'),
-        saveApiKey: document.getElementById('saveApiKey'),
 
         // Generate
         generateBtn: document.getElementById('generateBtn'),
@@ -349,11 +342,6 @@ CRITICAL REQUIREMENTS:
 // ============================================
 
 async function generateVisualization() {
-    if (!state.apiKey) {
-        showError('Please enter your OpenRouter API key first');
-        return;
-    }
-
     if (!state.uploadedImageBase64) {
         showError('Please upload a product image first');
         return;
@@ -408,46 +396,19 @@ async function generateVisualization() {
 }
 
 async function makeGenerationRequest(prompt, seed) {
-    const messageContent = [
-        { type: 'text', text: prompt },
-        { type: 'image_url', image_url: { url: state.uploadedImageBase64 } }
-    ];
-
-    const requestBody = {
-        model: state.aiModel || 'google/gemini-3-pro-image-preview',
-        messages: [{ role: 'user', content: messageContent }],
-        modalities: ['image', 'text'],
-        max_tokens: 4096
-    };
-
-    if (seed) {
-        requestBody.seed = seed;
-    }
-
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${state.apiKey}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': window.location.origin,
-            'X-Title': 'HEFAISTOS Size Visualizer'
-        },
-        body: JSON.stringify(requestBody)
+    const result = await api.generateImage({
+        model: DEFAULT_MODEL,
+        prompt,
+        images: state.uploadedImageBase64 ? [state.uploadedImageBase64] : [],
+        seed,
+        aspectRatio: state.aspectRatio
     });
 
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error?.message || `API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const imageUrl = SharedRequest.extractImageFromResponse(data);
-
-    if (!imageUrl) {
+    if (!result.image) {
         throw new Error('No image in response');
     }
 
-    return imageUrl;
+    return result.image;
 }
 
 async function adjustVisualization() {
@@ -793,7 +754,7 @@ function captureCurrentSettings() {
         multiAngle: elements.multiAngle?.value || 'single',
         negativePrompt: elements.negativePrompt?.value || '',
         variations: state.variations,
-        model: elements.aiModel?.value
+        model: DEFAULT_MODEL
     };
 }
 
@@ -1019,16 +980,6 @@ function setupEventListeners() {
         elements.advancedSection.classList.toggle('open');
     });
 
-    // Settings toggle
-    elements.settingsToggle?.addEventListener('click', () => {
-        elements.settingsSection.classList.toggle('open');
-    });
-
-    // AI Model selection
-    elements.aiModel?.addEventListener('change', (e) => {
-        state.aiModel = e.target.value;
-    });
-
     // Multi-angle selection
     elements.multiAngle?.addEventListener('change', (e) => {
         state.multiAngle = e.target.value;
@@ -1049,29 +1000,6 @@ function setupEventListeners() {
     // Negative prompt
     elements.negativePrompt?.addEventListener('input', (e) => {
         state.negativePrompt = e.target.value;
-    });
-
-    // API key handling
-    elements.apiKey?.addEventListener('change', () => {
-        const key = elements.apiKey.value.trim();
-        if (key) {
-            state.apiKey = key;
-            SharedAPI.saveKey(key);
-        }
-    });
-
-    elements.saveApiKey?.addEventListener('click', () => {
-        const key = elements.apiKey?.value.trim();
-        if (key) {
-            state.apiKey = key;
-            SharedAPI.saveKey(key);
-            showSuccess('API key saved!');
-        }
-    });
-
-    elements.toggleApiKey?.addEventListener('click', () => {
-        const type = elements.apiKey.type === 'password' ? 'text' : 'password';
-        elements.apiKey.type = type;
     });
 
     // Actions
@@ -1188,16 +1116,6 @@ function setupEventListeners() {
 // INITIALIZATION
 // ============================================
 
-function loadApiKey() {
-    const savedKey = SharedAPI.getKey();
-    if (savedKey) {
-        state.apiKey = savedKey;
-        if (elements.apiKey) {
-            elements.apiKey.value = savedKey;
-        }
-    }
-}
-
 function loadHistory() {
     history.load();
     state.history = history.getAll();
@@ -1209,6 +1127,9 @@ let initialized = false;
 function init() {
     if (initialized) return;
     initialized = true;
+
+    // Set studio name for API usage tracking
+    api.setStudio('size-visualizer');
 
     // Header is pre-rendered in HTML to prevent flash
     // Initialize DOM cache
@@ -1222,10 +1143,6 @@ function init() {
     if (accountContainer && typeof AccountMenu !== 'undefined') {
         new AccountMenu(accountContainer);
     }
-
-
-    // Load API key
-    loadApiKey();
 
     // Setup event listeners
     setupEventListeners();

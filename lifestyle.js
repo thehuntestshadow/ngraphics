@@ -11,6 +11,7 @@
 // ============================================
 
 const STUDIO_ID = 'lifestyle';
+const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
 
 // ============================================
 // STATE
@@ -18,7 +19,6 @@ const STUDIO_ID = 'lifestyle';
 
 const state = {
     // Core
-    apiKey: '',
     uploadedImage: null,
     uploadedImageBase64: null,
     autoMode: true,  // Auto-generate on upload (30 seconds to fun)
@@ -156,14 +156,6 @@ function initElements() {
         colorGrading: document.getElementById('colorGrading'),
         seedInput: document.getElementById('seedInput'),
         negativePrompt: document.getElementById('negativePrompt'),
-
-        // API Settings
-        settingsSection: document.getElementById('settingsSection'),
-        settingsToggle: document.getElementById('settingsToggle'),
-        apiKey: document.getElementById('apiKey'),
-        toggleApiKey: document.getElementById('toggleApiKey'),
-        apiStatus: document.getElementById('apiStatus'),
-        aiModel: document.getElementById('aiModel'),
 
         // Generate
         generateBtn: document.getElementById('generateBtn'),
@@ -444,11 +436,6 @@ function handleCancel() {
 }
 
 async function generateLifestylePhoto() {
-    if (!state.apiKey) {
-        showError('Please enter your OpenRouter API key first');
-        return;
-    }
-
     if (!state.uploadedImageBase64) {
         showError('Please upload a product image first');
         return;
@@ -520,7 +507,7 @@ async function makeGenerationRequest(prompt, seed) {
     }
 
     const result = await api.generateImage({
-        model: elements.aiModel?.value || 'google/gemini-3-pro-image-preview',
+        model: DEFAULT_MODEL,
         prompt,
         images,
         seed: seed || undefined
@@ -569,17 +556,6 @@ Please regenerate the lifestyle photo with these specific changes applied while 
 
 async function analyzeProductImage() {
     if (!state.uploadedImageBase64) return;
-
-    // If no API key, prompt user in auto mode
-    if (!state.apiKey) {
-        if (state.autoMode) {
-            // Open settings section so user can add API key
-            elements.settingsSection?.classList.add('open');
-            elements.settingsToggle?.setAttribute('aria-expanded', 'true');
-            showError('Add your API key to enable auto-generation');
-        }
-        return;
-    }
 
     // Show loading immediately for auto mode
     if (state.autoMode) {

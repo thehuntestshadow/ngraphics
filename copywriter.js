@@ -2,13 +2,14 @@
    COPYWRITER - AI Marketing Copy Generator
    ============================================ */
 
+const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+
 // ============================================
 // STATE
 // ============================================
 const state = {
     // Core
     language: localStorage.getItem('copywriter_language') || 'en',
-    apiKey: localStorage.getItem('openrouter_api_key') || '',
 
     // Product Images
     productImages: [], // [{ id, base64, thumbnail, file }]
@@ -24,7 +25,6 @@ const state = {
     copyTone: 'professional',
     includeEmoji: true,
     includeHashtags: true,
-    aiModel: 'google/gemini-2.0-flash-001',
 
     // Generated Copy
     generatedCopy: null,
@@ -56,15 +56,7 @@ function initElements() {
         addBenefitBtn: document.getElementById('addBenefitBtn'),
         includeEmoji: document.getElementById('includeEmoji'),
         includeHashtags: document.getElementById('includeHashtags'),
-        aiModel: document.getElementById('aiModel'),
         generateBtn: document.getElementById('generateBtn'),
-
-        // API
-        apiKey: document.getElementById('apiKey'),
-        toggleApiKey: document.getElementById('toggleApiKey'),
-        saveApiKey: document.getElementById('saveApiKey'),
-        settingsToggle: document.getElementById('settingsToggle'),
-        settingsSection: document.getElementById('settingsSection'),
 
         // Messages
         errorMessage: document.getElementById('errorMessage'),
@@ -145,20 +137,11 @@ async function init() {
     // Setup event listeners
     setupEventListeners();
 
-    // Setup API
-    if (state.apiKey) {
-        elements.apiKey.value = state.apiKey;
-        api.apiKey = state.apiKey;
-    }
-
     // Setup keyboard shortcuts
     SharedKeyboard.setup({
         onGenerate: () => elements.generateBtn.click(),
         onDownload: null
     });
-
-    // Setup collapsible sections
-    SharedCollapsible.setup(elements.settingsToggle, elements.settingsSection.querySelector('.settings-content'));
 
     // Setup upload area
     setupUploadArea();

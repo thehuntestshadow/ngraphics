@@ -3,11 +3,12 @@
  * Creates various comparison layouts: Before/After, Product vs Product, Feature Tables, Size Lineups
  */
 
+const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+
 // ============================================
 // APPLICATION STATE
 // ============================================
 const state = {
-    apiKey: '',
     comparisonType: 'before-after', // before-after, vs-competitor, feature-table, size-lineup, multi-product
 
     // Before/After images
@@ -105,14 +106,6 @@ function initElements() {
     elements = {
         // Form
         form: document.getElementById('comparisonForm'),
-
-        // API Settings
-        settingsSection: document.getElementById('settingsSection'),
-        settingsToggle: document.getElementById('settingsToggle'),
-        apiKey: document.getElementById('apiKey'),
-        toggleApiKey: document.getElementById('toggleApiKey'),
-        saveApiKey: document.getElementById('saveApiKey'),
-        aiModel: document.getElementById('aiModel'),
 
         // Comparison Type
         comparisonTypeTabs: document.getElementById('comparisonTypeTabs'),
@@ -256,13 +249,11 @@ function updateLoadingStatus(message) {
 }
 
 function updateGenerateButton() {
-    const canGenerate = hasRequiredImages() && state.apiKey && !state.isGenerating;
+    const canGenerate = hasRequiredImages() && !state.isGenerating;
 
     elements.generateBtn.disabled = !canGenerate;
 
-    if (!state.apiKey) {
-        elements.generateHelper.textContent = 'Enter API key to generate';
-    } else if (!hasRequiredImages()) {
+    if (!hasRequiredImages()) {
         elements.generateHelper.textContent = getImageRequirementText();
     } else {
         elements.generateHelper.textContent = 'Ready to generate';
@@ -926,11 +917,6 @@ async function generateComparison() {
         return;
     }
 
-    if (!state.apiKey) {
-        showError('Please enter your OpenRouter API key');
-        return;
-    }
-
     state.isGenerating = true;
     updateGenerateButton();
 
@@ -943,7 +929,7 @@ async function generateComparison() {
     const prompt = generatePrompt();
     state.lastPrompt = prompt;
 
-    const model = elements.aiModel.value;
+    const model = DEFAULT_MODEL;
 
     // Build message content with images
     const messageContent = [
@@ -1046,11 +1032,6 @@ async function generateWithAdjustment() {
         return;
     }
 
-    if (!state.apiKey) {
-        showError('Please enter your OpenRouter API key');
-        return;
-    }
-
     state.isGenerating = true;
     updateGenerateButton();
 
@@ -1060,7 +1041,7 @@ async function generateWithAdjustment() {
     elements.favoriteBtn.classList.remove('active');
     updateLoadingStatus('Applying adjustments...');
 
-    const model = elements.aiModel.value;
+    const model = DEFAULT_MODEL;
 
     const adjustmentPrompt = `Here is an image I generated previously, along with the original generation prompt. Please regenerate this image with the following adjustments:
 
@@ -1113,8 +1094,6 @@ Keep the same overall composition and style, but apply the requested adjustments
 }
 
 async function makeGenerationRequest(requestBody) {
-    api.apiKey = state.apiKey;
-
     const result = await api.request('/chat/completions', requestBody, {
         title: 'Comparison Generator'
     });
@@ -1281,7 +1260,7 @@ function captureCurrentSettings() {
         aspectRatio: state.aspectRatio,
         variations: state.variations,
         negativePrompt: state.negativePrompt,
-        model: elements.aiModel.value
+        model: DEFAULT_MODEL
     };
 }
 
@@ -1468,36 +1447,6 @@ function setupEventListeners() {
     elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
         generateComparison();
-    });
-
-    // API Key
-    elements.saveApiKey.addEventListener('click', () => {
-        const key = elements.apiKey.value.trim();
-        if (key) {
-            state.apiKey = key;
-            SharedAPI.saveKey(key);
-            showSuccess('API key saved');
-            updateGenerateButton();
-        }
-    });
-
-    elements.apiKey.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            elements.saveApiKey.click();
-        }
-    });
-
-    // Settings toggle
-    elements.settingsToggle.addEventListener('click', () => {
-        elements.settingsSection.classList.toggle('open');
-    });
-
-    // Toggle API key visibility
-    elements.toggleApiKey.addEventListener('click', () => {
-        const input = elements.apiKey;
-        const isPassword = input.type === 'password';
-        input.type = isPassword ? 'text' : 'password';
     });
 
     // Comparison type tabs
@@ -1709,7 +1658,7 @@ function setupEventListeners() {
             } else {
                 const info = {
                     seed: state.lastSeed,
-                    model: elements.aiModel?.value || 'google/gemini-3-pro-image-preview',
+                    model: DEFAULT_MODEL,
                     dimensions: state.aspectRatio || '16:9',
                     style: state.visualStyle || 'Clean',
                     variations: state.generatedImages?.length || 1
@@ -1821,14 +1770,6 @@ async function init() {
     const accountContainer = document.getElementById('accountContainer');
     if (accountContainer && typeof AccountMenu !== 'undefined') {
         new AccountMenu(accountContainer);
-    }
-
-
-    // Load API key
-    const savedKey = SharedAPI.getKey();
-    if (savedKey) {
-        state.apiKey = savedKey;
-        elements.apiKey.value = savedKey;
     }
 
     setupEventListeners();

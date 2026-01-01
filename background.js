@@ -3,13 +3,14 @@
  * Remove and replace product backgrounds for e-commerce ready images
  */
 
+const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+
 // ============================================
 // STATE
 // ============================================
 
 const state = {
     // Core
-    apiKey: '',
     uploadedImage: null,
     uploadedImageBase64: null,
     generatedImageUrl: null,
@@ -117,14 +118,6 @@ function initElements() {
         outputQuality: document.getElementById('outputQuality'),
         seedInput: document.getElementById('seedInput'),
         negativePrompt: document.getElementById('negativePrompt'),
-
-        // API Settings
-        settingsSection: document.getElementById('settingsSection'),
-        settingsToggle: document.getElementById('settingsToggle'),
-        apiKey: document.getElementById('apiKey'),
-        toggleApiKey: document.getElementById('toggleApiKey'),
-        apiStatus: document.getElementById('apiStatus'),
-        aiModel: document.getElementById('aiModel'),
 
         // Generate
         generateBtn: document.getElementById('generateBtn'),
@@ -1207,21 +1200,6 @@ function setupEventListeners() {
         state.negativePrompt = e.target.value;
     });
 
-    // API key handling
-    elements.apiKey?.addEventListener('change', () => {
-        const key = elements.apiKey.value.trim();
-        if (key) {
-            state.apiKey = key;
-            SharedAPI.saveKey(key);
-            SharedUI.updateApiStatus(elements.apiStatus, true);
-        }
-    });
-
-    elements.toggleApiKey?.addEventListener('click', () => {
-        const type = elements.apiKey.type === 'password' ? 'text' : 'password';
-        elements.apiKey.type = type;
-    });
-
     // Actions
     elements.downloadBtn?.addEventListener('click', downloadImage);
     elements.favoriteBtn?.addEventListener('click', saveFavorite);
@@ -1357,15 +1335,6 @@ function setupEventListeners() {
 // INITIALIZATION
 // ============================================
 
-function loadApiKey() {
-    const savedKey = SharedAPI.getKey();
-    if (savedKey) {
-        state.apiKey = savedKey;
-        elements.apiKey.value = savedKey;
-        SharedUI.updateApiStatus(elements.apiStatus, true);
-    }
-}
-
 function loadHistory() {
     history.load();
     renderHistory();
@@ -1389,10 +1358,6 @@ function init() {
     if (accountContainer && typeof AccountMenu !== 'undefined') {
         new AccountMenu(accountContainer);
     }
-
-
-    // Load API key
-    loadApiKey();
 
     // Setup event listeners
     setupEventListeners();

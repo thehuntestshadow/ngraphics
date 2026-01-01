@@ -68,35 +68,6 @@ const StudioBootstrap = {
     },
 
     /**
-     * Load API key from storage
-     * @param {Object} state - State object to update
-     * @param {HTMLInputElement} apiKeyInput - API key input element
-     * @param {HTMLElement} apiStatusEl - API status indicator element
-     */
-    loadApiKey(state, apiKeyInput, apiStatusEl) {
-        const savedKey = SharedAPI.getKey();
-        if (savedKey) {
-            state.apiKey = savedKey;
-            if (apiKeyInput) apiKeyInput.value = savedKey;
-            if (apiStatusEl) SharedUI.updateApiStatus(apiStatusEl, true);
-        }
-    },
-
-    /**
-     * Save API key to storage
-     * @param {string} key - API key to save
-     * @param {Object} state - State object to update
-     * @param {HTMLElement} apiStatusEl - API status indicator element
-     */
-    saveApiKey(key, state, apiStatusEl) {
-        if (key) {
-            state.apiKey = key;
-            SharedAPI.saveKey(key);
-            if (apiStatusEl) SharedUI.updateApiStatus(apiStatusEl, true);
-        }
-    },
-
-    /**
      * Unified async action wrapper with loading states and error handling
      * @param {string} actionName - Name of the action (for logging/display)
      * @param {Function} asyncFn - Async function to execute

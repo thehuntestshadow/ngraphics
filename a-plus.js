@@ -162,7 +162,6 @@ function initElements() {
         // API
         apiToggle: document.getElementById('settingsToggle'),
         apiContent: document.getElementById('settingsSection'),
-        apiKey: document.getElementById('apiKey'),
         aiModel: document.getElementById('aiModel'),
 
         // Generate
@@ -1559,13 +1558,6 @@ function setupEventListeners() {
         SharedCollapsible.setup(elements.apiToggle, elements.apiContent);
     }
 
-    if (elements.apiKey) {
-        elements.apiKey.addEventListener('input', (e) => {
-            state.apiKey = e.target.value;
-            SharedAPI.save(e.target.value);
-            updateGenerateButton();
-        });
-    }
 
     if (elements.aiModel) {
         elements.aiModel.addEventListener('change', (e) => {
@@ -1700,12 +1692,6 @@ async function init() {
     history.setImageStore(imageStore);
     favorites.setImageStore(imageStore);
 
-    // Load API key
-    const savedKey = SharedAPI.getKey();
-    if (savedKey) {
-        state.apiKey = savedKey;
-        if (elements.apiKey) elements.apiKey.value = savedKey;
-    }
 
     // Setup event listeners
     setupEventListeners();

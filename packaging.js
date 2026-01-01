@@ -2,13 +2,12 @@
    PACKAGING MOCKUP - AI Packaging Visualization
    ============================================ */
 
+const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+
 // ============================================
 // STATE
 // ============================================
 const state = {
-    // Core
-    apiKey: localStorage.getItem('openrouter_api_key') || '',
-
     // Product
     productImage: null,
     productName: '',
@@ -36,7 +35,6 @@ const state = {
     // Advanced
     lighting: 'studio',
     background: 'white',
-    aiModel: 'google/gemini-3-pro-image-preview',
     useRandomSeed: true,
     seed: null,
     negativePrompt: '',
@@ -90,17 +88,9 @@ function initElements() {
         advancedSection: document.getElementById('advancedSection'),
         lighting: document.getElementById('lighting'),
         background: document.getElementById('background'),
-        aiModel: document.getElementById('aiModel'),
         randomSeedCheck: document.getElementById('randomSeedCheck'),
         seedInput: document.getElementById('seedInput'),
         negativePrompt: document.getElementById('negativePrompt'),
-
-        // API
-        apiKey: document.getElementById('apiKey'),
-        toggleApiKey: document.getElementById('toggleApiKey'),
-        saveApiKey: document.getElementById('saveApiKey'),
-        settingsToggle: document.getElementById('settingsToggle'),
-        settingsSection: document.getElementById('settingsSection'),
 
         // Generate
         generateBtn: document.getElementById('generateBtn'),
@@ -284,12 +274,6 @@ async function init() {
     // Setup event listeners
     setupEventListeners();
 
-    // Setup API
-    if (state.apiKey) {
-        elements.apiKey.value = state.apiKey;
-        api.apiKey = state.apiKey;
-    }
-
     // Setup keyboard shortcuts
     SharedKeyboard.setup({
         onGenerate: () => elements.generateBtn.click(),
@@ -298,7 +282,6 @@ async function init() {
 
     // Setup collapsible sections
     SharedCollapsible.setup(elements.advancedToggle, elements.advancedSection.querySelector('.advanced-content'));
-    SharedCollapsible.setup(elements.settingsToggle, elements.settingsSection.querySelector('.settings-content'));
 
     // Setup lightbox
     SharedLightbox.setup();
@@ -373,7 +356,6 @@ function setupEventListeners() {
     elements.aspectRatio.addEventListener('change', (e) => state.aspectRatio = e.target.value);
     elements.lighting.addEventListener('change', (e) => state.lighting = e.target.value);
     elements.background.addEventListener('change', (e) => state.background = e.target.value);
-    elements.aiModel.addEventListener('change', (e) => state.aiModel = e.target.value);
 
     // Seed
     elements.randomSeedCheck.addEventListener('change', (e) => {
@@ -415,18 +397,6 @@ function setupEventListeners() {
     // History & Favorites
     elements.clearHistoryBtn.addEventListener('click', clearHistory);
     elements.clearFavoritesBtn.addEventListener('click', clearFavorites);
-
-    // API Key
-    elements.toggleApiKey.addEventListener('click', () => {
-        elements.apiKey.type = elements.apiKey.type === 'password' ? 'text' : 'password';
-    });
-
-    elements.saveApiKey.addEventListener('click', () => {
-        state.apiKey = elements.apiKey.value.trim();
-        localStorage.setItem('openrouter_api_key', state.apiKey);
-        api.apiKey = state.apiKey;
-        showSuccess('API key saved');
-    });
 }
 
 // ============================================
@@ -452,13 +422,13 @@ function setupUpload() {
 }
 
 async function analyzeProduct() {
-    if (!state.productImage || !state.apiKey) return;
+    if (!state.productImage) return;
 
     try {
         const result = await api.analyzeImage({
             image: state.productImage,
             prompt: 'What is this product? Provide a short, marketable product name (2-5 words). Return only the name, nothing else.',
-            model: state.aiModel
+            model: DEFAULT_MODEL
         });
 
         if (result.text) {
@@ -542,11 +512,6 @@ async function generateMockup() {
         return;
     }
 
-    if (!state.apiKey) {
-        showError('Please enter your API key');
-        return;
-    }
-
     state.isGenerating = true;
     showLoading();
     updateLoadingStatus('Building mockup prompt...');
@@ -564,7 +529,7 @@ async function generateMockup() {
         if (state.variations === 1) {
             // Single image
             const result = await api.generateImage({
-                model: state.aiModel,
+                model: DEFAULT_MODEL,
                 prompt,
                 images: [state.productImage],
                 aspectRatio: state.aspectRatio,
@@ -581,7 +546,7 @@ async function generateMockup() {
             for (let i = 0; i < state.variations; i++) {
                 const varSeed = seed + i;
                 promises.push(api.generateImage({
-                    model: state.aiModel,
+                    model: DEFAULT_MODEL,
                     prompt,
                     images: [state.productImage],
                     aspectRatio: state.aspectRatio,
@@ -627,7 +592,7 @@ async function generateWithAdjustment() {
         const adjustedPrompt = `${state.lastPrompt} Additional requirements: ${feedback}`;
 
         const result = await api.generateImage({
-            model: state.aiModel,
+            model: DEFAULT_MODEL,
             prompt: adjustedPrompt,
             images: [state.productImage],
             aspectRatio: state.aspectRatio,
@@ -700,7 +665,7 @@ function updateImageInfo() {
         <div class="info-row"><span class="info-label">Type</span><span class="info-value">${state.packagingType}</span></div>
         <div class="info-row"><span class="info-label">Scene</span><span class="info-value">${state.scene}</span></div>
         <div class="info-row"><span class="info-label">Seed</span><span class="info-value">${state.lastSeed || 'N/A'}</span></div>
-        <div class="info-row"><span class="info-label">Model</span><span class="info-value">${state.aiModel.split('/')[1]}</span></div>
+        <div class="info-row"><span class="info-label">Model</span><span class="info-value">${DEFAULT_MODEL.split('/')[1]}</span></div>
     `;
     elements.imageInfoOverlay.innerHTML = info;
 }
@@ -754,7 +719,7 @@ async function saveToHistory() {
         packagingType: state.packagingType,
         scene: state.scene,
         seed: state.lastSeed,
-        model: state.aiModel,
+        model: DEFAULT_MODEL,
         prompt: state.lastPrompt
     });
 
@@ -780,7 +745,7 @@ async function saveToFavorites() {
         colorScheme: state.colorScheme,
         designStyle: state.designStyle,
         seed: state.lastSeed,
-        model: state.aiModel,
+        model: DEFAULT_MODEL,
         prompt: state.lastPrompt
     });
 

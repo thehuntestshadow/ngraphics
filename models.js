@@ -3,11 +3,13 @@
  * Generates in-context product photos with AI models
  */
 
+// Default model for image generation (handled by edge function)
+const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+
 // ============================================
 // APPLICATION STATE
 // ============================================
 const state = {
-    apiKey: '',
     uploadedImage: null,
     uploadedImageBase64: null,
     generatedImageUrl: null,
@@ -94,7 +96,6 @@ function initElements() {
         aspectRatio: document.getElementById('aspectRatio'),
         collageMode: document.getElementById('collageMode'),
         collageFaceOption: document.getElementById('collageFaceOption'),
-        aiModel: document.getElementById('aiModel'),
         negativePrompt: document.getElementById('negativePrompt'),
         // Seed control
         randomSeedCheck: document.getElementById('randomSeedCheck'),
@@ -120,13 +121,6 @@ function initElements() {
         sceneDetailInput: document.getElementById('sceneDetailInput'),
         sceneDetailText: document.getElementById('sceneDetailText'),
         sceneNameLabel: document.getElementById('sceneNameLabel'),
-
-        // Settings
-        settingsSection: document.getElementById('settingsSection'),
-        settingsToggle: document.getElementById('settingsToggle'),
-        apiKeyInput: document.getElementById('apiKey'),
-        toggleApiKeyBtn: document.getElementById('toggleApiKey'),
-        saveApiKeyBtn: document.getElementById('saveApiKey'),
 
         // Generate
         generateBtn: document.getElementById('generateBtn'),
@@ -236,27 +230,6 @@ function updateLoadingStatus(status) {
 }
 
 // ============================================
-// API KEY HANDLING (uses SharedAPI)
-// ============================================
-function loadApiKey() {
-    const savedKey = SharedAPI.getKey();
-    if (savedKey) {
-        state.apiKey = savedKey;
-        elements.apiKeyInput.value = savedKey;
-        SharedUI.updateApiStatus(elements.apiStatus, true);
-    }
-}
-
-function saveApiKey() {
-    const key = elements.apiKeyInput.value.trim();
-    if (SharedAPI.saveKey(key)) {
-        state.apiKey = key;
-        SharedUI.updateApiStatus(elements.apiStatus, true);
-        SharedUI.showSuccess(elements.successMessage, 'API key saved!');
-    }
-}
-
-// ============================================
 // IMAGE UPLOAD HANDLING (uses SharedUpload)
 // ============================================
 function setupImageUpload() {
@@ -287,18 +260,12 @@ function setupImageUpload() {
 async function analyzeProductImage() {
     if (!state.uploadedImageBase64) return;
 
-    if (!state.apiKey) {
-        // Don't show error, just skip analysis if no API key
-        return;
-    }
-
     // Show analyzing state in the description field
     elements.productDescription.value = '';
     elements.productDescription.placeholder = 'Analyzing image...';
     elements.productDescription.disabled = true;
 
     try {
-        api.apiKey = state.apiKey;
         const result = await api.analyzeImage({
             image: state.uploadedImageBase64,
             prompt: `Analyze this product image and return ONLY valid JSON (no markdown):
@@ -851,8 +818,6 @@ Style influence: ${styleStrength}%`;
 // IMAGE GENERATION (uses unified API client)
 // ============================================
 async function makeGenerationRequest(requestBody, retries = 3) {
-    api.apiKey = state.apiKey;
-
     const result = await api.request('/chat/completions', requestBody, {
         maxRetries: retries,
         title: 'HEFAISTOS Model Studio'
@@ -862,20 +827,13 @@ async function makeGenerationRequest(requestBody, retries = 3) {
 }
 
 async function generateModelPhoto() {
-    if (!state.apiKey) {
-        showError('Please enter your OpenRouter API key first');
-        // Open settings
-        elements.settingsSection.classList.add('open');
-        return;
-    }
-
     showLoading();
     updateLoadingStatus('Building prompt...');
 
     const prompt = generatePrompt();
     state.lastPrompt = prompt;
 
-    const model = elements.aiModel.value;
+    const model = DEFAULT_MODEL;
 
     try {
         updateLoadingStatus('Connecting to AI...');
@@ -1055,7 +1013,7 @@ ${feedback}
 
 Please regenerate the image with these specific changes applied.`;
 
-    const model = elements.aiModel.value;
+    const model = DEFAULT_MODEL;
 
     try {
         let messageContent;
@@ -1168,7 +1126,7 @@ async function clearHistory() {
 // ============================================
 function captureCurrentSettings() {
     return {
-        model: elements.aiModel?.value,
+        model: DEFAULT_MODEL,
         productType: state.productType,
         productDescription: elements.productDescription?.value || '',
         gender: state.gender,
@@ -1403,7 +1361,6 @@ function loadFavorite() {
     if (settings.contextDescription) state.contextDescription = settings.contextDescription;
 
     // Restore form values
-    if (elements.aiModel && settings.model) elements.aiModel.value = settings.model;
     if (elements.productDescription && settings.productDescription) {
         elements.productDescription.value = settings.productDescription;
     }
@@ -1768,19 +1725,6 @@ function setupEventListeners() {
         elements.advancedSection.classList.toggle('open');
     });
 
-    // Settings toggle
-    elements.settingsToggle?.addEventListener('click', () => {
-        elements.settingsSection.classList.toggle('open');
-    });
-
-    // API Key
-    elements.toggleApiKeyBtn?.addEventListener('click', () => {
-        const type = elements.apiKeyInput.type === 'password' ? 'text' : 'password';
-        elements.apiKeyInput.type = type;
-    });
-
-    elements.saveApiKeyBtn?.addEventListener('click', saveApiKey);
-
     // Download
     elements.downloadBtn?.addEventListener('click', downloadImage);
 
@@ -1952,7 +1896,7 @@ function setupEventListeners() {
 // ============================================
 function getCurrentSettings() {
     return {
-        model: elements.aiModel?.value,
+        model: DEFAULT_MODEL,
         productType: state.productType,
         gender: state.gender,
         age: state.age,
@@ -1995,7 +1939,6 @@ function applySettings(settings) {
     if (settings.variations) state.variations = settings.variations;
 
     // Update form elements
-    if (settings.model && elements.aiModel) elements.aiModel.value = settings.model;
     if (settings.ethnicity && elements.modelEthnicity) elements.modelEthnicity.value = settings.ethnicity;
     if (settings.bodyType && elements.modelBodyType) elements.modelBodyType.value = settings.bodyType;
     if (settings.hair && elements.modelHair) elements.modelHair.value = settings.hair;
@@ -2086,14 +2029,8 @@ function initCostEstimator() {
     const container = document.getElementById('costEstimatorContainer');
     if (!container) return;
 
-    const modelId = elements.aiModel?.value || 'google/gemini-3-pro-image-preview';
     const variations = state.variations || 1;
-    SharedCostEstimator.renderDisplay(modelId, variations, 500, container);
-
-    // Update when model changes
-    if (elements.aiModel) {
-        elements.aiModel.addEventListener('change', updateCostEstimator);
-    }
+    SharedCostEstimator.renderDisplay(DEFAULT_MODEL, variations, 500, container);
 
     // Update when variations change
     document.querySelectorAll('input[name="variations"]').forEach(radio => {
@@ -2108,9 +2045,8 @@ function updateCostEstimator() {
     const container = document.getElementById('costEstimatorContainer');
     if (!container) return;
 
-    const modelId = elements.aiModel?.value || 'google/gemini-3-pro-image-preview';
     const variations = state.variations || 1;
-    SharedCostEstimator.updateDisplay(container, modelId, variations, 500);
+    SharedCostEstimator.updateDisplay(container, DEFAULT_MODEL, variations, 500);
 }
 
 // ============================================
@@ -2132,7 +2068,6 @@ async function init() {
         new AccountMenu(accountContainer);
     }
 
-    loadApiKey();
     setupImageUpload();
     setupEventListeners();
 

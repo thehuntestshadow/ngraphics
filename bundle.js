@@ -3,11 +3,12 @@
  * Creates professional bundle/kit images from multiple product photos
  */
 
+const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+
 // ============================================
 // APPLICATION STATE
 // ============================================
 const state = {
-    apiKey: '',
     products: [], // Array of { id, imageBase64, thumbnail, name, description, analyzed }
     nextProductId: 1,
 
@@ -116,15 +117,6 @@ function initElements() {
     elements = {
         // Form
         form: document.getElementById('bundleForm'),
-
-        // API Settings
-        settingsSection: document.getElementById('settingsSection'),
-        settingsToggle: document.getElementById('settingsToggle'),
-        apiKey: document.getElementById('apiKey'),
-        toggleApiKey: document.getElementById('toggleApiKey'),
-        saveApiKey: document.getElementById('saveApiKey'),
-        apiStatus: document.getElementById('apiStatus'),
-        aiModel: document.getElementById('aiModel'),
 
         // Products
         productGrid: document.getElementById('productGrid'),
@@ -237,13 +229,11 @@ function showSuccess(message) {
 
 function updateGenerateButton() {
     const productCount = state.products.length;
-    const canGenerate = productCount >= 2 && state.apiKey && !state.isGenerating;
+    const canGenerate = productCount >= 2 && !state.isGenerating;
 
     elements.generateBtn.disabled = !canGenerate;
 
-    if (!state.apiKey) {
-        elements.generateHelper.textContent = 'Enter API key to generate';
-    } else if (productCount < 2) {
+    if (productCount < 2) {
         elements.generateHelper.textContent = `Add ${2 - productCount} more product${2 - productCount > 1 ? 's' : ''} to generate`;
     } else {
         elements.generateHelper.textContent = `Ready to generate with ${productCount} products`;
@@ -390,18 +380,10 @@ async function analyzeProduct(productId) {
     const product = state.products.find(p => p.id === productId);
     if (!product) return;
 
-    if (!state.apiKey) {
-        product.name = `Product ${product.id}`;
-        product.analyzed = false;
-        renderProductSlot(product.slotIndex, product);
-        return;
-    }
-
     const slot = elements.productGrid.querySelectorAll('.product-slot')[product.slotIndex];
     slot.classList.add('analyzing');
 
     try {
-        api.apiKey = state.apiKey;
         const result = await api.analyzeImage({
             image: product.imageBase64,
             model: 'google/gemini-2.0-flash-exp:free',
@@ -580,11 +562,6 @@ async function generateBundle() {
         return;
     }
 
-    if (!state.apiKey) {
-        showError('Please enter your OpenRouter API key');
-        return;
-    }
-
     state.isGenerating = true;
     updateGenerateButton();
 
@@ -690,11 +667,6 @@ async function generateWithAdjustment() {
         return;
     }
 
-    if (!state.apiKey) {
-        showError('Please enter your OpenRouter API key');
-        return;
-    }
-
     state.isGenerating = true;
     updateGenerateButton();
 
@@ -758,8 +730,6 @@ Keep the same overall composition and style, but apply the requested adjustments
 }
 
 async function makeGenerationRequest(requestBody) {
-    api.apiKey = state.apiKey;
-
     const result = await api.request('/chat/completions', requestBody, {
         title: 'Bundle Studio'
     });
@@ -1135,37 +1105,6 @@ function setupEventListeners() {
     elements.form.addEventListener('submit', (e) => {
         e.preventDefault();
         generateBundle();
-    });
-
-    // API Key
-    elements.saveApiKey.addEventListener('click', () => {
-        const key = elements.apiKey.value.trim();
-        if (key) {
-            state.apiKey = key;
-            SharedAPI.saveKey(key);
-            SharedUI.updateApiStatus(elements.apiStatus, true);
-            showSuccess('API key saved');
-            updateGenerateButton();
-        }
-    });
-
-    elements.apiKey.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            elements.saveApiKey.click();
-        }
-    });
-
-    // Settings toggle
-    elements.settingsToggle.addEventListener('click', () => {
-        elements.settingsSection.classList.toggle('open');
-    });
-
-    // Toggle API key visibility
-    elements.toggleApiKey.addEventListener('click', () => {
-        const input = elements.apiKey;
-        const isPassword = input.type === 'password';
-        input.type = isPassword ? 'text' : 'password';
     });
 
     // Product file inputs
@@ -1629,15 +1568,6 @@ async function init() {
     const accountContainer = document.getElementById('accountContainer');
     if (accountContainer && typeof AccountMenu !== 'undefined') {
         new AccountMenu(accountContainer);
-    }
-
-
-    // Load API key
-    const savedKey = SharedAPI.getKey();
-    if (savedKey) {
-        state.apiKey = savedKey;
-        elements.apiKey.value = savedKey;
-        SharedUI.updateApiStatus(elements.apiStatus, true);
     }
 
     setupEventListeners();

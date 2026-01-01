@@ -3,13 +3,15 @@
  * Main JavaScript file with all functionality
  */
 
+// Default model for image generation (handled by edge function)
+const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
+
 // ============================================
 // APPLICATION STATE
 // ============================================
 const state = {
     language: 'ro', // 'en' or 'ro'
     theme: 'dark', // 'dark' or 'light'
-    apiKey: '',
     uploadedImage: null,
     uploadedImageBase64: null,
     // Multi-angle references
@@ -219,19 +221,12 @@ function initElements() {
         titleHint: document.getElementById('titleHint'),
         charHint: document.getElementById('charHint'),
 
-        // API Key
-        apiKeyInput: document.getElementById('apiKey'),
-        toggleApiKeyBtn: document.getElementById('toggleApiKey'),
-        saveApiKeyBtn: document.getElementById('saveApiKey'),
-        apiStatus: document.getElementById('apiStatus'),
-
         // Messages
         errorMessage: document.getElementById('errorMessage'),
         successMessage: document.getElementById('successMessage'),
 
         // Form
         form: document.getElementById('infographicForm'),
-        aiModel: document.getElementById('aiModel'),
         uploadArea: document.getElementById('uploadArea'),
         productPhoto: document.getElementById('productPhoto'),
         imagePreview: document.getElementById('imagePreview'),
@@ -448,10 +443,6 @@ function initElements() {
         // AI Analyze
         analyzeImageBtn: document.getElementById('analyzeImageBtn'),
 
-        // Settings Section
-        settingsSection: document.getElementById('settingsSection'),
-        settingsToggle: document.getElementById('settingsToggle'),
-
         // Smart Regeneration
         smartRegenSection: document.getElementById('smartRegenSection'),
         smartRegenToggle: document.getElementById('smartRegenToggle'),
@@ -537,44 +528,6 @@ function loadTheme() {
 function toggleTheme() {
     SharedTheme.toggle();
     state.theme = SharedTheme.current;
-}
-
-// ============================================
-// API KEY HANDLING (uses SharedAPI)
-// ============================================
-function loadApiKey() {
-    const savedKey = SharedAPI.getKey();
-    if (savedKey) {
-        state.apiKey = savedKey;
-        elements.apiKeyInput.value = savedKey;
-    }
-}
-
-function updateApiStatus(connected) {
-    SharedUI.updateApiStatus(elements.apiStatus, connected);
-}
-
-function setupApiKeyHandlers() {
-    elements.toggleApiKeyBtn.addEventListener('click', () => {
-        const isPassword = elements.apiKeyInput.type === 'password';
-        elements.apiKeyInput.type = isPassword ? 'text' : 'password';
-    });
-
-    elements.saveApiKeyBtn.addEventListener('click', () => {
-        const key = elements.apiKeyInput.value.trim();
-        if (SharedAPI.saveKey(key)) {
-            state.apiKey = key;
-            updateApiStatus(true);
-            showSuccess('API key saved successfully!');
-        } else {
-            showError('Please enter a valid API key');
-        }
-    });
-
-    // Update status on load if key exists
-    if (state.apiKey) {
-        updateApiStatus(true);
-    }
 }
 
 // ============================================
@@ -1779,7 +1732,7 @@ function captureCurrentSettings() {
     });
 
     return {
-        model: elements.aiModel?.value,
+        model: DEFAULT_MODEL,
         style: elements.infographicStyle?.value,
         layout: elements.layoutTemplate?.value,
         aspectRatio: elements.aspectRatio?.value,
@@ -2114,7 +2067,6 @@ function loadFavorite() {
     const settings = fav.settings || {};
 
     // Restore form settings
-    if (elements.aiModel && settings.model) elements.aiModel.value = settings.model;
     if (elements.infographicStyle && settings.style) {
         elements.infographicStyle.value = settings.style;
         // Also update radio buttons to match
@@ -2611,10 +2563,7 @@ STYLE RULES:
 // API INTEGRATION (uses unified API client)
 // ============================================
 async function makeGenerationRequest(requestBody, retries = 3) {
-    // Set API key on client
-    api.apiKey = state.apiKey;
-
-    // Use the unified API client
+    // Use the unified API client (auth handled by edge function)
     const result = await api.request('/chat/completions', requestBody, {
         maxRetries: retries,
         title: 'AI Product Infographics Generator'
@@ -2625,12 +2574,6 @@ async function makeGenerationRequest(requestBody, retries = 3) {
 
 async function generateInfographic() {
     console.log('generateInfographic called');
-    console.log('API Key exists:', !!state.apiKey);
-
-    if (!state.apiKey) {
-        showError('Please enter your OpenRouter API key first');
-        return;
-    }
 
     const title = elements.productTitle.value.trim();
     if (!title) {
@@ -2648,7 +2591,7 @@ async function generateInfographic() {
     updateLoadingStatus('Preparing prompt...');
 
     state.lastPrompt = prompt;
-    const model = elements.aiModel.value;
+    const model = DEFAULT_MODEL;
 
     try {
         updateLoadingStatus('Connecting to AI...');
@@ -2816,15 +2759,10 @@ async function adjustInfographic() {
         return;
     }
 
-    if (!state.apiKey) {
-        showError('Please enter your OpenRouter API key first');
-        return;
-    }
-
     showLoading();
     updateLoadingStatus('Preparing adjustment...');
 
-    const model = elements.aiModel.value;
+    const model = DEFAULT_MODEL;
     const language = state.language === 'ro' ? 'Romanian' : 'English';
 
     const adjustPrompt = `I'm providing an infographic image that needs adjustments.
@@ -2844,10 +2782,6 @@ INSTRUCTIONS:
 Generate an adjusted version of this infographic based on the feedback above.`;
 
     try {
-        updateLoadingStatus('Sending adjustment request...');
-
-        api.apiKey = state.apiKey;
-
         updateLoadingStatus('Adjusting infographic...');
 
         const result = await api.generateImage({
@@ -2898,7 +2832,6 @@ async function generateAltText(imageUrl) {
 
         const prompt = `Generate a concise SEO-friendly alt text (1-2 sentences, max 125 characters) for a product infographic. Product: ${productTitle}. Key features: ${features}. The alt text should be descriptive and include the product name. Return ONLY the alt text, nothing else.`;
 
-        api.apiKey = state.apiKey;
         const result = await api.generateText({
             prompt,
             maxTokens: 100
@@ -2978,7 +2911,6 @@ Return ONLY valid JSON (no markdown, no code blocks):
   }
 }`;
 
-        api.apiKey = state.apiKey;
         const result = await api.generateText({
             prompt,
             maxTokens: 1000
@@ -3248,11 +3180,6 @@ Create a high-quality, marketing-ready image suitable for e-commerce and promoti
 }
 
 async function generateComplementaryImages() {
-    if (!state.apiKey) {
-        showError('Please enter your OpenRouter API key first');
-        return;
-    }
-
     if (!state.generatedImageUrl) {
         showError('Please generate a main infographic first');
         return;
@@ -3291,7 +3218,7 @@ async function generateComplementaryImages() {
     }
 
     const prompt = buildComplementaryPrompt();
-    const model = elements.aiModel.value;
+    const model = DEFAULT_MODEL;
 
     try {
         const requests = [];
@@ -3405,7 +3332,7 @@ function saveTemplatesToStorage() {
 
 function getCurrentSettings() {
     return {
-        model: elements.aiModel.value,
+        model: DEFAULT_MODEL,
         style: document.querySelector('input[name="style"]:checked')?.value || 'auto',
         layout: elements.layoutTemplate?.value || 'auto',
         aspectRatio: elements.aspectRatio?.value || 'auto',
@@ -3422,11 +3349,6 @@ function getCurrentSettings() {
 
 function applySettings(settings) {
     if (!settings) return;
-
-    // Model
-    if (settings.model && elements.aiModel) {
-        elements.aiModel.value = settings.model;
-    }
 
     // Style
     if (settings.style) {
@@ -3588,16 +3510,8 @@ function initCostEstimator() {
     if (!container) return;
 
     // Render initial display
-    const modelId = elements.aiModel?.value || 'google/gemini-3-pro-image-preview';
     const variations = state.variations || 1;
-    SharedCostEstimator.renderDisplay(modelId, variations, 500, container);
-
-    // Update when model changes
-    if (elements.aiModel) {
-        elements.aiModel.addEventListener('change', () => {
-            updateCostEstimator();
-        });
-    }
+    SharedCostEstimator.renderDisplay(DEFAULT_MODEL, variations, 500, container);
 
     // Update when variations change
     document.querySelectorAll('input[name="variations"]').forEach(radio => {
@@ -3612,9 +3526,8 @@ function updateCostEstimator() {
     const container = document.getElementById('costEstimatorContainer');
     if (!container) return;
 
-    const modelId = elements.aiModel?.value || 'google/gemini-3-pro-image-preview';
     const variations = state.variations || 1;
-    SharedCostEstimator.updateDisplay(container, modelId, variations, 500);
+    SharedCostEstimator.updateDisplay(container, DEFAULT_MODEL, variations, 500);
 }
 
 // ============================================
@@ -3626,11 +3539,6 @@ async function analyzeProductImage() {
         return;
     }
 
-    if (!state.apiKey) {
-        showError('Please enter your API key');
-        return;
-    }
-
     const btn = elements.analyzeImageBtn;
     const originalHTML = btn.innerHTML;
     btn.disabled = true;
@@ -3639,7 +3547,6 @@ async function analyzeProductImage() {
     try {
         const language = state.language === 'ro' ? 'Romanian' : 'English';
 
-        api.apiKey = state.apiKey;
         const result = await api.analyzeImage({
             image: state.uploadedImageBase64,
             prompt: `Analyze this product image and extract information in JSON format.
@@ -3887,7 +3794,7 @@ async function smartRegenerate() {
     updateLoadingStatus('Smart regenerating with constraints...');
 
     try {
-        const model = elements.aiModel.value;
+        const model = DEFAULT_MODEL;
 
         const requestBody = {
             model: model,
@@ -4556,13 +4463,6 @@ function setupEventListeners() {
         elements.analyzeImageBtn.addEventListener('click', analyzeProductImage);
     }
 
-    // Settings Section toggle
-    if (elements.settingsToggle) {
-        elements.settingsToggle.addEventListener('click', () => {
-            elements.settingsSection.classList.toggle('open');
-        });
-    }
-
     // Smart Regeneration
     if (elements.smartRegenToggle) {
         elements.smartRegenToggle.addEventListener('click', () => {
@@ -4846,10 +4746,6 @@ function updateBatchControls() {
 
 async function startBatchProcessing() {
     if (state.batchProcessing) return;
-    if (!state.apiKey) {
-        showError('Please enter your API key first');
-        return;
-    }
 
     const pending = state.batchQueue.filter(i => i.status === 'pending');
     if (pending.length === 0) return;
@@ -4931,13 +4827,12 @@ async function generateForBatchItem(item) {
         });
     }
 
-    const model = elements.model.value;
     const aspectRatio = elements.aspectRatio.value !== 'auto'
         ? elements.aspectRatio.value
         : undefined;
 
     const requestBody = {
-        model,
+        model: DEFAULT_MODEL,
         messages,
         seed,
         modalities: ['image', 'text'],
@@ -4951,24 +4846,12 @@ async function generateForBatchItem(item) {
         requestBody.image_generation.negative_prompt = elements.negativePrompt.value.trim();
     }
 
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${state.apiKey}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': window.location.href,
-            'X-Title': 'HEFAISTOS - AI Product Infographics'
-        },
-        body: JSON.stringify(requestBody)
+    // Use the unified API client (auth handled by edge function)
+    const result = await api.request('/chat/completions', requestBody, {
+        title: 'AI Product Infographics Generator'
     });
 
-    if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
-        throw new Error(error.error?.message || `API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const imageUrl = SharedRequest.extractImageFromResponse(data);
+    const imageUrl = result.image;
 
     if (!imageUrl) {
         throw new Error('No image in response');
@@ -5086,8 +4969,6 @@ async function init() {
         new AccountMenu(accountContainer);
     }
 
-    loadApiKey();
-    setupApiKeyHandlers();
     setupImageUploadHandlers();
     setupAdvancedOptionsHandlers();
     setupColorPickerHandlers();
@@ -5117,10 +4998,6 @@ async function init() {
     // Initialize option examples
     initOptionExamples();
 
-    // Update API status on load
-    if (state.apiKey) {
-        updateApiStatus(true);
-    }
     console.log('HEFAISTOS: Ready!');
 }
 

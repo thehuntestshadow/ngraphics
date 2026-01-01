@@ -1196,21 +1196,6 @@ function setupEventListeners() {
         state.negativePrompt = e.target.value;
     });
 
-    // API key handling
-    elements.apiKey?.addEventListener('change', () => {
-        const key = elements.apiKey.value.trim();
-        if (key) {
-            state.apiKey = key;
-            SharedAPI.saveKey(key);
-            SharedUI.updateApiStatus(elements.apiStatus, true);
-        }
-    });
-
-    elements.toggleApiKey?.addEventListener('click', () => {
-        const type = elements.apiKey.type === 'password' ? 'text' : 'password';
-        elements.apiKey.type = type;
-    });
-
     // Actions
     elements.downloadAllBtn?.addEventListener('click', downloadAllAsZip);
     elements.favoriteBtn?.addEventListener('click', saveFavorite);
@@ -1313,15 +1298,6 @@ function setupEventListeners() {
 // INITIALIZATION
 // ============================================
 
-function loadApiKey() {
-    const savedKey = SharedAPI.getKey();
-    if (savedKey) {
-        state.apiKey = savedKey;
-        elements.apiKey.value = savedKey;
-        SharedUI.updateApiStatus(elements.apiStatus, true);
-    }
-}
-
 function loadHistory() {
     history.load();
     renderHistory();
@@ -1345,10 +1321,6 @@ function init() {
     if (accountContainer && typeof AccountMenu !== 'undefined') {
         new AccountMenu(accountContainer);
     }
-
-
-    // Load API key
-    loadApiKey();
 
     // Setup event listeners
     setupEventListeners();
