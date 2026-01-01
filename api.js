@@ -379,6 +379,7 @@ class APIClient {
 
     /**
      * Get usage data with caching to avoid repeated API calls
+     * Admins get unlimited usage
      * @returns {Promise<Object|null>} Usage data or null
      */
     async _getUsageWithCache() {
@@ -386,6 +387,21 @@ class APIClient {
 
         // Return cached usage if still valid
         if (this._cachedUsage && (now - this._usageCacheTime) < this._usageCacheTTL) {
+            return this._cachedUsage;
+        }
+
+        // Admins get unlimited usage
+        if (await ngSupabase.isAdmin()) {
+            this._cachedUsage = {
+                tier: 'admin',
+                tierLabel: 'Admin',
+                status: 'active',
+                generationsUsed: 0,
+                generationsLimit: Infinity,
+                creditsBalance: Infinity,
+                isUnlimited: true
+            };
+            this._usageCacheTime = now;
             return this._cachedUsage;
         }
 
@@ -430,13 +446,18 @@ class APIClient {
 
     /**
      * Check if current user can use the API
-     * All users must be authenticated with a paid subscription
+     * All users must be authenticated with a paid subscription (admins bypass)
      * @returns {Promise<{canUse: boolean, reason?: string}>}
      */
     async _checkAccess() {
         // Must be authenticated
         if (typeof ngSupabase === 'undefined' || !ngSupabase.isAuthenticated) {
             return { canUse: false, reason: 'AUTH_REQUIRED' };
+        }
+
+        // Admins have unlimited access
+        if (await ngSupabase.isAdmin()) {
+            return { canUse: true };
         }
 
         // Get usage data (includes tier info)

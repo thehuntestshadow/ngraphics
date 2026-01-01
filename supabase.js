@@ -24,6 +24,10 @@ class SupabaseClient {
         this._listeners = new Map();
         this._initialized = false;
         this._initPromise = null;
+        // Admin status cache
+        this._isAdmin = null;
+        this._adminCheckTime = 0;
+        this._adminCacheTTL = 60000; // 1 minute cache
     }
 
     /**
@@ -232,6 +236,7 @@ class SupabaseClient {
         this._user = null;
         this._session = null;
         this._syncEnabled = false;
+        this.clearAdminCache();
     }
 
     /**
@@ -300,6 +305,44 @@ class SupabaseClient {
 
         if (error) throw error;
         return data;
+    }
+
+    /**
+     * Check if current user is an admin (cached)
+     * @returns {Promise<boolean>} True if user is admin
+     */
+    async isAdmin() {
+        if (!this.isAuthenticated) return false;
+
+        const now = Date.now();
+        // Return cached value if still valid
+        if (this._isAdmin !== null && (now - this._adminCheckTime) < this._adminCacheTTL) {
+            return this._isAdmin;
+        }
+
+        try {
+            await this.init();
+            const { data, error } = await this._client
+                .from('profiles')
+                .select('is_admin')
+                .eq('id', this._user.id)
+                .single();
+
+            this._isAdmin = !error && data?.is_admin === true;
+            this._adminCheckTime = now;
+            return this._isAdmin;
+        } catch (error) {
+            console.warn('[Supabase] Admin check failed:', error.message);
+            return false;
+        }
+    }
+
+    /**
+     * Clear admin cache (call on sign out)
+     */
+    clearAdminCache() {
+        this._isAdmin = null;
+        this._adminCheckTime = 0;
     }
 
     /**
