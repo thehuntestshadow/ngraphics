@@ -36,16 +36,18 @@ serve(async (req) => {
       )
     }
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    )
+    const token = authHeader.replace('Bearer ', '')
+    const { data, error: authError } = await supabase.auth.getUser(token)
 
-    if (authError || !user) {
+    if (authError || !data?.user) {
       return new Response(
         JSON.stringify({ error: 'Unauthorized', code: 'AUTH_ERROR' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
+
+    const user = data.user
+    let isAdmin = false
 
     // Check if user is admin (bypass all restrictions)
     const { data: profile } = await supabase
@@ -54,7 +56,7 @@ serve(async (req) => {
       .eq('id', user.id)
       .single()
 
-    const isAdmin = profile?.is_admin === true
+    isAdmin = profile?.is_admin === true
 
     // Get subscription and check tier
     const { data: sub } = await supabase
