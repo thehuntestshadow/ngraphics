@@ -64,8 +64,6 @@ Standard DOM IDs ensure consistency across studios. Use these exact IDs for elem
 | `imageInfoBtn` | `<button>` | Toggle image info overlay |
 | `imageInfoOverlay` | `<div>` | Image metadata display |
 | `seedInput` | `<input>` | Seed control input |
-| `apiKey` | `<input>` | API key input |
-| `apiStatus` | `<div>` | API connection status |
 | `presetSelectorContainer` | `<div>` | Preset selector mount point |
 | `costEstimatorContainer` | `<div>` | Cost estimator mount point |
 
@@ -615,7 +613,7 @@ if (elements.autoModeToggle) {
 async function onImageUpload(base64, file) {
     // ... setup preview ...
 
-    if (state.autoMode && state.apiKey) {
+    if (state.autoMode) {
         showLoading();
         updateLoadingStatus('Analyzing product...');
         await analyzeProductImage();  // This chains to generation
@@ -627,12 +625,10 @@ async function onImageUpload(base64, file) {
 
 ### Behavior
 
-| Auto Mode | Has API Key | Behavior |
-|-----------|-------------|----------|
-| ON | Yes | Upload → Analyze → Auto-generate → Result |
-| ON | No | Upload → Prompt for API key |
-| OFF | Yes | Upload → Analyze → Wait for Generate click |
-| OFF | No | Upload → Wait for Generate click |
+| Auto Mode | Behavior |
+|-----------|----------|
+| ON | Upload → Analyze → Auto-generate → Result |
+| OFF | Upload → Analyze → Wait for Generate click |
 
 ---
 
@@ -775,101 +771,6 @@ The generate button uses an **animated rainbow gradient** with Apple colors:
 
 <!-- WRONG: btn-icon class on SVG -->
 <svg class="btn-icon">...</svg>
-```
-
----
-
-## API Settings Toggle
-
-Collapsible section for API key and model selection. Uses simple sun-ray gear icon.
-
-### Required Structure
-
-```html
-<div class="settings-section" id="settingsSection">
-    <button type="button" class="settings-toggle" id="settingsToggle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-        </svg>
-        <span>API Settings</span>
-        <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"/>
-        </svg>
-    </button>
-    <div class="settings-content">
-        <div class="api-key-group">
-            <label class="option-label">OpenRouter API Key</label>
-            <div class="api-key-input">
-                <input type="password" class="input-field" id="apiKey" placeholder="sk-or-...">
-                <button type="button" class="btn-icon" id="toggleApiKey" title="Show/Hide">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                </button>
-                <button type="button" class="btn-secondary btn-sm" id="saveApiKey">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
-```
-
-### Required Elements
-
-| Element | Class/ID | Required | Notes |
-|---------|----------|----------|-------|
-| Container | `.settings-section` `#settingsSection` | ✅ | Wraps toggle and content |
-| Toggle button | `.settings-toggle` `#settingsToggle` | ✅ | Collapsible trigger |
-| Gear icon | Sun-ray gear SVG | ✅ | Simple rays, not complex gear teeth |
-| Label | `<span>API Settings</span>` | ✅ | Text label |
-| Chevron | `.toggle-chevron` | ✅ | Down arrow, rotates when open |
-| Content | `.settings-content` | ✅ | Collapsed by default |
-| API key group | `.api-key-group` | ✅ | Contains label and input row |
-| Input row | `.api-key-input` | ✅ | Contains input, eye button, save button |
-| API input | `#apiKey` | ✅ | Password type, placeholder "sk-or-..." |
-| Toggle visibility | `#toggleApiKey` | ✅ | Eye icon button |
-| Save button | `#saveApiKey` | ✅ | `.btn-secondary .btn-sm` |
-
-### Icons
-
-```html
-<!-- Sun-ray gear icon (CORRECT) -->
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <circle cx="12" cy="12" r="3"/>
-    <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-</svg>
-
-<!-- Eye icon for show/hide -->
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-    <circle cx="12" cy="12" r="3"/>
-</svg>
-
-<!-- Chevron down -->
-<svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <polyline points="6 9 12 15 18 9"/>
-</svg>
-```
-
-### WRONG Patterns (Do NOT use)
-
-```html
-<!-- WRONG: Complex gear icon with teeth -->
-<svg viewBox="0 0 24 24">
-    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06..."/>
-</svg>
-
-<!-- WRONG: Inline API section without toggle -->
-<div class="api-section">
-    <input type="password" id="apiKeyInput">
-</div>
-
-<!-- WRONG: Different input ID -->
-<input id="apiKeyInput">  <!-- Should be id="apiKey" -->
-
-<!-- WRONG: Different container classes -->
-<div class="api-input-row">  <!-- Should be .api-key-input -->
 ```
 
 ---
@@ -1586,16 +1487,7 @@ Before finishing a new page, verify:
 - [ ] Uses `.advanced-section` with `.advanced-toggle` button
 - [ ] Uses 3-slider mixer icon (`.toggle-icon`)
 - [ ] Has `.toggle-chevron` for expand indicator
-- [ ] Contains AI Model select with `#aiModel`
 - [ ] Placed BEFORE generate button
-
-**API Settings:**
-- [ ] Uses `.settings-section` with `.settings-toggle` button
-- [ ] Uses sun-ray gear icon (simple, not complex gear teeth)
-- [ ] Has `.toggle-chevron` for expand indicator
-- [ ] Uses `.api-key-input` container with input `#apiKey`
-- [ ] Has eye toggle button `#toggleApiKey` and save button `#saveApiKey`
-- [ ] Placed AFTER generate button
 
 **History/Favorites:**
 - [ ] History and Favorites are stacked (not tabbed)

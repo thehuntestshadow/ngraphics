@@ -108,7 +108,7 @@ Before adding a new tool, it should:
 - **Config System** - Environment-based configuration
 - **Security** - XSS prevention, production logging toggle
 - **Commercial Ready** - Subscription tiers, usage tracking schema
-- **Settings Modal** - User preferences, API keys, appearance, danger zone actions
+- **Settings Modal** - User preferences, appearance, danger zone actions
 - **Admin Panel** - User management, system analytics, role management
 
 ---
@@ -823,12 +823,12 @@ Things explicitly out of scope:
 
 ## Commercial Architecture
 
-### Business Model: Freemium Hybrid
+### Business Model: Subscription Required
 
 | Tier | Price | Generations | Key Features |
 |------|-------|-------------|--------------|
-| **Free** | $0 | BYOK | Bring your own API key, local storage |
-| **Pro** | $19/mo | 200/mo | API included, cloud sync, no watermark |
+| **Free** | $0 | 0 | Browse, local history only, no generation |
+| **Pro** | $19/mo | 200/mo | Full access, cloud sync, no watermark |
 | **Business** | $49/mo | 1000/mo | Team seats, API access, priority |
 | **Enterprise** | Custom | Unlimited | SLA, custom integrations |
 

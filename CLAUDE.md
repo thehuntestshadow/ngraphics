@@ -85,7 +85,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `workers.js` - Web Worker and Service Worker managers
 - `image-worker.js` - Web Worker for image processing (compression, thumbnails, enhancement)
 - `service-worker.js` - Service Worker for caching and offline support
-- `supabase.js` - Supabase client wrapper (auth, profiles, API key storage, usage tracking)
+- `supabase.js` - Supabase client wrapper (auth, profiles, usage tracking)
 - `auth-ui.js` - Authentication UI (login/signup modal, account menu, settings modal with language settings, usage display)
 - `cloud-sync.js` - Cloud sync manager (history/favorites sync to Supabase)
 
@@ -151,7 +151,6 @@ async function init() {
         }
     });
 
-    StudioBootstrap.loadApiKey(state, elements.apiKey, elements.apiStatus);
     setupEventListeners();
     renderHistory();
     renderFavorites();
@@ -234,13 +233,13 @@ const result = await api.analyzeImage({
 Main page for creating product marketing infographics.
 
 ### Structure
-- `state` object: Manages language, API key, uploaded images, generated images, history
+- `state` object: Manages language, uploaded images, generated images, history
 - `elements` object: Cached DOM references (initialized in `initElements()`)
 - `iconSuggestions` map: Keyword-to-icon mapping for smart icon suggestions
 
 ### Key Functions
 - `generatePrompt()`: Builds comprehensive AI prompt based on all settings
-- `generateInfographic()`: Makes API call to OpenRouter with multimodal support
+- `generateInfographic()`: Makes API call via edge function with multimodal support
 - `enhanceImage()`: Client-side auto-levels and contrast adjustment
 
 ### Features
@@ -809,7 +808,6 @@ Each page has `generatePrompt()` that builds AI prompts by concatenating descrip
 ## Shared Utilities (`shared.js`)
 
 ### Classes
-- **SharedAPI**: API key management (localStorage)
 - **SharedRequest**: `extractImageFromResponse()`, `makeRequest()`, `formatError()`
 - **SharedHistory**: Hybrid storage with `add()`, `remove()`, `clear()`, `getImages()`, `findById()`, `getAll()`
 - **ImageStore**: IndexedDB storage with `init()`, `save()`, `get()`, `delete()`, `clear()`
@@ -819,7 +817,7 @@ Each page has `generatePrompt()` that builds AI prompts by concatenating descrip
 - **SharedTheme**: `init()`, `apply()`, `toggle()`, `setupToggle()` - Note: All HTML pages include inline `<script>` in `<head>` to prevent theme flash
 - **SharedHeader**: `render(options)` - consistent header across pages
 - **SharedDashboard**: `loadAllData()`, `getMetrics()`, `getGenerationTrends()`, `getModelUsage()`, `getRecentActivity()`, `getStorageEstimate()`, `clearOldItems()`
-- **SharedUI**: `showError()`, `showSuccess()`, `updateApiStatus()`, `showLoading()`, `hideLoading()`, `toast()`, `confirm()`, `showUpgradeModal()`, `showCreditsPrompt()`, `showUsageWarning()`
+- **SharedUI**: `showError()`, `showSuccess()`, `showLoading()`, `hideLoading()`, `toast()`, `confirm()`, `showUpgradeModal()`, `showCreditsPrompt()`, `showUsageWarning()`
 - **SharedUpload**: `setup()`, `handleFile()`
 - **SharedLightbox**: `setup()`, `open()`, `close()`
 - **SharedDownload**: `downloadImage()`
