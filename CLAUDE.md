@@ -934,6 +934,7 @@ Each page has `generatePrompt()` that builds AI prompts by concatenating descrip
 
 ### Utility Objects
 - **SharedTheme**: `init()`, `apply()`, `toggle()`, `setupToggle()` - Note: All HTML pages include inline `<script>` in `<head>` to prevent theme flash
+- **SharedAutoMode**: `init({ studioId, toggleElement, state, defaultOn })`, `get(studioId)`, `set(studioId, enabled)` - standardized auto-generate toggle initialization
 - **SharedHeader**: `render(options)` - consistent header across pages
 - **SharedDashboard**: `loadAllData()`, `getMetrics()`, `getGenerationTrends()`, `getModelUsage()`, `getRecentActivity()`, `getStorageEstimate()`, `clearOldItems()`
 - **SharedUI**: `showError()`, `showSuccess()`, `showLoading()`, `hideLoading()`, `toast()`, `confirm()`, `showUpgradeModal()`, `showCreditsPrompt()`, `showUsageWarning()`

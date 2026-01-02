@@ -65,6 +65,64 @@ const SharedTheme = {
 };
 
 // ============================================
+// SHARED AUTO-MODE
+// Standardized auto-generate toggle handling
+// ============================================
+const SharedAutoMode = {
+    /**
+     * Initialize auto-mode toggle for a studio
+     * @param {Object} options
+     * @param {string} options.studioId - Studio identifier for storage key
+     * @param {HTMLInputElement} options.toggleElement - The checkbox input element
+     * @param {Object} options.state - State object to update (will set state.autoMode)
+     * @param {boolean} [options.defaultOn=true] - Default state if no saved preference
+     * @returns {boolean} Current auto-mode state
+     */
+    init({ studioId, toggleElement, state, defaultOn = true }) {
+        if (!toggleElement || !state) return defaultOn;
+
+        const storageKey = `${studioId}_auto_mode`;
+        const saved = localStorage.getItem(storageKey);
+
+        // Determine current state
+        // If saved value exists, use it; otherwise use default
+        const isEnabled = saved !== null ? saved !== 'false' : defaultOn;
+
+        // Update state and UI
+        state.autoMode = isEnabled;
+        toggleElement.checked = isEnabled;
+
+        // Set up change listener
+        toggleElement.addEventListener('change', (e) => {
+            state.autoMode = e.target.checked;
+            localStorage.setItem(storageKey, state.autoMode);
+        });
+
+        return isEnabled;
+    },
+
+    /**
+     * Get auto-mode state for a studio (without initializing)
+     * @param {string} studioId - Studio identifier
+     * @param {boolean} [defaultOn=true] - Default if no saved preference
+     * @returns {boolean}
+     */
+    get(studioId, defaultOn = true) {
+        const saved = localStorage.getItem(`${studioId}_auto_mode`);
+        return saved !== null ? saved !== 'false' : defaultOn;
+    },
+
+    /**
+     * Set auto-mode state for a studio
+     * @param {string} studioId - Studio identifier
+     * @param {boolean} enabled - New state
+     */
+    set(studioId, enabled) {
+        localStorage.setItem(`${studioId}_auto_mode`, enabled);
+    }
+};
+
+// ============================================
 // SHARED HEADER
 // ============================================
 const SharedHeader = {

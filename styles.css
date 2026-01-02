@@ -2042,6 +2042,105 @@ textarea::placeholder {
     color: var(--text-muted);
 }
 
+/* ============================================
+   AUTO-MODE TOGGLE
+   "Auto-generate on upload" control
+   ============================================ */
+
+.auto-mode-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    transition: border-color var(--duration-fast) ease;
+}
+
+.auto-mode-row:hover {
+    border-color: var(--border-default);
+}
+
+.auto-mode-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.auto-mode-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    background: var(--accent-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--apple-blue);
+}
+
+.auto-mode-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.auto-mode-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.auto-mode-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.auto-mode-hint {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Compact variant (legacy support) */
+.auto-mode-row.compact {
+    padding: 10px 12px;
+    margin-bottom: 12px;
+}
+
+.auto-mode-row.compact .auto-mode-icon {
+    display: none;
+}
+
+.auto-mode-row.compact .auto-mode-hint {
+    display: none;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+    .auto-mode-row {
+        padding: 12px 14px;
+    }
+
+    .auto-mode-icon {
+        width: 28px;
+        height: 28px;
+    }
+
+    .auto-mode-hint {
+        display: none;
+    }
+}
+
 .callout-lines-options {
     display: none;
     margin-top: 14px;

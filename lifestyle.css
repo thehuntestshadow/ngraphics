@@ -2,23 +2,7 @@
    LIFESTYLE STUDIO STYLES
    ============================================ */
 
-/* Auto Mode Toggle */
-.auto-mode-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    padding: 10px 12px;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
-}
-
-.auto-mode-label {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-}
+/* Auto Mode Toggle - Now in styles.css */
 
 /* Required Badge */
 .required-badge {

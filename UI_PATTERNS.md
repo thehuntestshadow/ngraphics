@@ -559,10 +559,36 @@ if (elements.someToggle) {
 
 For "auto-generate on upload" and similar auto-action preferences. Placed near the upload area to indicate immediate behavior.
 
-### Required Structure
+### Full Structure (Recommended)
+
+The enhanced pattern includes an icon and hint text for better UX:
 
 ```html
 <div class="auto-mode-row">
+    <div class="auto-mode-info">
+        <div class="auto-mode-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+        </div>
+        <div class="auto-mode-text">
+            <span class="auto-mode-label">Auto-generate on upload</span>
+            <span class="auto-mode-hint">Instantly create when image is added</span>
+        </div>
+    </div>
+    <label class="toggle-label">
+        <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
+        <span class="toggle-switch"></span>
+    </label>
+</div>
+```
+
+### Compact Structure (Legacy)
+
+For tighter layouts, use the compact variant:
+
+```html
+<div class="auto-mode-row compact">
     <span class="auto-mode-label">Auto-generate on upload</span>
     <label class="toggle-label">
         <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
@@ -571,28 +597,63 @@ For "auto-generate on upload" and similar auto-action preferences. Placed near t
 </div>
 ```
 
-### Required CSS
+### Required Elements
+
+| Element | Class | Required | Notes |
+|---------|-------|----------|-------|
+| Container | `.auto-mode-row` | Yes | Wraps everything |
+| Info wrapper | `.auto-mode-info` | Recommended | Groups icon and text |
+| Icon container | `.auto-mode-icon` | Recommended | 32x32 icon box |
+| Text wrapper | `.auto-mode-text` | Recommended | Groups label and hint |
+| Label | `.auto-mode-label` | Yes | Main toggle text |
+| Hint | `.auto-mode-hint` | Recommended | Explains behavior |
+| Toggle | `.toggle-label` | Yes | Standard toggle switch |
+
+### CSS (in styles.css)
+
+The auto-mode styles are included in `styles.css`:
 
 ```css
 .auto-mode-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 12px;
-    padding: 10px 12px;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
     background: var(--bg-surface);
     border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+}
+
+.auto-mode-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--accent-subtle);
     border-radius: var(--radius-sm);
+    color: var(--apple-blue);
 }
 
 .auto-mode-label {
     font-size: 0.8rem;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--text-primary);
 }
+
+.auto-mode-hint {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* Compact variant hides icon and hint */
+.auto-mode-row.compact { padding: 10px 12px; }
+.auto-mode-row.compact .auto-mode-icon,
+.auto-mode-row.compact .auto-mode-hint { display: none; }
 ```
 
-### JavaScript Pattern
+### JavaScript Pattern (Using SharedAutoMode)
+
+Use the `SharedAutoMode` helper for standardized initialization:
 
 ```javascript
 // State
@@ -601,15 +662,13 @@ const state = {
     // ...
 };
 
-// Load preference (default true)
-state.autoMode = localStorage.getItem('studio_auto_mode') !== 'false';
-if (elements.autoModeToggle) {
-    elements.autoModeToggle.checked = state.autoMode;
-    elements.autoModeToggle.addEventListener('change', (e) => {
-        state.autoMode = e.target.checked;
-        localStorage.setItem('studio_auto_mode', state.autoMode);
-    });
-}
+// Initialize with SharedAutoMode (recommended)
+SharedAutoMode.init({
+    studioId: STUDIO_ID,
+    toggleElement: elements.autoModeToggle,
+    state: state,
+    defaultOn: true  // Default to ON for quick experience
+});
 
 // In upload handler - chain generation if auto mode
 async function onImageUpload(base64, file) {
@@ -624,6 +683,29 @@ async function onImageUpload(base64, file) {
     }
 }
 ```
+
+### Manual JavaScript Pattern (Legacy)
+
+If not using `SharedAutoMode`:
+
+```javascript
+// Load preference (default true)
+state.autoMode = localStorage.getItem(`${STUDIO_ID}_auto_mode`) !== 'false';
+if (elements.autoModeToggle) {
+    elements.autoModeToggle.checked = state.autoMode;
+    elements.autoModeToggle.addEventListener('change', (e) => {
+        state.autoMode = e.target.checked;
+        localStorage.setItem(`${STUDIO_ID}_auto_mode`, state.autoMode);
+    });
+}
+```
+
+### Storage Key Convention
+
+Always use the pattern `{studioId}_auto_mode`:
+- `models_auto_mode`
+- `lifestyle_auto_mode`
+- `infographics_auto_mode`
 
 ### Behavior
 
