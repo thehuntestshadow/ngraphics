@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=13">
 </head>
 <body>
     <!-- Noise overlay -->
@@ -22,7 +22,7 @@
     <header class="site-header">
         <div class="header-content">
             <div class="logo-group">
-                <span class="logo-title">HEFAISTOS</span>
+                <a href="index.html" class="logo-title">HEFAISTOS</a>
             </div>
             <div class="page-title-center">
                 <span class="page-title-text">Infographic Studio</span>
@@ -495,19 +495,14 @@
                                     </div>
                                     <div class="field-group">
                                         <label class="field-label" data-tooltip="Image dimensions. Use 1:1 for square, 9:16 for stories, 16:9 for banners.">Aspect Ratio</label>
-                                        <div class="aspect-ratio-preview">
-                                            <select class="select-field select-sm" id="aspectRatio">
-                                                <option value="auto">Auto</option>
-                                                <option value="1:1">1:1</option>
-                                                <option value="2:3">2:3</option>
-                                                <option value="4:5">4:5</option>
-                                                <option value="16:9">16:9</option>
-                                                <option value="9:16">9:16</option>
-                                            </select>
-                                            <div class="aspect-preview-box" id="aspectPreviewBox">
-                                                <div class="aspect-preview-inner" id="aspectPreviewInner"></div>
-                                            </div>
-                                        </div>
+                                        <select class="select-field select-sm" id="aspectRatio">
+                                            <option value="auto">Auto</option>
+                                            <option value="1:1">1:1</option>
+                                            <option value="2:3">2:3</option>
+                                            <option value="4:5">4:5</option>
+                                            <option value="16:9">16:9</option>
+                                            <option value="9:16">9:16</option>
+                                        </select>
                                     </div>
                                     <div class="field-group">
                                         <label class="field-label" data-tooltip="How much of the product to show. Close-up focuses on details, In Context places it in a real-world setting.">Product Focus</label>

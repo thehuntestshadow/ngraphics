@@ -3,7 +3,7 @@
  * Handles caching, offline support, and background sync
  */
 
-const CACHE_VERSION = 'v33';
+const CACHE_VERSION = 'v35';
 const CACHE_NAME = `hefaistos-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
@@ -13,17 +13,19 @@ const PRECACHE_ASSETS = [
     '/models.html',
     '/bundle.html',
     '/docs.html',
+    '/settings.html',
     '/styles.css',
     '/models.css',
     '/bundle.css',
     '/docs.css',
+    '/settings.css',
     '/shared.js',
     '/core.js',
     '/api.js',
     '/components.js',
-    '/script.js',
     '/models.js',
-    '/bundle.js'
+    '/bundle.js',
+    '/settings.js'
 ];
 
 // Cache strategies
@@ -62,7 +64,12 @@ const CACHE_STRATEGIES = {
         } catch (error) {
             const cached = await caches.match(request);
             if (cached) return cached;
-            throw error;
+            // Return offline fallback instead of throwing
+            return new Response('Offline - page not cached', {
+                status: 503,
+                statusText: 'Service Unavailable',
+                headers: { 'Content-Type': 'text/html' }
+            });
         }
     },
 

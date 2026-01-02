@@ -70,7 +70,8 @@
 }
 
 /* Content Area */
-.settings-content {
+.settings-page .settings-content {
+    display: block;
     flex: 1;
     min-width: 0;
 }

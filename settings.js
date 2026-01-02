@@ -17,18 +17,7 @@ const STUDIOS = [
     'export_center', 'ad_creative', 'model_video'
 ];
 
-const LANGUAGES = [
-    { code: 'en', name: 'English', native: 'English' },
-    { code: 'ro', name: 'Romanian', native: 'Română' },
-    { code: 'de', name: 'German', native: 'Deutsch' },
-    { code: 'fr', name: 'French', native: 'Français' },
-    { code: 'es', name: 'Spanish', native: 'Español' },
-    { code: 'it', name: 'Italian', native: 'Italiano' },
-    { code: 'pt', name: 'Portuguese', native: 'Português' },
-    { code: 'nl', name: 'Dutch', native: 'Nederlands' },
-    { code: 'pl', name: 'Polish', native: 'Polski' },
-    { code: 'cs', name: 'Czech', native: 'Čeština' }
-];
+// LANGUAGES is provided by i18n.js (loaded before this file)
 
 // ============================================
 // 2. STATE & ELEMENTS
