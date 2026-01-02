@@ -82,6 +82,10 @@ function initElements() {
         // Context options
         contextOptions: document.getElementById('contextOptions'),
 
+        // Basic settings (collapsible)
+        basicSection: document.getElementById('basicSection'),
+        basicToggle: document.getElementById('basicToggle'),
+
         // Advanced
         advancedSection: document.getElementById('advancedSection'),
         advancedToggle: document.getElementById('advancedToggle'),
@@ -997,6 +1001,13 @@ function setupEventListeners() {
     });
     elements.background?.addEventListener('change', (e) => {
         state.background = e.target.value;
+    });
+
+    // Basic settings toggle
+    elements.basicToggle?.addEventListener('click', () => {
+        elements.basicSection.classList.toggle('open');
+        const isOpen = elements.basicSection.classList.contains('open');
+        elements.basicToggle.setAttribute('aria-expanded', isOpen);
     });
 
     // Advanced toggle

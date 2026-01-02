@@ -91,6 +91,10 @@ function initElements() {
         bodyTypeOption: document.getElementById('bodyTypeOption'),
         modelHair: document.getElementById('modelHair'),
 
+        // Basic settings (collapsible)
+        basicSection: document.getElementById('basicSection'),
+        basicToggle: document.getElementById('basicToggle'),
+
         // Advanced options
         advancedSection: document.getElementById('advancedSection'),
         advancedToggle: document.getElementById('advancedToggle'),
@@ -2034,6 +2038,13 @@ function setupEventListeners() {
             }
         });
     }
+
+    // Basic settings toggle
+    elements.basicToggle?.addEventListener('click', () => {
+        elements.basicSection.classList.toggle('open');
+        const isOpen = elements.basicSection.classList.contains('open');
+        elements.basicToggle.setAttribute('aria-expanded', isOpen);
+    });
 
     // Advanced toggle
     elements.advancedToggle?.addEventListener('click', () => {

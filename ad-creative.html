@@ -87,6 +87,15 @@
                 </div>
 
                 <form id="adForm" class="config-form">
+                    <!-- Auto-Generate Toggle (Always at top) -->
+                    <div class="auto-mode-row">
+                        <span class="auto-mode-label">Auto-generate on upload</span>
+                        <label class="toggle-label">
+                            <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
+                            <span class="toggle-switch"></span>
+                        </label>
+                    </div>
+
                     <!-- Platform Tabs -->
                     <div class="config-section">
                         <div class="section-label" data-tooltip="Select the advertising platform. Each platform has specific ad sizes and requirements.">
@@ -159,13 +168,6 @@
                             </span>
                             Product Image
                         </div>
-                        <div class="auto-mode-row">
-                            <span class="auto-mode-label">Auto-generate on upload</span>
-                            <label class="toggle-label">
-                                <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
-                                <span class="toggle-switch"></span>
-                            </label>
-                        </div>
                         <div class="upload-zone" id="uploadArea">
                             <div class="upload-content">
                                 <div class="upload-icon">
@@ -191,19 +193,32 @@
                         </div>
                     </div>
 
-                    <!-- Ad Content -->
-                    <div class="config-section">
-                        <div class="section-label" data-tooltip="Add text content for your ad. Keep it short and impactful.">
-                            <span class="label-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="17" y1="10" x2="3" y2="10"/>
-                                    <line x1="21" y1="6" x2="3" y2="6"/>
-                                    <line x1="21" y1="14" x2="3" y2="14"/>
-                                    <line x1="17" y1="18" x2="3" y2="18"/>
-                                </svg>
-                            </span>
-                            Ad Content
-                        </div>
+                    <!-- Basic Settings (Collapsible) -->
+                    <div class="advanced-section" id="basicSection">
+                        <button type="button" class="advanced-toggle" id="basicToggle" aria-expanded="false" aria-controls="basicContent">
+                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                            </svg>
+                            <span>Basic Settings</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="advanced-content" id="basicContent">
+                            <!-- Ad Content -->
+                            <div class="config-section">
+                                <div class="section-label" data-tooltip="Add text content for your ad. Keep it short and impactful.">
+                                    <span class="label-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="17" y1="10" x2="3" y2="10"/>
+                                            <line x1="21" y1="6" x2="3" y2="6"/>
+                                            <line x1="21" y1="14" x2="3" y2="14"/>
+                                            <line x1="17" y1="18" x2="3" y2="18"/>
+                                        </svg>
+                                    </span>
+                                    Ad Content
+                                </div>
                         <div class="form-group">
                             <label class="input-label">
                                 Headline
@@ -372,9 +387,11 @@
                             </button>
                         </div>
                     </div>
+                        </div><!-- /basicContent -->
+                    </div><!-- /basicSection -->
 
                     <!-- Advanced Section -->
-                    <div class="advanced-section">
+                    <div class="advanced-section" id="advancedSection">
                         <button type="button" class="advanced-toggle" id="advancedToggle">
                             <span class="toggle-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

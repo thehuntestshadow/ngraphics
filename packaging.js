@@ -88,6 +88,10 @@ function initElements() {
         // Output
         aspectRatio: document.getElementById('aspectRatio'),
 
+        // Basic settings (collapsible)
+        basicSection: document.getElementById('basicSection'),
+        basicToggle: document.getElementById('basicToggle'),
+
         // Advanced
         advancedToggle: document.getElementById('advancedToggle'),
         advancedSection: document.getElementById('advancedSection'),
@@ -288,6 +292,7 @@ async function init() {
     });
 
     // Setup collapsible sections
+    SharedCollapsible.setup(elements.basicToggle, elements.basicSection);
     SharedCollapsible.setup(elements.advancedToggle, elements.advancedSection);
 
     // Setup lightbox

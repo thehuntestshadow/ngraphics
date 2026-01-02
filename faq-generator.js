@@ -65,9 +65,9 @@ function initElements() {
         productName: document.getElementById('productName'),
         productDescription: document.getElementById('productDescription'),
 
-        // Advanced
-        advancedSection: document.getElementById('advancedSection'),
-        advancedToggle: document.getElementById('advancedToggle'),
+        // Settings (collapsible)
+        settingsSection: document.getElementById('settingsSection'),
+        settingsToggle: document.getElementById('settingsToggle'),
         includeSchema: document.getElementById('includeSchema'),
         customInstructions: document.getElementById('customInstructions'),
 
@@ -80,34 +80,35 @@ function initElements() {
         faqLoadingStatus: document.getElementById('faqLoadingStatus'),
         faqResults: document.getElementById('faqResults'),
         faqList: document.getElementById('faqList'),
+        faqTabs: document.getElementById('faqTabs'),
         copyAllFaqsBtn: document.getElementById('copyAllFaqsBtn'),
         copySchemaBtn: document.getElementById('copySchemaBtn'),
         copySelectedBtn: document.getElementById('copySelectedBtn'),
         exportMarkdownBtn: document.getElementById('exportMarkdownBtn'),
+        createImageBtn: document.getElementById('createImageBtn'),
+        favoriteBtn: document.getElementById('favoriteBtn'),
 
-        // Image Output
-        imagePlaceholder: document.getElementById('imagePlaceholder'),
+        // Image Output (inline)
+        imageResultInline: document.getElementById('imageResultInline'),
         imageLoading: document.getElementById('imageLoading'),
         imageLoadingStatus: document.getElementById('imageLoadingStatus'),
-        imageResult: document.getElementById('imageResult'),
+        imageResultWrap: document.getElementById('imageResultWrap'),
+        imageActions: document.getElementById('imageActions'),
         resultImage: document.getElementById('resultImage'),
         downloadImageBtn: document.getElementById('downloadImageBtn'),
         regenerateImageBtn: document.getElementById('regenerateImageBtn'),
-        favoriteBtn: document.getElementById('favoriteBtn'),
+        closeImageResult: document.getElementById('closeImageResult'),
 
-        // History
+        // History/Favorites (compact)
         historyPanel: document.getElementById('historyPanel'),
         historyGrid: document.getElementById('historyGrid'),
         historyCount: document.getElementById('historyCount'),
         historyEmpty: document.getElementById('historyEmpty'),
         clearHistoryBtn: document.getElementById('clearHistoryBtn'),
-
-        // Favorites
         favoritesPanel: document.getElementById('favoritesPanel'),
         favoritesGrid: document.getElementById('favoritesGrid'),
         favoritesCount: document.getElementById('favoritesCount'),
         favoritesEmpty: document.getElementById('favoritesEmpty'),
-        clearFavoritesBtn: document.getElementById('clearFavoritesBtn'),
 
         // Messages
         errorMessage: document.getElementById('errorMessage'),
@@ -265,11 +266,6 @@ async function generateFaqs() {
         showFaqResults();
         showSuccess('FAQs generated successfully!');
 
-        // Auto-generate image if we have FAQs
-        if (state.faqs.length > 0) {
-            generateFaqImage();
-        }
-
         await addToHistory();
 
     } catch (error) {
@@ -407,9 +403,10 @@ function updateFaqLoadingStatus(message) {
 }
 
 function showImageLoading() {
-    elements.imagePlaceholder.style.display = 'none';
-    elements.imageResult.style.display = 'none';
+    elements.imageResultInline.style.display = 'block';
     elements.imageLoading.style.display = 'flex';
+    elements.imageResultWrap.style.display = 'none';
+    elements.imageActions.style.display = 'none';
 }
 
 function hideImageLoading() {
@@ -419,7 +416,15 @@ function hideImageLoading() {
 function showImageResult(imageUrl) {
     hideImageLoading();
     elements.resultImage.src = imageUrl;
-    elements.imageResult.style.display = 'block';
+    elements.imageResultWrap.style.display = 'block';
+    elements.imageActions.style.display = 'flex';
+}
+
+function hideImageResult() {
+    elements.imageResultInline.style.display = 'none';
+    elements.imageLoading.style.display = 'none';
+    elements.imageResultWrap.style.display = 'none';
+    elements.imageActions.style.display = 'none';
 }
 
 function updateImageLoadingStatus(message) {
@@ -454,10 +459,9 @@ function renderFaqs() {
     if (!elements.faqList) return;
 
     // Update tabs
-    const tabContainer = document.querySelector('.faq-tabs');
-    if (tabContainer) {
+    if (elements.faqTabs) {
         const uniqueCategories = [...new Set(state.faqs.map(f => f.category))];
-        tabContainer.innerHTML = `
+        elements.faqTabs.innerHTML = `
             <button type="button" class="faq-tab active" data-tab="all">All (${state.faqs.length})</button>
             ${uniqueCategories.map(cat => `
                 <button type="button" class="faq-tab" data-tab="${cat}">${capitalize(cat)} (${state.faqs.filter(f => f.category === cat).length})</button>
@@ -465,9 +469,9 @@ function renderFaqs() {
         `;
 
         // Add tab click handlers
-        tabContainer.querySelectorAll('.faq-tab').forEach(tab => {
+        elements.faqTabs.querySelectorAll('.faq-tab').forEach(tab => {
             tab.addEventListener('click', () => {
-                tabContainer.querySelectorAll('.faq-tab').forEach(t => t.classList.remove('active'));
+                elements.faqTabs.querySelectorAll('.faq-tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 state.activeTab = tab.dataset.tab;
                 renderFaqList();
@@ -604,7 +608,6 @@ async function addToHistory() {
 }
 
 function renderHistory() {
-    const panel = elements.historyPanel;
     const items = history.getAll();
 
     if (elements.historyCount) {
@@ -612,14 +615,12 @@ function renderHistory() {
     }
 
     if (items.length === 0) {
-        panel.classList.remove('has-items');
         elements.historyGrid.style.display = 'none';
-        elements.historyEmpty.style.display = 'none';
+        elements.historyEmpty.style.display = 'block';
         elements.historyGrid.innerHTML = '';
         return;
     }
 
-    panel.classList.add('has-items');
     elements.historyGrid.style.display = 'grid';
     elements.historyEmpty.style.display = 'none';
 
@@ -682,7 +683,6 @@ async function saveFavorite() {
 }
 
 function renderFavorites() {
-    const panel = elements.favoritesPanel;
     const items = favorites.getAll();
 
     if (elements.favoritesCount) {
@@ -690,14 +690,12 @@ function renderFavorites() {
     }
 
     if (items.length === 0) {
-        panel.classList.remove('has-items');
         elements.favoritesGrid.style.display = 'none';
-        elements.favoritesEmpty.style.display = 'none';
+        elements.favoritesEmpty.style.display = 'block';
         elements.favoritesGrid.innerHTML = '';
         return;
     }
 
-    panel.classList.add('has-items');
     elements.favoritesGrid.style.display = 'grid';
     elements.favoritesEmpty.style.display = 'none';
 
@@ -906,9 +904,9 @@ function setupEventListeners() {
         });
     });
 
-    // Advanced toggle
-    elements.advancedToggle?.addEventListener('click', () => {
-        elements.advancedSection.classList.toggle('open');
+    // Settings toggle (collapsible)
+    elements.settingsToggle?.addEventListener('click', () => {
+        elements.settingsSection.classList.toggle('open');
     });
 
     // Include Schema checkbox
@@ -927,9 +925,13 @@ function setupEventListeners() {
     elements.copySelectedBtn?.addEventListener('click', copySelectedFaqs);
     elements.exportMarkdownBtn?.addEventListener('click', exportMarkdown);
 
+    // Create Image button
+    elements.createImageBtn?.addEventListener('click', generateFaqImage);
+
     // Image actions
     elements.downloadImageBtn?.addEventListener('click', downloadImage);
     elements.regenerateImageBtn?.addEventListener('click', generateFaqImage);
+    elements.closeImageResult?.addEventListener('click', hideImageResult);
     elements.favoriteBtn?.addEventListener('click', saveFavorite);
 
     // Result image click
@@ -939,23 +941,45 @@ function setupEventListeners() {
         }
     });
 
-    // Clear history
-    elements.clearHistoryBtn?.addEventListener('click', async () => {
+    // Compact tabs (history/favorites switching)
+    document.querySelectorAll('.compact-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabType = tab.dataset.tab;
+            document.querySelectorAll('.compact-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            if (tabType === 'history') {
+                elements.historyPanel.style.display = 'block';
+                elements.favoritesPanel.style.display = 'none';
+                elements.clearHistoryBtn.textContent = 'Clear';
+                elements.clearHistoryBtn.onclick = clearHistoryHandler;
+            } else {
+                elements.historyPanel.style.display = 'none';
+                elements.favoritesPanel.style.display = 'block';
+                elements.clearHistoryBtn.textContent = 'Clear All';
+                elements.clearHistoryBtn.onclick = clearFavoritesHandler;
+            }
+        });
+    });
+
+    // Clear handlers
+    async function clearHistoryHandler() {
         if (await SharedUI.confirm('Clear all history? This cannot be undone.', { title: 'Clear History', confirmText: 'Clear', icon: 'warning' })) {
             await history.clear();
             renderHistory();
             showSuccess('History cleared');
         }
-    });
+    }
 
-    // Clear favorites
-    elements.clearFavoritesBtn?.addEventListener('click', async () => {
+    async function clearFavoritesHandler() {
         if (await SharedUI.confirm('Clear all favorites? This cannot be undone.', { title: 'Clear Favorites', confirmText: 'Clear All', icon: 'warning' })) {
             await favorites.clear();
             renderFavorites();
             showSuccess('Favorites cleared');
         }
-    });
+    }
+
+    elements.clearHistoryBtn?.addEventListener('click', clearHistoryHandler);
 
     // Lightbox
     elements.lightboxClose?.addEventListener('click', closeLightbox);

@@ -19,13 +19,6 @@
     <script src="cloud-sync.js"></script>
 </head>
 <body>
-    <!-- Noise overlay -->
-    <div class="noise-overlay"></div>
-
-    <!-- Gradient orbs for atmosphere -->
-    <div class="ambient-orb orb-1"></div>
-    <div class="ambient-orb orb-2"></div>
-
     <!-- Header (pre-rendered to prevent flash, JS sets up theme toggle) -->
     <header class="site-header">
         <div class="header-content">
@@ -94,6 +87,15 @@
                 </div>
 
                 <form id="featureCardForm" class="config-form">
+                    <!-- Auto-Generate Toggle (Always at top) -->
+                    <div class="auto-mode-row">
+                        <span class="auto-mode-label">Auto-generate on upload</span>
+                        <label class="toggle-label">
+                            <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
+                            <span class="toggle-switch"></span>
+                        </label>
+                    </div>
+
                     <!-- Product Image (Optional) -->
                     <div class="config-section">
                         <div class="section-label" data-tooltip="Optionally add a product image to incorporate into the card.">
@@ -106,13 +108,6 @@
                             </span>
                             Product Image
                             <span class="label-hint">Optional</span>
-                        </div>
-                        <div class="auto-mode-row">
-                            <span class="auto-mode-label">Auto-generate on upload</span>
-                            <label class="toggle-label">
-                                <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
-                                <span class="toggle-switch"></span>
-                            </label>
                         </div>
                         <div class="upload-zone" id="uploadArea">
                             <div class="upload-content" id="uploadPlaceholder">
@@ -138,6 +133,20 @@
                             </button>
                         </div>
                     </div>
+
+                    <!-- Basic Settings (Collapsible) -->
+                    <div class="advanced-section" id="basicSection">
+                        <button type="button" class="advanced-toggle" id="basicToggle" aria-expanded="false" aria-controls="basicContent">
+                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                            </svg>
+                            <span>Basic Settings</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="advanced-content" id="basicContent">
 
                     <!-- Card Type Selection -->
                     <div class="config-section">
@@ -386,6 +395,9 @@
                             </div>
                         </div>
                     </div>
+
+                        </div><!-- /basicContent -->
+                    </div><!-- /basicSection -->
 
                     <!-- Advanced Section -->
                     <div class="advanced-section" id="advancedSection">

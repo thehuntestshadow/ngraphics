@@ -149,18 +149,16 @@ function initElements() {
     elements.durationValue = document.getElementById('durationValue');
     elements.loopVideo = document.getElementById('loopVideo');
 
+    // Basic settings (collapsible)
+    elements.basicSection = document.getElementById('basicSection');
+    elements.basicToggle = document.getElementById('basicToggle');
+
     // Advanced
+    elements.advancedSection = document.getElementById('advancedSection');
     elements.advancedToggle = document.getElementById('advancedToggle');
     elements.advancedContent = document.getElementById('advancedContent');
     elements.seedInput = document.getElementById('seedInput');
     elements.randomizeSeed = document.getElementById('randomizeSeed');
-
-    // API settings
-    elements.settingsToggle = document.getElementById('settingsToggle');
-    elements.settingsContent = document.getElementById('settingsContent');
-    elements.videoApiKey = document.getElementById('videoApiKey');
-    elements.toggleApiKey = document.getElementById('toggleApiKey');
-    elements.saveApiKey = document.getElementById('saveApiKey');
 
     // Generate button
     elements.generateBtn = document.getElementById('generateBtn');
@@ -182,27 +180,22 @@ function initElements() {
     elements.regenerateBtn = document.getElementById('regenerateBtn');
 
     // History & Favorites
-    elements.historyPanel = document.getElementById('historyPanel');
+    elements.historyPanel = document.getElementById('historySection');
     elements.historyGrid = document.getElementById('historyGrid');
     elements.historyCount = document.getElementById('historyCount');
     elements.historyEmpty = document.getElementById('historyEmpty');
-    elements.clearHistory = document.getElementById('clearHistory');
-    elements.favoritesPanel = document.getElementById('favoritesPanel');
+    elements.clearHistory = document.getElementById('clearHistoryBtn');
+    elements.favoritesPanel = document.getElementById('favoritesSection');
     elements.favoritesGrid = document.getElementById('favoritesGrid');
     elements.favoritesCount = document.getElementById('favoritesCount');
     elements.favoritesEmpty = document.getElementById('favoritesEmpty');
-    elements.clearFavorites = document.getElementById('clearFavorites');
+    elements.clearFavorites = document.getElementById('clearFavoritesBtn');
 
     // Messages
     elements.errorMessage = document.getElementById('errorMessage');
     elements.successMessage = document.getElementById('successMessage');
 
     // Modals
-    elements.favoritesModal = document.getElementById('favoritesModal');
-    elements.favoritesModalBody = document.getElementById('favoritesModalBody');
-    elements.closeFavoritesModal = document.getElementById('closeFavoritesModal');
-    elements.loadFavoriteSettings = document.getElementById('loadFavoriteSettings');
-    elements.deleteFavorite = document.getElementById('deleteFavorite');
 
     // Auto mode
     elements.autoModeToggle = document.getElementById('autoModeToggle');
@@ -602,94 +595,6 @@ async function renderFavorites() {
     });
 }
 
-// Open favorites modal
-function openFavoritesModal(item) {
-    state.selectedFavorite = item;
-
-    elements.favoritesModalBody.innerHTML = `
-        <div class="modal-preview">
-            <video src="${item.videoUrl || item.thumbnailUrl}" controls loop playsinline></video>
-        </div>
-        <div class="modal-details">
-            <div class="detail-row">
-                <span class="detail-label">Motion Type:</span>
-                <span class="detail-value">${item.settings?.motionType || 'model'}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Model Motion:</span>
-                <span class="detail-value">${modelMotions[item.settings?.modelMotion]?.name || 'Subtle Sway'}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Camera Motion:</span>
-                <span class="detail-value">${cameraMotions[item.settings?.cameraMotion]?.name || 'Zoom In'}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Duration:</span>
-                <span class="detail-value">${item.settings?.duration || 5}s</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Seed:</span>
-                <span class="detail-value">${item.seed || 'Random'}</span>
-            </div>
-        </div>
-    `;
-
-    elements.favoritesModal.classList.add('show');
-}
-
-// Close favorites modal
-function closeFavoritesModal() {
-    elements.favoritesModal.classList.remove('show');
-    state.selectedFavorite = null;
-}
-
-// Load favorite settings
-function loadFavoriteSettings() {
-    if (!state.selectedFavorite) return;
-
-    const settings = state.selectedFavorite.settings;
-    if (settings) {
-        switchMotionType(settings.motionType || 'model');
-        selectModelMotion(settings.modelMotion || 'subtle-sway');
-        selectCameraMotion(settings.cameraMotion || 'zoom-in');
-        state.duration = settings.duration || 5;
-        state.speed = settings.speed || 'normal';
-        state.intensity = settings.intensity || 'normal';
-        state.smoothness = settings.smoothness || 'high';
-        state.aspectRatio = settings.aspectRatio || '9:16';
-        state.loop = settings.loop !== false;
-
-        // Update UI
-        elements.durationSlider.value = state.duration;
-        elements.durationValue.textContent = state.duration;
-        elements.loopVideo.checked = state.loop;
-
-        // Update option buttons
-        updateOptionButtons('[data-speed]', state.speed);
-        updateOptionButtons('[data-intensity]', state.intensity);
-        updateOptionButtons('[data-smoothness]', state.smoothness);
-        updateOptionButtons('[data-aspect]', state.aspectRatio);
-    }
-
-    if (state.selectedFavorite.seed) {
-        elements.seedInput.value = state.selectedFavorite.seed;
-        state.seed = state.selectedFavorite.seed;
-    }
-
-    closeFavoritesModal();
-    showSuccess('Settings loaded!');
-}
-
-// Delete favorite
-async function deleteFavorite() {
-    if (!state.selectedFavorite) return;
-
-    await favorites.remove(state.selectedFavorite.id);
-    closeFavoritesModal();
-    renderFavorites();
-    showSuccess('Removed from favorites');
-}
-
 // Update option buttons helper
 function updateOptionButtons(selector, value) {
     document.querySelectorAll(selector).forEach(btn => {
@@ -880,16 +785,16 @@ function setupEventListeners() {
         });
     });
 
-    // Advanced toggle
-    elements.advancedToggle.addEventListener('click', () => {
-        elements.advancedToggle.classList.toggle('expanded');
-        elements.advancedContent.classList.toggle('show');
+    // Basic settings toggle
+    elements.basicToggle?.addEventListener('click', () => {
+        elements.basicSection.classList.toggle('open');
+        const isOpen = elements.basicSection.classList.contains('open');
+        elements.basicToggle.setAttribute('aria-expanded', isOpen);
     });
 
-    // Settings toggle
-    elements.settingsToggle.addEventListener('click', () => {
-        elements.settingsToggle.classList.toggle('expanded');
-        elements.settingsContent.classList.toggle('show');
+    // Advanced toggle
+    elements.advancedToggle?.addEventListener('click', () => {
+        elements.advancedSection.classList.toggle('open');
     });
 
     // Seed input
@@ -901,18 +806,6 @@ function setupEventListeners() {
         const seed = Math.floor(Math.random() * 999999999);
         elements.seedInput.value = seed;
         state.seed = seed.toString();
-    });
-
-    // API key
-    elements.toggleApiKey.addEventListener('click', () => {
-        const type = elements.videoApiKey.type === 'password' ? 'text' : 'password';
-        elements.videoApiKey.type = type;
-    });
-
-    elements.saveApiKey.addEventListener('click', () => {
-        state.videoApiKey = elements.videoApiKey.value;
-        localStorage.setItem('video_api_key', state.videoApiKey);
-        showSuccess('API key saved!');
     });
 
     // Result actions
@@ -937,17 +830,6 @@ function setupEventListeners() {
         }
     });
 
-    // Favorites modal
-    elements.closeFavoritesModal.addEventListener('click', closeFavoritesModal);
-    elements.loadFavoriteSettings.addEventListener('click', loadFavoriteSettings);
-    elements.deleteFavorite.addEventListener('click', deleteFavorite);
-
-    elements.favoritesModal.addEventListener('click', (e) => {
-        if (e.target === elements.favoritesModal) {
-            closeFavoritesModal();
-        }
-    });
-
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         // Ctrl+Enter to generate
@@ -960,10 +842,6 @@ function setupEventListeners() {
             e.preventDefault();
             downloadMp4();
         }
-        // Escape to close modals
-        if (e.key === 'Escape') {
-            closeFavoritesModal();
-        }
     });
 }
 
@@ -971,11 +849,10 @@ function setupEventListeners() {
 async function init() {
     initElements();
 
-    // Load API key
+    // Load API key from localStorage (set via global settings)
     const savedApiKey = localStorage.getItem('video_api_key');
     if (savedApiKey) {
         state.videoApiKey = savedApiKey;
-        elements.videoApiKey.value = savedApiKey;
     }
 
     // Setup theme
@@ -998,8 +875,7 @@ async function init() {
     // Setup keyboard shortcuts
     SharedKeyboard.setup({
         generate: generateVideo,
-        download: downloadMp4,
-        escape: closeFavoritesModal
+        download: downloadMp4
     });
 
     // Initial motion type state

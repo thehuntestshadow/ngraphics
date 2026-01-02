@@ -41,14 +41,15 @@
 }
 
 .format-tab.active {
-    background: rgba(99, 102, 241, 0.15);
-    border-color: var(--accent-primary);
-    color: var(--text-primary);
+    background: linear-gradient(135deg, var(--apple-blue), var(--apple-indigo));
+    border-color: transparent;
+    color: #ffffff;
+    box-shadow: var(--shadow-primary);
 }
 
 .format-tab.active svg {
     opacity: 1;
-    color: var(--accent-primary);
+    stroke: #ffffff;
 }
 
 /* Motion Grid */
@@ -80,9 +81,10 @@
 }
 
 .motion-btn.active {
-    background: rgba(99, 102, 241, 0.15);
-    border-color: var(--accent-primary);
-    color: var(--text-primary);
+    background: linear-gradient(135deg, var(--apple-blue), var(--apple-indigo));
+    border-color: transparent;
+    color: #ffffff;
+    box-shadow: var(--shadow-primary);
 }
 
 .motion-icon {
@@ -99,13 +101,18 @@
     opacity: 0.7;
 }
 
-.motion-btn:hover .motion-icon svg,
-.motion-btn.active .motion-icon svg {
+.motion-btn:hover .motion-icon svg {
     opacity: 1;
 }
 
 .motion-btn.active .motion-icon svg {
-    color: var(--accent-primary);
+    opacity: 1;
+    stroke: #ffffff;
+}
+
+.motion-btn.active .motion-name,
+.motion-btn.active .motion-desc {
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .motion-name {
@@ -222,6 +229,27 @@
     color: var(--text-primary);
 }
 
+/* Loop Toggle Row */
+.loop-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+}
+
+.loop-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* History/Favorites Header Icons - MUST be 14px per UI_PATTERNS.md */
+.history-header h3 svg,
+.favorites-header h3 svg,
+.favorites-title svg {
+    width: 14px;
+    height: 14px;
+}
+
 /* API Link */
 .api-link {
     display: inline-block;
@@ -317,7 +345,12 @@
 }
 
 [data-theme="light"] .format-tab.active {
-    background: rgba(99, 102, 241, 0.1);
+    background: linear-gradient(135deg, var(--apple-blue), var(--apple-indigo));
+    color: #ffffff;
+}
+
+[data-theme="light"] .format-tab.active svg {
+    stroke: #ffffff;
 }
 
 [data-theme="light"] .motion-btn {
@@ -329,7 +362,17 @@
 }
 
 [data-theme="light"] .motion-btn.active {
-    background: rgba(99, 102, 241, 0.1);
+    background: linear-gradient(135deg, var(--apple-blue), var(--apple-indigo));
+    color: #ffffff;
+}
+
+[data-theme="light"] .motion-btn.active .motion-icon svg {
+    stroke: #ffffff;
+}
+
+[data-theme="light"] .motion-btn.active .motion-name,
+[data-theme="light"] .motion-btn.active .motion-desc {
+    color: #ffffff;
 }
 
 [data-theme="light"] .slider-field {

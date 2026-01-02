@@ -75,17 +75,35 @@ Right: 3 options visible, 44 hidden in "Advanced"
 ### Progressive Disclosure
 
 1. **Level 0 (Auto)**: Auto-generate on upload—user uploads, magic happens
-2. **Level 1 (Visible)**: Upload area + Generate button only
-3. **Level 2 (One Click)**: Basic Settings (Scene, Mood, Time) + Advanced Options
-4. **Level 3 (Hidden)**: API settings, developer options
+2. **Level 1 (Visible)**: Auto-mode toggle + Upload area + Generate button
+3. **Level 2 (One Click)**: Basic Settings dropdown (Scene, Mood, Style)
+4. **Level 3 (Two Clicks)**: Advanced Settings dropdown (technical options)
 
-The casual user should never see Level 3. The power user should never be blocked from it.
+The casual user never needs to open any dropdowns. The power user can access everything.
 
-**Implementation:**
-- Level 0: Auto-mode toggle ON by default
-- Level 1: Only upload area and generate button visible on load
-- Level 2: Collapsed "Basic Settings" and "Advanced Options" dropdowns
-- Level 3: Collapsed "API Settings" at the bottom
+**Implementation - Standard Layout Order:**
+```
+┌─────────────────────────────────────┐
+│  [Auto-generate on upload]  [ON]   │  ← Always at top
+├─────────────────────────────────────┤
+│  [Upload Area]                      │  ← Primary action
+│  Drop image or click to upload      │
+├─────────────────────────────────────┤
+│  ▶ Basic Settings                   │  ← Collapsed by default
+│    (Scene, Style, Mood, etc.)       │
+├─────────────────────────────────────┤
+│  ▶ Advanced Settings                │  ← Collapsed by default
+│    (Quality, Seed, Technical)       │
+├─────────────────────────────────────┤
+│  [====== Generate ======]           │  ← Primary CTA
+└─────────────────────────────────────┘
+```
+
+- Auto-mode toggle ALWAYS at the very top
+- Upload area immediately below (the main action)
+- Basic Settings collapsed (common customizations)
+- Advanced Settings collapsed (power user options)
+- Generate button at bottom (natural flow endpoint)
 
 ### Opinionated Defaults
 

@@ -94,6 +94,10 @@ function initElements() {
         // Output Options
         preserveLighting: document.getElementById('preserveLighting'),
 
+        // Basic settings (collapsible)
+        basicSection: document.getElementById('basicSection'),
+        basicToggle: document.getElementById('basicToggle'),
+
         // Advanced
         advancedSection: document.getElementById('advancedSection'),
         advancedToggle: document.getElementById('advancedToggle'),
@@ -1196,6 +1200,13 @@ function setupEventListeners() {
     // Preserve lighting toggle
     elements.preserveLighting?.addEventListener('change', (e) => {
         state.preserveLighting = e.target.checked;
+    });
+
+    // Basic settings toggle
+    elements.basicToggle?.addEventListener('click', () => {
+        elements.basicSection.classList.toggle('open');
+        const isOpen = elements.basicSection.classList.contains('open');
+        elements.basicToggle.setAttribute('aria-expanded', isOpen);
     });
 
     // Advanced toggle

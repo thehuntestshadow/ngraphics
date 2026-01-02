@@ -115,6 +115,10 @@ function initElements() {
         paddingSlider: document.getElementById('paddingSlider'),
         paddingValue: document.getElementById('paddingValue'),
 
+        // Basic settings (collapsible)
+        basicSection: document.getElementById('basicSection'),
+        basicToggle: document.getElementById('basicToggle'),
+
         // Advanced
         advancedSection: document.getElementById('advancedSection'),
         advancedToggle: document.getElementById('advancedToggle'),
@@ -1197,6 +1201,13 @@ function setupEventListeners() {
             btn.classList.add('active');
             state.variations = parseInt(btn.dataset.value) || 1;
         });
+    });
+
+    // Basic settings toggle
+    elements.basicToggle?.addEventListener('click', () => {
+        elements.basicSection.classList.toggle('open');
+        const isOpen = elements.basicSection.classList.contains('open');
+        elements.basicToggle.setAttribute('aria-expanded', isOpen);
     });
 
     // Advanced toggle

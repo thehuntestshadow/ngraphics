@@ -90,6 +90,15 @@
                 <div id="presetSelectorContainer"></div>
 
                 <form id="modelForm" class="config-form">
+                    <!-- Auto-Generate Toggle (Always at top) -->
+                    <div class="auto-mode-row">
+                        <span class="auto-mode-label">Auto-generate on upload</span>
+                        <label class="toggle-label">
+                            <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
+                            <span class="toggle-switch"></span>
+                        </label>
+                    </div>
+
                     <!-- Product Upload (Multiple Images) -->
                     <div class="config-section">
                         <div class="section-label" data-tooltip="Upload product images that the model will wear, hold, or showcase. Add multiple angles for better results.">
@@ -102,23 +111,6 @@
                             </span>
                             Product Images
                             <span class="label-hint">(up to 4)</span>
-                        </div>
-                        <div class="auto-mode-row">
-                            <div class="auto-mode-info">
-                                <div class="auto-mode-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                                    </svg>
-                                </div>
-                                <div class="auto-mode-text">
-                                    <span class="auto-mode-label">Auto-generate on upload</span>
-                                    <span class="auto-mode-hint">Instantly create when image is added</span>
-                                </div>
-                            </div>
-                            <label class="toggle-label">
-                                <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
-                                <span class="toggle-switch"></span>
-                            </label>
                         </div>
 
                         <!-- Multi-Image Upload Grid -->
@@ -214,6 +206,20 @@
                         </div>
                         <p class="upload-hint">Add multiple angles of the same product for better accuracy</p>
                     </div>
+
+                    <!-- Basic Settings (Collapsible) -->
+                    <div class="advanced-section" id="basicSection">
+                        <button type="button" class="advanced-toggle" id="basicToggle" aria-expanded="false" aria-controls="basicContent">
+                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                            </svg>
+                            <span>Basic Settings</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="advanced-content" id="basicContent">
 
                     <!-- Product Type -->
                     <div class="config-section">
@@ -593,6 +599,9 @@
                             </div>
                         </div>
                     </div>
+
+                        </div><!-- /basicContent -->
+                    </div><!-- /basicSection -->
 
                     <!-- Advanced Options -->
                     <div class="advanced-section" id="advancedSection">

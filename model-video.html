@@ -12,13 +12,6 @@
     <link rel="stylesheet" href="model-video.css">
 </head>
 <body>
-    <!-- Noise overlay -->
-    <div class="noise-overlay"></div>
-
-    <!-- Gradient orbs for atmosphere -->
-    <div class="ambient-orb orb-1"></div>
-    <div class="ambient-orb orb-2"></div>
-
     <!-- Header (pre-rendered to prevent flash, JS sets up theme toggle) -->
     <header class="site-header">
         <div class="header-content">
@@ -87,6 +80,15 @@
                 </div>
 
                 <form id="videoForm" class="config-form">
+                    <!-- Auto-Generate Toggle (Always at top) -->
+                    <div class="auto-mode-row">
+                        <span class="auto-mode-label">Auto-generate on upload</span>
+                        <label class="toggle-label">
+                            <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
+                            <span class="toggle-switch"></span>
+                        </label>
+                    </div>
+
                     <!-- Source Image -->
                     <div class="config-section">
                         <div class="section-label" data-tooltip="Upload a model photo or select from Model Studio history.">
@@ -98,13 +100,6 @@
                                 </svg>
                             </span>
                             Source Image
-                        </div>
-                        <div class="auto-mode-row">
-                            <span class="auto-mode-label">Auto-generate on upload</span>
-                            <label class="toggle-label">
-                                <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
-                                <span class="toggle-switch"></span>
-                            </label>
                         </div>
                         <div class="upload-zone" id="uploadArea">
                             <div class="upload-content">
@@ -131,16 +126,29 @@
                         </div>
                     </div>
 
-                    <!-- Motion Type Tabs -->
-                    <div class="config-section">
-                        <div class="section-label" data-tooltip="Choose the type of motion to apply to your video.">
-                            <span class="label-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polygon points="5 3 19 12 5 21 5 3"/>
-                                </svg>
-                            </span>
-                            Motion Type
-                        </div>
+                    <!-- Basic Settings (Collapsible) -->
+                    <div class="advanced-section" id="basicSection">
+                        <button type="button" class="advanced-toggle" id="basicToggle" aria-expanded="false" aria-controls="basicContent">
+                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                            </svg>
+                            <span>Basic Settings</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <div class="advanced-content" id="basicContent">
+                            <!-- Motion Type Tabs -->
+                            <div class="config-section">
+                                <div class="section-label" data-tooltip="Choose the type of motion to apply to your video.">
+                                    <span class="label-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polygon points="5 3 19 12 5 21 5 3"/>
+                                        </svg>
+                                    </span>
+                                    Motion Type
+                                </div>
                         <div class="format-tabs" id="motionTabs">
                             <button type="button" class="format-tab active" data-motion="model">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -339,16 +347,19 @@
                             <button type="button" class="option-btn" data-speed="slow">Slow-mo</button>
                             <button type="button" class="option-btn" data-speed="cinematic">Cinematic</button>
                         </div>
-                        <div class="checkbox-group" style="margin-top: 12px;">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="loopVideo" checked>
-                                <span>Seamless Loop</span>
+                        <div class="loop-toggle-row">
+                            <span class="loop-label">Seamless Loop</span>
+                            <label class="toggle-label">
+                                <input type="checkbox" class="toggle-checkbox" id="loopVideo" checked>
+                                <span class="toggle-switch"></span>
                             </label>
                         </div>
                     </div>
+                        </div><!-- /basicContent -->
+                    </div><!-- /basicSection -->
 
                     <!-- Advanced Section -->
-                    <div class="advanced-section">
+                    <div class="advanced-section" id="advancedSection">
                         <button type="button" class="advanced-toggle" id="advancedToggle">
                             <span class="toggle-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -429,86 +440,56 @@
                     </button>
                     <div class="shortcut-hint">Press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to generate</div>
 
-                    <!-- API Settings -->
-                    <div class="settings-section">
-                        <button type="button" class="settings-toggle" id="settingsToggle">
-                            <span class="toggle-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="3"/>
-                                    <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-                                </svg>
-                            </span>
-                            API Settings
-                            <span class="toggle-chevron">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="6 9 12 15 18 9"/>
-                                </svg>
-                            </span>
-                        </button>
-                        <div class="settings-content" id="settingsContent">
-                            <div class="form-group">
-                                <label class="input-label">Luma AI API Key</label>
-                                <div class="api-key-input">
-                                    <input type="password" id="videoApiKey" class="input-field" placeholder="luma-...">
-                                    <button type="button" id="toggleApiKey" class="btn-icon" title="Show/hide API key">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                            <circle cx="12" cy="12" r="3"/>
-                                        </svg>
-                                    </button>
-                                    <button type="button" id="saveApiKey" class="btn-text">Save</button>
-                                </div>
-                                <a href="https://lumalabs.ai/dream-machine/api" target="_blank" class="api-link">Get API Key</a>
-                            </div>
-                        </div>
-                    </div>
                 </form>
 
-                <!-- History & Favorites Grid -->
-                <div class="history-favorites-grid">
-                    <div class="history-container" id="historyPanel">
-                        <div class="history-header">
-                            <div class="history-title">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <polyline points="12 6 12 12 16 14"/>
-                                </svg>
-                                Recent
-                                <span class="count-badge" id="historyCount">0</span>
-                            </div>
-                            <button type="button" class="btn-text" id="clearHistory">Clear</button>
+                <!-- History Section -->
+                <div class="history-section" id="historySection">
+                    <div class="history-header">
+                        <h3>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            Recent
+                            <span class="history-count" id="historyCount">0</span>
+                        </h3>
+                        <button type="button" class="btn-text" id="clearHistoryBtn">Clear</button>
+                    </div>
+                    <div class="history-grid" id="historyGrid"></div>
+                    <div class="empty-state" id="historyEmpty">
+                        <div class="empty-state-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
                         </div>
-                        <div class="history-grid" id="historyGrid">
-                            <div class="history-empty" id="historyEmpty">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <polyline points="12 6 12 12 16 14"/>
-                                </svg>
-                                <span class="empty-title">No history yet</span>
-                                <span class="empty-text">Generated videos will appear here</span>
-                            </div>
-                        </div>
+                        <p class="empty-state-title">No videos yet</p>
+                        <p class="empty-state-text">Generated videos will appear here</p>
                     </div>
 
-                    <div class="history-container" id="favoritesPanel">
+                    <!-- Favorites Section (nested inside history) -->
+                    <div class="favorites-section" id="favoritesSection">
                         <div class="favorites-header">
-                            <div class="favorites-title">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                                </svg>
-                                Favorites
-                                <span class="count-badge" id="favoritesCount">0</span>
+                            <div class="favorites-title-group">
+                                <h3 class="favorites-title">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                    Favorites
+                                </h3>
+                                <span class="favorites-count" id="favoritesCount">0</span>
                             </div>
-                            <button type="button" class="btn-text-danger" id="clearFavorites">Clear All</button>
+                            <button type="button" class="btn-text-danger" id="clearFavoritesBtn">Clear All</button>
                         </div>
-                        <div class="favorites-grid" id="favoritesGrid">
-                            <div class="favorites-empty" id="favoritesEmpty">
+                        <div class="favorites-grid" id="favoritesGrid"></div>
+                        <div class="empty-state" id="favoritesEmpty">
+                            <div class="empty-state-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                                 </svg>
-                                <span class="empty-title">No favorites</span>
-                                <span class="empty-text">Save videos you love</span>
                             </div>
+                            <p class="empty-state-title">No favorites yet</p>
+                            <p class="empty-state-text">Click the star on videos to save them</p>
                         </div>
                     </div>
                 </div>
@@ -600,28 +581,6 @@
             </section>
         </div>
     </main>
-
-    <!-- Favorites Modal -->
-    <div class="modal-overlay" id="favoritesModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Favorite Details</h3>
-                <button class="modal-close" id="closeFavoritesModal">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body" id="favoritesModalBody">
-                <!-- Populated by JS -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-secondary" id="loadFavoriteSettings">Load Settings</button>
-                <button type="button" class="btn-danger" id="deleteFavorite">Delete</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Footer -->
     <footer class="site-footer">

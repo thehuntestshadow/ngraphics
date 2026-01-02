@@ -84,8 +84,13 @@ function initElements() {
         includeBadge: document.getElementById('includeBadge'),
         badgeType: document.getElementById('badgeType'),
 
+        // Basic settings (collapsible)
+        basicSection: document.getElementById('basicSection'),
+        basicToggle: document.getElementById('basicToggle'),
+
         // Advanced
         advancedToggle: document.getElementById('advancedToggle'),
+        advancedSection: document.getElementById('advancedSection'),
         advancedContent: document.getElementById('advancedContent'),
         aiModel: document.getElementById('aiModel'),
         seedInput: document.getElementById('seedInput'),
@@ -920,10 +925,16 @@ function setupEventListeners() {
         document.documentElement.style.setProperty('--custom-color', state.customColor);
     });
 
+    // Basic settings toggle
+    elements.basicToggle?.addEventListener('click', () => {
+        elements.basicSection.classList.toggle('open');
+        const isOpen = elements.basicSection.classList.contains('open');
+        elements.basicToggle.setAttribute('aria-expanded', isOpen);
+    });
+
     // Advanced toggle
     elements.advancedToggle?.addEventListener('click', () => {
-        elements.advancedContent.classList.toggle('show');
-        elements.advancedToggle.classList.toggle('open');
+        elements.advancedSection.classList.toggle('open');
     });
 
     // Settings toggle

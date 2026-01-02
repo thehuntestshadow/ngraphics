@@ -144,6 +144,10 @@ function initElements() {
         lifestyleRow: document.getElementById('lifestyleRow'),
         lifestyleInput: document.getElementById('lifestyleInput'),
 
+        // Basic settings (collapsible)
+        basicSection: document.getElementById('basicSection'),
+        basicToggle: document.getElementById('basicToggle'),
+
         // Advanced
         advancedToggle: document.getElementById('advancedToggle'),
         advancedContent: document.getElementById('advancedContent'),
@@ -1235,6 +1239,13 @@ function setupEventListeners() {
 
     elements.lifestyleInput.addEventListener('input', () => {
         state.lifestyleScene = elements.lifestyleInput.value;
+    });
+
+    // Basic settings toggle
+    elements.basicToggle?.addEventListener('click', () => {
+        elements.basicSection.classList.toggle('open');
+        const isOpen = elements.basicSection.classList.contains('open');
+        elements.basicToggle.setAttribute('aria-expanded', isOpen);
     });
 
     // Advanced toggle

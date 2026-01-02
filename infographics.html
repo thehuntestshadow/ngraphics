@@ -91,6 +91,15 @@
                 <div id="presetSelectorContainer"></div>
 
                 <form id="infographicForm" class="config-form">
+                    <!-- Auto-Generate Toggle (Always at top) -->
+                    <div class="auto-mode-row">
+                        <span class="auto-mode-label">Auto-generate on upload</span>
+                        <label class="toggle-label">
+                            <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
+                            <span class="toggle-switch"></span>
+                        </label>
+                    </div>
+
                     <!-- Product Photo Upload -->
                     <div class="config-section">
                         <div class="section-label" data-tooltip="Upload the product image to generate an infographic from. The AI will analyze and feature this product.">
@@ -103,13 +112,6 @@
                             </span>
                             Product Photo
                             <span class="label-hint">Reference image</span>
-                        </div>
-                        <div class="auto-mode-row">
-                            <span class="auto-mode-label">Auto-generate on upload</span>
-                            <label class="toggle-label">
-                                <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
-                                <span class="toggle-switch"></span>
-                            </label>
                         </div>
                         <div class="batch-mode-row">
                             <button type="button" class="batch-mode-toggle" id="batchModeToggle" title="Switch to batch mode">

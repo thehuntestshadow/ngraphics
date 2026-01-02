@@ -138,6 +138,10 @@ function initElements() {
         fileInput: document.getElementById('fileInput'),
         autoModeToggle: document.getElementById('autoModeToggle'),
 
+        // Basic settings (collapsible)
+        basicSection: document.getElementById('basicSection'),
+        basicToggle: document.getElementById('basicToggle'),
+
         // Advanced
         advancedToggle: document.getElementById('advancedToggle'),
         advancedSection: document.getElementById('advancedSection'),
@@ -920,6 +924,15 @@ function setupEventListeners() {
     if (elements.afterDesc) elements.afterDesc.oninput = () => state.afterDesc = elements.afterDesc.value;
     if (elements.beforeText) elements.beforeText.oninput = () => state.beforeDesc = elements.beforeText.value;
     if (elements.afterText) elements.afterText.oninput = () => state.afterDesc = elements.afterText.value;
+
+    // Basic settings toggle
+    if (elements.basicToggle && elements.basicSection) {
+        elements.basicToggle.addEventListener('click', () => {
+            elements.basicSection.classList.toggle('open');
+            const isOpen = elements.basicSection.classList.contains('open');
+            elements.basicToggle.setAttribute('aria-expanded', isOpen);
+        });
+    }
 
     // Advanced toggle
     if (elements.advancedToggle && elements.advancedSection) {

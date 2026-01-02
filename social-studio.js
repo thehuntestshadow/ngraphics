@@ -87,6 +87,10 @@ function initElements() {
         bodyText: document.getElementById('bodyText'),
         ctaText: document.getElementById('ctaText'),
 
+        // Basic settings (collapsible)
+        basicSection: document.getElementById('basicSection'),
+        basicToggle: document.getElementById('basicToggle'),
+
         // Advanced
         advancedToggle: document.getElementById('advancedToggle'),
         advancedSection: document.getElementById('advancedSection'),
@@ -785,6 +789,9 @@ function setupEventListeners() {
 
     // Upload handling
     setupUploadHandlers();
+
+    // Basic settings toggle
+    SharedCollapsible.setup(elements.basicToggle, elements.basicSection);
 
     // Advanced toggle
     SharedCollapsible.setup(elements.advancedToggle, elements.advancedSection);

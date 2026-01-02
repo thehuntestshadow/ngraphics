@@ -228,7 +228,7 @@ function switchModuleType(type) {
 
     // Update tabs
     if (elements.moduleTypeTabs) {
-        elements.moduleTypeTabs.querySelectorAll('.module-type-tab').forEach(tab => {
+        elements.moduleTypeTabs.querySelectorAll('.module-tab').forEach(tab => {
             tab.classList.toggle('active', tab.dataset.type === type);
         });
     }
@@ -526,18 +526,14 @@ function toggleFeatureValue(featureId, productIndex, btn) {
 function switchGridMode(mode) {
     state.gridMode = mode;
 
-    if (elements.gridModeOptions) {
-        elements.gridModeOptions.querySelectorAll('.option-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.value === mode);
-        });
-    }
+    // Update grid mode buttons
+    document.querySelectorAll('.option-btn[data-option="gridMode"]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === mode);
+    });
 
-    if (mode === 'upload') {
-        if (elements.gridUploadMode) elements.gridUploadMode.classList.remove('hidden');
-        if (elements.gridGenerateMode) elements.gridGenerateMode.classList.add('hidden');
-    } else {
-        if (elements.gridUploadMode) elements.gridUploadMode.classList.add('hidden');
-        if (elements.gridGenerateMode) elements.gridGenerateMode.classList.remove('hidden');
+    // Show/hide upload slots based on mode
+    if (elements.gridUploadSlots) {
+        elements.gridUploadSlots.style.display = mode === 'upload' ? 'grid' : 'none';
     }
 
     updateGenerateButton();
@@ -549,7 +545,7 @@ function setupGridSlots() {
     const slots = elements.gridUploadSlots.querySelectorAll('.grid-slot');
 
     slots.forEach((slot, index) => {
-        const fileInput = slot.querySelector('.grid-file-input');
+        const fileInput = slot.querySelector('.grid-slot-input');
         if (!fileInput) return;
 
         slot.addEventListener('click', (e) => {
@@ -584,7 +580,7 @@ function renderGridSlot(slot, index) {
         slot.innerHTML = `
             <img src="${data.thumbnail}" class="grid-slot-preview" alt="Grid image ${index + 1}">
             <button type="button" class="btn-remove-grid" data-index="${index}">&times;</button>
-            <input type="file" class="grid-file-input" accept="image/*" hidden>
+            <input type="file" class="grid-slot-input" accept="image/*" hidden>
         `;
 
         slot.querySelector('.btn-remove-grid').addEventListener('click', (e) => {
@@ -594,7 +590,7 @@ function renderGridSlot(slot, index) {
             updateGenerateButton();
         });
 
-        slot.querySelector('.grid-file-input').addEventListener('change', async (e) => {
+        slot.querySelector('.grid-slot-input').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
@@ -620,10 +616,10 @@ function renderGridSlot(slot, index) {
                 </svg>
                 <span>Image ${index + 1}</span>
             </div>
-            <input type="file" class="grid-file-input" accept="image/*" hidden>
+            <input type="file" class="grid-slot-input" accept="image/*" hidden>
         `;
 
-        slot.querySelector('.grid-file-input').addEventListener('change', async (e) => {
+        slot.querySelector('.grid-slot-input').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
@@ -1321,7 +1317,7 @@ function loadFavoriteSettings() {
 
     // Update style options
     if (elements.visualStyleOptions) {
-        elements.visualStyleOptions.querySelectorAll('.style-option').forEach(btn => {
+        elements.visualStyleOptions.querySelectorAll('.style-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.value === settings.visualStyle);
         });
     }
@@ -1405,7 +1401,7 @@ function setupEventListeners() {
 
     // Module type tabs
     if (elements.moduleTypeTabs) {
-        elements.moduleTypeTabs.querySelectorAll('.module-type-tab').forEach(tab => {
+        elements.moduleTypeTabs.querySelectorAll('.module-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 switchModuleType(tab.dataset.type);
             });
@@ -1488,7 +1484,17 @@ function setupEventListeners() {
         elements.addComparisonFeatureBtn.addEventListener('click', () => addComparisonFeature());
     }
 
-    // Four-Grid
+    // Four-Grid mode toggle
+    document.querySelectorAll('.option-btn[data-option="gridMode"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            switchGridMode(btn.dataset.value);
+            document.querySelectorAll('.option-btn[data-option="gridMode"]').forEach(b => {
+                b.classList.toggle('active', b.dataset.value === btn.dataset.value);
+            });
+        });
+    });
+
+    // Four-Grid slots
     setupGridSlots();
 
     // Standard Text
@@ -1518,10 +1524,10 @@ function setupEventListeners() {
 
     // Visual Style
     if (elements.visualStyleOptions) {
-        elements.visualStyleOptions.querySelectorAll('.style-option').forEach(btn => {
+        elements.visualStyleOptions.querySelectorAll('.style-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 state.visualStyle = btn.dataset.value;
-                elements.visualStyleOptions.querySelectorAll('.style-option').forEach(b => {
+                elements.visualStyleOptions.querySelectorAll('.style-btn').forEach(b => {
                     b.classList.toggle('active', b === btn);
                 });
             });
@@ -1529,10 +1535,10 @@ function setupEventListeners() {
     }
 
     // Color scheme options
-    document.querySelectorAll('.color-scheme-btn').forEach(btn => {
+    document.querySelectorAll('.option-btn[data-option="colorScheme"]').forEach(btn => {
         btn.addEventListener('click', () => {
             state.colorScheme = btn.dataset.value;
-            document.querySelectorAll('.color-scheme-btn').forEach(b => {
+            document.querySelectorAll('.option-btn[data-option="colorScheme"]').forEach(b => {
                 b.classList.toggle('active', b.dataset.value === btn.dataset.value);
             });
             if (elements.customColorGroup) {
@@ -1561,10 +1567,10 @@ function setupEventListeners() {
     }
 
     // Variations options
-    document.querySelectorAll('.variations-btn').forEach(btn => {
+    document.querySelectorAll('.option-btn[data-option="variations"]').forEach(btn => {
         btn.addEventListener('click', () => {
             state.variations = parseInt(btn.dataset.value);
-            document.querySelectorAll('.variations-btn').forEach(b => {
+            document.querySelectorAll('.option-btn[data-option="variations"]').forEach(b => {
                 b.classList.toggle('active', b.dataset.value === btn.dataset.value);
             });
         });

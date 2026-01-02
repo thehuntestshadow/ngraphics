@@ -169,6 +169,10 @@ function initElements() {
         // Style
         visualStyleSelect: document.getElementById('visualStyleSelect'),
 
+        // Basic settings (collapsible)
+        basicSection: document.getElementById('basicSection'),
+        basicToggle: document.getElementById('basicToggle'),
+
         // Advanced
         advancedToggle: document.getElementById('advancedToggle'),
         advancedContent: document.getElementById('advancedContent'),
@@ -1609,6 +1613,13 @@ function setupEventListeners() {
     // Visual style
     elements.visualStyleSelect.addEventListener('change', () => {
         state.visualStyle = elements.visualStyleSelect.value;
+    });
+
+    // Basic settings toggle
+    elements.basicToggle?.addEventListener('click', () => {
+        elements.basicSection.classList.toggle('open');
+        const isOpen = elements.basicSection.classList.contains('open');
+        elements.basicToggle.setAttribute('aria-expanded', isOpen);
     });
 
     // Advanced toggle
