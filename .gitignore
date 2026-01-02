@@ -11,6 +11,7 @@ Thumbs.db
 # Claude Code - ignore local settings, keep shared config
 .claude/settings.local.json
 .playwright-mcp/
+.playwright-auth/
 
 # Dependencies (if ever added)
 node_modules/
