@@ -22,14 +22,6 @@
     height: 14px;
 }
 
-/* Panel Description */
-.panel-description {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    margin-top: 2px;
-    margin-bottom: 8px;
-}
-
 /* Image Preview */
 .panel-config .image-preview {
     max-height: 200px;

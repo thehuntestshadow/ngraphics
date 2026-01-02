@@ -19,24 +19,23 @@
     <script src="cloud-sync.js"></script>
 </head>
 <body>
-    <!-- Noise overlay -->
-    <div class="noise-overlay"></div>
-
-    <!-- Gradient orbs for atmosphere -->
-    <div class="ambient-orb orb-1"></div>
-    <div class="ambient-orb orb-2"></div>
-
     <!-- Header (pre-rendered to prevent flash, JS sets up theme toggle) -->
     <header class="site-header">
         <div class="header-content">
-            <div class="logo-group">
-                <a href="index.html" class="logo-link">
-                    <span class="logo-title">HEFAISTOS</span>
-                </a>
-            </div>
-            <div class="page-title-center">
-                <span class="page-title-text">Export Center</span>
-            </div>
+            <a href="index.html" class="logo-link">
+                <div class="logo-group">
+                    <div class="logo-mark">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">HEFAISTOS</span>
+                        <span class="logo-subtitle">Export Center</span>
+                    </div>
+                </div>
+            </a>
             <div class="header-controls">
                 <a href="dashboard.html" class="docs-link" title="Dashboard">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -79,7 +78,6 @@
                         <span class="title-number">01</span>
                         Export Center
                     </h2>
-                    <p class="panel-description">Resize, compress, watermark, and export images</p>
                 </div>
 
                 <!-- Error/Success Messages -->
@@ -95,47 +93,6 @@
                 </div>
 
                 <form id="exportForm" class="config-form">
-                    <!-- Tool Tabs -->
-                    <div class="config-section">
-                        <div class="section-label" data-tooltip="Choose which tool to use on your images.">
-                            <span class="label-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                    <line x1="9" y1="3" x2="9" y2="21"/>
-                                </svg>
-                            </span>
-                            Tool
-                        </div>
-                        <div class="tool-tabs" id="toolTabs">
-                            <button type="button" class="tool-tab active" data-tool="resize">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-                                </svg>
-                                <span>Resize</span>
-                            </button>
-                            <button type="button" class="tool-tab" data-tool="compress">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 3v18M3 12h18M7 8l5 4 5-4M7 16l5-4 5 4"/>
-                                </svg>
-                                <span>Compress</span>
-                            </button>
-                            <button type="button" class="tool-tab" data-tool="watermark">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                                </svg>
-                                <span>Watermark</span>
-                            </button>
-                            <button type="button" class="tool-tab" data-tool="convert">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                                    <polyline points="7 10 12 15 17 10"/>
-                                    <line x1="12" y1="15" x2="12" y2="3"/>
-                                </svg>
-                                <span>Export</span>
-                            </button>
-                        </div>
-                    </div>
-
                     <!-- Image Upload -->
                     <div class="config-section">
                         <div class="section-label" data-tooltip="Upload one or more images to process. Supports batch operations.">
@@ -168,6 +125,25 @@
                         </div>
                     </div>
 
+                    <!-- Tool Selection -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Choose which tool to use on your images.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <line x1="9" y1="3" x2="9" y2="21"/>
+                                </svg>
+                            </span>
+                            Tool
+                        </div>
+                        <select id="toolSelect" class="input-field">
+                            <option value="resize">Resize</option>
+                            <option value="compress">Compress</option>
+                            <option value="watermark">Watermark</option>
+                            <option value="convert">Export</option>
+                        </select>
+                    </div>
+
                     <!-- Resize Options -->
                     <div class="tool-section" id="resizeSection">
                         <div class="config-section">
@@ -179,38 +155,16 @@
                                 </span>
                                 Size Preset
                             </div>
-                            <div class="preset-grid" id="sizePresets">
-                                <button type="button" class="preset-btn active" data-preset="original">
-                                    <span class="preset-name">Original</span>
-                                </button>
-                                <button type="button" class="preset-btn" data-preset="amazon">
-                                    <span class="preset-name">Amazon</span>
-                                    <span class="preset-size">2000×2000</span>
-                                </button>
-                                <button type="button" class="preset-btn" data-preset="instagram">
-                                    <span class="preset-name">Instagram</span>
-                                    <span class="preset-size">1080×1080</span>
-                                </button>
-                                <button type="button" class="preset-btn" data-preset="facebook">
-                                    <span class="preset-name">Facebook</span>
-                                    <span class="preset-size">1200×628</span>
-                                </button>
-                                <button type="button" class="preset-btn" data-preset="pinterest">
-                                    <span class="preset-name">Pinterest</span>
-                                    <span class="preset-size">1000×1500</span>
-                                </button>
-                                <button type="button" class="preset-btn" data-preset="etsy">
-                                    <span class="preset-name">Etsy</span>
-                                    <span class="preset-size">2000×2000</span>
-                                </button>
-                                <button type="button" class="preset-btn" data-preset="shopify">
-                                    <span class="preset-name">Shopify</span>
-                                    <span class="preset-size">2048×2048</span>
-                                </button>
-                                <button type="button" class="preset-btn" data-preset="custom">
-                                    <span class="preset-name">Custom</span>
-                                </button>
-                            </div>
+                            <select id="sizePreset" class="input-field">
+                                <option value="original">Original</option>
+                                <option value="amazon">Amazon (2000×2000)</option>
+                                <option value="instagram">Instagram (1080×1080)</option>
+                                <option value="facebook">Facebook (1200×628)</option>
+                                <option value="pinterest">Pinterest (1000×1500)</option>
+                                <option value="etsy">Etsy (2000×2000)</option>
+                                <option value="shopify">Shopify (2048×2048)</option>
+                                <option value="custom">Custom...</option>
+                            </select>
                         </div>
 
                         <div class="config-section" id="customSizeSection" style="display: none;">
@@ -433,33 +387,6 @@
                     <div class="shortcut-hint">Press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to process</div>
                 </form>
 
-                <!-- History & Favorites Grid -->
-                <div class="history-favorites-grid">
-                    <div class="history-container" id="historyPanel">
-                        <div class="history-header">
-                            <div class="history-title">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <polyline points="12 6 12 12 16 14"/>
-                                </svg>
-                                Recent Exports
-                                <span class="count-badge" id="historyCount">0</span>
-                            </div>
-                            <button type="button" class="btn-text" id="clearHistory">Clear</button>
-                        </div>
-                        <div class="history-grid" id="historyGrid">
-                            <div class="history-empty" id="historyEmpty">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                                    <polyline points="7 10 12 15 17 10"/>
-                                    <line x1="12" y1="15" x2="12" y2="3"/>
-                                </svg>
-                                <span class="empty-title">No exports yet</span>
-                                <span class="empty-text">Processed images will appear here</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </section>
 
             <!-- Right Panel: Preview -->
@@ -535,10 +462,11 @@
     <!-- Footer -->
     <footer class="site-footer">
         <div class="footer-content">
-            <span class="keyboard-hint">
-                <kbd>Ctrl</kbd> + <kbd>Enter</kbd> Process
-                <kbd>Esc</kbd> Close
-            </span>
+            <span>HEFAISTOS</span>
+            <span class="footer-divider">•</span>
+            <span>Powered by OpenRouter AI</span>
+            <span class="footer-divider">•</span>
+            <span class="footer-shortcut"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> Process</span>
         </div>
     </footer>
 

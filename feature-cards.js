@@ -121,11 +121,13 @@ function initElements() {
         beforeDesc: document.getElementById('beforeDesc'),
         afterLabel: document.getElementById('afterLabel'),
         afterDesc: document.getElementById('afterDesc'),
+        beforeText: document.getElementById('beforeText'),
+        afterText: document.getElementById('afterText'),
 
         // Style & color
-        styleOptions: document.getElementById('styleOptions'),
-        colorGrid: document.getElementById('colorGrid'),
-        customColor: document.getElementById('customColor'),
+        styleButtons: document.getElementById('styleButtons'),
+        colorButtons: document.getElementById('colorButtons'),
+        customColor: document.getElementById('customColorInput'),
 
         // Upload
         uploadArea: document.getElementById('uploadArea'),
@@ -811,192 +813,244 @@ function setupEventListeners() {
     });
 
     // Style selection
-    elements.styleOptions.querySelectorAll('.style-btn').forEach(btn => {
-        btn.onclick = () => updateStyle(btn.dataset.style);
-    });
+    if (elements.styleButtons) {
+        elements.styleButtons.querySelectorAll('.option-btn').forEach(btn => {
+            btn.onclick = () => {
+                elements.styleButtons.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.style = btn.dataset.value;
+            };
+        });
+    }
 
     // Color selection
-    elements.colorGrid.querySelectorAll('.color-btn').forEach(btn => {
-        if (!btn.classList.contains('color-btn-custom')) {
-            btn.onclick = () => updateColor(btn.dataset.color);
-        }
-    });
-
-    elements.customColor.onchange = () => {
-        const color = elements.customColor.value;
-        state.color = color;
-        elements.colorGrid.querySelectorAll('.color-btn').forEach(btn => {
-            btn.classList.remove('active');
+    if (elements.colorButtons) {
+        elements.colorButtons.querySelectorAll('.color-btn').forEach(btn => {
+            if (!btn.classList.contains('color-btn-custom')) {
+                btn.onclick = () => {
+                    elements.colorButtons.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    state.color = btn.dataset.color;
+                };
+            }
         });
-        elements.customColor.parentElement.classList.add('active');
-    };
+    }
 
-    // Output options
-    document.querySelectorAll('[data-size]').forEach(btn => {
+    if (elements.customColor) {
+        elements.customColor.onchange = () => {
+            const color = elements.customColor.value;
+            state.color = color;
+            elements.colorButtons.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            elements.customColor.parentElement.classList.add('active');
+        };
+    }
+
+    // Output options - size
+    document.querySelectorAll('[data-option="size"]').forEach(btn => {
         btn.onclick = () => {
-            document.querySelectorAll('[data-size]').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('[data-option="size"]').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            state.size = btn.dataset.size;
+            state.size = btn.dataset.value;
         };
     });
 
-    document.querySelectorAll('[data-bg]').forEach(btn => {
+    // Output options - variations
+    document.querySelectorAll('[data-option="variations"]').forEach(btn => {
         btn.onclick = () => {
-            document.querySelectorAll('[data-bg]').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('[data-option="variations"]').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            state.background = btn.dataset.bg;
-        };
-    });
-
-    document.querySelectorAll('[data-variations]').forEach(btn => {
-        btn.onclick = () => {
-            document.querySelectorAll('[data-variations]').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            state.variations = parseInt(btn.dataset.variations);
+            state.variations = parseInt(btn.dataset.value);
         };
     });
 
     // Feature inputs
-    elements.featureIcon.oninput = () => state.featureIcon = elements.featureIcon.value;
-    elements.featureHeadline.oninput = () => state.featureHeadline = elements.featureHeadline.value;
-    elements.featureDescription.oninput = () => state.featureDescription = elements.featureDescription.value;
+    if (elements.featureIcon) elements.featureIcon.oninput = () => state.featureIcon = elements.featureIcon.value;
+    if (elements.featureHeadline) elements.featureHeadline.oninput = () => state.featureHeadline = elements.featureHeadline.value;
+    if (elements.featureDescription) elements.featureDescription.oninput = () => state.featureDescription = elements.featureDescription.value;
 
     // Spec list
-    elements.addSpecBtn.onclick = addSpecRow;
-    elements.specList.querySelectorAll('.spec-row').forEach(row => {
-        row.querySelector('.btn-remove-spec').onclick = () => {
-            if (elements.specList.querySelectorAll('.spec-row').length > 1) {
-                row.remove();
-                updateSpecsFromDOM();
+    if (elements.addSpecBtn) elements.addSpecBtn.onclick = addSpecRow;
+    if (elements.specList) {
+        elements.specList.querySelectorAll('.spec-row').forEach(row => {
+            const removeBtn = row.querySelector('.btn-remove-spec');
+            if (removeBtn) {
+                removeBtn.onclick = () => {
+                    if (elements.specList.querySelectorAll('.spec-row').length > 1) {
+                        row.remove();
+                        updateSpecsFromDOM();
+                    }
+                };
             }
-        };
-        row.querySelectorAll('input').forEach(input => {
-            input.addEventListener('input', updateSpecsFromDOM);
+            row.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', updateSpecsFromDOM);
+            });
         });
-    });
+    }
 
     // Inbox list
-    elements.addInboxBtn.onclick = addInboxRow;
-    elements.inboxTitle.oninput = () => state.inboxTitle = elements.inboxTitle.value;
-    elements.inboxList.querySelectorAll('.inbox-row').forEach(row => {
-        row.querySelector('.btn-remove-inbox').onclick = () => {
-            if (elements.inboxList.querySelectorAll('.inbox-row').length > 1) {
-                row.remove();
-                updateInboxFromDOM();
+    if (elements.addInboxBtn) elements.addInboxBtn.onclick = addInboxRow;
+    if (elements.inboxTitle) elements.inboxTitle.oninput = () => state.inboxTitle = elements.inboxTitle.value;
+    if (elements.inboxList) {
+        elements.inboxList.querySelectorAll('.inbox-row').forEach(row => {
+            const removeBtn = row.querySelector('.btn-remove-inbox');
+            if (removeBtn) {
+                removeBtn.onclick = () => {
+                    if (elements.inboxList.querySelectorAll('.inbox-row').length > 1) {
+                        row.remove();
+                        updateInboxFromDOM();
+                    }
+                };
             }
-        };
-        row.querySelector('input').addEventListener('input', updateInboxFromDOM);
-    });
+            const input = row.querySelector('input');
+            if (input) input.addEventListener('input', updateInboxFromDOM);
+        });
+    }
 
     // How-to inputs
-    elements.howtoStep.oninput = () => state.howtoStep = parseInt(elements.howtoStep.value) || 1;
-    elements.howtoTitle.oninput = () => state.howtoTitle = elements.howtoTitle.value;
-    elements.howtoDescription.oninput = () => state.howtoDescription = elements.howtoDescription.value;
+    if (elements.howtoStep) elements.howtoStep.oninput = () => state.howtoStep = parseInt(elements.howtoStep.value) || 1;
+    if (elements.howtoTitle) elements.howtoTitle.oninput = () => state.howtoTitle = elements.howtoTitle.value;
+    if (elements.howtoDescription) elements.howtoDescription.oninput = () => state.howtoDescription = elements.howtoDescription.value;
 
-    // Before/after inputs
-    elements.beforeLabel.oninput = () => state.beforeLabel = elements.beforeLabel.value;
-    elements.beforeDesc.oninput = () => state.beforeDesc = elements.beforeDesc.value;
-    elements.afterLabel.oninput = () => state.afterLabel = elements.afterLabel.value;
-    elements.afterDesc.oninput = () => state.afterDesc = elements.afterDesc.value;
+    // Before/after inputs (optional - may not exist in simplified HTML)
+    if (elements.beforeLabel) elements.beforeLabel.oninput = () => state.beforeLabel = elements.beforeLabel.value;
+    if (elements.beforeDesc) elements.beforeDesc.oninput = () => state.beforeDesc = elements.beforeDesc.value;
+    if (elements.afterLabel) elements.afterLabel.oninput = () => state.afterLabel = elements.afterLabel.value;
+    if (elements.afterDesc) elements.afterDesc.oninput = () => state.afterDesc = elements.afterDesc.value;
+    if (elements.beforeText) elements.beforeText.oninput = () => state.beforeDesc = elements.beforeText.value;
+    if (elements.afterText) elements.afterText.oninput = () => state.afterDesc = elements.afterText.value;
 
     // Advanced toggle
-    elements.advancedToggle.onclick = () => {
-        elements.advancedSection.classList.toggle('hidden');
-        elements.advancedToggle.classList.toggle('active');
-    };
+    if (elements.advancedToggle && elements.advancedSection) {
+        elements.advancedToggle.addEventListener('click', () => {
+            elements.advancedSection.classList.toggle('open');
+        });
+    }
 
     // Seed
-    elements.randomSeedBtn.onclick = () => {
-        elements.seedInput.value = Math.floor(Math.random() * 999999);
-        state.seed = parseInt(elements.seedInput.value);
-    };
-    elements.seedInput.oninput = () => {
-        state.seed = elements.seedInput.value ? parseInt(elements.seedInput.value) : null;
-    };
+    if (elements.randomSeedBtn && elements.seedInput) {
+        elements.randomSeedBtn.onclick = () => {
+            elements.seedInput.value = Math.floor(Math.random() * 999999);
+            state.seed = parseInt(elements.seedInput.value);
+        };
+    }
+    if (elements.seedInput) {
+        elements.seedInput.oninput = () => {
+            state.seed = elements.seedInput.value ? parseInt(elements.seedInput.value) : null;
+        };
+    }
 
     // Negative prompt
-    elements.negativePrompt.oninput = () => state.negativePrompt = elements.negativePrompt.value;
+    if (elements.negativePrompt) {
+        elements.negativePrompt.oninput = () => state.negativePrompt = elements.negativePrompt.value;
+    }
 
     // Model
-    elements.aiModel.onchange = () => state.model = elements.aiModel.value;
+    if (elements.aiModel) {
+        elements.aiModel.onchange = () => state.model = elements.aiModel.value;
+    }
 
     // API key
-    elements.apiKey.oninput = updateApiStatus;
-    elements.toggleApiKey.onclick = () => {
-        const type = elements.apiKey.type === 'password' ? 'text' : 'password';
-        elements.apiKey.type = type;
-    };
+    if (elements.apiKey) {
+        elements.apiKey.oninput = updateApiStatus;
+    }
+    if (elements.toggleApiKey && elements.apiKey) {
+        elements.toggleApiKey.onclick = () => {
+            const type = elements.apiKey.type === 'password' ? 'text' : 'password';
+            elements.apiKey.type = type;
+        };
+    }
 
     // Generate
-    elements.generateBtn.onclick = generateCard;
+    if (elements.generateBtn) {
+        elements.generateBtn.onclick = generateCard;
+    }
 
     // Result actions
-    elements.downloadBtn.onclick = () => {
-        if (state.generatedImages.length > 0) {
-            SharedDownload.downloadImage(state.generatedImages[0].imageUrl, 'feature-card');
-        }
-    };
+    if (elements.downloadBtn) {
+        elements.downloadBtn.onclick = () => {
+            if (state.generatedImages.length > 0) {
+                SharedDownload.downloadImage(state.generatedImages[0].imageUrl, 'feature-card');
+            }
+        };
+    }
 
-    elements.downloadZipBtn.onclick = async () => {
-        if (state.generatedImages.length > 0) {
-            await SharedZip.downloadAsZip(
-                state.generatedImages.map(r => r.imageUrl),
-                'feature-cards',
-                { prompt: state.lastPrompt, settings: { cardType: state.cardType, style: state.style } }
-            );
-        }
-    };
+    if (elements.downloadZipBtn) {
+        elements.downloadZipBtn.onclick = async () => {
+            if (state.generatedImages.length > 0) {
+                await SharedZip.downloadAsZip(
+                    state.generatedImages.map(r => r.imageUrl),
+                    'feature-cards',
+                    { prompt: state.lastPrompt, settings: { cardType: state.cardType, style: state.style } }
+                );
+            }
+        };
+    }
 
-    elements.copyPromptBtn.onclick = () => {
-        if (state.lastPrompt) {
-            SharedClipboard.copy(state.lastPrompt);
-            SharedUI.showSuccess('Prompt copied to clipboard');
-        }
-    };
+    if (elements.copyPromptBtn) {
+        elements.copyPromptBtn.onclick = () => {
+            if (state.lastPrompt) {
+                SharedClipboard.copy(state.lastPrompt);
+                SharedUI.showSuccess('Prompt copied to clipboard');
+            }
+        };
+    }
 
-    elements.favoriteBtn.onclick = addToFavorites;
+    if (elements.favoriteBtn) elements.favoriteBtn.onclick = addToFavorites;
 
     // History
-    elements.clearHistoryBtn.onclick = async () => {
-        if (await SharedConfirm.show('Clear all history?')) {
-            await history.clear();
-            renderHistory();
-        }
-    };
+    if (elements.clearHistoryBtn) {
+        elements.clearHistoryBtn.onclick = async () => {
+            if (await SharedConfirm.show('Clear all history?')) {
+                await history.clear();
+                renderHistory();
+            }
+        };
+    }
 
     // Favorites modal
-    elements.viewFavoritesBtn.onclick = () => {
-        renderFavoritesModal();
-        elements.favoritesModal.classList.remove('hidden');
-    };
+    if (elements.viewFavoritesBtn && elements.favoritesModal) {
+        elements.viewFavoritesBtn.onclick = () => {
+            renderFavoritesModal();
+            elements.favoritesModal.classList.remove('hidden');
+        };
+    }
 
-    elements.closeFavoritesModal.onclick = () => {
-        elements.favoritesModal.classList.add('hidden');
-    };
+    if (elements.closeFavoritesModal && elements.favoritesModal) {
+        elements.closeFavoritesModal.onclick = () => {
+            elements.favoritesModal.classList.add('hidden');
+        };
+    }
 
-    elements.favoritesModal.querySelector('.modal-overlay').onclick = () => {
-        elements.favoritesModal.classList.add('hidden');
-    };
+    if (elements.favoritesModal) {
+        const overlay = elements.favoritesModal.querySelector('.modal-overlay');
+        if (overlay) overlay.onclick = () => elements.favoritesModal.classList.add('hidden');
+    }
 
     // Lightbox
-    elements.lightboxClose.onclick = closeLightbox;
-    elements.lightbox.onclick = (e) => {
-        if (e.target === elements.lightbox) closeLightbox();
-    };
+    if (elements.lightboxClose) elements.lightboxClose.onclick = closeLightbox;
+    if (elements.lightbox) {
+        elements.lightbox.onclick = (e) => {
+            if (e.target === elements.lightbox) closeLightbox();
+        };
+    }
 
-    elements.lightboxDownload.onclick = () => {
-        SharedDownload.downloadImage(elements.lightboxImage.src, 'feature-card');
-    };
+    if (elements.lightboxDownload && elements.lightboxImage) {
+        elements.lightboxDownload.onclick = () => {
+            SharedDownload.downloadImage(elements.lightboxImage.src, 'feature-card');
+        };
+    }
 
-    elements.lightboxFavorite.onclick = addToFavorites;
+    if (elements.lightboxFavorite) elements.lightboxFavorite.onclick = addToFavorites;
 
     // Keyboard shortcuts
     SharedKeyboard.setup({
         generate: generateCard,
-        download: () => elements.downloadBtn.click(),
+        download: () => elements.downloadBtn?.click(),
         escape: () => {
             closeLightbox();
-            elements.favoritesModal.classList.add('hidden');
+            elements.favoritesModal?.classList.add('hidden');
         }
     });
 }

@@ -18,7 +18,7 @@ const state = {
 
     // Badge settings
     category: 'sale', // 'sale' or 'trust'
-    badgeText: '50% OFF',
+    badgeText: '',
     style: 'starburst',
     color: 'red',
     customColor: '#e53e3e',
@@ -29,7 +29,7 @@ const state = {
     variations: 1,
 
     // Advanced
-    aiModel: 'google/gemini-2.0-flash-exp:free',
+    aiModel: 'google/gemini-3-pro-image-preview',
     seed: null,
     customInstructions: '',
 
@@ -50,11 +50,6 @@ function initElements() {
 
         // Category
         categoryBtns: document.querySelectorAll('.category-btn'),
-        salePresets: document.getElementById('salePresets'),
-        trustPresets: document.getElementById('trustPresets'),
-
-        // Presets
-        presetBtns: document.querySelectorAll('.preset-btn'),
 
         // Badge settings
         badgeText: document.getElementById('badgeText'),
@@ -552,8 +547,6 @@ function loadFavoriteSettings() {
     elements.categoryBtns.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.category === s.category);
     });
-    elements.salePresets.style.display = s.category === 'sale' ? 'block' : 'none';
-    elements.trustPresets.style.display = s.category === 'trust' ? 'block' : 'none';
 
     // Update style
     elements.styleBtns.forEach(btn => {
@@ -659,37 +652,6 @@ function setupEventListeners() {
             elements.categoryBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             state.category = btn.dataset.category;
-
-            elements.salePresets.style.display = state.category === 'sale' ? 'block' : 'none';
-            elements.trustPresets.style.display = state.category === 'trust' ? 'block' : 'none';
-
-            // Select first preset of new category
-            const presets = state.category === 'sale' ? elements.salePresets : elements.trustPresets;
-            const firstPreset = presets.querySelector('.preset-btn:not([data-custom])');
-            if (firstPreset) {
-                presets.querySelectorAll('.preset-btn').forEach(p => p.classList.remove('active'));
-                firstPreset.classList.add('active');
-                state.badgeText = firstPreset.dataset.text;
-                elements.badgeText.value = state.badgeText;
-                elements.charCount.textContent = state.badgeText.length;
-            }
-        });
-    });
-
-    // Preset buttons
-    elements.presetBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const container = btn.closest('.badge-presets');
-            container.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            if (btn.dataset.custom === 'true' && !btn.dataset.text) {
-                elements.badgeText.focus();
-            } else {
-                state.badgeText = btn.dataset.text;
-                elements.badgeText.value = state.badgeText;
-                elements.charCount.textContent = state.badgeText.length;
-            }
         });
     });
 
@@ -697,9 +659,6 @@ function setupEventListeners() {
     elements.badgeText.addEventListener('input', (e) => {
         state.badgeText = e.target.value;
         elements.charCount.textContent = e.target.value.length;
-
-        // Deselect presets when custom text entered
-        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
     });
 
     // Style buttons
@@ -748,26 +707,34 @@ function setupEventListeners() {
     });
 
     // Advanced inputs
-    elements.aiModel.addEventListener('change', (e) => state.aiModel = e.target.value);
+    if (elements.aiModel) {
+        elements.aiModel.addEventListener('change', (e) => state.aiModel = e.target.value);
+    }
     elements.seed.addEventListener('input', (e) => state.seed = e.target.value ? parseInt(e.target.value) : null);
     elements.customInstructions.addEventListener('input', (e) => state.customInstructions = e.target.value);
 
-    // Settings toggle
-    elements.settingsToggle.addEventListener('click', () => {
-        elements.settingsSection.classList.toggle('open');
-    });
+    // Settings toggle (optional - element may not exist)
+    if (elements.settingsToggle && elements.settingsSection) {
+        elements.settingsToggle.addEventListener('click', () => {
+            elements.settingsSection.classList.toggle('open');
+        });
+    }
 
-    // API key
-    elements.toggleApiKey.addEventListener('click', () => {
-        const input = elements.apiKey;
-        input.type = input.type === 'password' ? 'text' : 'password';
-    });
+    // API key (optional - element may not exist)
+    if (elements.toggleApiKey && elements.apiKey) {
+        elements.toggleApiKey.addEventListener('click', () => {
+            const input = elements.apiKey;
+            input.type = input.type === 'password' ? 'text' : 'password';
+        });
+    }
 
-    elements.saveApiKey.addEventListener('click', () => {
-        state.apiKey = elements.apiKey.value;
-        localStorage.setItem('openrouter_api_key', state.apiKey);
-        showSuccess('API key saved');
-    });
+    if (elements.saveApiKey && elements.apiKey) {
+        elements.saveApiKey.addEventListener('click', () => {
+            state.apiKey = elements.apiKey.value;
+            localStorage.setItem('openrouter_api_key', state.apiKey);
+            showSuccess('API key saved');
+        });
+    }
 
     // Generate button
     elements.generateBtn.addEventListener('click', (e) => {
@@ -860,7 +827,9 @@ async function init() {
 
     // Load API key
     state.apiKey = localStorage.getItem('openrouter_api_key') || '';
-    elements.apiKey.value = state.apiKey;
+    if (elements.apiKey) {
+        elements.apiKey.value = state.apiKey;
+    }
 
     // Initialize stores
     await imageStore.init();

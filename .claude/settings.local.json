@@ -30,11 +30,10 @@
       "Bash(xargs:*)",
       "Bash(claude:*)",
       "Bash(supabase:*)",
-      "Bash(for file in packaging.html faq-generator.html product-variants.html badge-generator.html)",
-      "Bash(do echo \"=== $file ===\")",
-      "Bash(done)",
       "Bash(psql:*)",
-      "Bash(# Check if service role key exists in any config grep -r \"\"service_role\"\" ~/.supabase/)"
+      "Bash(for:*)",
+      "Bash(if:*)",
+      "mcp__plugin_serena_serena__replace_content"
     ]
   }
 }

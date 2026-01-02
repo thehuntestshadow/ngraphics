@@ -803,10 +803,9 @@ function setupEventListeners() {
     });
 
     // Advanced toggle
-    elements.advancedToggle.onclick = () => {
-        elements.advancedSection.classList.toggle('hidden');
-        elements.advancedToggle.classList.toggle('active');
-    };
+    elements.advancedToggle.addEventListener('click', () => {
+        elements.advancedSection.classList.toggle('open');
+    });
 
     // Include instructions
     elements.includeInstructions.onchange = () => {

@@ -288,7 +288,7 @@ async function init() {
     });
 
     // Setup collapsible sections
-    SharedCollapsible.setup(elements.advancedToggle, elements.advancedSection.querySelector('.advanced-content'));
+    SharedCollapsible.setup(elements.advancedToggle, elements.advancedSection);
 
     // Setup lightbox
     SharedLightbox.setup();

@@ -72,7 +72,6 @@
                         <span class="title-number">01</span>
                         Social Studio
                     </h2>
-                    <p class="panel-description">Create social media graphics for all platforms</p>
                 </div>
 
                 <!-- Error/Success Messages -->
@@ -350,41 +349,28 @@
                     </div>
 
                     <!-- Advanced Section -->
-                    <div class="advanced-section">
+                    <div class="advanced-section" id="advancedSection">
                         <button type="button" class="advanced-toggle" id="advancedToggle">
-                            <span class="toggle-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="4" y1="21" x2="4" y2="14"/>
-                                    <line x1="4" y1="10" x2="4" y2="3"/>
-                                    <line x1="12" y1="21" x2="12" y2="12"/>
-                                    <line x1="12" y1="8" x2="12" y2="3"/>
-                                    <line x1="20" y1="21" x2="20" y2="16"/>
-                                    <line x1="20" y1="12" x2="20" y2="3"/>
-                                    <line x1="1" y1="14" x2="7" y2="14"/>
-                                    <line x1="9" y1="8" x2="15" y2="8"/>
-                                    <line x1="17" y1="16" x2="23" y2="16"/>
-                                </svg>
-                            </span>
-                            Advanced Options
-                            <span class="toggle-chevron">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="6 9 12 15 18 9"/>
-                                </svg>
-                            </span>
+                            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="4" y1="21" x2="4" y2="14"/>
+                                <line x1="4" y1="10" x2="4" y2="3"/>
+                                <line x1="12" y1="21" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12" y2="3"/>
+                                <line x1="20" y1="21" x2="20" y2="16"/>
+                                <line x1="20" y1="12" x2="20" y2="3"/>
+                                <circle cx="4" cy="12" r="2"/>
+                                <circle cx="12" cy="10" r="2"/>
+                                <circle cx="20" cy="14" r="2"/>
+                            </svg>
+                            <span>Advanced Options</span>
+                            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
                         </button>
-                        <div class="advanced-content" id="advancedContent">
-                            <!-- AI Model -->
-                            <div class="form-group">
-                                <label class="input-label" data-tooltip="AI model used for generation. Different models have different styles.">AI Model</label>
-                                <select id="aiModel" class="select-field">
-                                    <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (Free)</option>
-                                    <option value="google/gemini-exp-1206:free">Gemini Exp 1206 (Free)</option>
-                                </select>
-                            </div>
-
+                        <div class="advanced-content">
                             <!-- Seed Control -->
-                            <div class="form-group">
-                                <label class="input-label" data-tooltip="Seed for reproducible results. Same seed = same output.">Seed</label>
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Seed for reproducible results. Same seed = same output.">Seed</label>
                                 <div class="seed-input-group">
                                     <input type="number" id="seedInput" class="input-field" placeholder="Random">
                                     <button type="button" id="randomizeSeed" class="btn-icon" title="Randomize seed">
@@ -396,8 +382,8 @@
                             </div>
 
                             <!-- Variations -->
-                            <div class="form-group">
-                                <label class="input-label" data-tooltip="Generate multiple variations at once.">Variations</label>
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Generate multiple variations at once.">Variations</label>
                                 <div class="option-grid">
                                     <button type="button" class="option-btn active" data-variations="1">1</button>
                                     <button type="button" class="option-btn" data-variations="2">2</button>
@@ -406,8 +392,8 @@
                             </div>
 
                             <!-- Include Elements -->
-                            <div class="form-group">
-                                <label class="input-label" data-tooltip="Additional elements to include in the design.">Include</label>
+                            <div class="option-group">
+                                <label class="option-label" data-tooltip="Additional elements to include in the design.">Include</label>
                                 <div class="checkbox-group">
                                     <label class="checkbox-label">
                                         <input type="checkbox" id="includeLogo">
@@ -437,39 +423,6 @@
                         <span class="btn-glow"></span>
                     </button>
                     <div class="shortcut-hint">Press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to generate</div>
-
-                    <!-- API Settings -->
-                    <div class="settings-section">
-                        <button type="button" class="settings-toggle" id="settingsToggle">
-                            <span class="toggle-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="3"/>
-                                    <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-                                </svg>
-                            </span>
-                            API Settings
-                            <span class="toggle-chevron">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="6 9 12 15 18 9"/>
-                                </svg>
-                            </span>
-                        </button>
-                        <div class="settings-content" id="settingsContent">
-                            <div class="form-group">
-                                <label class="input-label">OpenRouter API Key</label>
-                                <div class="api-key-input">
-                                    <input type="password" id="apiKey" class="input-field" placeholder="sk-or-...">
-                                    <button type="button" id="toggleApiKey" class="btn-icon" title="Show/hide API key">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                            <circle cx="12" cy="12" r="3"/>
-                                        </svg>
-                                    </button>
-                                    <button type="button" id="saveApiKey" class="btn-text">Save</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </form>
 
                 <!-- History & Favorites Grid -->
@@ -623,7 +576,8 @@
     </div>
 
     <!-- Favorites Modal -->
-    <div class="modal-overlay" id="favoritesModal">
+    <div class="modal favorites-modal" id="favoritesModal">
+        <div class="modal-backdrop"></div>
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Favorite Details</h3>

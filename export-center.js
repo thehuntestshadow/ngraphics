@@ -32,10 +32,7 @@ const state = {
     outputFormat: 'jpg',
     namingPattern: '{name}-{size}',
     zipExport: true,
-    preserveMetadata: false,
-
-    // History
-    history: []
+    preserveMetadata: false
 };
 
 // Size presets
@@ -53,12 +50,9 @@ const sizePresets = {
 // Elements cache
 const elements = {};
 
-// History storage
-const history = new SharedHistory('export_center_history', 20);
-
 function initElements() {
     elements.form = document.getElementById('exportForm');
-    elements.toolTabs = document.getElementById('toolTabs');
+    elements.toolSelect = document.getElementById('toolSelect');
     elements.uploadArea = document.getElementById('uploadArea');
     elements.imageFiles = document.getElementById('imageFiles');
     elements.imageList = document.getElementById('imageList');
@@ -71,7 +65,7 @@ function initElements() {
     elements.convertSection = document.getElementById('convertSection');
 
     // Resize elements
-    elements.sizePresets = document.getElementById('sizePresets');
+    elements.sizePreset = document.getElementById('sizePreset');
     elements.customSizeSection = document.getElementById('customSizeSection');
     elements.customWidth = document.getElementById('customWidth');
     elements.customHeight = document.getElementById('customHeight');
@@ -113,13 +107,6 @@ function initElements() {
     elements.batchGrid = document.getElementById('batchGrid');
     elements.downloadAllBtn = document.getElementById('downloadAllBtn');
 
-    // History elements
-    elements.historyPanel = document.getElementById('historyPanel');
-    elements.historyGrid = document.getElementById('historyGrid');
-    elements.historyCount = document.getElementById('historyCount');
-    elements.historyEmpty = document.getElementById('historyEmpty');
-    elements.clearHistory = document.getElementById('clearHistory');
-
     // Messages
     elements.errorMessage = document.getElementById('errorMessage');
     elements.successMessage = document.getElementById('successMessage');
@@ -127,11 +114,6 @@ function initElements() {
 
 function switchTool(tool) {
     state.currentTool = tool;
-
-    // Update tab buttons
-    elements.toolTabs.querySelectorAll('.tool-tab').forEach(tab => {
-        tab.classList.toggle('active', tab.dataset.tool === tool);
-    });
 
     // Show/hide sections
     elements.resizeSection.style.display = tool === 'resize' ? 'block' : 'none';
@@ -158,10 +140,6 @@ function switchTool(tool) {
 
 function selectPreset(preset) {
     state.sizePreset = preset;
-
-    elements.sizePresets.querySelectorAll('.preset-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.preset === preset);
-    });
 
     // Show/hide custom size inputs
     elements.customSizeSection.style.display = preset === 'custom' ? 'block' : 'none';
@@ -255,9 +233,6 @@ async function processImages() {
         hideLoading();
         showResults();
         showSuccess(`Processed ${state.processedImages.length} image${state.processedImages.length > 1 ? 's' : ''}`);
-
-        // Add to history
-        addToHistory();
 
     } catch (error) {
         hideLoading();
@@ -568,51 +543,6 @@ async function downloadAll() {
     }
 }
 
-function addToHistory() {
-    if (state.processedImages.length === 0) return;
-
-    const firstProcessed = state.processedImages[0];
-    history.add({
-        thumbnail: firstProcessed.dataUrl,
-        tool: state.currentTool,
-        count: state.processedImages.length,
-        timestamp: Date.now()
-    });
-
-    renderHistory();
-}
-
-function renderHistory() {
-    const panel = elements.historyPanel;
-    const items = history.getAll();
-    elements.historyCount.textContent = items.length;
-
-    if (items.length === 0) {
-        panel.classList.remove('has-items');
-        if (elements.historyEmpty) {
-            elements.historyEmpty.style.display = 'none';
-        }
-        return;
-    }
-
-    panel.classList.add('has-items');
-    elements.historyGrid.innerHTML = items.map(item => `
-        <div class="history-item" data-id="${item.id}">
-            <img src="${item.thumbnail}" alt="Export" loading="lazy">
-            <div class="history-item-overlay">
-                <span class="history-tool">${item.tool}</span>
-                <span class="history-count">${item.count} image${item.count > 1 ? 's' : ''}</span>
-            </div>
-        </div>
-    `).join('');
-}
-
-function clearHistoryData() {
-    history.clear();
-    renderHistory();
-    showSuccess('History cleared');
-}
-
 function showError(message) {
     elements.errorMessage.querySelector('.error-text').textContent = message;
     elements.errorMessage.classList.add('visible');
@@ -630,12 +560,9 @@ function showSuccess(message) {
 }
 
 function setupEventListeners() {
-    // Tool tabs
-    elements.toolTabs.addEventListener('click', (e) => {
-        const tab = e.target.closest('.tool-tab');
-        if (tab) {
-            switchTool(tab.dataset.tool);
-        }
+    // Tool dropdown
+    elements.toolSelect.addEventListener('change', (e) => {
+        switchTool(e.target.value);
     });
 
     // File upload
@@ -656,12 +583,9 @@ function setupEventListeners() {
         addImages(e.dataTransfer.files);
     });
 
-    // Size presets
-    elements.sizePresets.addEventListener('click', (e) => {
-        const btn = e.target.closest('.preset-btn');
-        if (btn) {
-            selectPreset(btn.dataset.preset);
-        }
+    // Size preset dropdown
+    elements.sizePreset.addEventListener('change', (e) => {
+        selectPreset(e.target.value);
     });
 
     // Custom dimensions
@@ -793,9 +717,6 @@ function setupEventListeners() {
     // Download all
     elements.downloadAllBtn.addEventListener('click', downloadAll);
 
-    // Clear history
-    elements.clearHistory.addEventListener('click', clearHistoryData);
-
     // Keyboard shortcuts
     SharedKeyboard.setup({
         generate: processImages,
@@ -816,9 +737,6 @@ async function init() {
     if (accountContainer && typeof AccountMenu !== 'undefined') {
         new AccountMenu(accountContainer);
     }
-
-    // Render history
-    renderHistory();
 
     // Initialize onboarding tour for first-time visitors
     if (typeof OnboardingTour !== 'undefined') {

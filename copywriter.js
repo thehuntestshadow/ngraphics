@@ -27,6 +27,7 @@ const state = {
     copyTone: 'professional',
     includeEmoji: true,
     includeHashtags: true,
+    aiModel: DEFAULT_MODEL,
 
     // Generated Copy
     generatedCopy: null,
@@ -194,10 +195,12 @@ function setupEventListeners() {
         state.includeHashtags = e.target.checked;
     });
 
-    // AI Model
-    elements.aiModel.addEventListener('change', (e) => {
-        state.aiModel = e.target.value;
-    });
+    // AI Model (optional - element may not exist)
+    if (elements.aiModel) {
+        elements.aiModel.addEventListener('change', (e) => {
+            state.aiModel = e.target.value;
+        });
+    }
 
     // Output tabs
     elements.outputTabs.forEach(tab => {

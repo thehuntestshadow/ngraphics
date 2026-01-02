@@ -40,7 +40,7 @@ const state = {
     customColor: '#6366f1',
 
     // Advanced
-    aiModel: 'google/gemini-2.0-flash-exp:free',
+    aiModel: 'google/gemini-3-pro-image-preview',
     seed: '',
     variations: 1,
     includeLogo: false,
@@ -89,8 +89,7 @@ function initElements() {
 
         // Advanced
         advancedToggle: document.getElementById('advancedToggle'),
-        advancedContent: document.getElementById('advancedContent'),
-        aiModel: document.getElementById('aiModel'),
+        advancedSection: document.getElementById('advancedSection'),
         seedInput: document.getElementById('seedInput'),
         randomizeSeed: document.getElementById('randomizeSeed'),
         includeLogo: document.getElementById('includeLogo'),
@@ -657,11 +656,11 @@ async function openFavoritesModal(id) {
         </div>
     `;
 
-    elements.favoritesModal.classList.add('active');
+    elements.favoritesModal.classList.add('visible');
 }
 
 function closeFavoritesModal() {
-    elements.favoritesModal.classList.remove('active');
+    elements.favoritesModal.classList.remove('visible');
     state.selectedFavorite = null;
 }
 
@@ -784,17 +783,11 @@ function setupEventListeners() {
         state.seed = seed;
     });
 
-    // AI Model
-    elements.aiModel?.addEventListener('change', (e) => state.aiModel = e.target.value);
-
     // Upload handling
     setupUploadHandlers();
 
     // Advanced toggle
-    elements.advancedToggle?.addEventListener('click', () => {
-        elements.advancedContent?.classList.toggle('expanded');
-        elements.advancedToggle?.classList.toggle('expanded');
-    });
+    SharedCollapsible.setup(elements.advancedToggle, elements.advancedSection);
 
     // Actions
     elements.downloadBtn?.addEventListener('click', downloadImage);

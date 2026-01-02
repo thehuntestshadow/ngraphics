@@ -94,6 +94,51 @@
                 </div>
 
                 <form id="featureCardForm" class="config-form">
+                    <!-- Product Image (Optional) -->
+                    <div class="config-section">
+                        <div class="section-label" data-tooltip="Optionally add a product image to incorporate into the card.">
+                            <span class="label-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                            </span>
+                            Product Image
+                            <span class="label-hint">Optional</span>
+                        </div>
+                        <div class="auto-mode-row">
+                            <span class="auto-mode-label">Auto-generate on upload</span>
+                            <label class="toggle-label">
+                                <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
+                                <span class="toggle-switch"></span>
+                            </label>
+                        </div>
+                        <div class="upload-zone" id="uploadArea">
+                            <div class="upload-content" id="uploadPlaceholder">
+                                <div class="upload-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                        <polyline points="17,8 12,3 7,8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                </div>
+                                <p class="upload-text">Drop image or click to upload</p>
+                                <p class="upload-formats">PNG, JPG, WebP • Max 10MB</p>
+                            </div>
+                            <input type="file" class="upload-input" id="fileInput" accept="image/png,image/jpeg,image/jpg,image/webp">
+                        </div>
+                        <div class="image-preview" id="uploadPreview" style="display: none;">
+                            <img id="previewImage" alt="Preview" class="preview-img">
+                            <button type="button" class="preview-remove" id="removeImage">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Card Type Selection -->
                     <div class="config-section">
                         <div class="section-label" data-tooltip="Choose the type of feature card to generate. Each type has a different layout optimized for its content.">
@@ -259,51 +304,6 @@
                         <div class="form-group">
                             <label class="input-label">After</label>
                             <input type="text" id="afterText" class="input-field" placeholder="e.g., Shiny, healthy hair">
-                        </div>
-                    </div>
-
-                    <!-- Product Image (Optional) -->
-                    <div class="config-section">
-                        <div class="section-label" data-tooltip="Optionally add a product image to incorporate into the card.">
-                            <span class="label-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                                    <path d="M21 15l-5-5L5 21"/>
-                                </svg>
-                            </span>
-                            Product Image
-                            <span class="label-hint">Optional</span>
-                        </div>
-                        <div class="auto-mode-row">
-                            <span class="auto-mode-label">Auto-generate on upload</span>
-                            <label class="toggle-label">
-                                <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
-                                <span class="toggle-switch"></span>
-                            </label>
-                        </div>
-                        <div class="upload-zone" id="uploadArea">
-                            <div class="upload-content" id="uploadPlaceholder">
-                                <div class="upload-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                                        <polyline points="17,8 12,3 7,8"/>
-                                        <line x1="12" y1="3" x2="12" y2="15"/>
-                                    </svg>
-                                </div>
-                                <p class="upload-text">Drop image or click to upload</p>
-                                <p class="upload-formats">PNG, JPG, WebP • Max 10MB</p>
-                            </div>
-                            <input type="file" class="upload-input" id="fileInput" accept="image/png,image/jpeg,image/jpg,image/webp">
-                        </div>
-                        <div class="image-preview" id="uploadPreview" style="display: none;">
-                            <img id="previewImage" alt="Preview" class="preview-img">
-                            <button type="button" class="preview-remove" id="removeImage">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="18" y1="6" x2="6" y2="18"/>
-                                    <line x1="6" y1="6" x2="18" y2="18"/>
-                                </svg>
-                            </button>
                         </div>
                     </div>
 
