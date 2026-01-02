@@ -71,6 +71,9 @@ const OnboardingTour = {
      * @returns {boolean} Whether tour was started
      */
     init(tourName = 'landing') {
+        // DISABLED: Onboarding tour temporarily disabled
+        return false;
+
         const state = this._loadState();
 
         // Check if this tour was completed

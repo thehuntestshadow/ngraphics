@@ -22,6 +22,8 @@
 
 class CloudSync {
     constructor() {
+        // DISABLED: This class is deprecated. Use SupabaseStorage instead.
+        this._disabled = true;
         this._syncInProgress = false;
         this._lastSyncTime = null;
         this._pendingUploads = [];
@@ -80,7 +82,7 @@ class CloudSync {
      * @param {Object} imageData - { imageUrl, imageUrls, thumbnail, productImageBase64 }
      */
     uploadHistoryItem(studio, item, imageData) {
-        if (!this.canSync) return;
+        if (this._disabled || !this.canSync) return;
 
         this._syncQueue.push({
             type: 'history',
@@ -99,7 +101,7 @@ class CloudSync {
      * @param {Object} imageData - { imageUrl, imageUrls, thumbnail }
      */
     uploadFavoriteItem(studio, item, imageData) {
-        if (!this.canSync) return;
+        if (this._disabled || !this.canSync) return;
 
         this._syncQueue.push({
             type: 'favorite',
@@ -277,7 +279,7 @@ class CloudSync {
      * @returns {Promise<Array>} Array of history items
      */
     async downloadHistory(studio, limit = 20) {
-        if (!this.canSync) return [];
+        if (this._disabled || !this.canSync) return [];
 
         await ngSupabase.init();
         const client = ngSupabase.client;
@@ -305,7 +307,7 @@ class CloudSync {
      * @returns {Promise<Array>} Array of favorite items
      */
     async downloadFavorites(studio, limit = 30) {
-        if (!this.canSync) return [];
+        if (this._disabled || !this.canSync) return [];
 
         await ngSupabase.init();
         const client = ngSupabase.client;
@@ -333,7 +335,7 @@ class CloudSync {
      * @returns {Promise<string|null>} Signed URL or null
      */
     async getImageUrl(path, expiresIn = 3600) {
-        if (!path || !this.canSync) return null;
+        if (this._disabled || !path || !this.canSync) return null;
 
         try {
             await ngSupabase.init();
@@ -353,7 +355,7 @@ class CloudSync {
      * @returns {Promise<string|null>} Base64 data URL or null
      */
     async downloadImage(path) {
-        if (!path || !this.canSync) return null;
+        if (this._disabled || !path || !this.canSync) return null;
 
         try {
             await ngSupabase.init();
@@ -381,7 +383,7 @@ class CloudSync {
      * and makes it available for viewing, not merging with local.
      */
     async fullSync() {
-        if (!this.canSync || this._syncInProgress) return;
+        if (this._disabled || !this.canSync || this._syncInProgress) return;
 
         this._syncInProgress = true;
         this._emit('syncStart');
@@ -410,7 +412,7 @@ class CloudSync {
      * Update sync metadata in database
      */
     async _updateSyncMetadata() {
-        if (!this.canSync) return;
+        if (this._disabled || !this.canSync) return;
 
         try {
             await ngSupabase.init();
@@ -435,7 +437,7 @@ class CloudSync {
      * @param {string} itemId - Item ID
      */
     async deleteHistoryItem(itemId) {
-        if (!this.canSync) return;
+        if (this._disabled || !this.canSync) return;
 
         try {
             await ngSupabase.init();
@@ -474,7 +476,7 @@ class CloudSync {
      * @param {string} itemId - Item ID
      */
     async deleteFavoriteItem(itemId) {
-        if (!this.canSync) return;
+        if (this._disabled || !this.canSync) return;
 
         try {
             await ngSupabase.init();
@@ -567,7 +569,7 @@ class CloudSync {
      * @returns {Promise<Object>} { used, limit, percentage }
      */
     async getStorageUsage() {
-        if (!this.canSync) return { used: 0, limit: 0, percentage: 0 };
+        if (this._disabled || !this.canSync) return { used: 0, limit: 0, percentage: 0 };
 
         try {
             await ngSupabase.init();
