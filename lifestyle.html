@@ -90,6 +90,15 @@
                 <div id="presetSelectorContainer"></div>
 
                 <form id="lifestyleForm" class="config-form">
+                    <!-- Auto-Generate Toggle (Always at top) -->
+                    <div class="auto-mode-row">
+                        <span class="auto-mode-label">Auto-generate on upload</span>
+                        <label class="toggle-label">
+                            <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
+                            <span class="toggle-switch"></span>
+                        </label>
+                    </div>
+
                     <!-- Product Upload -->
                     <div class="config-section">
                         <div class="section-label" data-tooltip="Upload the product image to place in a lifestyle scene.">
@@ -103,14 +112,7 @@
                             Product Image
                             <span class="required-badge">Required</span>
                         </div>
-                        <div class="auto-mode-row">
-                            <span class="auto-mode-label">Auto-generate on upload</span>
-                            <label class="toggle-label">
-                                <input type="checkbox" class="toggle-checkbox" id="autoModeToggle" checked>
-                                <span class="toggle-switch"></span>
-                            </label>
-                        </div>
-                        <div class="upload-zone" id="uploadArea" style="background: var(--bg-tertiary);">
+                        <div class="upload-zone" id="uploadArea">
                             <div class="upload-content">
                                 <div class="upload-icon">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
