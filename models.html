@@ -90,9 +90,9 @@
                 <div id="presetSelectorContainer"></div>
 
                 <form id="modelForm" class="config-form">
-                    <!-- Product Upload -->
+                    <!-- Product Upload (Multiple Images) -->
                     <div class="config-section">
-                        <div class="section-label" data-tooltip="Upload the product image that the model will wear, hold, or showcase.">
+                        <div class="section-label" data-tooltip="Upload product images that the model will wear, hold, or showcase. Add multiple angles for better results.">
                             <span class="label-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -100,7 +100,8 @@
                                     <path d="M21 15l-5-5L5 21"/>
                                 </svg>
                             </span>
-                            Product Image
+                            Product Images
+                            <span class="label-hint">(up to 4)</span>
                         </div>
                         <div class="auto-mode-row">
                             <span class="auto-mode-label">Auto-generate on upload</span>
@@ -109,29 +110,99 @@
                                 <span class="toggle-switch"></span>
                             </label>
                         </div>
-                        <div class="upload-zone" id="uploadArea">
-                            <div class="upload-content">
-                                <div class="upload-icon">
+
+                        <!-- Multi-Image Upload Grid -->
+                        <div class="product-upload-grid" id="productUploadGrid">
+                            <!-- Slot 1 (Primary) -->
+                            <div class="product-upload-slot primary" data-slot="0">
+                                <div class="slot-empty">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                         <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
                                         <polyline points="17,8 12,3 7,8"/>
                                         <line x1="12" y1="3" x2="12" y2="15"/>
                                     </svg>
+                                    <span class="slot-label">Main Image</span>
                                 </div>
-                                <p class="upload-text">Drop image or click to upload</p>
-                                <p class="upload-formats">PNG, JPG, WebP • Max 10MB</p>
+                                <div class="slot-filled" style="display: none;">
+                                    <img src="" alt="Product 1" class="slot-image">
+                                    <button type="button" class="slot-remove" title="Remove image">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"/>
+                                            <line x1="6" y1="6" x2="18" y2="18"/>
+                                        </svg>
+                                    </button>
+                                    <span class="slot-badge">1</span>
+                                </div>
+                                <input type="file" class="slot-input" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="Upload product image 1">
                             </div>
-                            <input type="file" class="upload-input" id="productPhoto" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="Upload product photo">
+
+                            <!-- Slot 2 -->
+                            <div class="product-upload-slot" data-slot="1">
+                                <div class="slot-empty">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    <span class="slot-label">+ Angle</span>
+                                </div>
+                                <div class="slot-filled" style="display: none;">
+                                    <img src="" alt="Product 2" class="slot-image">
+                                    <button type="button" class="slot-remove" title="Remove image">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"/>
+                                            <line x1="6" y1="6" x2="18" y2="18"/>
+                                        </svg>
+                                    </button>
+                                    <span class="slot-badge">2</span>
+                                </div>
+                                <input type="file" class="slot-input" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="Upload product image 2">
+                            </div>
+
+                            <!-- Slot 3 -->
+                            <div class="product-upload-slot" data-slot="2">
+                                <div class="slot-empty">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    <span class="slot-label">+ Angle</span>
+                                </div>
+                                <div class="slot-filled" style="display: none;">
+                                    <img src="" alt="Product 3" class="slot-image">
+                                    <button type="button" class="slot-remove" title="Remove image">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"/>
+                                            <line x1="6" y1="6" x2="18" y2="18"/>
+                                        </svg>
+                                    </button>
+                                    <span class="slot-badge">3</span>
+                                </div>
+                                <input type="file" class="slot-input" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="Upload product image 3">
+                            </div>
+
+                            <!-- Slot 4 -->
+                            <div class="product-upload-slot" data-slot="3">
+                                <div class="slot-empty">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    <span class="slot-label">+ Angle</span>
+                                </div>
+                                <div class="slot-filled" style="display: none;">
+                                    <img src="" alt="Product 4" class="slot-image">
+                                    <button type="button" class="slot-remove" title="Remove image">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"/>
+                                            <line x1="6" y1="6" x2="18" y2="18"/>
+                                        </svg>
+                                    </button>
+                                    <span class="slot-badge">4</span>
+                                </div>
+                                <input type="file" class="slot-input" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="Upload product image 4">
+                            </div>
                         </div>
-                        <div class="image-preview" id="imagePreview" style="display: none;">
-                            <img id="previewImg" alt="Preview" class="preview-img">
-                            <button type="button" class="preview-remove" id="removeImage">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="18" y1="6" x2="6" y2="18"/>
-                                    <line x1="6" y1="6" x2="18" y2="18"/>
-                                </svg>
-                            </button>
-                        </div>
+                        <p class="upload-hint">Add multiple angles of the same product for better accuracy</p>
                     </div>
 
                     <!-- Product Type -->

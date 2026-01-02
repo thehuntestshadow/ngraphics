@@ -13,6 +13,9 @@ const STUDIO_ID = 'models';
 // ============================================
 const state = {
     autoMode: true,
+    // Multiple product images support (up to 4)
+    productImages: [], // Array of { slotIndex, imageBase64, thumbnail, analyzed }
+    // Legacy single image support (kept for backwards compatibility)
     uploadedImage: null,
     uploadedImageBase64: null,
     generatedImageUrl: null,
@@ -78,11 +81,8 @@ function initElements() {
         autoModeToggle: document.getElementById('autoModeToggle'),
         // Form
         form: document.getElementById('modelForm'),
-        uploadArea: document.getElementById('uploadArea'),
-        productPhoto: document.getElementById('productPhoto'),
-        imagePreview: document.getElementById('imagePreview'),
-        previewImg: document.getElementById('previewImg'),
-        removeImageBtn: document.getElementById('removeImage'),
+        // Multi-image upload grid
+        productUploadGrid: document.getElementById('productUploadGrid'),
         productDescription: document.getElementById('productDescription'),
 
         // Model options
@@ -235,40 +235,269 @@ function updateLoadingStatus(status) {
 }
 
 // ============================================
-// IMAGE UPLOAD HANDLING (uses SharedUpload)
+// MULTI-IMAGE UPLOAD HANDLING
 // ============================================
 function setupImageUpload() {
-    SharedUpload.setup(elements.uploadArea, elements.productPhoto, {
-        onError: showError,
-        onLoad: (base64, file) => {
-            state.uploadedImage = file;
-            state.uploadedImageBase64 = base64;
-            elements.previewImg.src = base64;
-            elements.imagePreview.style.display = 'block';
-            elements.uploadArea.style.display = 'none';
-            analyzeProductImage();
+    if (!elements.productUploadGrid) return;
 
-            // Auto-generate if enabled
-            if (state.autoMode) {
-                setTimeout(() => generateModelPhoto(), 100);
+    const slots = elements.productUploadGrid.querySelectorAll('.product-upload-slot');
+
+    slots.forEach((slot, index) => {
+        const input = slot.querySelector('.slot-input');
+        const removeBtn = slot.querySelector('.slot-remove');
+
+        // Click on slot to trigger file input
+        slot.addEventListener('click', (e) => {
+            if (slot.classList.contains('filled')) return;
+            if (e.target.closest('.slot-remove')) return;
+            input.click();
+        });
+
+        // File input change
+        input.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                handleSlotUpload(index, e.target.files[0]);
+            }
+        });
+
+        // Remove button
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            removeSlotImage(index);
+        });
+
+        // Drag and drop for each slot
+        slot.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            slot.classList.add('drag-over');
+        });
+
+        slot.addEventListener('dragleave', () => {
+            slot.classList.remove('drag-over');
+        });
+
+        slot.addEventListener('drop', (e) => {
+            e.preventDefault();
+            slot.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleSlotUpload(index, file);
+            }
+        });
+    });
+}
+
+function handleSlotUpload(slotIndex, file) {
+    const slot = elements.productUploadGrid.querySelectorAll('.product-upload-slot')[slotIndex];
+    if (!slot) return;
+
+    // Show loading state
+    slot.classList.add('analyzing');
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        const imageBase64 = e.target.result;
+
+        // Compress if needed
+        let finalBase64 = imageBase64;
+        if (file.size > 500 * 1024) {
+            try {
+                finalBase64 = await compressImage(imageBase64, 1200);
+            } catch (err) {
+                console.warn('Compression failed, using original:', err);
             }
         }
-    });
 
-    elements.removeImageBtn.addEventListener('click', () => {
+        // Create thumbnail for display
+        const thumbnail = await createThumbnail(finalBase64, 200);
+
+        // Add to state
+        const imageData = {
+            slotIndex,
+            imageBase64: finalBase64,
+            thumbnail,
+            analyzed: false
+        };
+
+        // Remove existing image at this slot if any
+        state.productImages = state.productImages.filter(img => img.slotIndex !== slotIndex);
+        state.productImages.push(imageData);
+        state.productImages.sort((a, b) => a.slotIndex - b.slotIndex);
+
+        // Update legacy single-image state for compatibility
+        if (slotIndex === 0) {
+            state.uploadedImage = file;
+            state.uploadedImageBase64 = finalBase64;
+        }
+
+        // Update UI
+        renderSlotFilled(slotIndex, thumbnail);
+
+        // Analyze first image for product details
+        if (slotIndex === 0) {
+            analyzeProductImage();
+        }
+
+        slot.classList.remove('analyzing');
+
+        // Auto-generate if enabled and this is the first image
+        if (state.autoMode && slotIndex === 0) {
+            setTimeout(() => generateModelPhoto(), 100);
+        }
+    };
+
+    reader.onerror = () => {
+        slot.classList.remove('analyzing');
+        showError('Failed to read image file');
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function renderSlotFilled(slotIndex, thumbnail) {
+    const slot = elements.productUploadGrid.querySelectorAll('.product-upload-slot')[slotIndex];
+    if (!slot) return;
+
+    const emptyEl = slot.querySelector('.slot-empty');
+    const filledEl = slot.querySelector('.slot-filled');
+    const img = slot.querySelector('.slot-image');
+
+    slot.classList.add('filled');
+    emptyEl.style.display = 'none';
+    filledEl.style.display = 'block';
+    img.src = thumbnail;
+}
+
+function removeSlotImage(slotIndex) {
+    const slot = elements.productUploadGrid.querySelectorAll('.product-upload-slot')[slotIndex];
+    if (!slot) return;
+
+    // Remove from state
+    state.productImages = state.productImages.filter(img => img.slotIndex !== slotIndex);
+
+    // Update legacy state if removing first image
+    if (slotIndex === 0) {
         state.uploadedImage = null;
         state.uploadedImageBase64 = null;
-        elements.imagePreview.style.display = 'none';
-        elements.uploadArea.style.display = 'flex';
-        elements.productPhoto.value = '';
+        // If there's an image in slot 1, promote it
+        const nextImage = state.productImages.find(img => img.slotIndex > 0);
+        if (nextImage) {
+            state.uploadedImageBase64 = nextImage.imageBase64;
+        }
+    }
+
+    // Update UI
+    const emptyEl = slot.querySelector('.slot-empty');
+    const filledEl = slot.querySelector('.slot-filled');
+    const img = slot.querySelector('.slot-image');
+    const input = slot.querySelector('.slot-input');
+
+    slot.classList.remove('filled');
+    emptyEl.style.display = 'flex';
+    filledEl.style.display = 'none';
+    img.src = '';
+    input.value = '';
+}
+
+function clearAllSlots() {
+    state.productImages = [];
+    state.uploadedImage = null;
+    state.uploadedImageBase64 = null;
+
+    const slots = elements.productUploadGrid.querySelectorAll('.product-upload-slot');
+    slots.forEach((slot, index) => {
+        const emptyEl = slot.querySelector('.slot-empty');
+        const filledEl = slot.querySelector('.slot-filled');
+        const img = slot.querySelector('.slot-image');
+        const input = slot.querySelector('.slot-input');
+
+        slot.classList.remove('filled', 'analyzing');
+        emptyEl.style.display = 'flex';
+        filledEl.style.display = 'none';
+        img.src = '';
+        input.value = '';
     });
+}
+
+async function createThumbnail(base64, maxSize) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > maxSize) {
+                    height *= maxSize / width;
+                    width = maxSize;
+                }
+            } else {
+                if (height > maxSize) {
+                    width *= maxSize / height;
+                    height = maxSize;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.8));
+        };
+        img.onerror = () => resolve(base64);
+        img.src = base64;
+    });
+}
+
+async function compressImage(base64, maxSize) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxSize || height > maxSize) {
+                if (width > height) {
+                    height *= maxSize / width;
+                    width = maxSize;
+                } else {
+                    width *= maxSize / height;
+                    height = maxSize;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.85));
+        };
+        img.onerror = reject;
+        img.src = base64;
+    });
+}
+
+// Helper to get all uploaded images for API calls
+function getUploadedImages() {
+    return state.productImages
+        .sort((a, b) => a.slotIndex - b.slotIndex)
+        .map(img => img.imageBase64);
+}
+
+// Check if we have at least one image
+function hasProductImage() {
+    return state.productImages.length > 0;
 }
 
 // ============================================
 // AUTO IMAGE ANALYSIS (uses unified API client)
 // ============================================
 async function analyzeProductImage() {
-    if (!state.uploadedImageBase64) return;
+    // Use first image from productImages or legacy uploadedImageBase64
+    const imageToAnalyze = state.productImages[0]?.imageBase64 || state.uploadedImageBase64;
+    if (!imageToAnalyze) return;
 
     // Show analyzing state in the description field
     elements.productDescription.value = '';
@@ -277,7 +506,7 @@ async function analyzeProductImage() {
 
     try {
         const result = await api.analyzeImage({
-            image: state.uploadedImageBase64,
+            image: imageToAnalyze,
             prompt: `Analyze this product image and return ONLY valid JSON (no markdown):
 {
   "description": "Brief product description for fashion photography (e.g., 'Black leather crossbody bag with gold chain strap')",
@@ -794,13 +1023,26 @@ IMPORTANT INSTRUCTIONS:
 - No harsh edges or unnatural cutouts - the subject should look naturally present in the environment`;
     }
 
-    if (state.uploadedImageBase64) {
-        prompt += `\n\nPRODUCT REFERENCE IMAGE:
+    // Add product reference images section
+    const uploadedImages = getUploadedImages();
+    if (uploadedImages.length > 0) {
+        if (uploadedImages.length === 1) {
+            prompt += `\n\nPRODUCT REFERENCE IMAGE:
 I am providing a reference image of the actual product. CRITICAL requirements:
 - The product must appear EXACTLY as shown in the reference image
 - Preserve exact colors, patterns, logos, labels, and all design details
 - Do NOT modify, reinterpret, or stylize the product in any way
 - The product should be the hero of the shot while matching the reference precisely`;
+        } else {
+            prompt += `\n\nPRODUCT REFERENCE IMAGES:
+I am providing ${uploadedImages.length} reference images of the actual product from different angles. CRITICAL requirements:
+- The product must appear EXACTLY as shown in the reference images
+- Use ALL provided angles to understand the complete product appearance
+- Preserve exact colors, patterns, logos, labels, and all design details from EVERY angle
+- Do NOT modify, reinterpret, or stylize the product in any way
+- Combine the visual information from all angles for the most accurate representation
+- The product should be the hero of the shot while matching the references precisely`;
+        }
     }
 
     // Add negative prompt if provided
@@ -848,14 +1090,19 @@ async function generateModelPhoto() {
     try {
         updateLoadingStatus('Connecting to AI...');
 
+        // Build message content with all product images
+        const uploadedImages = getUploadedImages();
         let messageContent;
-        if (state.uploadedImageBase64 || state.styleReferenceBase64) {
+
+        if (uploadedImages.length > 0 || state.styleReferenceBase64) {
             messageContent = [
                 { type: 'text', text: prompt }
             ];
-            if (state.uploadedImageBase64) {
-                messageContent.push({ type: 'image_url', image_url: { url: state.uploadedImageBase64 } });
+            // Add all product images
+            for (const imgBase64 of uploadedImages) {
+                messageContent.push({ type: 'image_url', image_url: { url: imgBase64 } });
             }
+            // Add style reference if present
             if (state.styleReferenceBase64) {
                 messageContent.push({ type: 'image_url', image_url: { url: state.styleReferenceBase64 } });
             }
@@ -1038,12 +1285,17 @@ Please regenerate the image with these specific changes applied.`;
     const model = DEFAULT_MODEL;
 
     try {
+        // Build message content with all product images
+        const uploadedImages = getUploadedImages();
         let messageContent;
-        if (state.uploadedImageBase64) {
+
+        if (uploadedImages.length > 0) {
             messageContent = [
-                { type: 'text', text: adjustedPrompt },
-                { type: 'image_url', image_url: { url: state.uploadedImageBase64 } }
+                { type: 'text', text: adjustedPrompt }
             ];
+            for (const imgBase64 of uploadedImages) {
+                messageContent.push({ type: 'image_url', image_url: { url: imgBase64 } });
+            }
         } else {
             messageContent = adjustedPrompt;
         }
@@ -1081,8 +1333,14 @@ function loadHistory() {
 
 async function addToHistory(imageUrl) {
     if (!imageUrl) return; // Don't save null/undefined images
+
+    // Collect product image thumbnails for history
+    const productThumbnails = state.productImages.map(img => img.thumbnail);
+
     await history.add(imageUrl, {
-        imageUrls: [imageUrl]
+        imageUrls: [imageUrl],
+        productImages: productThumbnails,
+        imageCount: state.productImages.length
     });
     state.history = history.getAll();
     renderHistory();
@@ -1202,13 +1460,20 @@ async function saveFavorite() {
     const name = elements.productDescription?.value?.trim().slice(0, 30) || 'Model Photo';
 
     try {
+        // Collect product images (thumbnails for storage efficiency)
+        const productThumbnails = state.productImages.map(img => ({
+            slotIndex: img.slotIndex,
+            thumbnail: img.thumbnail
+        }));
+
         const favorite = await favorites.add({
             name,
             imageUrl: state.generatedImageUrl,
             imageUrls: state.generatedImages, // All variants
             seed: state.lastSeed,
             prompt: state.lastPrompt,
-            productImageBase64: state.uploadedImageBase64,
+            productImageBase64: state.uploadedImageBase64, // Legacy: first image
+            productImages: productThumbnails, // New: all images
             styleReferenceBase64: state.styleReferenceBase64,
             settings
         });

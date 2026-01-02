@@ -343,8 +343,17 @@ Generate AI model photos with products (person wearing/holding product).
 - `generatePrompt()`: Builds prompt for model photo generation
 - `generateModelPhoto()`: Makes API call for model image
 - `analyzeProductImage()`: Auto-detect product type and description
+- `handleSlotUpload()`: Handle multi-image uploads
+- `getUploadedImages()`: Get all uploaded product images for API calls
+
+### Multi-Image Support
+- Upload up to 4 product images for better accuracy
+- Multiple angles help AI understand the complete product appearance
+- First image is the "main" image, used for product analysis
+- All images sent to API for generation
 
 ### Configuration
+- **Product Images**: Up to 4 images (different angles for better results)
 - **Product**: Type, Description (auto-analyzed or manual)
 - **Model Appearance**: Gender, Age, Ethnicity, Body Type, Hair
 - **Shot Types**: Full Body, Half Body, Portrait, Close-up, Hands Only, Product Detail
