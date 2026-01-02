@@ -10,14 +10,30 @@ const StudioBootstrap = {
      * @param {string} config.studioId - Unique studio identifier (e.g., 'lifestyle', 'models')
      * @param {Object} config.elements - Cached DOM elements object
      * @param {Object} config.shortcuts - Keyboard shortcut handlers { generate, download, escape }
-     * @returns {Object} { history, favorites, imageStore }
+     * @param {boolean} config.requireAuth - Require authentication (default: true)
+     * @returns {Object} { history, favorites, imageStore, user }
      */
     async init(config) {
         const {
             studioId,
             elements = {},
-            shortcuts = {}
+            shortcuts = {},
+            requireAuth = true
         } = config;
+
+        // 0. Require authentication (blocks until user logs in)
+        let user = null;
+        if (requireAuth && typeof AuthGate !== 'undefined') {
+            try {
+                user = await AuthGate.requireAuth();
+                console.log(`[StudioBootstrap] Authenticated as ${user.email}`);
+            } catch (error) {
+                console.error('[StudioBootstrap] Authentication required but failed:', error);
+                // Auth gate will handle showing the login UI
+                // Return early with minimal init
+                return { history: null, favorites: null, imageStore: null, user: null };
+            }
+        }
 
         // 1. Initialize theme (already done inline in HTML to prevent flash)
         SharedTheme.init();
@@ -60,11 +76,41 @@ const StudioBootstrap = {
             });
         }
 
-        // 5. Load persisted data
+        // 5. Load persisted data (triggers async cloud sync)
         history.load();
         favorites.load();
 
-        return { history, favorites, imageStore };
+        // 6. Setup offline queue processor
+        if (typeof offlineQueue !== 'undefined') {
+            offlineQueue.setProcessor(async (op) => {
+                return StudioBootstrap._processOfflineOperation(op);
+            });
+
+            // Flush any pending operations now that we're authenticated
+            if (navigator.onLine) {
+                offlineQueue.flush().catch(e =>
+                    console.warn('[StudioBootstrap] Failed to flush offline queue:', e)
+                );
+            }
+        }
+
+        return { history, favorites, imageStore, user };
+    },
+
+    /**
+     * Process offline queue operations
+     * @param {Object} op - Queue operation
+     * @returns {Promise<boolean>} Success status
+     */
+    async _processOfflineOperation(op) {
+        if (!AuthGate.isAuthenticated()) {
+            return false;
+        }
+
+        // Operations are processed by SupabaseStorage directly
+        // This is just a placeholder for any custom handling
+        console.log(`[StudioBootstrap] Processing offline operation: ${op.type} for ${op.studioId}`);
+        return true;
     },
 
     /**

@@ -29,7 +29,8 @@ HEFAISTOS - AI E-commerce Toolkit. A collection of web-based tools that e-commer
 
 **Guiding principles:**
 - Each tool solves one specific problem well
-- Works fully offline; optional accounts for cloud sync
+- Requires login for all features (Supabase auth)
+- Supabase-first storage with local IndexedDB caching
 - AI-powered but user-controlled
 - Fast iteration: upload → configure → generate → download
 
@@ -124,15 +125,18 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `styles.css` - Base styles, CSS variables, theming, common components, mobile optimization
 - `core.js` - Core infrastructure: Reactive State, Event Bus, Image Compression, Virtual Scrolling, Lazy Loading
 - `i18n.js` - Internationalization module with 10 languages, interface/generation language settings
-- `shared.js` - Shared utilities: API handling, history, favorites, UI helpers, upload handling, lightbox, keyboard shortcuts, upgrade prompts, language helpers
+- `shared.js` - Shared utilities: SharedHistory, SharedFavorites, ImageStore, UI helpers, upload handling, lightbox
 - `api.js` - Unified API client with retry logic, rate limiting, response normalization, usage limit checking
 - `components.js` - Reusable Web Components and UI elements
 - `workers.js` - Web Worker and Service Worker managers
 - `image-worker.js` - Web Worker for image processing (compression, thumbnails, enhancement)
 - `service-worker.js` - Service Worker for caching and offline support
 - `supabase.js` - Supabase client wrapper (auth, profiles, usage tracking, CMS)
-- `auth-ui.js` - Authentication UI (login/signup modal, account menu, settings modal with language settings, usage display)
-- `cloud-sync.js` - Cloud sync manager (history/favorites sync to Supabase)
+- `auth-ui.js` - Authentication UI (login/signup modal, account menu, settings modal, AuthGate for auth-required pages)
+- `supabase-storage.js` - Supabase-first storage with IndexedDB caching (source of truth for history/favorites)
+- `offline-queue.js` - Offline write queue (IndexedDB queue for operations when offline)
+- `studio-bootstrap.js` - Shared studio initialization (auth gating, storage setup, keyboard shortcuts)
+- `cloud-sync.js` - DEPRECATED: Legacy sync manager, replaced by SupabaseStorage
 - `onboarding.js` - First-time user guidance tour (landing and studio tours)
 
 ### Documentation Files
@@ -861,11 +865,39 @@ DOM elements cached in `elements` object, initialized via `initElements()` on pa
 ### Prompt Generation
 Each page has `generatePrompt()` that builds AI prompts by concatenating descriptions from option maps.
 
-### History & Favorites
-- Hybrid storage: thumbnails in localStorage, full images in IndexedDB
-- History: view in modal, download, configurable limits (default 20)
-- Favorites: save with all settings/seed/reference images, supports multiple variants
-- Storage keys: `ngraphics_*`, `model_studio_*`, `bundle_studio_*`, `lifestyle_studio_*`, `copywriter_*`, `packaging_*`, `comparison_generator_*`, `size_visualizer_*`, `faq_generator_*`, `background_studio_*`, `badge_generator_*`, `feature_cards_*`, `size_chart_*`, `aplus_generator_*`, `product_variants_*`, `social_studio_*`, `export_center_*`, `ad_creative_*`, `model_video_*`
+### Storage Architecture (Supabase-First)
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Studio Page                          │
+├─────────────────────────────────────────────────────────┤
+│  AuthGate.requireAuth() ──► Block until authenticated   │
+├─────────────────────────────────────────────────────────┤
+│  SharedHistory / SharedFavorites                        │
+│    └── SupabaseStorage (history/favorites)              │
+│          ├── Read: Cache first → Background refresh     │
+│          ├── Write: Supabase first → Update cache       │
+│          └── Offline: Queue writes → Flush when online  │
+├─────────────────────────────────────────────────────────┤
+│  ImageStore (IndexedDB cache only)                      │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Data Flow:**
+- **Read**: Check IndexedDB cache → Return if fresh → Background sync from Supabase
+- **Write**: Save to Supabase → Update local cache → If offline, queue in OfflineQueue
+- **Offline**: Operations queued in IndexedDB, auto-flush when back online
+
+**Key Classes:**
+- `SupabaseStorage` - Primary storage with Supabase as source of truth
+- `SharedHistory` / `SharedFavorites` - Delegates to SupabaseStorage
+- `OfflineQueue` - Queues write operations when offline
+- `AuthGate` - Blocks page until authenticated
+
+**Storage Keys:**
+- Database tables: `history`, `favorites` with RLS policies
+- Storage bucket: `ngraphics-images`
+- Path pattern: `{user_id}/{type}/{studio}/{item_id}/main.ext`
 
 ### Language Settings
 - `ngraphics_ui_language` - Interface language (EN, RO, DE, FR, ES, IT, PT, NL, PL, CS)
@@ -881,9 +913,13 @@ Each page has `generatePrompt()` that builds AI prompts by concatenating descrip
 
 ### Classes
 - **SharedRequest**: `extractImageFromResponse()`, `makeRequest()`, `formatError()`
-- **SharedHistory**: Hybrid storage with `add()`, `remove()`, `clear()`, `getImages()`, `findById()`, `getAll()`
-- **ImageStore**: IndexedDB storage with `init()`, `save()`, `get()`, `delete()`, `clear()`
-- **SharedFavorites**: Hybrid storage with same interface as SharedHistory
+- **SharedHistory**: Supabase-backed storage with `add()`, `remove()`, `clear()`, `getImages()`, `findById()`, `getAll()`, `syncFromCloud()`
+- **ImageStore**: IndexedDB storage with cache metadata: `saveWithMeta()`, `getMeta()`, `isStale()`, `markPending()`, `markSynced()`
+- **SharedFavorites**: Supabase-backed storage with tags/folders: `addTag()`, `removeTag()`, `getAllTags()`, `setFolder()`, `getAllFolders()`, `filter()`
+
+### Storage Classes (`supabase-storage.js`, `offline-queue.js`)
+- **SupabaseStorage**: Primary storage class with Supabase as source of truth, IndexedDB caching
+- **OfflineQueue**: IndexedDB-based queue for offline write operations with auto-flush
 
 ### Utility Objects
 - **SharedTheme**: `init()`, `apply()`, `toggle()`, `setupToggle()` - Note: All HTML pages include inline `<script>` in `<head>` to prevent theme flash

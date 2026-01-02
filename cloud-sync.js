@@ -1,11 +1,23 @@
 /**
- * HEFAISTOS - Cloud Sync Manager
- * Handles bidirectional sync between local storage and Supabase
+ * HEFAISTOS - Cloud Sync Manager (DEPRECATED)
  *
- * Usage:
+ * @deprecated This class is deprecated. Use SupabaseStorage instead.
+ * Sync functionality is now handled by:
+ *   - SupabaseStorage: Supabase-first storage with caching
+ *   - SharedHistory/SharedFavorites: Delegate to SupabaseStorage
+ *   - OfflineQueue: Handles offline write operations
+ *
+ * This file is kept for backwards compatibility but should not be used
+ * for new features.
+ *
+ * OLD Usage (deprecated):
  *   cloudSync.uploadHistoryItem('infographics', item, imageData);
  *   await cloudSync.downloadHistory('infographics');
  *   await cloudSync.fullSync();
+ *
+ * NEW Usage:
+ *   const history = new SharedHistory('studio_history');
+ *   await history.add(imageUrl, metadata);  // Automatically syncs to Supabase
  */
 
 class CloudSync {

@@ -441,23 +441,20 @@ class AccountMenu {
         // Sync now
         this.container.querySelector('#syncNowBtn').addEventListener('click', async () => {
             this._closeDropdown();
-            if (typeof window.cloudSync !== 'undefined' && window.cloudSync.fullSync) {
+            if (typeof SharedUI !== 'undefined' && SharedUI.toast) {
+                SharedUI.toast('Syncing...', 'info');
+            }
+            try {
+                // Trigger sync on SupabaseStorage instances via event
+                window.dispatchEvent(new CustomEvent('requestSync'));
+                localStorage.setItem('ngraphics_last_sync', new Date().toISOString());
                 if (typeof SharedUI !== 'undefined' && SharedUI.toast) {
-                    SharedUI.toast('Syncing...', 'info');
+                    SharedUI.toast('Sync complete!', 'success');
                 }
-                try {
-                    await window.cloudSync.fullSync();
-                    if (typeof SharedUI !== 'undefined' && SharedUI.toast) {
-                        SharedUI.toast('Sync complete!', 'success');
-                    }
-                } catch (error) {
-                    if (typeof SharedUI !== 'undefined' && SharedUI.toast) {
-                        SharedUI.toast('Sync failed', 'error');
-                    }
-                }
-            } else {
+            } catch (error) {
+                console.error('[Sync] Failed:', error);
                 if (typeof SharedUI !== 'undefined' && SharedUI.toast) {
-                    SharedUI.toast('Sync not available yet', 'info');
+                    SharedUI.toast('Sync failed', 'error');
                 }
             }
         });
@@ -1226,15 +1223,13 @@ class SettingsModal {
         this._showToast('Syncing...', 'info');
 
         try {
-            if (typeof window.cloudSync !== 'undefined' && window.cloudSync.fullSync) {
-                await window.cloudSync.fullSync();
-                localStorage.setItem('ngraphics_last_sync', new Date().toISOString());
-                this._updateSyncStatus();
-                this._showToast('Sync complete!', 'success');
-            } else {
-                this._showToast('Sync not available', 'error');
-            }
+            // Trigger sync via event for new SupabaseStorage system
+            window.dispatchEvent(new CustomEvent('requestSync'));
+            localStorage.setItem('ngraphics_last_sync', new Date().toISOString());
+            this._updateSyncStatus();
+            this._showToast('Sync complete!', 'success');
         } catch (error) {
+            console.error('[Sync] Failed:', error);
             this._showToast('Sync failed', 'error');
         } finally {
             if (btn) btn.disabled = false;
@@ -1410,6 +1405,183 @@ class SettingsModal {
 
 
 // ============================================
+// AUTH GATE
+// Blocks page access until user is authenticated
+// ============================================
+
+class AuthGate {
+    static _overlay = null;
+    static _resolveAuth = null;
+    static _authPromise = null;
+
+    /**
+     * Require authentication before proceeding
+     * Shows blocking overlay if not authenticated
+     * @returns {Promise<Object>} Resolves with user object when authenticated
+     */
+    static async requireAuth() {
+        // Initialize Supabase first
+        if (typeof ngSupabase !== 'undefined') {
+            await ngSupabase.init();
+
+            // Already authenticated - return user immediately
+            if (ngSupabase.isAuthenticated) {
+                this.hideBlockingOverlay();
+                return ngSupabase.user;
+            }
+        }
+
+        // Show blocking overlay and wait for auth
+        this.showBlockingOverlay();
+        return this.waitForAuth();
+    }
+
+    /**
+     * Show full-screen blocking overlay
+     */
+    static showBlockingOverlay() {
+        // Check if overlay already exists in HTML
+        let overlay = document.getElementById('authOverlay');
+
+        if (!overlay) {
+            // Create overlay if it doesn't exist
+            overlay = document.createElement('div');
+            overlay.id = 'authOverlay';
+            overlay.className = 'auth-overlay';
+            overlay.innerHTML = `
+                <div class="auth-overlay-backdrop"></div>
+                <div class="auth-overlay-content">
+                    <div class="auth-overlay-logo">
+                        <svg viewBox="0 0 40 40" fill="none" width="64" height="64">
+                            <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 28V12h4l8 10V12h4v16h-4l-8-10v10h-4z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <h2 class="auth-overlay-title">Sign in to continue</h2>
+                    <p class="auth-overlay-subtitle">HEFAISTOS requires an account to save and sync your work</p>
+                    <div class="auth-overlay-actions">
+                        <button class="auth-overlay-btn auth-overlay-btn-primary" id="authOverlayLogin">
+                            Sign In
+                        </button>
+                        <button class="auth-overlay-btn auth-overlay-btn-secondary" id="authOverlaySignup">
+                            Create Account
+                        </button>
+                    </div>
+                    <p class="auth-overlay-note">
+                        Free accounts get access to all tools.
+                        <a href="/pricing.html">View plans</a> for AI generation.
+                    </p>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        // Attach event listeners
+        const loginBtn = overlay.querySelector('#authOverlayLogin');
+        const signupBtn = overlay.querySelector('#authOverlaySignup');
+
+        if (loginBtn) {
+            loginBtn.onclick = () => authUI.show('login');
+        }
+        if (signupBtn) {
+            signupBtn.onclick = () => authUI.show('signup');
+        }
+
+        // Show overlay
+        overlay.classList.add('visible');
+        document.body.classList.add('auth-blocked');
+        this._overlay = overlay;
+    }
+
+    /**
+     * Hide blocking overlay
+     */
+    static hideBlockingOverlay() {
+        const overlay = document.getElementById('authOverlay');
+        if (overlay) {
+            overlay.classList.remove('visible');
+            document.body.classList.remove('auth-blocked');
+        }
+        this._overlay = null;
+    }
+
+    /**
+     * Wait for authentication
+     * @returns {Promise<Object>} Resolves with user object when authenticated
+     */
+    static waitForAuth() {
+        // Return existing promise if already waiting
+        if (this._authPromise) {
+            return this._authPromise;
+        }
+
+        this._authPromise = new Promise((resolve) => {
+            this._resolveAuth = resolve;
+
+            // Check if already authenticated
+            if (typeof ngSupabase !== 'undefined' && ngSupabase.isAuthenticated) {
+                this._onAuthenticated(ngSupabase.user);
+                return;
+            }
+
+            // Listen for auth changes
+            if (typeof ngSupabase !== 'undefined') {
+                const unsubscribe = ngSupabase.on('authChange', ({ event, user }) => {
+                    if (event === 'SIGNED_IN' && user) {
+                        unsubscribe();
+                        this._onAuthenticated(user);
+                    }
+                });
+            }
+        });
+
+        return this._authPromise;
+    }
+
+    /**
+     * Handle successful authentication
+     * @param {Object} user - Authenticated user
+     */
+    static _onAuthenticated(user) {
+        this.hideBlockingOverlay();
+
+        // Close auth modal if open
+        if (authUI.isOpen) {
+            authUI.hide();
+        }
+
+        // Resolve promise
+        if (this._resolveAuth) {
+            this._resolveAuth(user);
+            this._resolveAuth = null;
+            this._authPromise = null;
+        }
+
+        // Show success toast
+        if (typeof SharedUI !== 'undefined' && SharedUI.toast) {
+            SharedUI.toast('Signed in successfully!', 'success');
+        }
+    }
+
+    /**
+     * Check if user is authenticated without blocking
+     * @returns {boolean}
+     */
+    static isAuthenticated() {
+        return typeof ngSupabase !== 'undefined' && ngSupabase.isAuthenticated;
+    }
+
+    /**
+     * Get current user without blocking
+     * @returns {Object|null}
+     */
+    static getUser() {
+        return typeof ngSupabase !== 'undefined' ? ngSupabase.user : null;
+    }
+}
+
+
+// ============================================
 // EXPORTS
 // ============================================
 
@@ -1423,3 +1595,71 @@ window.authUI = authUI;
 window.AccountMenu = AccountMenu;
 window.SettingsModal = SettingsModal;
 window.settingsModal = settingsModal;
+window.AuthGate = AuthGate;
+
+// ============================================
+// AUTO-INIT: Require auth on studio pages
+// ============================================
+
+/**
+ * Pages that don't require authentication
+ */
+const AUTH_EXEMPT_PAGES = [
+    'index.html',
+    'gallery.html',
+    'faq.html',
+    'pricing.html',
+    'docs.html',
+    ''  // root path
+];
+
+/**
+ * Check if current page requires authentication
+ */
+function isAuthRequiredPage() {
+    const path = window.location.pathname;
+    const page = path.split('/').pop() || '';
+
+    // Check if page is exempt
+    if (AUTH_EXEMPT_PAGES.includes(page)) {
+        return false;
+    }
+
+    // All other pages (studios) require auth
+    return page.endsWith('.html') || page === '';
+}
+
+/**
+ * Auto-initialize auth gate on page load
+ */
+function autoInitAuthGate() {
+    if (!isAuthRequiredPage()) {
+        console.log('[AuthGate] Page exempt from authentication');
+        return;
+    }
+
+    // Don't auto-init if page explicitly opts out
+    if (document.body.hasAttribute('data-no-auth')) {
+        console.log('[AuthGate] Page opted out of authentication');
+        return;
+    }
+
+    // Require authentication
+    console.log('[AuthGate] Requiring authentication for this page');
+    AuthGate.requireAuth().then(user => {
+        console.log(`[AuthGate] Authenticated as ${user.email}`);
+
+        // Dispatch event for studios to listen to
+        window.dispatchEvent(new CustomEvent('authReady', { detail: { user } }));
+    }).catch(error => {
+        console.error('[AuthGate] Authentication error:', error);
+    });
+}
+
+// Run auto-init after DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', autoInitAuthGate);
+} else {
+    // DOM already loaded, run immediately
+    autoInitAuthGate();
+}

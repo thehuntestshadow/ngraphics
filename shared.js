@@ -419,12 +419,30 @@ const SharedRequest = {
 // HISTORY MANAGEMENT (IndexedDB for images)
 // ============================================
 class SharedHistory {
+    /**
+     * @param {string} storageKey - Storage key (e.g., 'ngraphics_history')
+     * @param {number} maxItems - Max items to store (default: 20)
+     */
     constructor(storageKey, maxItems = 20) {
         this.storageKey = storageKey;
         this.maxItems = maxItems;
-        this.items = [];
-        this.imageStore = null; // Will be set after ImageStore is created
+        this.studioId = this._deriveStudioId(storageKey);
         this.studioName = this._deriveStudioName(storageKey);
+
+        // Supabase-first storage (new)
+        this._storage = null;
+        this._initPromise = null;
+
+        // Legacy support - items array for synchronous access
+        this.items = [];
+
+        // Legacy imageStore reference (for backwards compatibility)
+        this.imageStore = null;
+    }
+
+    // Derive studio ID from storage key
+    _deriveStudioId(key) {
+        return key.replace(/_history$/, '');
     }
 
     // Derive studio name from storage key for cloud sync
@@ -453,62 +471,123 @@ class SharedHistory {
         return keyMap[key] || 'unknown';
     }
 
-    // Set the image store (called after imageStore is available)
+    /**
+     * Initialize Supabase storage
+     * @returns {Promise<SupabaseStorage>}
+     */
+    async _initStorage() {
+        if (this._storage) return this._storage;
+        if (this._initPromise) return this._initPromise;
+
+        this._initPromise = (async () => {
+            // Wait for SupabaseStorage class to be available
+            if (typeof SupabaseStorage === 'undefined') {
+                console.warn('[SharedHistory] SupabaseStorage not available, using local-only mode');
+                return null;
+            }
+
+            this._storage = new SupabaseStorage(this.studioId, 'history', {
+                maxItems: this.maxItems
+            });
+
+            // Load initial data
+            const items = await this._storage.getAll();
+            this.items = items;
+
+            return this._storage;
+        })();
+
+        return this._initPromise;
+    }
+
+    // Set the image store (for backwards compatibility)
     setImageStore(store) {
         this.imageStore = store;
     }
 
+    /**
+     * Load items (async, returns cached items immediately if available)
+     * @returns {Array} Current items array
+     */
     load() {
-        try {
-            const saved = localStorage.getItem(this.storageKey);
-            if (saved) {
-                this.items = JSON.parse(saved);
-            }
-        } catch (error) {
-            console.error('Failed to load history:', error);
-            this.items = [];
-        }
+        // Trigger async load in background
+        this._initStorage().catch(e => console.warn('[SharedHistory] Load error:', e));
         return this.items;
     }
 
+    /**
+     * Save items (no-op in Supabase-first mode, kept for compatibility)
+     * @deprecated Saves are automatic in Supabase-first mode
+     */
     save() {
-        try {
-            localStorage.setItem(this.storageKey, JSON.stringify(this.items));
-        } catch (error) {
-            console.error('Failed to save history:', error);
-        }
+        // No-op - saves are handled by SupabaseStorage
     }
 
+    /**
+     * Add new history item
+     * @param {string} imageUrl - Primary image URL
+     * @param {Object} metadata - Item metadata
+     * @returns {Promise<Object>} Created item
+     */
     async add(imageUrl, metadata = {}) {
-        const id = Date.now();
+        const storage = await this._initStorage();
 
         // Support multiple images (variants)
         const imageUrls = metadata.imageUrls || (imageUrl ? [imageUrl] : []);
         const primaryImage = imageUrls[0] || imageUrl;
 
-        // Store images in IndexedDB if available
-        if (this.imageStore) {
-            const images = {
-                imageUrl: primaryImage,
-                imageUrls: imageUrls,
-                productImageBase64: metadata.productImageBase64 || null
-            };
-            try {
-                await this.imageStore.save(`history_${id}`, images);
-            } catch (error) {
-                console.error('Failed to save history images to IndexedDB:', error);
-            }
-        }
-
         // Create thumbnail for grid display
         const thumbnail = await this._createThumbnail(primaryImage);
+
+        const itemMetadata = {
+            title: metadata.title || '',
+            prompt: metadata.prompt || '',
+            seed: metadata.seed || null,
+            settings: metadata.settings || {}
+        };
+
+        const imageData = {
+            imageUrl: primaryImage,
+            imageUrls: imageUrls,
+            thumbnail,
+            productImageBase64: metadata.productImageBase64 || null,
+            styleReferenceBase64: metadata.styleReferenceBase64 || null
+        };
+
+        if (storage) {
+            // Use Supabase-first storage
+            const item = await storage.add(itemMetadata, imageData);
+            this.items = await storage.getAll();
+            return item;
+        } else {
+            // Fallback to legacy IndexedDB-only storage
+            return this._addLegacy(primaryImage, imageUrls, thumbnail, metadata);
+        }
+    }
+
+    /**
+     * Legacy add method (IndexedDB only, for when SupabaseStorage unavailable)
+     */
+    async _addLegacy(primaryImage, imageUrls, thumbnail, metadata) {
+        const id = Date.now();
+
+        if (this.imageStore) {
+            try {
+                await this.imageStore.save(`history_${id}`, {
+                    imageUrl: primaryImage,
+                    imageUrls: imageUrls,
+                    productImageBase64: metadata.productImageBase64 || null
+                });
+            } catch (error) {
+                console.error('Failed to save history images:', error);
+            }
+        }
 
         const item = {
             id,
             timestamp: new Date().toISOString(),
-            thumbnail, // Small thumbnail for display
+            thumbnail,
             variantCount: imageUrls.length,
-            // Store metadata but not full images
             title: metadata.title || '',
             prompt: metadata.prompt || '',
             seed: metadata.seed || null,
@@ -516,28 +595,8 @@ class SharedHistory {
         };
 
         this.items.unshift(item);
-
         if (this.items.length > this.maxItems) {
-            // Remove images from IndexedDB for items being removed
-            const removedItems = this.items.slice(this.maxItems);
-            for (const removed of removedItems) {
-                if (this.imageStore) {
-                    this.imageStore.delete(`history_${removed.id}`).catch(() => {});
-                }
-            }
             this.items = this.items.slice(0, this.maxItems);
-        }
-
-        this.save();
-
-        // Cloud sync (non-blocking)
-        if (typeof cloudSync !== 'undefined' && cloudSync.canSync) {
-            cloudSync.uploadHistoryItem(this.studioName, item, {
-                imageUrl: primaryImage,
-                imageUrls: imageUrls,
-                thumbnail,
-                productImageBase64: metadata.productImageBase64 || null
-            });
         }
 
         return item;
@@ -561,7 +620,19 @@ class SharedHistory {
         });
     }
 
+    /**
+     * Get full images for an item
+     * @param {number} id - Item ID
+     * @returns {Promise<Object|null>}
+     */
     async getImages(id) {
+        const storage = await this._initStorage();
+
+        if (storage) {
+            return storage.getImages(id);
+        }
+
+        // Legacy fallback
         if (!this.imageStore) return null;
         try {
             return await this.imageStore.get(`history_${id}`);
@@ -571,8 +642,19 @@ class SharedHistory {
         }
     }
 
+    /**
+     * Clear all history
+     */
     async clear() {
-        // Delete all images from IndexedDB
+        const storage = await this._initStorage();
+
+        if (storage) {
+            await storage.clear();
+            this.items = [];
+            return;
+        }
+
+        // Legacy fallback
         if (this.imageStore) {
             for (const item of this.items) {
                 try {
@@ -583,27 +665,47 @@ class SharedHistory {
             }
         }
         this.items = [];
-        this.save();
     }
 
     get count() {
         return this.items.length;
     }
 
+    /**
+     * Get all items
+     * @returns {Array}
+     */
     getAll() {
         return this.items;
     }
 
+    /**
+     * Find item by ID
+     * @param {number} id
+     * @returns {Object|undefined}
+     */
     findById(id) {
         return this.items.find(item => item.id === id);
     }
 
+    /**
+     * Remove item by ID
+     * @param {number} id
+     * @returns {Promise<boolean>}
+     */
     async remove(id) {
+        const storage = await this._initStorage();
+
+        if (storage) {
+            const result = await storage.remove(id);
+            this.items = await storage.getAll();
+            return result;
+        }
+
+        // Legacy fallback
         const index = this.items.findIndex(item => item.id === id);
         if (index !== -1) {
             this.items.splice(index, 1);
-            this.save();
-            // Remove images from IndexedDB
             if (this.imageStore) {
                 try {
                     await this.imageStore.delete(`history_${id}`);
@@ -616,29 +718,25 @@ class SharedHistory {
         return false;
     }
 
-    // Bulk remove
+    /**
+     * Bulk remove items
+     * @param {Array<number>} ids
+     * @returns {Promise<number>} Number of items removed
+     */
     async removeMultiple(ids) {
-        const idsSet = new Set(ids.map(id => parseInt(id, 10) || id));
-        const toRemove = this.items.filter(item => idsSet.has(item.id));
-
-        this.items = this.items.filter(item => !idsSet.has(item.id));
-        this.save();
-
-        // Remove images from IndexedDB
-        if (this.imageStore) {
-            for (const item of toRemove) {
-                try {
-                    await this.imageStore.delete(`history_${item.id}`);
-                } catch (error) {
-                    // Continue even if delete fails
-                }
-            }
+        let removed = 0;
+        for (const id of ids) {
+            const success = await this.remove(id);
+            if (success) removed++;
         }
-
-        return toRemove.length;
+        return removed;
     }
 
-    // Search by title or date
+    /**
+     * Search by title or date
+     * @param {string} query
+     * @returns {Array}
+     */
     search(query) {
         if (!query) return this.items;
         const q = query.toLowerCase().trim();
@@ -649,7 +747,12 @@ class SharedHistory {
         });
     }
 
-    // Filter by date range
+    /**
+     * Filter by date range
+     * @param {Date} startDate
+     * @param {Date} endDate
+     * @returns {Array}
+     */
     filterByDateRange(startDate, endDate) {
         return this.items.filter(item => {
             const itemDate = new Date(item.timestamp);
@@ -657,6 +760,18 @@ class SharedHistory {
             if (endDate && itemDate > endDate) return false;
             return true;
         });
+    }
+
+    /**
+     * Force sync from cloud
+     * @returns {Promise<void>}
+     */
+    async syncFromCloud() {
+        const storage = await this._initStorage();
+        if (storage) {
+            await storage.syncFromCloud();
+            this.items = await storage.getAll();
+        }
     }
 }
 
@@ -768,19 +883,183 @@ class ImageStore {
         }
         return deleted;
     }
+
+    // ============================================
+    // CACHE METADATA METHODS (for Supabase-first storage)
+    // ============================================
+
+    /**
+     * Save data with cache metadata
+     * @param {string} id - Cache key
+     * @param {Object} data - Data to cache
+     * @param {Object} [meta] - Cache metadata
+     * @param {string} [meta.cloudUpdatedAt] - When data was last updated in cloud
+     * @param {string} [meta.etag] - ETag for cache validation
+     * @param {'synced'|'pending'|'failed'} [meta.syncStatus] - Sync status
+     */
+    async saveWithMeta(id, data, meta = {}) {
+        await this.init();
+        const entry = {
+            id,
+            ...data,
+            _cacheMeta: {
+                cachedAt: new Date().toISOString(),
+                cloudUpdatedAt: meta.cloudUpdatedAt || null,
+                etag: meta.etag || null,
+                syncStatus: meta.syncStatus || 'synced'
+            }
+        };
+        return new Promise((resolve, reject) => {
+            const transaction = this.db.transaction([this.storeName], 'readwrite');
+            const store = transaction.objectStore(this.storeName);
+            const request = store.put(entry);
+            request.onsuccess = () => resolve(true);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    /**
+     * Get cache metadata for an entry
+     * @param {string} id - Cache key
+     * @returns {Promise<Object|null>} Cache metadata or null
+     */
+    async getMeta(id) {
+        const entry = await this.get(id);
+        return entry?._cacheMeta || null;
+    }
+
+    /**
+     * Update only the cache metadata
+     * @param {string} id - Cache key
+     * @param {Object} updates - Metadata updates
+     */
+    async updateMeta(id, updates) {
+        const entry = await this.get(id);
+        if (!entry) return null;
+
+        const newMeta = {
+            ...entry._cacheMeta,
+            ...updates
+        };
+
+        return this.saveWithMeta(id, entry, newMeta);
+    }
+
+    /**
+     * Check if cache entry is stale
+     * @param {string} id - Cache key
+     * @param {number} [maxAge=3600000] - Max age in milliseconds (default: 1 hour)
+     * @returns {Promise<boolean>} True if stale or missing
+     */
+    async isStale(id, maxAge = 3600000) {
+        const meta = await this.getMeta(id);
+        if (!meta || !meta.cachedAt) return true;
+
+        const age = Date.now() - new Date(meta.cachedAt).getTime();
+        return age > maxAge;
+    }
+
+    /**
+     * Check if entry needs sync (pending status)
+     * @param {string} id - Cache key
+     * @returns {Promise<boolean>}
+     */
+    async needsSync(id) {
+        const meta = await this.getMeta(id);
+        return meta?.syncStatus === 'pending';
+    }
+
+    /**
+     * Mark entry as pending sync
+     * @param {string} id - Cache key
+     */
+    async markPending(id) {
+        return this.updateMeta(id, { syncStatus: 'pending' });
+    }
+
+    /**
+     * Mark entry as synced
+     * @param {string} id - Cache key
+     * @param {string} [cloudUpdatedAt] - Cloud timestamp
+     */
+    async markSynced(id, cloudUpdatedAt) {
+        return this.updateMeta(id, {
+            syncStatus: 'synced',
+            cloudUpdatedAt: cloudUpdatedAt || new Date().toISOString()
+        });
+    }
+
+    /**
+     * Mark entry as failed sync
+     * @param {string} id - Cache key
+     */
+    async markFailed(id) {
+        return this.updateMeta(id, { syncStatus: 'failed' });
+    }
+
+    /**
+     * Get all entries that need sync
+     * @returns {Promise<string[]>} IDs of entries needing sync
+     */
+    async getPendingIds() {
+        const allKeys = await this.getAllKeys();
+        const pending = [];
+        for (const key of allKeys) {
+            if (await this.needsSync(key)) {
+                pending.push(key);
+            }
+        }
+        return pending;
+    }
+
+    /**
+     * Clear all cache entries older than maxAge
+     * @param {number} maxAge - Max age in milliseconds
+     * @returns {Promise<number>} Number of entries cleared
+     */
+    async clearStale(maxAge) {
+        const allKeys = await this.getAllKeys();
+        const staleIds = [];
+
+        for (const key of allKeys) {
+            if (await this.isStale(key, maxAge)) {
+                staleIds.push(key);
+            }
+        }
+
+        return this.deleteByIds(staleIds);
+    }
 }
 
 
 // ============================================
-// FAVORITES MANAGEMENT
+// FAVORITES MANAGEMENT (Supabase-first with IndexedDB cache)
 // ============================================
 class SharedFavorites {
+    /**
+     * @param {string} storageKey - Storage key (e.g., 'ngraphics_favorites')
+     * @param {number} maxItems - Max items to store (default: 50)
+     */
     constructor(storageKey, maxItems = 50) {
         this.storageKey = storageKey;
         this.maxItems = maxItems;
-        this.items = [];
-        this.imageStore = null;
+        this.studioId = this._deriveStudioId(storageKey);
         this.studioName = this._deriveStudioName(storageKey);
+
+        // Supabase-first storage (new)
+        this._storage = null;
+        this._initPromise = null;
+
+        // Legacy support - items array for synchronous access
+        this.items = [];
+
+        // Legacy imageStore reference (for backwards compatibility)
+        this.imageStore = null;
+    }
+
+    // Derive studio ID from storage key
+    _deriveStudioId(key) {
+        return key.replace(/_favorites$/, '');
     }
 
     // Derive studio name from storage key for cloud sync
@@ -809,95 +1088,143 @@ class SharedFavorites {
         return keyMap[key] || 'unknown';
     }
 
+    /**
+     * Initialize Supabase storage
+     * @returns {Promise<SupabaseStorage>}
+     */
+    async _initStorage() {
+        if (this._storage) return this._storage;
+        if (this._initPromise) return this._initPromise;
+
+        this._initPromise = (async () => {
+            // Wait for SupabaseStorage class to be available
+            if (typeof SupabaseStorage === 'undefined') {
+                console.warn('[SharedFavorites] SupabaseStorage not available, using local-only mode');
+                return null;
+            }
+
+            this._storage = new SupabaseStorage(this.studioId, 'favorites', {
+                maxItems: this.maxItems
+            });
+
+            // Load initial data
+            const items = await this._storage.getAll();
+            this.items = items;
+
+            return this._storage;
+        })();
+
+        return this._initPromise;
+    }
+
+    // Set the image store (for backwards compatibility)
     setImageStore(store) {
         this.imageStore = store;
     }
 
+    /**
+     * Load items (async, returns cached items immediately if available)
+     * @returns {Array} Current items array
+     */
     load() {
-        try {
-            const saved = localStorage.getItem(this.storageKey);
-            if (saved) {
-                this.items = JSON.parse(saved);
-            }
-        } catch (error) {
-            console.error('Failed to load favorites:', error);
-            this.items = [];
-        }
+        // Trigger async load in background
+        this._initStorage().catch(e => console.warn('[SharedFavorites] Load error:', e));
         return this.items;
     }
 
+    /**
+     * Save items (no-op in Supabase-first mode, kept for compatibility)
+     * @deprecated Saves are automatic in Supabase-first mode
+     */
     save() {
-        try {
-            localStorage.setItem(this.storageKey, JSON.stringify(this.items));
-            return true;
-        } catch (error) {
-            console.error('Failed to save favorites:', error);
-            return false;
-        }
+        // No-op - saves are handled by SupabaseStorage
     }
 
+    /**
+     * Add new favorite item
+     * @param {Object} favorite - Favorite data
+     * @returns {Promise<Object>} Created item
+     */
     async add(favorite) {
-        const id = Date.now();
+        const storage = await this._initStorage();
 
         // Support multiple images (variants)
         const imageUrls = favorite.imageUrls || (favorite.imageUrl ? [favorite.imageUrl] : []);
+        const primaryImage = imageUrls[0] || favorite.imageUrl;
 
-        // Store images in IndexedDB
-        const images = {
-            imageUrl: imageUrls[0] || favorite.imageUrl, // Primary image for backward compat
-            imageUrls: imageUrls, // All variant images
+        // Create thumbnail for grid display
+        const thumbnail = await this._createThumbnail(primaryImage);
+
+        const itemMetadata = {
+            name: favorite.name || 'Untitled',
+            prompt: favorite.prompt || '',
+            seed: favorite.seed || null,
+            settings: favorite.settings || {},
+            tags: favorite.tags || [],
+            folder: favorite.folder || null
+        };
+
+        const imageData = {
+            imageUrl: primaryImage,
+            imageUrls: imageUrls,
+            thumbnail,
             productImageBase64: favorite.productImageBase64 || null,
             styleReferenceBase64: favorite.styleReferenceBase64 || null
         };
 
-        try {
-            await this.imageStore.save(id, images);
-        } catch (error) {
-            console.error('Failed to save images to IndexedDB:', error);
-            // Fallback: store in localStorage (may fail for large images)
+        if (storage) {
+            // Use Supabase-first storage
+            const item = await storage.add(itemMetadata, imageData);
+            this.items = await storage.getAll();
+            return item;
+        } else {
+            // Fallback to legacy IndexedDB-only storage
+            return this._addLegacy(primaryImage, imageUrls, thumbnail, favorite);
+        }
+    }
+
+    /**
+     * Legacy add method (IndexedDB only, for when SupabaseStorage unavailable)
+     */
+    async _addLegacy(primaryImage, imageUrls, thumbnail, favorite) {
+        const id = Date.now();
+
+        if (this.imageStore) {
+            try {
+                await this.imageStore.save(id, {
+                    imageUrl: primaryImage,
+                    imageUrls: imageUrls,
+                    productImageBase64: favorite.productImageBase64 || null,
+                    styleReferenceBase64: favorite.styleReferenceBase64 || null
+                });
+            } catch (error) {
+                console.error('Failed to save favorite images:', error);
+            }
         }
 
-        // Store metadata in localStorage (no images)
         const item = {
             id,
             timestamp: new Date().toISOString(),
+            thumbnail,
+            variantCount: imageUrls.length,
             name: favorite.name || 'Untitled',
-            seed: favorite.seed,
             prompt: favorite.prompt || '',
+            seed: favorite.seed || null,
             settings: favorite.settings || {},
-            variantCount: imageUrls.length, // Track how many variants
-            tags: favorite.tags || [], // Tags for organization
-            folder: favorite.folder || null, // Folder for organization
-            // Store small thumbnail for grid display
-            thumbnail: await this._createThumbnail(imageUrls[0] || favorite.imageUrl)
+            tags: favorite.tags || [],
+            folder: favorite.folder || null
         };
 
         this.items.unshift(item);
-
         if (this.items.length > this.maxItems) {
-            // Remove images from IndexedDB for items being removed
-            const removedItems = this.items.slice(this.maxItems);
-            for (const removed of removedItems) {
-                this.imageStore.delete(removed.id).catch(() => {});
-            }
             this.items = this.items.slice(0, this.maxItems);
-        }
-
-        this.save();
-
-        // Cloud sync (non-blocking)
-        if (typeof cloudSync !== 'undefined' && cloudSync.canSync) {
-            cloudSync.uploadFavoriteItem(this.studioName, item, {
-                imageUrl: images.imageUrl,
-                imageUrls: images.imageUrls,
-                thumbnail: item.thumbnail
-            });
         }
 
         return item;
     }
 
     async _createThumbnail(imageUrl, maxSize = 150) {
+        if (!imageUrl) return null;
         return new Promise((resolve) => {
             const img = new Image();
             img.onload = () => {
@@ -909,99 +1236,179 @@ class SharedFavorites {
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 resolve(canvas.toDataURL('image/jpeg', 0.7));
             };
-            img.onerror = () => resolve(imageUrl); // Fallback to original
+            img.onerror = () => resolve(null);
             img.src = imageUrl;
         });
     }
 
+    /**
+     * Get full images for an item
+     * @param {number} id - Item ID
+     * @returns {Promise<Object|null>}
+     */
     async getImages(id) {
+        const storage = await this._initStorage();
+
+        if (storage) {
+            return storage.getImages(id);
+        }
+
+        // Legacy fallback
+        if (!this.imageStore) return null;
         try {
             return await this.imageStore.get(id);
         } catch (error) {
-            console.error('Failed to load images:', error);
+            console.error('Failed to load favorite images:', error);
             return null;
         }
     }
 
-    update(id, updates) {
+    /**
+     * Update favorite item
+     * @param {number} id - Item ID
+     * @param {Object} updates - Fields to update
+     * @returns {Promise<Object|null>}
+     */
+    async update(id, updates) {
+        const storage = await this._initStorage();
+
+        if (storage) {
+            const item = await storage.update(id, updates);
+            this.items = await storage.getAll();
+            return item;
+        }
+
+        // Legacy fallback
         const index = this.items.findIndex(item => item.id === id);
         if (index !== -1) {
             this.items[index] = { ...this.items[index], ...updates };
-            this.save();
             return this.items[index];
         }
         return null;
     }
 
+    /**
+     * Remove favorite by ID
+     * @param {number} id - Item ID
+     * @returns {Promise<boolean>}
+     */
     async remove(id) {
+        const storage = await this._initStorage();
+
+        if (storage) {
+            const result = await storage.remove(id);
+            this.items = await storage.getAll();
+            return result;
+        }
+
+        // Legacy fallback
         const index = this.items.findIndex(item => item.id === id);
         if (index !== -1) {
             this.items.splice(index, 1);
-            this.save();
-            // Remove images from IndexedDB
-            try {
-                await this.imageStore.delete(id);
-            } catch (error) {
-                console.error('Failed to delete images:', error);
+            if (this.imageStore) {
+                try {
+                    await this.imageStore.delete(id);
+                } catch (error) {
+                    console.error('Failed to delete favorite images:', error);
+                }
             }
             return true;
         }
         return false;
     }
 
+    /**
+     * Clear all favorites
+     */
     async clear() {
-        // Delete all images from IndexedDB
-        for (const item of this.items) {
-            try {
-                await this.imageStore.delete(item.id);
-            } catch (error) {
-                // Continue even if delete fails
+        const storage = await this._initStorage();
+
+        if (storage) {
+            await storage.clear();
+            this.items = [];
+            return;
+        }
+
+        // Legacy fallback
+        if (this.imageStore) {
+            for (const item of this.items) {
+                try {
+                    await this.imageStore.delete(item.id);
+                } catch (error) {
+                    // Continue even if delete fails
+                }
             }
         }
         this.items = [];
-        this.save();
     }
 
     get count() {
         return this.items.length;
     }
 
+    /**
+     * Get all items
+     * @returns {Array}
+     */
     getAll() {
         return this.items;
     }
 
+    /**
+     * Find item by ID
+     * @param {number} id
+     * @returns {Object|undefined}
+     */
     findById(id) {
         return this.items.find(item => item.id === id);
     }
 
-    // Tag management
-    addTag(id, tag) {
+    // ==================== Tag Management ====================
+
+    /**
+     * Add tag to item
+     * @param {number} id - Item ID
+     * @param {string} tag - Tag to add
+     * @returns {Promise<boolean>}
+     */
+    async addTag(id, tag) {
         const item = this.findById(id);
-        if (item) {
-            if (!item.tags) item.tags = [];
-            const normalizedTag = tag.toLowerCase().trim();
-            if (normalizedTag && !item.tags.includes(normalizedTag)) {
-                item.tags.push(normalizedTag);
-                this.save();
-                return true;
-            }
-        }
-        return false;
+        if (!item) return false;
+
+        const normalizedTag = tag.toLowerCase().trim();
+        if (!normalizedTag) return false;
+
+        if (!item.tags) item.tags = [];
+        if (item.tags.includes(normalizedTag)) return false;
+
+        const newTags = [...item.tags, normalizedTag];
+        await this.update(id, { tags: newTags });
+        return true;
     }
 
-    removeTag(id, tag) {
+    /**
+     * Remove tag from item
+     * @param {number} id - Item ID
+     * @param {string} tag - Tag to remove
+     * @returns {Promise<boolean>}
+     */
+    async removeTag(id, tag) {
         const item = this.findById(id);
-        if (item && item.tags) {
-            const index = item.tags.indexOf(tag.toLowerCase().trim());
-            if (index !== -1) {
-                item.tags.splice(index, 1);
-                this.save();
-                return true;
-            }
-        }
-        return false;
+        if (!item || !item.tags) return false;
+
+        const normalizedTag = tag.toLowerCase().trim();
+        const index = item.tags.indexOf(normalizedTag);
+        if (index === -1) return false;
+
+        const newTags = item.tags.filter(t => t !== normalizedTag);
+        await this.update(id, { tags: newTags });
+        return true;
     }
 
+    /**
+     * Get all unique tags
+     * @returns {string[]}
+     */
     getAllTags() {
         const tags = new Set();
         this.items.forEach(item => {
@@ -1012,23 +1419,37 @@ class SharedFavorites {
         return Array.from(tags).sort();
     }
 
+    /**
+     * Filter by tag
+     * @param {string} tag
+     * @returns {Array}
+     */
     filterByTag(tag) {
         if (!tag) return this.items;
         const normalizedTag = tag.toLowerCase().trim();
         return this.items.filter(item => item.tags && item.tags.includes(normalizedTag));
     }
 
-    // Folder management
-    setFolder(id, folder) {
+    // ==================== Folder Management ====================
+
+    /**
+     * Set folder for item
+     * @param {number} id - Item ID
+     * @param {string|null} folder - Folder name or null
+     * @returns {Promise<boolean>}
+     */
+    async setFolder(id, folder) {
         const item = this.findById(id);
-        if (item) {
-            item.folder = folder || null;
-            this.save();
-            return true;
-        }
-        return false;
+        if (!item) return false;
+
+        await this.update(id, { folder: folder || null });
+        return true;
     }
 
+    /**
+     * Get all unique folders
+     * @returns {string[]}
+     */
     getAllFolders() {
         const folders = new Set();
         this.items.forEach(item => {
@@ -1039,6 +1460,11 @@ class SharedFavorites {
         return Array.from(folders).sort();
     }
 
+    /**
+     * Filter by folder
+     * @param {string|null} folder
+     * @returns {Array}
+     */
     filterByFolder(folder) {
         if (folder === null) {
             return this.items.filter(item => !item.folder);
@@ -1047,7 +1473,13 @@ class SharedFavorites {
         return this.items.filter(item => item.folder === folder);
     }
 
-    // Search
+    // ==================== Search & Filter ====================
+
+    /**
+     * Search by name or tags
+     * @param {string} query
+     * @returns {Array}
+     */
     search(query) {
         if (!query) return this.items;
         const q = query.toLowerCase().trim();
@@ -1058,7 +1490,11 @@ class SharedFavorites {
         });
     }
 
-    // Combined filter
+    /**
+     * Combined filter by tag, folder, and query
+     * @param {Object} options
+     * @returns {Array}
+     */
     filter({ tag, folder, query } = {}) {
         let results = this.items;
 
@@ -1083,6 +1519,18 @@ class SharedFavorites {
         }
 
         return results;
+    }
+
+    /**
+     * Force sync from cloud
+     * @returns {Promise<void>}
+     */
+    async syncFromCloud() {
+        const storage = await this._initStorage();
+        if (storage) {
+            await storage.syncFromCloud();
+            this.items = await storage.getAll();
+        }
     }
 }
 
