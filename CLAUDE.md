@@ -57,6 +57,27 @@ npm run format    # Format code (prettier)
 - `tests/core.test.js` - EventBus and ReactiveState tests
 - `tests/api.test.js` - APIError, response normalization, retry logic tests
 
+### Playwright Browser Testing
+
+For visual testing with Playwright MCP, auth credentials are stored locally (gitignored):
+
+```
+.playwright-auth/
+├── credentials.json      # Email/password for auto-login
+└── storage-state.json    # Saved session (cookies/localStorage)
+```
+
+**Auto-login snippet** (run at start of Playwright session if needed):
+```javascript
+// Fill and submit login form
+await page.goto('http://localhost:8000/lifestyle.html');
+await page.getByRole('button', { name: 'Sign In' }).click();
+await page.getByRole('textbox', { name: 'Email' }).fill(email);
+await page.getByRole('textbox', { name: 'Password' }).fill(password);
+await page.locator('.auth-modal .auth-submit-btn').evaluate(btn => btn.click());
+await page.waitForTimeout(3000);
+```
+
 ### TypeScript (Optional)
 
 Type checking via JSDoc annotations - no build step required.
