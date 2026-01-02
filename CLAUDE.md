@@ -118,6 +118,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 | Ad Creative | `ad-creative.html`, `ad-creative.js`, `ad-creative.css` | Banner ads for Google, Facebook, Amazon, Instagram |
 | Model Video | `model-video.html`, `model-video.js`, `model-video.css` | Animate model photos with motion and camera effects |
 | Dashboard | `dashboard.html`, `dashboard.js`, `dashboard.css` | Analytics, storage management, quick access to recent work |
+| Settings | `settings.html`, `settings.js`, `settings.css` | User settings: profile, billing, API keys, appearance, language, data |
 | Admin | `admin.html`, `admin.js`, `admin.css` | User management, analytics, system administration (admin only) |
 | Documentation | `docs.html`, `docs.css` | User documentation |
 
@@ -132,7 +133,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `image-worker.js` - Web Worker for image processing (compression, thumbnails, enhancement)
 - `service-worker.js` - Service Worker for caching and offline support
 - `supabase.js` - Supabase client wrapper (auth, profiles, usage tracking, CMS)
-- `auth-ui.js` - Authentication UI (login/signup modal, account menu, settings modal, AuthGate for auth-required pages)
+- `auth-ui.js` - Authentication UI (login/signup modal, account menu, AuthGate for auth-required pages)
 - `supabase-storage.js` - Supabase-first storage with IndexedDB caching (source of truth for history/favorites)
 - `offline-queue.js` - Offline write queue (IndexedDB queue for operations when offline)
 - `studio-bootstrap.js` - Shared studio initialization (auth gating, storage setup, keyboard shortcuts)
@@ -150,6 +151,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `API_REFERENCE.md` - Code examples for shared infrastructure
 - `TESTING.md` - Testing guide (visual tests, performance, hooks)
 - `ADMIN_PAGE.md` - Admin panel documentation and future improvements
+- `SETTINGS_PAGE.md` - Settings page documentation and sections
 
 ## API Integration
 
