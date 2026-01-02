@@ -250,6 +250,8 @@ function setupImageUpload() {
         slot.addEventListener('click', (e) => {
             if (slot.classList.contains('filled')) return;
             if (e.target.closest('.slot-remove')) return;
+            // Don't trigger if clicking directly on the input (native behavior handles it)
+            if (e.target === input) return;
             input.click();
         });
 
@@ -257,6 +259,8 @@ function setupImageUpload() {
         input.addEventListener('change', (e) => {
             if (e.target.files[0]) {
                 handleSlotUpload(index, e.target.files[0]);
+                // Reset input so same file can be selected again
+                e.target.value = '';
             }
         });
 
