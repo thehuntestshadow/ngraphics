@@ -229,19 +229,6 @@ function setupEventListeners() {
     elements.clearHistoryBtn.addEventListener('click', clearHistory);
     elements.clearFavoritesBtn.addEventListener('click', clearFavorites);
 
-    // API Key
-    elements.toggleApiKey.addEventListener('click', () => {
-        const type = elements.apiKey.type === 'password' ? 'text' : 'password';
-        elements.apiKey.type = type;
-    });
-
-    elements.saveApiKey.addEventListener('click', () => {
-        state.apiKey = elements.apiKey.value.trim();
-        localStorage.setItem('openrouter_api_key', state.apiKey);
-        api.apiKey = state.apiKey;
-        showSuccess('API key saved');
-    });
-
     // Language toggle (from header)
     document.addEventListener('click', (e) => {
         if (e.target.closest('.lang-btn')) {
@@ -547,11 +534,6 @@ async function generateCopy() {
     const features = state.features.filter(f => f.text.trim());
     if (features.length === 0) {
         showError('Please add at least one feature');
-        return;
-    }
-
-    if (!state.apiKey) {
-        showError('Please enter your API key');
         return;
     }
 

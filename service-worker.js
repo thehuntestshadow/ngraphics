@@ -3,7 +3,7 @@
  * Handles caching, offline support, and background sync
  */
 
-const CACHE_VERSION = 'v21';
+const CACHE_VERSION = 'v33';
 const CACHE_NAME = `hefaistos-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
@@ -118,7 +118,7 @@ self.addEventListener('activate', event => {
             .then(cacheNames => {
                 return Promise.all(
                     cacheNames
-                        .filter(name => name.startsWith('ngraphics-') && name !== CACHE_NAME)
+                        .filter(name => (name.startsWith('hefaistos-') || name.startsWith('ngraphics-')) && name !== CACHE_NAME)
                         .map(name => {
                             console.log('[SW] Deleting old cache:', name);
                             return caches.delete(name);
