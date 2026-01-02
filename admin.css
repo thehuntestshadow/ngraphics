@@ -1231,33 +1231,6 @@
     text-overflow: ellipsis;
 }
 
-/* Quill Editor Customization */
-.ql-container {
-    min-height: 150px;
-    font-size: 0.95rem;
-}
-
-.ql-toolbar.ql-snow {
-    background: var(--bg-tertiary);
-    border-color: var(--border-color);
-    border-radius: 8px 8px 0 0;
-}
-
-.ql-container.ql-snow {
-    background: var(--bg-primary);
-    border-color: var(--border-color);
-    border-radius: 0 0 8px 8px;
-}
-
-.ql-editor {
-    color: var(--text-primary);
-}
-
-.ql-editor.ql-blank::before {
-    color: var(--text-muted);
-    font-style: normal;
-}
-
 /* JSON Editor */
 .json-editor {
     font-family: 'JetBrains Mono', monospace;

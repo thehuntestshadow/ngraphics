@@ -62,7 +62,6 @@ Type checking via JSDoc annotations - no build step required.
 
 **Setup:**
 - `jsconfig.json` - TypeScript config with `checkJs: false` (opt-in per file)
-- `types.js` - Shared type definitions (API, User, CMS, UI types)
 - TypeScript installed as dev dependency
 
 **Usage:**
@@ -73,7 +72,7 @@ Type checking via JSDoc annotations - no build step required.
 /** @type {string} */
 let name = "test";
 
-/** @param {import('./types.js').GenerateImageOptions} options */
+/** @param {{prompt: string, images?: string[]}} options */
 function generate(options) { ... }
 ```
 
@@ -135,7 +134,6 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `auth-ui.js` - Authentication UI (login/signup modal, account menu, settings modal with language settings, usage display)
 - `cloud-sync.js` - Cloud sync manager (history/favorites sync to Supabase)
 - `onboarding.js` - First-time user guidance tour (landing and studio tours)
-- `types.js` - JSDoc type definitions for TypeScript checking
 
 ### Documentation Files
 - `DESIGN.md` - Design system (Apple color palette, gradients, spacing, components)

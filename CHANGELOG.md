@@ -24,6 +24,12 @@ Version history and completed features for HEFAISTOS.
 - Pre-commit hooks for validation
 - Visual regression testing skill
 - Performance auditing skill
+- Dead code cleanup (~100 lines removed):
+  - Removed unused templates CSS (templates-section, templates-header, etc.)
+  - Removed unused cost estimator CSS (cost-estimate-label, cost-session-value, etc.)
+  - Removed unused skeleton CSS (skeleton-text, skeleton-btn, history-skeleton)
+  - Removed unused Quill editor CSS from admin.css
+  - Deleted orphaned types.js (237 lines, never imported)
 
 ---
 
