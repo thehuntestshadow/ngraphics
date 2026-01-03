@@ -334,7 +334,7 @@ function renderUsageCard(usage) {
             </div>
             ` : `
             <div class="settings-usage-upgrade">
-                <button class="btn-secondary" onclick="openBillingPortal()" style="width: 100%;">
+                <button class="btn-secondary" data-action="billing-portal" style="width: 100%;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
                         <line x1="1" y1="10" x2="23" y2="10"/>
@@ -783,6 +783,20 @@ function setupEventListeners() {
             window.location.href = 'dashboard.html';
         }
     });
+
+    // Event delegation for dynamic elements
+    document.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-action]');
+        if (!target) return;
+
+        const action = target.dataset.action;
+
+        switch (action) {
+            case 'billing-portal':
+                openBillingPortal();
+                break;
+        }
+    });
 }
 
 // ============================================
@@ -794,5 +808,3 @@ if (document.readyState !== 'loading') {
     init();
 }
 
-// Expose functions for inline handlers
-window.openBillingPortal = openBillingPortal;

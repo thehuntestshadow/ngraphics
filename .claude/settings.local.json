@@ -52,7 +52,11 @@
       "Bash(__NEW_LINE__ echo -e \"\\\\n=== Searching for capitalize usage \\(as distinct function\\) ===\")",
       "Bash(__NEW_LINE__ echo -e \"\\\\n=== Checking what uses the capitalize function in faq-generator ===\")",
       "mcp__plugin_supabase_supabase__execute_sql",
-      "mcp__plugin_supabase_supabase__list_tables"
+      "mcp__plugin_supabase_supabase__list_tables",
+      "Bash(__NEW_LINE__ echo \"\")",
+      "Skill(security)",
+      "Bash(do if [ -f \"$file\" ])",
+      "Bash(then echo \"=== $file ===\" grep -A8 '<footer class=\"\"site-footer\"\">' \"$file\")"
     ]
   }
 }

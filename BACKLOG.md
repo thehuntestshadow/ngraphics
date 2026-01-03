@@ -98,15 +98,15 @@ Current focus area. See [ADMIN_PAGE.md](ADMIN_PAGE.md) for full details.
 ### Code Quality (P1)
 | Task | Effort | Priority |
 |------|--------|----------|
-| E2E tests (Playwright) | Hard | P1 |
-| Remove inline onclick handlers | Medium | P1 |
-| Standardize error retry UI | Medium | P1 |
-| Custom confirmation modals | Easy | P1 |
+| ~~E2E tests (Playwright)~~ | ~~Hard~~ | ✅ Done |
+| ~~Remove inline onclick handlers~~ | ~~Medium~~ | ✅ Done |
+| ~~Standardize error retry UI~~ | ~~Medium~~ | ✅ Done |
+| ~~Custom confirmation modals~~ | ~~Easy~~ | ✅ Done |
 
 ### Accessibility (P2)
 | Task | Effort | Priority |
 |------|--------|----------|
-| ARIA labels on icon buttons | Easy | P2 |
+| ~~ARIA labels on icon buttons~~ | ~~Easy~~ | ✅ Done |
 | Keyboard navigation in modals | Medium | P2 |
 | Focus trap in modals | Medium | P2 |
 | Skip-to-content links | Easy | P2 |
@@ -129,7 +129,7 @@ Current focus area. See [ADMIN_PAGE.md](ADMIN_PAGE.md) for full details.
 | Skeleton loading states | Medium | Replace "Loading..." text |
 | Tooltips for all options | Medium | Explain each setting |
 | Progress indicators | Easy | Long operation feedback |
-| Error retry buttons | Easy | "Try again" on failures |
+| ~~Error retry buttons~~ | ~~Easy~~ | ✅ Done |
 
 ### Medium Priority (P2)
 | Feature | Effort | Notes |

@@ -198,7 +198,7 @@ function renderImageList() {
                 <div class="image-item-name">${img.name}</div>
                 <div class="image-item-size">${img.width}×${img.height} • ${formatFileSize(img.size)}</div>
             </div>
-            <button type="button" class="image-item-remove" onclick="removeImage(${img.id})">
+            <button type="button" class="image-item-remove" data-action="remove" data-id="${img.id}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"/>
                     <line x1="6" y1="6" x2="18" y2="18"/>
@@ -492,7 +492,7 @@ function showResults() {
             <div class="batch-item">
                 <img src="${p.dataUrl}" alt="${p.name}">
                 <div class="batch-item-actions">
-                    <button type="button" class="batch-item-btn" onclick="downloadSingle(${i})" title="Download">
+                    <button type="button" class="batch-item-btn" data-action="download" data-index="${i}" title="Download">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
                             <polyline points="7 10 12 15 17 10"/>
@@ -721,6 +721,25 @@ function setupEventListeners() {
     SharedKeyboard.setup({
         generate: processImages,
         download: downloadAll
+    });
+
+    // Event delegation for dynamic elements
+    document.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-action]');
+        if (!target) return;
+
+        const action = target.dataset.action;
+        const id = target.dataset.id;
+        const index = target.dataset.index;
+
+        switch (action) {
+            case 'remove':
+                removeImage(parseInt(id));
+                break;
+            case 'download':
+                downloadSingle(parseInt(index));
+                break;
+        }
     });
 }
 

@@ -19,12 +19,12 @@ const state = {
 
 const PRICES = {
     pro: {
-        monthly: { amount: 19, priceId: CONFIG.STRIPE_PRICES?.PRO_MONTHLY || 'price_1SkTw4G8e7fqKTguuqHpJEqi' },
-        yearly: { amount: 15, priceId: CONFIG.STRIPE_PRICES?.PRO_YEARLY || 'price_1SkTw4G8e7fqKTgu5E1GyYiZ' }
+        monthly: { amount: CONFIG.TIER_PRICES?.PRO_MONTHLY || 19, priceId: CONFIG.STRIPE_PRICES?.PRO_MONTHLY || 'price_1SkTw4G8e7fqKTguuqHpJEqi' },
+        yearly: { amount: CONFIG.TIER_PRICES?.PRO_YEARLY || 15, priceId: CONFIG.STRIPE_PRICES?.PRO_YEARLY || 'price_1SkTw4G8e7fqKTgu5E1GyYiZ' }
     },
     business: {
-        monthly: { amount: 49, priceId: CONFIG.STRIPE_PRICES?.BUSINESS_MONTHLY || 'price_1SkTw5G8e7fqKTguRra3rgMg' },
-        yearly: { amount: 39, priceId: CONFIG.STRIPE_PRICES?.BUSINESS_YEARLY || 'price_1SkTw5G8e7fqKTguHURNx22O' }
+        monthly: { amount: CONFIG.TIER_PRICES?.BUSINESS_MONTHLY || 49, priceId: CONFIG.STRIPE_PRICES?.BUSINESS_MONTHLY || 'price_1SkTw5G8e7fqKTguRra3rgMg' },
+        yearly: { amount: CONFIG.TIER_PRICES?.BUSINESS_YEARLY || 39, priceId: CONFIG.STRIPE_PRICES?.BUSINESS_YEARLY || 'price_1SkTw5G8e7fqKTguHURNx22O' }
     },
     credits: {
         credits_50: { amount: 5, credits: 50 },

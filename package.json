@@ -8,15 +8,21 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:all": "vitest run && playwright test",
     "lint": "eslint *.js",
     "lint:fix": "eslint *.js --fix",
     "format": "prettier --write \"*.{js,css,html}\"",
     "format:check": "prettier --check \"*.{js,css,html}\""
   },
   "devDependencies": {
-    "vitest": "^2.0.0",
-    "jsdom": "^24.0.0",
+    "@playwright/test": "^1.57.0",
     "eslint": "^8.57.0",
-    "prettier": "^3.2.0"
+    "jsdom": "^24.0.0",
+    "prettier": "^3.2.0",
+    "vitest": "^2.0.0"
   }
 }

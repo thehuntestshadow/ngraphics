@@ -1690,6 +1690,69 @@ const SharedUI = {
     },
 
     /**
+     * Show error toast with retry button
+     * @param {string} message - Error message
+     * @param {Function} retryCallback - Function to call on retry
+     * @param {Object} options - Options
+     * @param {number} options.duration - Auto-dismiss duration (0 = no auto-dismiss)
+     */
+    showErrorWithRetry(message, retryCallback, options = {}) {
+        const { duration = 0 } = options; // Default to no auto-dismiss for retryable errors
+
+        let container = document.getElementById('toastContainer');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toastContainer';
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-error toast-with-retry';
+
+        toast.innerHTML = `
+            <span class="toast-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+            </span>
+            <span class="toast-message">${message}</span>
+            <button class="toast-retry btn btn-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <polyline points="23 4 23 10 17 10"/>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+                Retry
+            </button>
+            <button class="toast-close">&times;</button>
+        `;
+
+        container.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add('visible'));
+
+        const closeToast = () => {
+            toast.classList.remove('visible');
+            setTimeout(() => toast.remove(), 300);
+        };
+
+        toast.querySelector('.toast-close').addEventListener('click', closeToast);
+        toast.querySelector('.toast-retry').addEventListener('click', () => {
+            closeToast();
+            if (typeof retryCallback === 'function') {
+                retryCallback();
+            }
+        });
+
+        if (duration > 0) {
+            setTimeout(closeToast, duration);
+        }
+
+        return toast;
+    },
+
+    /**
      * Show styled confirm dialog (replaces browser confirm())
      */
     confirm(message, options = {}) {

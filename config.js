@@ -19,6 +19,13 @@ const CONFIG = {
         BUSINESS_MONTHLY: 'price_1SkTw5G8e7fqKTguRra3rgMg',
         BUSINESS_YEARLY: 'price_1SkTw5G8e7fqKTguHURNx22O'
     },
+    // Tier pricing (in USD)
+    TIER_PRICES: {
+        PRO_MONTHLY: 19,
+        PRO_YEARLY: 15,      // per month, billed annually
+        BUSINESS_MONTHLY: 49,
+        BUSINESS_YEARLY: 39  // per month, billed annually
+    },
     STRIPE_PAYMENT_LINKS: {
         PRO_MONTHLY: 'https://buy.stripe.com/5kQ4gz6ZzdlabxEbjufAc00',
         PRO_YEARLY: 'https://buy.stripe.com/6oU00j4Rr0yo0T03R2fAc01',
@@ -62,6 +69,7 @@ Object.freeze(CONFIG);
 Object.freeze(CONFIG.FEATURES);
 Object.freeze(CONFIG.API);
 Object.freeze(CONFIG.STRIPE_PRICES);
+Object.freeze(CONFIG.TIER_PRICES);
 Object.freeze(CONFIG.STRIPE_PAYMENT_LINKS);
 
 // Expose globally

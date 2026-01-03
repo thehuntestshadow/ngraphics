@@ -124,7 +124,7 @@
             </nav>
 
             <div class="sidebar-footer">
-                <button class="nav-item" id="themeToggle">
+                <button class="nav-item" id="themeToggle" aria-label="Toggle light/dark mode">
                     <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                     </svg>
@@ -168,7 +168,7 @@
                         <h1>Dashboard Overview</h1>
                         <p>Monitor your platform's performance and activity <span class="last-updated" id="overviewLastUpdated"></span></p>
                     </div>
-                    <button class="btn btn-icon" data-action="refresh-section" data-section="overview" title="Refresh">
+                    <button class="btn btn-icon" data-action="refresh-section" data-section="overview" title="Refresh" aria-label="Refresh overview section">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
                             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
@@ -269,7 +269,7 @@
                         <h1>User Management</h1>
                         <p>View and manage all platform users <span class="last-updated" id="usersLastUpdated"></span></p>
                     </div>
-                    <button class="btn btn-icon" data-action="refresh-section" data-section="users" title="Refresh">
+                    <button class="btn btn-icon" data-action="refresh-section" data-section="users" title="Refresh" aria-label="Refresh users section">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
                             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
@@ -357,7 +357,7 @@
                         <button class="btn btn-secondary" data-action="bulk-set-tier" data-tier="free">Set Free</button>
                         <button class="btn btn-secondary" data-action="bulk-add-credits">Add Credits</button>
                     </div>
-                    <button class="bulk-close" data-action="clear-selection">&times;</button>
+                    <button class="bulk-close" data-action="clear-selection" aria-label="Clear selection">&times;</button>
                 </div>
             </section>
 
@@ -368,7 +368,7 @@
                         <h1>Subscriptions</h1>
                         <p>Overview of subscription tiers and revenue</p>
                     </div>
-                    <button class="btn btn-icon" data-action="refresh-section" data-section="subscriptions" title="Refresh">
+                    <button class="btn btn-icon" data-action="refresh-section" data-section="subscriptions" title="Refresh" aria-label="Refresh subscriptions section">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
                             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
@@ -434,7 +434,7 @@
                         <h1>Usage Analytics</h1>
                         <p>Platform-wide usage statistics</p>
                     </div>
-                    <button class="btn btn-icon" data-action="refresh-section" data-section="usage" title="Refresh">
+                    <button class="btn btn-icon" data-action="refresh-section" data-section="usage" title="Refresh" aria-label="Refresh usage section">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
                             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
@@ -468,7 +468,7 @@
                         <h1>Audit Log</h1>
                         <p>Track administrative actions</p>
                     </div>
-                    <button class="btn btn-icon" data-action="refresh-section" data-section="audit" title="Refresh">
+                    <button class="btn btn-icon" data-action="refresh-section" data-section="audit" title="Refresh" aria-label="Refresh audit section">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
                             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
@@ -702,7 +702,7 @@
     <!-- User Detail Modal -->
     <div class="modal-overlay" id="userModal">
         <div class="modal-content user-modal">
-            <button class="modal-close" data-action="close-user-modal">&times;</button>
+            <button class="modal-close" data-action="close-user-modal" aria-label="Close user modal">&times;</button>
             <div class="modal-header">
                 <h2>User Details</h2>
             </div>
@@ -716,7 +716,7 @@
     <!-- Gallery Item Modal -->
     <div class="modal-overlay" id="galleryModal">
         <div class="modal-content cms-modal">
-            <button class="modal-close" data-action="close-gallery-modal">&times;</button>
+            <button class="modal-close" data-action="close-gallery-modal" aria-label="Close gallery modal">&times;</button>
             <div class="modal-header">
                 <h2 id="galleryModalTitle">Add Gallery Image</h2>
             </div>
@@ -788,7 +788,7 @@
     <!-- FAQ Item Modal -->
     <div class="modal-overlay" id="faqModal">
         <div class="modal-content cms-modal cms-modal-large">
-            <button class="modal-close" data-action="close-faq-modal">&times;</button>
+            <button class="modal-close" data-action="close-faq-modal" aria-label="Close FAQ modal">&times;</button>
             <div class="modal-header">
                 <h2 id="faqModalTitle">Add FAQ Item</h2>
             </div>

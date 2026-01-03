@@ -425,6 +425,31 @@ function setupEventListeners() {
     // History & Favorites
     elements.clearHistoryBtn.addEventListener('click', clearHistory);
     elements.clearFavoritesBtn.addEventListener('click', clearFavorites);
+
+    // Event delegation for dynamic elements
+    document.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-action]');
+        if (!target) return;
+
+        const action = target.dataset.action;
+        const id = target.dataset.id;
+        const index = target.dataset.index;
+
+        switch (action) {
+            case 'download':
+                downloadImage(parseInt(index));
+                break;
+            case 'view':
+                openLightbox(parseInt(index));
+                break;
+            case 'load-history':
+                loadHistoryItem(id);
+                break;
+            case 'load-favorite':
+                loadFavoriteItem(id);
+                break;
+        }
+    });
 }
 
 // ============================================
@@ -667,14 +692,14 @@ function displayMultipleResults(images) {
         <div class="result-grid-item" data-index="${i}">
             <img src="${img}" alt="Variation ${i + 1}">
             <div class="grid-item-actions">
-                <button onclick="downloadImage(${i})" title="Download">
+                <button data-action="download" data-index="${i}" title="Download">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
                         <polyline points="7 10 12 15 17 10"/>
                         <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
                 </button>
-                <button onclick="openLightbox(${i})" title="View">
+                <button data-action="view" data-index="${i}" title="View">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
                     </svg>
@@ -803,7 +828,7 @@ function loadHistory() {
     elements.historyEmpty.style.display = 'none';
 
     elements.historyGrid.innerHTML = items.map(item => `
-        <div class="history-item" onclick="loadHistoryItem('${item.id}')">
+        <div class="history-item" data-action="load-history" data-id="${item.id}">
             <img src="${item.thumbnail}" alt="${item.productName || 'Mockup'}">
         </div>
     `).join('');
@@ -845,7 +870,7 @@ function loadFavorites() {
     elements.favoritesEmpty.style.display = 'none';
 
     elements.favoritesGrid.innerHTML = items.map(item => `
-        <div class="history-item favorite-item" onclick="loadFavoriteItem('${item.id}')">
+        <div class="history-item favorite-item" data-action="load-favorite" data-id="${item.id}">
             <img src="${item.thumbnail}" alt="${item.productName || 'Favorite'}">
             <div class="favorite-badge">
                 <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
@@ -918,13 +943,23 @@ function updateUIFromState() {
 }
 
 async function clearHistory() {
-    if (!confirm('Clear all history?')) return;
+    const confirmed = await SharedUI.confirm('Clear all history? This cannot be undone.', {
+        title: 'Clear History',
+        confirmText: 'Clear',
+        icon: 'warning'
+    });
+    if (!confirmed) return;
     await history.clear();
     loadHistory();
 }
 
 async function clearFavorites() {
-    if (!confirm('Clear all favorites?')) return;
+    const confirmed = await SharedUI.confirm('Clear all favorites? This cannot be undone.', {
+        title: 'Clear Favorites',
+        confirmText: 'Clear All',
+        icon: 'warning'
+    });
+    if (!confirmed) return;
     await favorites.clear();
     loadFavorites();
 }

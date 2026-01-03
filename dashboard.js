@@ -361,7 +361,7 @@ function renderTrash() {
         return `
                     <div class="trash-item" data-id="${item.id}">
                         <div class="trash-item-preview">
-                            ${thumbnail ? `<img src="${thumbnail}" alt="${escapeHtml(title)}" onclick="openLightbox('${thumbnail}')">` : ''}
+                            ${thumbnail ? `<img src="${thumbnail}" alt="${escapeHtml(title)}" data-action="lightbox" data-url="${thumbnail}">` : ''}
                             <span class="trash-item-studio ${studioClass}">${studioLabel}</span>
                         </div>
                         <div class="trash-item-info">
@@ -507,7 +507,7 @@ function renderActivityTable() {
         return `
             <tr>
                 <td>
-                    ${thumbnail ? `<img class="activity-thumbnail" src="${thumbnail}" alt="Preview" onclick="openLightbox('${thumbnail}')">` : '-'}
+                    ${thumbnail ? `<img class="activity-thumbnail" src="${thumbnail}" alt="Preview" data-action="lightbox" data-url="${thumbnail}">` : '-'}
                 </td>
                 <td>${escapeHtml(title)}</td>
                 <td><span class="activity-studio ${studioClass}">${item.studioLabel}</span></td>
@@ -516,7 +516,7 @@ function renderActivityTable() {
                 <td class="activity-time">${time}</td>
                 <td class="activity-actions">
                     ${thumbnail ? `
-                        <button class="activity-btn" title="View" onclick="openLightbox('${thumbnail}')">
+                        <button class="activity-btn" title="View" data-action="lightbox" data-url="${thumbnail}">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                 <circle cx="12" cy="12" r="3"/>
@@ -685,6 +685,28 @@ function setupEventListeners() {
     // Keyboard
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') closeLightbox();
+    });
+
+    // Event delegation for dynamic elements
+    document.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-action]');
+        if (!target) return;
+
+        const action = target.dataset.action;
+        const id = target.dataset.id;
+        const url = target.dataset.url;
+
+        switch (action) {
+            case 'lightbox':
+                openLightbox(url);
+                break;
+            case 'restore':
+                restoreItem(id);
+                break;
+            case 'delete':
+                deleteItemPermanently(id);
+                break;
+        }
     });
 
     // Window resize - debounced chart resize

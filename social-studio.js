@@ -822,7 +822,13 @@ function setupEventListeners() {
     });
 
     elements.deleteFavorite?.addEventListener('click', async () => {
-        if (state.selectedFavorite && confirm('Delete this favorite?')) {
+        if (!state.selectedFavorite) return;
+        const confirmed = await SharedUI.confirm('Delete this favorite?', {
+            title: 'Delete Favorite',
+            confirmText: 'Delete',
+            icon: 'danger'
+        });
+        if (confirmed) {
             await favorites.remove(state.selectedFavorite);
             closeFavoritesModal();
             renderFavorites();

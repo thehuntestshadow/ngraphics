@@ -764,7 +764,7 @@ function renderMultiAngleGrid() {
         <div class="multi-angle-item" data-id="${img.id}">
             <img src="${img.base64}" alt="${img.label}">
             <span class="multi-angle-item-label">${img.label}</span>
-            <button type="button" class="multi-angle-item-remove" onclick="removeMultiAngleImage(${img.id})">
+            <button type="button" class="multi-angle-item-remove" data-action="remove-ref-image" data-id="${img.id}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"/>
                     <line x1="6" y1="6" x2="18" y2="18"/>
@@ -784,8 +784,6 @@ function updateMultiAngleCount() {
     }
 }
 
-// Make removeMultiAngleImage globally accessible for onclick
-window.removeMultiAngleImage = removeMultiAngleImage;
 
 // Auto-enhance image function
 async function enhanceImage(base64Image) {
@@ -1308,7 +1306,13 @@ function initDragAndDrop() {
 // ============================================
 // MESSAGE DISPLAY
 // ============================================
-function showError(message) {
+function showError(message, retryCallback = null) {
+    // If retry callback provided, use toast with retry button
+    if (retryCallback) {
+        SharedUI.showErrorWithRetry(message, retryCallback);
+        return;
+    }
+    // Otherwise use the inline error element
     elements.errorMessage.querySelector('.error-text').textContent = message;
     elements.errorMessage.classList.add('visible');
     elements.successMessage.classList.remove('visible');
@@ -1658,7 +1662,12 @@ async function bulkDeleteHistory() {
     if (state.historySelectedIds.size === 0) return;
 
     const count = state.historySelectedIds.size;
-    if (!confirm(`Delete ${count} selected item${count > 1 ? 's' : ''}?`)) return;
+    const confirmed = await SharedUI.confirm(`Delete ${count} selected item${count > 1 ? 's' : ''}?`, {
+        title: 'Delete Selected',
+        confirmText: 'Delete',
+        icon: 'danger'
+    });
+    if (!confirmed) return;
 
     await history.removeMultiple(Array.from(state.historySelectedIds));
     state.history = history.getAll();
@@ -2793,7 +2802,7 @@ async function generateInfographic() {
             ? error.toUserMessage()
             : error.message || 'An unexpected error occurred';
 
-        showError(errorMessage);
+        showError(errorMessage, generateInfographic);
     }
 }
 
@@ -2863,7 +2872,7 @@ Generate an adjusted version of this infographic based on the feedback above.`;
             ? error.toUserMessage()
             : error.message || 'An unexpected error occurred';
 
-        showError(errorMessage);
+        showError(errorMessage, adjustInfographic);
     }
 }
 
@@ -3319,9 +3328,9 @@ async function generateComplementaryImages() {
             } else {
                 elements.compResultsGrid.innerHTML = state.complementaryImages.map((url, index) => `
                     <div class="comp-result-item">
-                        <img src="${url}" alt="Complementary image ${index + 1}" class="comp-result-img" onclick="openLightbox('${url}')">
+                        <img src="${url}" alt="Complementary image ${index + 1}" class="comp-result-img" data-action="lightbox" data-url="${url}">
                         <div class="comp-result-actions">
-                            <button type="button" class="comp-download-btn" onclick="downloadImageFromUrl('${url}', 'complementary-${index + 1}.png')">
+                            <button type="button" class="comp-download-btn" data-action="download-url" data-url="${url}" data-filename="complementary-${index + 1}.png">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                                     <polyline points="7 10 12 15 17 10"/>
@@ -3506,7 +3515,7 @@ function loadTemplate(templateId) {
     }
 }
 
-function deleteTemplate() {
+async function deleteTemplate() {
     const selectedId = elements.templateSelect.value;
     if (!selectedId) {
         showError('Select a template to delete');
@@ -3514,7 +3523,14 @@ function deleteTemplate() {
     }
 
     const template = state.savedTemplates.find(t => t.id === parseInt(selectedId));
-    if (template && confirm(`Delete template "${template.name}"?`)) {
+    if (!template) return;
+
+    const confirmed = await SharedUI.confirm(`Delete template "${template.name}"?`, {
+        title: 'Delete Template',
+        confirmText: 'Delete',
+        icon: 'danger'
+    });
+    if (confirmed) {
         state.savedTemplates = state.savedTemplates.filter(t => t.id !== parseInt(selectedId));
         saveTemplatesToStorage();
         updateTemplateSelect();
@@ -4664,6 +4680,35 @@ function setupEventListeners() {
     if (elements.startBatchBtn) {
         elements.startBatchBtn.addEventListener('click', startBatchProcessing);
     }
+
+    // Event delegation for dynamic elements
+    document.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-action]');
+        if (!target) return;
+
+        const action = target.dataset.action;
+        const id = target.dataset.id;
+        const url = target.dataset.url;
+        const filename = target.dataset.filename;
+
+        switch (action) {
+            case 'remove-ref-image':
+                removeMultiAngleImage(parseInt(id));
+                break;
+            case 'lightbox':
+                openLightbox(url);
+                break;
+            case 'download-url':
+                downloadImageFromUrl(url, filename);
+                break;
+            case 'view-batch-result':
+                viewBatchResult(id);
+                break;
+            case 'remove-batch-item':
+                removeBatchItem(parseInt(id));
+                break;
+        }
+    });
 }
 
 // ============================================
@@ -4755,11 +4800,11 @@ function renderBatchQueue() {
                 ${item.status === 'processing' ? '<div class="batch-item-spinner"></div>' : ''}
                 ${item.status !== 'pending' ? `<span class="batch-item-status">${item.status}</span>` : ''}
                 ${item.status === 'completed' && item.result ? `
-                    <button class="btn-view-result" onclick="viewBatchResult('${item.id}')">View</button>
+                    <button class="btn-view-result" data-action="view-batch-result" data-id="${item.id}">View</button>
                 ` : ''}
             </div>
             ${item.status === 'pending' ? `
-                <button class="batch-item-remove" onclick="removeBatchItem(${item.id})">
+                <button class="batch-item-remove" data-action="remove-batch-item" data-id="${item.id}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18"/>
                         <line x1="6" y1="6" x2="18" y2="18"/>

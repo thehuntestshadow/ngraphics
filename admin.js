@@ -690,11 +690,11 @@ function updateStatsDisplay(stats, animate = true) {
         if (elements.statBusinessSubs) animateValue(elements.statBusinessSubs, 0, stats.business_subscribers);
         if (elements.statProMRR) {
             elements.statProMRR.textContent = '$0';
-            animateValue(elements.statProMRR, 0, stats.pro_subscribers * 19);
+            animateValue(elements.statProMRR, 0, stats.pro_subscribers * (CONFIG.TIER_PRICES?.PRO_MONTHLY || 19));
         }
         if (elements.statBusinessMRR) {
             elements.statBusinessMRR.textContent = '$0';
-            animateValue(elements.statBusinessMRR, 0, stats.business_subscribers * 49);
+            animateValue(elements.statBusinessMRR, 0, stats.business_subscribers * (CONFIG.TIER_PRICES?.BUSINESS_MONTHLY || 49));
         }
     } else {
         if (elements.statUsers) elements.statUsers.textContent = formatNumber(stats.total_users);
@@ -703,8 +703,8 @@ function updateStatsDisplay(stats, animate = true) {
         if (elements.statGenerations) elements.statGenerations.textContent = '-';
         if (elements.statProSubs) elements.statProSubs.textContent = formatNumber(stats.pro_subscribers);
         if (elements.statBusinessSubs) elements.statBusinessSubs.textContent = formatNumber(stats.business_subscribers);
-        if (elements.statProMRR) elements.statProMRR.textContent = `$${formatNumber(stats.pro_subscribers * 19)}`;
-        if (elements.statBusinessMRR) elements.statBusinessMRR.textContent = `$${formatNumber(stats.business_subscribers * 49)}`;
+        if (elements.statProMRR) elements.statProMRR.textContent = `$${formatNumber(stats.pro_subscribers * (CONFIG.TIER_PRICES?.PRO_MONTHLY || 19))}`;
+        if (elements.statBusinessMRR) elements.statBusinessMRR.textContent = `$${formatNumber(stats.business_subscribers * (CONFIG.TIER_PRICES?.BUSINESS_MONTHLY || 49))}`;
     }
 }
 
@@ -1345,7 +1345,12 @@ async function changeTier(userId, tierId) {
     }
 
     // tierId is already validated against VALID_TIERS, but escape for defense in depth
-    if (!confirm(`Change user's subscription to ${escapeHtml(tierId)}?`)) return;
+    const confirmed = await SharedUI.confirm(`Change user's subscription to ${escapeHtml(tierId)}?`, {
+        title: 'Change Subscription',
+        confirmText: 'Change',
+        icon: 'warning'
+    });
+    if (!confirmed) return;
 
     // Find and add loading state to clicked button
     const buttons = document.querySelectorAll('.action-group .action-btn');
@@ -1394,7 +1399,13 @@ async function addCreditsToUser(userId) {
         return;
     }
 
-    if (!confirm(`Add ${amount} credits to this user?`)) return;
+    const confirmed = await SharedUI.confirm(`Add ${amount} credits to this user?`, {
+        title: 'Add Credits',
+        confirmText: 'Add Credits',
+        confirmClass: 'btn-primary',
+        icon: 'info'
+    });
+    if (!confirmed) return;
 
     // Add loading state to button
     const addBtn = document.querySelector('.credit-input-group .action-btn');
@@ -1475,28 +1486,28 @@ function renderPagination(container, currentPage, totalPages, onPageChange) {
     let html = '';
 
     // Previous
-    html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="arguments[0].stopPropagation()">Prev</button>`;
+    html += `<button ${currentPage === 1 ? 'disabled' : ''} data-page="prev">Prev</button>`;
 
     // Page numbers
     const start = Math.max(1, currentPage - 2);
     const end = Math.min(totalPages, currentPage + 2);
 
     if (start > 1) {
-        html += '<button onclick="arguments[0].stopPropagation()">1</button>';
+        html += '<button data-page="1">1</button>';
         if (start > 2) html += '<span>...</span>';
     }
 
     for (let i = start; i <= end; i++) {
-        html += `<button class="${i === currentPage ? 'active' : ''}" onclick="arguments[0].stopPropagation()">${i}</button>`;
+        html += `<button class="${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
     }
 
     if (end < totalPages) {
         if (end < totalPages - 1) html += '<span>...</span>';
-        html += `<button onclick="arguments[0].stopPropagation()">${totalPages}</button>`;
+        html += `<button data-page="${totalPages}">${totalPages}</button>`;
     }
 
     // Next
-    html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="arguments[0].stopPropagation()">Next</button>`;
+    html += `<button ${currentPage === totalPages ? 'disabled' : ''} data-page="next">Next</button>`;
 
     container.innerHTML = html;
 
@@ -1791,7 +1802,12 @@ async function saveGalleryItem(e) {
 }
 
 async function deleteGalleryItem(id) {
-    if (!confirm('Delete this gallery item?')) return;
+    const confirmed = await SharedUI.confirm('Delete this gallery item?', {
+        title: 'Delete Gallery Item',
+        confirmText: 'Delete',
+        icon: 'danger'
+    });
+    if (!confirmed) return;
     try {
         await ngSupabase.deleteCMSGalleryItem(id);
         await logAdminAction('cms_delete', null, { id, type: 'gallery' });
@@ -1965,7 +1981,12 @@ async function saveFAQItem(e) {
 }
 
 async function deleteFAQItem(id) {
-    if (!confirm('Delete this FAQ item?')) return;
+    const confirmed = await SharedUI.confirm('Delete this FAQ item?', {
+        title: 'Delete FAQ Item',
+        confirmText: 'Delete',
+        icon: 'danger'
+    });
+    if (!confirmed) return;
     try {
         await ngSupabase.deleteCMSFAQItem(id);
         await logAdminAction('cms_delete', null, { id, type: 'faq' });
@@ -2211,7 +2232,12 @@ async function bulkSetTier(tierId) {
     const count = adminState.selectedUsers.size;
     if (count === 0) return;
 
-    if (!confirm(`Set ${count} user(s) to ${tierId} tier?`)) return;
+    const confirmed = await SharedUI.confirm(`Set ${count} user(s) to ${tierId} tier?`, {
+        title: 'Bulk Update Tier',
+        confirmText: 'Update All',
+        icon: 'warning'
+    });
+    if (!confirmed) return;
 
     // Add loading state to bulk action buttons
     const bulkButtons = document.querySelectorAll('.bulk-actions .btn');
@@ -2249,7 +2275,13 @@ async function bulkAddCredits() {
     if (!amount || isNaN(parseInt(amount)) || parseInt(amount) <= 0) return;
 
     const credits = parseInt(amount);
-    if (!confirm(`Add ${credits} credits to ${count} user(s)?`)) return;
+    const bulkConfirmed = await SharedUI.confirm(`Add ${credits} credits to ${count} user(s)?`, {
+        title: 'Bulk Add Credits',
+        confirmText: 'Add Credits',
+        confirmClass: 'btn-primary',
+        icon: 'info'
+    });
+    if (!bulkConfirmed) return;
 
     // Add loading state to bulk action buttons
     const bulkButtons = document.querySelectorAll('.bulk-actions .btn');

@@ -74,7 +74,7 @@ Active development roadmap for HEFAISTOS. For historical changes see [CHANGELOG.
 
 ### Up Next
 
-1. E2E tests for critical flows
+1. ~~E2E tests for critical flows~~ ✅ (72 tests in 6 spec files)
 2. Skeleton loading states
 3. Additional admin panel polish (as needed)
 
@@ -93,7 +93,7 @@ None currently.
 - [ ] Platform presets for Copywriter (Amazon, Etsy, Shopify)
 
 ### Technical
-- [ ] E2E tests for critical flows
+- [x] E2E tests for critical flows (72 tests)
 - [ ] Full i18n coverage (~400 strings)
 - [ ] Skeleton loading states
 - [ ] Tooltips for all options
@@ -141,13 +141,13 @@ None currently.
 
 ## Technical Debt (Priority)
 
-| Issue | Location | Impact | Effort |
-|-------|----------|--------|--------|
-| Inline onclick handlers | admin.js, studios | Maintainability | Medium |
-| Hardcoded tier prices | admin.js:434 | Flexibility | Easy |
-| No error retry UI | API failures | UX | Medium |
-| Browser confirm() | Delete actions | UX | Easy |
-| Missing ARIA labels | Icon buttons | Accessibility | Easy |
+| Issue | Location | Impact | Effort | Status |
+|-------|----------|--------|--------|--------|
+| ~~Inline onclick handlers~~ | ~~admin.js, studios~~ | ~~Maintainability~~ | ~~Medium~~ | ✅ Done |
+| ~~Hardcoded tier prices~~ | ~~config.js~~ | ~~Flexibility~~ | ~~Easy~~ | ✅ Done |
+| ~~No error retry UI~~ | ~~API failures~~ | ~~UX~~ | ~~Medium~~ | ✅ Done |
+| ~~Browser confirm()~~ | ~~Delete actions~~ | ~~UX~~ | ~~Easy~~ | ✅ Done |
+| ~~Missing ARIA labels~~ | ~~Icon buttons~~ | ~~Accessibility~~ | ~~Easy~~ | ✅ Done |
 
 ---
 

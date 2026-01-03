@@ -243,6 +243,60 @@ function setupEventListeners() {
             }
         }
     });
+
+    // Event delegation for dynamic elements
+    document.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-action]');
+        if (!target) return;
+
+        const action = target.dataset.action;
+        const id = target.dataset.id;
+
+        switch (action) {
+            case 'remove-image':
+                removeProductImage(id);
+                break;
+            case 'toggle-star':
+                toggleFeatureStar(id);
+                break;
+            case 'remove-feature':
+                removeFeature(id);
+                break;
+            case 'remove-benefit':
+                removeBenefit(id);
+                break;
+            case 'load-history':
+                loadHistoryItem(id);
+                break;
+            case 'delete-history':
+                deleteHistoryItem(id);
+                break;
+            case 'load-favorite':
+                loadFavoriteItem(id);
+                break;
+            case 'delete-favorite':
+                deleteFavoriteItem(id);
+                break;
+        }
+    });
+
+    // Event delegation for input changes
+    document.addEventListener('change', (e) => {
+        const target = e.target.closest('[data-action]');
+        if (!target) return;
+
+        const action = target.dataset.action;
+        const id = target.dataset.id;
+
+        switch (action) {
+            case 'update-feature':
+                updateFeature(id, target.value);
+                break;
+            case 'update-benefit':
+                updateBenefit(id, target.value);
+                break;
+        }
+    });
 }
 
 // ============================================
@@ -323,7 +377,7 @@ function renderImagePreviews() {
     elements.imagePreviews.innerHTML = state.productImages.map(img => `
         <div class="image-preview-item" data-id="${img.id}">
             <img src="${img.thumbnail}" alt="Product">
-            <button type="button" class="preview-remove" onclick="removeProductImage('${img.id}')">
+            <button type="button" class="preview-remove" data-action="remove-image" data-id="${img.id}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"/>
                     <line x1="6" y1="6" x2="18" y2="18"/>
@@ -540,13 +594,13 @@ function addFeature(text = '', starred = false) {
 
     const html = `
         <div class="feature-item" data-id="${id}">
-            <button type="button" class="star-btn ${starred ? 'starred' : ''}" onclick="toggleFeatureStar('${id}')">
+            <button type="button" class="star-btn ${starred ? 'starred' : ''}" data-action="toggle-star" data-id="${id}">
                 <svg viewBox="0 0 24 24" fill="${starred ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                 </svg>
             </button>
-            <input type="text" value="${text}" placeholder="Enter a feature..." onchange="updateFeature('${id}', this.value)">
-            <button type="button" class="remove-btn" onclick="removeFeature('${id}')">
+            <input type="text" value="${text}" placeholder="Enter a feature..." data-action="update-feature" data-id="${id}">
+            <button type="button" class="remove-btn" data-action="remove-feature" data-id="${id}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"/>
                     <line x1="6" y1="6" x2="18" y2="18"/>
@@ -590,8 +644,8 @@ function addBenefit(text = '') {
                 <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
                 <polyline points="22 4 12 14.01 9 11.01"/>
             </svg>
-            <input type="text" value="${text}" placeholder="Enter a benefit..." onchange="updateBenefit('${id}', this.value)">
-            <button type="button" class="remove-btn" onclick="removeBenefit('${id}')">
+            <input type="text" value="${text}" placeholder="Enter a benefit..." data-action="update-benefit" data-id="${id}">
+            <button type="button" class="remove-btn" data-action="remove-benefit" data-id="${id}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"/>
                     <line x1="6" y1="6" x2="18" y2="18"/>
@@ -1140,14 +1194,14 @@ function loadHistory() {
                 <div class="history-item-meta">${formatDate(item.timestamp)}</div>
             </div>
             <div class="history-item-actions">
-                <button onclick="loadHistoryItem('${item.id}')" title="Load">
+                <button data-action="load-history" data-id="${item.id}" title="Load">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
                         <polyline points="17,8 12,3 7,8"/>
                         <line x1="12" y1="3" x2="12" y2="15"/>
                     </svg>
                 </button>
-                <button class="delete" onclick="deleteHistoryItem('${item.id}')" title="Delete">
+                <button class="delete" data-action="delete-history" data-id="${item.id}" title="Delete">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="3,6 5,6 21,6"/>
                         <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
@@ -1181,7 +1235,12 @@ async function deleteHistoryItem(id) {
 }
 
 async function clearHistory() {
-    if (!confirm('Clear all history?')) return;
+    const confirmed = await SharedUI.confirm('Clear all history? This cannot be undone.', {
+        title: 'Clear History',
+        confirmText: 'Clear',
+        icon: 'warning'
+    });
+    if (!confirmed) return;
     await history.clear();
     loadHistory();
 }
@@ -1213,14 +1272,14 @@ function loadFavorites() {
                 <div class="favorite-item-meta">${formatDate(item.timestamp)}</div>
             </div>
             <div class="favorite-item-actions">
-                <button onclick="loadFavoriteItem('${item.id}')" title="Load">
+                <button data-action="load-favorite" data-id="${item.id}" title="Load">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
                         <polyline points="17,8 12,3 7,8"/>
                         <line x1="12" y1="3" x2="12" y2="15"/>
                     </svg>
                 </button>
-                <button class="delete" onclick="deleteFavoriteItem('${item.id}')" title="Delete">
+                <button class="delete" data-action="delete-favorite" data-id="${item.id}" title="Delete">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="3,6 5,6 21,6"/>
                         <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
@@ -1283,7 +1342,12 @@ async function deleteFavoriteItem(id) {
 }
 
 async function clearFavorites() {
-    if (!confirm('Clear all favorites?')) return;
+    const confirmed = await SharedUI.confirm('Clear all favorites? This cannot be undone.', {
+        title: 'Clear Favorites',
+        confirmText: 'Clear All',
+        icon: 'warning'
+    });
+    if (!confirmed) return;
     await favorites.clear();
     loadFavorites();
 }

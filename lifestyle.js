@@ -492,7 +492,7 @@ async function generateLifestylePhoto() {
             return;
         }
         hideLoading();
-        showError(mapErrorToFriendly(error));
+        showError(mapErrorToFriendly(error), generateLifestylePhoto);
     } finally {
         abortController = null;
     }
@@ -550,7 +550,7 @@ Please regenerate the lifestyle photo with these specific changes applied while 
         elements.feedbackTextarea.value = '';
     } catch (error) {
         hideLoading();
-        showError(mapErrorToFriendly(error));
+        showError(mapErrorToFriendly(error), () => adjustGeneration(feedback));
     }
 }
 
@@ -715,7 +715,13 @@ function showMultipleResults(imageUrls) {
     addToHistory(imageUrls[0], imageUrls);
 }
 
-function showError(message) {
+function showError(message, retryCallback = null) {
+    // If retry callback provided, use toast with retry button
+    if (retryCallback) {
+        SharedUI.showErrorWithRetry(message, retryCallback);
+        return;
+    }
+    // Otherwise use the inline error element
     const errorText = elements.errorMessage.querySelector('.error-text');
     if (errorText) errorText.textContent = message;
     elements.errorMessage.style.display = 'flex';
@@ -1339,7 +1345,13 @@ function setupEventListeners() {
     });
 
     elements.deleteFavoriteBtn?.addEventListener('click', async () => {
-        if (state.selectedFavorite && confirm('Delete this favorite?')) {
+        if (!state.selectedFavorite) return;
+        const confirmed = await SharedUI.confirm('Delete this favorite?', {
+            title: 'Delete Favorite',
+            confirmText: 'Delete',
+            icon: 'danger'
+        });
+        if (confirmed) {
             await favorites.remove(state.selectedFavorite.id);
             closeFavoritesModal();
             renderFavorites();
