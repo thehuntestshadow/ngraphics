@@ -432,6 +432,85 @@ async function deleteProduct() {
     }
 }
 
+async function duplicateProduct(productId) {
+    showLoading();
+
+    try {
+        // 1. Fetch source product
+        const source = await ngSupabase.getProduct(productId);
+        if (!source) {
+            throw new Error('Product not found');
+        }
+
+        // 2. Fetch source images as base64
+        const imageData = await fetchProductImages(source);
+
+        // 3. Create duplicate with modified name
+        const duplicate = {
+            name: `${source.name} (copy)`,
+            sku: source.sku ? `${source.sku}-copy` : '',
+            category: source.category,
+            description: source.description,
+            features: source.features || [],
+            benefits: source.benefits || [],
+            tags: source.tags || []
+        };
+
+        // 4. Create new product with images
+        const newProduct = await ngSupabase.createProduct(duplicate, imageData);
+
+        hideLoading();
+        showToast('Product duplicated', 'success');
+
+        // 5. Reload products and open duplicate in edit mode
+        await loadProducts();
+        editProduct(newProduct.id);
+    } catch (error) {
+        console.error('Duplicate error:', error);
+        hideLoading();
+        showToast('Failed to duplicate product', 'error');
+    }
+}
+
+async function fetchProductImages(product) {
+    const imageData = {};
+
+    if (product.primary_image_path) {
+        try {
+            const url = ngSupabase.getProductImageUrl(product.primary_image_path);
+            imageData.primary = await urlToBase64(url);
+        } catch (e) {
+            console.warn('Failed to fetch primary image:', e);
+        }
+    }
+
+    if (product.image_paths?.length) {
+        imageData.additional = [];
+        for (const path of product.image_paths) {
+            try {
+                const url = ngSupabase.getProductImageUrl(path);
+                const base64 = await urlToBase64(url);
+                imageData.additional.push(base64);
+            } catch (e) {
+                console.warn('Failed to fetch additional image:', e);
+            }
+        }
+    }
+
+    return imageData;
+}
+
+async function urlToBase64(url) {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
 // ============================================
 // 5. AI ANALYSIS
 // ============================================
@@ -584,6 +663,12 @@ function renderProducts() {
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                     </svg>
                 </button>
+                <button class="btn-icon duplicate-btn" title="Duplicate">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                </button>
                 <button class="btn-icon delete-btn" title="Delete">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="3 6 5 6 21 6"/>
@@ -602,6 +687,14 @@ function renderProducts() {
             e.stopPropagation();
             const id = btn.closest('.product-card').dataset.id;
             editProduct(id);
+        });
+    });
+
+    elements.productsGrid.querySelectorAll('.duplicate-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = btn.closest('.product-card').dataset.id;
+            duplicateProduct(id);
         });
     });
 
@@ -890,6 +983,28 @@ function handleImageUpload(file, slot) {
     reader.readAsDataURL(file);
 }
 
+function handleMultipleImageUpload(files) {
+    // Get available slots (primary first, then additional 1, 2, 3)
+    const availableSlots = [];
+    if (!state.primaryImage) availableSlots.push('primary');
+    for (let i = 0; i < 3; i++) {
+        if (!state.additionalImages[i]) availableSlots.push(i + 1);
+    }
+
+    // Upload files to available slots (up to 4 files)
+    const filesToUpload = files.slice(0, Math.min(4, availableSlots.length));
+    filesToUpload.forEach((file, index) => {
+        if (availableSlots[index] !== undefined) {
+            handleImageUpload(file, availableSlots[index]);
+        }
+    });
+
+    // Show toast if some files were skipped
+    if (files.length > filesToUpload.length) {
+        showToast(`Uploaded ${filesToUpload.length} of ${files.length} images (slots full)`, 'info');
+    }
+}
+
 function removeImage(slot) {
     if (slot === 'primary') {
         state.primaryImage = null;
@@ -1051,8 +1166,14 @@ function setupImageUpload(slot) {
     });
 
     input.addEventListener('change', (e) => {
-        if (e.target.files[0]) {
-            handleImageUpload(e.target.files[0], slot);
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+
+        if (isMain && files.length > 1) {
+            // Multiple files selected on primary input - distribute to available slots
+            handleMultipleImageUpload(files);
+        } else if (files[0]) {
+            handleImageUpload(files[0], slot);
         }
     });
 

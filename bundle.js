@@ -308,6 +308,30 @@ function addProduct(file, slotIndex) {
     reader.readAsDataURL(file);
 }
 
+function handleMultipleProducts(files) {
+    // Get available slots (0-5)
+    const availableSlots = [];
+    for (let i = 0; i < 6; i++) {
+        const hasProduct = state.products.some(p => p.slotIndex === i);
+        if (!hasProduct) availableSlots.push(i);
+    }
+
+    // Upload files to available slots (up to 4 files at a time)
+    const filesToUpload = files.slice(0, Math.min(4, availableSlots.length));
+    filesToUpload.forEach((file, index) => {
+        if (availableSlots[index] !== undefined) {
+            addProduct(file, availableSlots[index]);
+        }
+    });
+
+    // Show toast if some files were skipped
+    if (files.length > filesToUpload.length) {
+        const skipped = files.length - filesToUpload.length;
+        const reason = availableSlots.length < files.length ? 'slots full' : 'max 4 at once';
+        showSuccess(`Uploaded ${filesToUpload.length} of ${files.length} images (${reason})`);
+    }
+}
+
 async function createThumbnail(base64, maxSize) {
     return new Promise((resolve) => {
         const img = new Image();
@@ -1142,10 +1166,19 @@ function setupEventListeners() {
 
     // Product file inputs
     elements.productGrid.querySelectorAll('.product-file-input').forEach(input => {
+        const slotIndex = parseInt(input.dataset.slot, 10);
         input.addEventListener('change', (e) => {
-            if (e.target.files[0]) {
-                addProduct(e.target.files[0], parseInt(e.target.dataset.slot, 10));
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            if (slotIndex === 0 && files.length > 1) {
+                // Multiple files selected on first slot - distribute to available slots
+                handleMultipleProducts(files);
+            } else if (files[0]) {
+                addProduct(files[0], slotIndex);
             }
+            // Reset input so same file can be selected again
+            e.target.value = '';
         });
     });
 

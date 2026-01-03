@@ -331,6 +331,11 @@
     color: var(--danger);
 }
 
+.product-actions .duplicate-btn:hover {
+    background: var(--accent-subtle);
+    color: var(--accent);
+}
+
 /* ============================================
    EMPTY & LOADING STATES
    ============================================ */

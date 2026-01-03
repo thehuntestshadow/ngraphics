@@ -261,11 +261,17 @@ function setupImageUpload() {
 
         // File input change
         input.addEventListener('change', (e) => {
-            if (e.target.files[0]) {
-                handleSlotUpload(index, e.target.files[0]);
-                // Reset input so same file can be selected again
-                e.target.value = '';
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            if (index === 0 && files.length > 1) {
+                // Multiple files selected on first slot - distribute to available slots
+                handleMultipleSlotUpload(files);
+            } else if (files[0]) {
+                handleSlotUpload(index, files[0]);
             }
+            // Reset input so same file can be selected again
+            e.target.value = '';
         });
 
         // Remove button
@@ -360,6 +366,28 @@ function handleSlotUpload(slotIndex, file) {
     };
 
     reader.readAsDataURL(file);
+}
+
+function handleMultipleSlotUpload(files) {
+    // Get available slots (0-3)
+    const availableSlots = [];
+    for (let i = 0; i < 4; i++) {
+        const hasImage = state.productImages.some(img => img.slotIndex === i);
+        if (!hasImage) availableSlots.push(i);
+    }
+
+    // Upload files to available slots (up to 4)
+    const filesToUpload = files.slice(0, Math.min(4, availableSlots.length));
+    filesToUpload.forEach((file, index) => {
+        if (availableSlots[index] !== undefined) {
+            handleSlotUpload(availableSlots[index], file);
+        }
+    });
+
+    // Show toast if some files were skipped
+    if (files.length > filesToUpload.length) {
+        showToast(`Uploaded ${filesToUpload.length} of ${files.length} images (slots full)`, 'info');
+    }
 }
 
 function renderSlotFilled(slotIndex, thumbnail) {
