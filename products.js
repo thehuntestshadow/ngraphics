@@ -433,7 +433,8 @@ async function deleteProduct() {
 }
 
 async function duplicateProduct(productId) {
-    showLoading();
+    elements.loadingState.style.display = 'flex';
+    elements.productsGrid.style.display = 'none';
 
     try {
         // 1. Fetch source product
@@ -459,7 +460,6 @@ async function duplicateProduct(productId) {
         // 4. Create new product with images
         const newProduct = await ngSupabase.createProduct(duplicate, imageData);
 
-        hideLoading();
         showToast('Product duplicated', 'success');
 
         // 5. Reload products and open duplicate in edit mode
@@ -467,7 +467,8 @@ async function duplicateProduct(productId) {
         editProduct(newProduct.id);
     } catch (error) {
         console.error('Duplicate error:', error);
-        hideLoading();
+        elements.loadingState.style.display = 'none';
+        elements.productsGrid.style.display = 'grid';
         showToast('Failed to duplicate product', 'error');
     }
 }
