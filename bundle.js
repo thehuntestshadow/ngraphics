@@ -1592,6 +1592,66 @@ function updateCostEstimator() {
 }
 
 // ============================================
+// PRODUCT SELECTOR
+// ============================================
+function initProductSelector() {
+    const container = document.getElementById('productSelectorContainer');
+    if (!container || typeof ProductSelector === 'undefined') return;
+
+    new ProductSelector({
+        container,
+        onSelect: loadProductData
+    });
+}
+
+async function loadProductData(product) {
+    // Find first empty slot
+    const slots = elements.productGrid.querySelectorAll('.product-slot');
+    let targetSlotIndex = -1;
+
+    for (let i = 0; i < slots.length; i++) {
+        const hasProduct = state.products.some(p => p.slotIndex === i);
+        if (!hasProduct) {
+            targetSlotIndex = i;
+            break;
+        }
+    }
+
+    if (targetSlotIndex === -1) {
+        showError('All product slots are full');
+        return;
+    }
+
+    if (state.products.length >= 6) {
+        showError('Maximum 6 products allowed');
+        return;
+    }
+
+    // Load the primary image into the slot
+    if (product._primaryImageData) {
+        const thumbnail = await createThumbnail(product._primaryImageData, 200);
+
+        const bundleProduct = {
+            id: state.nextProductId++,
+            slotIndex: targetSlotIndex,
+            imageBase64: product._primaryImageData,
+            thumbnail,
+            name: product.name || '',
+            description: product.description || '',
+            quantity: 1,
+            analyzed: true // Already analyzed in products page
+        };
+
+        state.products.push(bundleProduct);
+        renderProductSlot(targetSlotIndex, bundleProduct);
+        updateProductCount();
+        updateGenerateButton();
+
+        SharedUI.toast(`Added: ${product.name}`);
+    }
+}
+
+// ============================================
 // INITIALIZATION
 // ============================================
 let initialized = false;
@@ -1611,6 +1671,9 @@ async function init() {
     }
 
     setupEventListeners();
+
+    // Setup product selector
+    initProductSelector();
 
     // Setup keyboard shortcuts
     SharedKeyboard.setup({

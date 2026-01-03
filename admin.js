@@ -22,10 +22,24 @@ const adminState = {
     cmsFaq: [],
     editingGalleryItem: null,
     editingFaqItem: null,
-    quillEditor: null
+    quillEditor: null,
+    // Selection state
+    selectedUsers: new Set(),
+    // Sort state
+    usersSortColumn: 'created_at',
+    usersSortDir: 'desc',
+    // Pagination
+    itemsPerPage: 20,
+    // Timestamps
+    lastUpdated: {
+        overview: null,
+        users: null,
+        subscriptions: null,
+        audit: null
+    }
 };
 
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE_OPTIONS = [20, 50, 100];
 
 // Elements cache
 let elements = {};
@@ -59,14 +73,28 @@ function initElements() {
         recentUsersBody: document.getElementById('recentUsersBody'),
         usersTableBody: document.getElementById('usersTableBody'),
         usersPagination: document.getElementById('usersPagination'),
+        usersPaginationInfo: document.getElementById('usersPaginationInfo'),
         subscriptionsTableBody: document.getElementById('subscriptionsTableBody'),
         auditTableBody: document.getElementById('auditTableBody'),
         auditPagination: document.getElementById('auditPagination'),
+        auditPaginationInfo: document.getElementById('auditPaginationInfo'),
+        // Mobile card views
+        usersCards: document.getElementById('usersCards'),
+        subscriptionsCards: document.getElementById('subscriptionsCards'),
+        auditCards: document.getElementById('auditCards'),
         // Filters
         userSearch: document.getElementById('userSearch'),
         tierFilter: document.getElementById('tierFilter'),
         statusFilter: document.getElementById('statusFilter'),
+        clearFiltersBtn: document.getElementById('clearFiltersBtn'),
         exportUsersBtn: document.getElementById('exportUsersBtn'),
+        // Last updated timestamps
+        overviewLastUpdated: document.getElementById('overviewLastUpdated'),
+        usersLastUpdated: document.getElementById('usersLastUpdated'),
+        // Selection
+        selectAllUsers: document.getElementById('selectAllUsers'),
+        bulkActionsBar: document.getElementById('bulkActionsBar'),
+        selectedCount: document.getElementById('selectedCount'),
         // Modal
         userModal: document.getElementById('userModal'),
         userModalBody: document.getElementById('userModalBody'),
@@ -115,21 +143,47 @@ function setupEventListeners() {
             adminState.usersPage = 1;
             loadUsers();
         }, 300);
+        updateClearFiltersVisibility();
     });
 
     // Filters
     elements.tierFilter?.addEventListener('change', () => {
         adminState.usersPage = 1;
         loadUsers();
+        updateClearFiltersVisibility();
     });
 
     elements.statusFilter?.addEventListener('change', () => {
         adminState.usersPage = 1;
         loadUsers();
+        updateClearFiltersVisibility();
     });
+
+    // Clear filters
+    elements.clearFiltersBtn?.addEventListener('click', clearFilters);
 
     // Export
     elements.exportUsersBtn?.addEventListener('click', exportUsersCSV);
+
+    // Select all users checkbox
+    elements.selectAllUsers?.addEventListener('change', (e) => {
+        const checkboxes = document.querySelectorAll('.user-checkbox');
+        checkboxes.forEach(cb => {
+            cb.checked = e.target.checked;
+            const userId = cb.dataset.userId;
+            if (e.target.checked) {
+                adminState.selectedUsers.add(userId);
+            } else {
+                adminState.selectedUsers.delete(userId);
+            }
+        });
+        updateBulkActionsBar();
+    });
+
+    // Sortable column headers
+    document.querySelectorAll('.admin-table th.sortable').forEach(th => {
+        th.addEventListener('click', () => handleSortClick(th));
+    });
 
     // Modal close
     elements.userModal?.addEventListener('click', (e) => {
@@ -419,20 +473,43 @@ async function loadDashboardData() {
         // Initialize charts
         initCharts();
 
+        // Update timestamp
+        updateLastUpdated('overview');
+
     } catch (err) {
         console.error('Failed to load dashboard data:', err);
     }
 }
 
-function updateStatsDisplay(stats) {
-    if (elements.statUsers) elements.statUsers.textContent = formatNumber(stats.total_users);
-    if (elements.statActiveSubs) elements.statActiveSubs.textContent = formatNumber(stats.active_subscriptions);
-    if (elements.statMRR) elements.statMRR.textContent = `$${formatNumber(stats.mrr_dollars)}`;
-    if (elements.statGenerations) elements.statGenerations.textContent = '-'; // Would need usage tracking
-    if (elements.statProSubs) elements.statProSubs.textContent = formatNumber(stats.pro_subscribers);
-    if (elements.statBusinessSubs) elements.statBusinessSubs.textContent = formatNumber(stats.business_subscribers);
-    if (elements.statProMRR) elements.statProMRR.textContent = `$${formatNumber(stats.pro_subscribers * 19)}`;
-    if (elements.statBusinessMRR) elements.statBusinessMRR.textContent = `$${formatNumber(stats.business_subscribers * 49)}`;
+function updateStatsDisplay(stats, animate = true) {
+    if (animate) {
+        if (elements.statUsers) animateValue(elements.statUsers, 0, stats.total_users);
+        if (elements.statActiveSubs) animateValue(elements.statActiveSubs, 0, stats.active_subscriptions);
+        if (elements.statMRR) {
+            elements.statMRR.textContent = '$0';
+            animateValue(elements.statMRR, 0, stats.mrr_dollars);
+        }
+        if (elements.statGenerations) elements.statGenerations.textContent = '-';
+        if (elements.statProSubs) animateValue(elements.statProSubs, 0, stats.pro_subscribers);
+        if (elements.statBusinessSubs) animateValue(elements.statBusinessSubs, 0, stats.business_subscribers);
+        if (elements.statProMRR) {
+            elements.statProMRR.textContent = '$0';
+            animateValue(elements.statProMRR, 0, stats.pro_subscribers * 19);
+        }
+        if (elements.statBusinessMRR) {
+            elements.statBusinessMRR.textContent = '$0';
+            animateValue(elements.statBusinessMRR, 0, stats.business_subscribers * 49);
+        }
+    } else {
+        if (elements.statUsers) elements.statUsers.textContent = formatNumber(stats.total_users);
+        if (elements.statActiveSubs) elements.statActiveSubs.textContent = formatNumber(stats.active_subscriptions);
+        if (elements.statMRR) elements.statMRR.textContent = `$${formatNumber(stats.mrr_dollars)}`;
+        if (elements.statGenerations) elements.statGenerations.textContent = '-';
+        if (elements.statProSubs) elements.statProSubs.textContent = formatNumber(stats.pro_subscribers);
+        if (elements.statBusinessSubs) elements.statBusinessSubs.textContent = formatNumber(stats.business_subscribers);
+        if (elements.statProMRR) elements.statProMRR.textContent = `$${formatNumber(stats.pro_subscribers * 19)}`;
+        if (elements.statBusinessMRR) elements.statBusinessMRR.textContent = `$${formatNumber(stats.business_subscribers * 49)}`;
+    }
 }
 
 async function loadRecentUsers() {
@@ -476,7 +553,7 @@ async function loadUsers() {
         const tierFilter = elements.tierFilter?.value || '';
         const statusFilter = elements.statusFilter?.value || '';
 
-        const offset = (adminState.usersPage - 1) * ITEMS_PER_PAGE;
+        const offset = (adminState.usersPage - 1) * adminState.itemsPerPage;
 
         // Use RPC functions to bypass RLS
         const [usersResult, countResult] = await Promise.all([
@@ -484,7 +561,7 @@ async function loadUsers() {
                 p_search: search || null,
                 p_tier: tierFilter || null,
                 p_status: statusFilter || null,
-                p_limit: ITEMS_PER_PAGE,
+                p_limit: adminState.itemsPerPage,
                 p_offset: offset
             }),
             ngSupabase.client.rpc('count_admin_users', {
@@ -502,11 +579,18 @@ async function loadUsers() {
         adminState.users = users;
         adminState.usersTotal = count;
 
-        renderUsersTable(users);
-        renderPagination(elements.usersPagination, adminState.usersPage, Math.ceil(count / ITEMS_PER_PAGE), (page) => {
+        // Apply sorting and update headers
+        sortUsers();
+        updateSortHeaders();
+
+        renderUsersTable();
+        renderPagination(elements.usersPagination, adminState.usersPage, Math.ceil(count / adminState.itemsPerPage), (page) => {
             adminState.usersPage = page;
             loadUsers();
         });
+
+        // Update timestamp
+        updateLastUpdated('users');
 
     } catch (err) {
         console.error('Failed to load users:', err);
@@ -514,19 +598,149 @@ async function loadUsers() {
     }
 }
 
-function renderUsersTable(users) {
+function renderUsersTable(users = adminState.users) {
+    // Reset select all checkbox
+    if (elements.selectAllUsers) {
+        elements.selectAllUsers.checked = false;
+    }
+
     elements.usersTableBody.innerHTML = users.length === 0
-        ? '<tr><td colspan="7" class="loading-cell">No users found</td></tr>'
+        ? '<tr><td colspan="8" class="loading-cell">No users found</td></tr>'
         : users.map(user => `
             <tr>
-                <td>${escapeHtml(user.email || 'N/A')}</td>
-                <td>${escapeHtml(user.full_name || '-')}</td>
+                <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}" ${adminState.selectedUsers.has(user.id) ? 'checked' : ''} onchange="toggleUserSelection('${user.id}', this.checked)"></td>
+                <td class="email-cell">
+                    <span class="email-text" title="${escapeHtml(user.email || '')}">${escapeHtml(user.email || 'N/A')}</span>
+                    <button class="copy-btn" onclick="copyEmail('${escapeHtml(user.email || '')}', this)" title="Copy email">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                    </button>
+                </td>
+                <td title="${escapeHtml(user.full_name || '')}">${escapeHtml(user.full_name || '-')}</td>
                 <td><span class="tier-badge ${user.tier_id || 'free'}">${capitalizeFirst(user.tier_id || 'free')}</span></td>
                 <td>${user.credit_balance ?? 0}</td>
                 <td><span class="status-badge ${user.subscription_status || 'active'}">${capitalizeFirst(user.subscription_status || 'active')}</span></td>
                 <td>${formatDate(user.created_at)}</td>
                 <td><button class="action-btn secondary" onclick="openUserModal('${user.id}')">Manage</button></td>
             </tr>
+        `).join('');
+
+    // Update pagination info
+    updatePaginationInfo(elements.usersPaginationInfo, adminState.usersPage, adminState.usersTotal, adminState.itemsPerPage);
+
+    // Render mobile cards
+    renderUsersCards(users);
+}
+
+// Mobile card view for users
+function renderUsersCards(users = adminState.users) {
+    if (!elements.usersCards) return;
+
+    elements.usersCards.innerHTML = users.length === 0
+        ? '<div class="empty-state"><p>No users found</p></div>'
+        : users.map(user => `
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <div class="admin-card-title">${escapeHtml(user.email || 'N/A')}</div>
+                    <div class="admin-card-badges">
+                        <span class="tier-badge ${user.tier_id || 'free'}">${capitalizeFirst(user.tier_id || 'free')}</span>
+                    </div>
+                </div>
+                <div class="admin-card-body">
+                    <div class="admin-card-row">
+                        <span class="admin-card-label">Name</span>
+                        <span class="admin-card-value">${escapeHtml(user.full_name || '-')}</span>
+                    </div>
+                    <div class="admin-card-row">
+                        <span class="admin-card-label">Credits</span>
+                        <span class="admin-card-value">${user.credit_balance ?? 0}</span>
+                    </div>
+                    <div class="admin-card-row">
+                        <span class="admin-card-label">Status</span>
+                        <span class="admin-card-value"><span class="status-badge ${user.subscription_status || 'active'}">${capitalizeFirst(user.subscription_status || 'active')}</span></span>
+                    </div>
+                    <div class="admin-card-row">
+                        <span class="admin-card-label">Joined</span>
+                        <span class="admin-card-value">${formatDate(user.created_at)}</span>
+                    </div>
+                </div>
+                <div class="admin-card-footer">
+                    <label class="admin-card-checkbox">
+                        <input type="checkbox" class="user-checkbox" data-user-id="${user.id}" ${adminState.selectedUsers.has(user.id) ? 'checked' : ''} onchange="toggleUserSelection('${user.id}', this.checked)">
+                        Select
+                    </label>
+                    <div class="admin-card-actions">
+                        <button class="action-btn secondary" onclick="openUserModal('${user.id}')">Manage</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+}
+
+// Mobile card view for subscriptions
+function renderSubscriptionsCards(subs = adminState.subscriptions) {
+    if (!elements.subscriptionsCards) return;
+
+    elements.subscriptionsCards.innerHTML = subs.length === 0
+        ? '<div class="empty-state"><p>No active subscriptions</p></div>'
+        : subs.map(sub => `
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <div class="admin-card-title">${escapeHtml(sub.email || 'N/A')}</div>
+                    <div class="admin-card-badges">
+                        <span class="tier-badge ${sub.tier_id}">${capitalizeFirst(sub.tier_id)}</span>
+                    </div>
+                </div>
+                <div class="admin-card-body">
+                    <div class="admin-card-row">
+                        <span class="admin-card-label">Started</span>
+                        <span class="admin-card-value">${formatDate(sub.created_at)}</span>
+                    </div>
+                    <div class="admin-card-row">
+                        <span class="admin-card-label">Next Billing</span>
+                        <span class="admin-card-value">${sub.current_period_end ? formatDate(sub.current_period_end) : '-'}</span>
+                    </div>
+                </div>
+                <div class="admin-card-footer">
+                    <div class="admin-card-actions">
+                        <button class="action-btn secondary" onclick="openUserModal('${sub.user_id}')">View User</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+}
+
+// Mobile card view for audit logs
+function renderAuditCards(logs = adminState.auditLogs) {
+    if (!elements.auditCards) return;
+
+    elements.auditCards.innerHTML = logs.length === 0
+        ? '<div class="empty-state"><p>No audit logs yet</p></div>'
+        : logs.map(log => `
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <div class="admin-card-title"><code>${escapeHtml(log.action)}</code></div>
+                    <div class="admin-card-subtitle">${formatDateTime(log.created_at)}</div>
+                </div>
+                <div class="admin-card-body">
+                    <div class="admin-card-row">
+                        <span class="admin-card-label">Admin</span>
+                        <span class="admin-card-value">${escapeHtml(log.admin_email || 'System')}</span>
+                    </div>
+                    <div class="admin-card-row">
+                        <span class="admin-card-label">Target</span>
+                        <span class="admin-card-value">${escapeHtml(log.target_email || '-')}</span>
+                    </div>
+                    ${log.details && Object.keys(log.details).length > 0 ? `
+                    <div class="admin-card-row">
+                        <span class="admin-card-label">Details</span>
+                        <span class="admin-card-value"><code style="font-size:0.75rem">${JSON.stringify(log.details)}</code></span>
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
         `).join('');
 }
 
@@ -556,6 +770,9 @@ async function loadSubscriptions() {
                 </tr>
             `).join('');
 
+        // Render mobile cards
+        renderSubscriptionsCards();
+
     } catch (err) {
         console.error('Failed to load subscriptions:', err);
         elements.subscriptionsTableBody.innerHTML = '<tr><td colspan="6" class="loading-cell">Failed to load subscriptions</td></tr>';
@@ -567,12 +784,12 @@ async function loadAuditLogs() {
     try {
         elements.auditTableBody.innerHTML = '<tr><td colspan="5" class="loading-cell">Loading...</td></tr>';
 
-        const offset = (adminState.auditPage - 1) * ITEMS_PER_PAGE;
+        const offset = (adminState.auditPage - 1) * adminState.itemsPerPage;
 
         // Use RPC function to bypass RLS
         const { data: logs, error } = await ngSupabase.client
             .rpc('get_admin_audit_logs', {
-                p_limit: ITEMS_PER_PAGE,
+                p_limit: adminState.itemsPerPage,
                 p_offset: offset
             });
 
@@ -580,7 +797,7 @@ async function loadAuditLogs() {
 
         adminState.auditLogs = logs || [];
         // Note: count not available from RPC, estimate from data length
-        adminState.auditTotal = logs?.length >= ITEMS_PER_PAGE ? (adminState.auditPage * ITEMS_PER_PAGE) + 1 : logs?.length || 0;
+        adminState.auditTotal = logs?.length >= adminState.itemsPerPage ? (adminState.auditPage * adminState.itemsPerPage) + 1 : logs?.length || 0;
 
         elements.auditTableBody.innerHTML = logs.length === 0
             ? '<tr><td colspan="5" class="loading-cell">No audit logs yet</td></tr>'
@@ -595,11 +812,20 @@ async function loadAuditLogs() {
             `).join('');
 
         // Estimate pages based on whether we got a full page
-        const estimatedPages = logs.length >= ITEMS_PER_PAGE ? adminState.auditPage + 1 : adminState.auditPage;
+        const estimatedPages = logs.length >= adminState.itemsPerPage ? adminState.auditPage + 1 : adminState.auditPage;
         renderPagination(elements.auditPagination, adminState.auditPage, estimatedPages, (page) => {
             adminState.auditPage = page;
             loadAuditLogs();
         });
+
+        // Update pagination info (estimated)
+        const estimatedTotal = logs.length >= adminState.itemsPerPage
+            ? adminState.auditPage * adminState.itemsPerPage + 1  // At least one more page
+            : (adminState.auditPage - 1) * adminState.itemsPerPage + logs.length;
+        updatePaginationInfo(elements.auditPaginationInfo, adminState.auditPage, estimatedTotal, adminState.itemsPerPage);
+
+        // Render mobile cards
+        renderAuditCards();
 
     } catch (err) {
         console.error('Failed to load audit logs:', err);
@@ -609,74 +835,147 @@ async function loadAuditLogs() {
 
 // Usage Analytics
 async function loadUsageData() {
-    // Usage data would require tracking table
-    // For now, show placeholder
     if (adminState.charts.usage) return;
 
     const ctx = document.getElementById('usageChart')?.getContext('2d');
     if (!ctx) return;
 
-    // Placeholder data
-    const labels = [];
-    const data = [];
-    for (let i = 29; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-        data.push(Math.floor(Math.random() * 100) + 20);
-    }
+    try {
+        // Fetch real generation trends from database
+        const { data: trends, error: trendsError } = await ngSupabase.client
+            .rpc('get_generation_trends', { p_days: 30 });
 
-    adminState.charts.usage = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels,
-            datasets: [{
-                label: 'Generations',
-                data,
-                borderColor: '#6366f1',
-                backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                fill: true,
-                tension: 0.3
-            }]
-        },
-        options: getChartOptions()
-    });
+        // Build labels and data arrays
+        const labels = [];
+        const data = [];
 
-    // Studios chart
-    const studiosCtx = document.getElementById('studiosChart')?.getContext('2d');
-    if (studiosCtx) {
-        adminState.charts.studios = new Chart(studiosCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Infographics', 'Model Studio', 'Lifestyle', 'Bundle', 'Other'],
-                datasets: [{
-                    data: [35, 25, 20, 12, 8],
-                    backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { position: 'bottom', labels: { color: '#9ca3af' } } }
+        if (!trendsError && trends?.length > 0) {
+            // Create a map of dates to counts
+            const trendMap = new Map(trends.map(t => [t.date, Number(t.count)]));
+
+            // Fill in all 30 days (including zeros)
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toISOString().split('T')[0];
+                labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                data.push(trendMap.get(dateStr) || 0);
             }
-        });
-    }
+        } else {
+            // Fallback: empty chart with date labels
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                data.push(0);
+            }
+        }
 
-    // Models chart
-    const modelsCtx = document.getElementById('modelsChart')?.getContext('2d');
-    if (modelsCtx) {
-        adminState.charts.models = new Chart(modelsCtx, {
-            type: 'bar',
+        adminState.charts.usage = new Chart(ctx, {
+            type: 'line',
             data: {
-                labels: ['Gemini', 'GPT-4o', 'Flux', 'Recraft', 'Other'],
+                labels,
                 datasets: [{
-                    label: 'Usage',
-                    data: [45, 25, 15, 10, 5],
-                    backgroundColor: '#6366f1'
+                    label: 'Generations',
+                    data,
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    fill: true,
+                    tension: 0.3
                 }]
             },
             options: getChartOptions()
         });
+
+        // Studios chart - fetch real studio usage
+        const studiosCtx = document.getElementById('studiosChart')?.getContext('2d');
+        if (studiosCtx) {
+            const { data: studioData, error: studioError } = await ngSupabase.client
+                .rpc('get_studio_usage', { p_days: 30 });
+
+            let studioLabels = ['No data'];
+            let studioValues = [1];
+            const studioColors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#84cc16', '#a855f7'];
+
+            if (!studioError && studioData?.length > 0) {
+                studioLabels = studioData.map(s => formatStudioName(s.studio));
+                studioValues = studioData.map(s => Number(s.count));
+            }
+
+            adminState.charts.studios = new Chart(studiosCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: studioLabels,
+                    datasets: [{
+                        data: studioValues,
+                        backgroundColor: studioColors.slice(0, studioLabels.length)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom', labels: { color: '#9ca3af' } } }
+                }
+            });
+        }
+
+        // Models chart - fetch real model usage
+        const modelsCtx = document.getElementById('modelsChart')?.getContext('2d');
+        if (modelsCtx) {
+            const { data: modelData, error: modelError } = await ngSupabase.client
+                .rpc('get_model_usage', { p_days: 30 });
+
+            let modelLabels = ['No data'];
+            let modelValues = [1];
+
+            if (!modelError && modelData?.length > 0) {
+                modelLabels = modelData.map(m => formatModelName(m.model));
+                modelValues = modelData.map(m => Number(m.count));
+            }
+
+            adminState.charts.models = new Chart(modelsCtx, {
+                type: 'bar',
+                data: {
+                    labels: modelLabels,
+                    datasets: [{
+                        label: 'Usage',
+                        data: modelValues,
+                        backgroundColor: '#6366f1'
+                    }]
+                },
+                options: getChartOptions()
+            });
+        }
+
+    } catch (err) {
+        console.error('Failed to load usage data:', err);
+        // Show empty charts on error
+        adminState.charts.usage = new Chart(ctx, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Generations', data: [], borderColor: '#6366f1' }] },
+            options: getChartOptions()
+        });
     }
+}
+
+// Helper: Format studio name for display
+function formatStudioName(studio) {
+    if (!studio) return 'Unknown';
+    return studio
+        .replace(/-/g, ' ')
+        .replace(/_/g, ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+// Helper: Format model name for display (shorten long model IDs)
+function formatModelName(model) {
+    if (!model) return 'Unknown';
+    // Extract just the model name from full path like "google/gemini-3-pro-image-preview"
+    const parts = model.split('/');
+    const name = parts[parts.length - 1];
+    // Shorten if too long
+    return name.length > 20 ? name.substring(0, 17) + '...' : name;
 }
 
 // Charts
@@ -838,6 +1137,10 @@ function closeUserModal() {
 async function changeTier(userId, tierId) {
     if (!confirm(`Change user's subscription to ${tierId}?`)) return;
 
+    // Find and add loading state to clicked button
+    const buttons = document.querySelectorAll('.action-group .action-btn');
+    buttons.forEach(btn => btn.classList.add('loading'));
+
     try {
         // Use RPC function to bypass RLS
         const { error } = await ngSupabase.client
@@ -857,6 +1160,8 @@ async function changeTier(userId, tierId) {
     } catch (err) {
         console.error('Failed to change tier:', err);
         showToast('error', 'Failed to change tier', err.message);
+    } finally {
+        buttons.forEach(btn => btn.classList.remove('loading'));
     }
 }
 
@@ -869,6 +1174,10 @@ async function addCreditsToUser(userId) {
     }
 
     if (!confirm(`Add ${amount} credits to this user?`)) return;
+
+    // Add loading state to button
+    const addBtn = document.querySelector('.credit-input-group .action-btn');
+    if (addBtn) addBtn.classList.add('loading');
 
     try {
         // Use RPC function to bypass RLS (also logs the action)
@@ -885,6 +1194,8 @@ async function addCreditsToUser(userId) {
     } catch (err) {
         console.error('Failed to add credits:', err);
         showToast('error', 'Failed to add credits', err.message);
+    } finally {
+        if (addBtn) addBtn.classList.remove('loading');
     }
 }
 
@@ -1337,7 +1648,7 @@ function renderFAQTable() {
         ? '<tr><td colspan="5" class="loading-cell">No FAQ items found</td></tr>'
         : items.map(item => `
             <tr data-id="${item.id}">
-                <td class="question-cell">${escapeHtml(item.question)}</td>
+                <td class="question-cell" title="${escapeHtml(item.question)}">${escapeHtml(item.question)}</td>
                 <td><span class="category-tag">${FAQ_CATEGORIES[item.category] || item.category}</span></td>
                 <td>${item.sort_order}</td>
                 <td>
@@ -1481,12 +1792,385 @@ async function saveJSONContent() {
     }
 }
 
+// ==================== Clear Filters ====================
+
+function updateClearFiltersVisibility() {
+    const hasFilters = (elements.userSearch?.value || '') !== '' ||
+                      (elements.tierFilter?.value || '') !== '' ||
+                      (elements.statusFilter?.value || '') !== '';
+
+    if (elements.clearFiltersBtn) {
+        elements.clearFiltersBtn.style.display = hasFilters ? 'inline-flex' : 'none';
+    }
+}
+
+function clearFilters() {
+    if (elements.userSearch) elements.userSearch.value = '';
+    if (elements.tierFilter) elements.tierFilter.value = '';
+    if (elements.statusFilter) elements.statusFilter.value = '';
+    updateClearFiltersVisibility();
+    adminState.usersPage = 1;
+    loadUsers();
+}
+
+// ==================== Table Sorting ====================
+
+function handleSortClick(th) {
+    const column = th.dataset.sort;
+    if (!column) return;
+
+    // Toggle direction if same column, otherwise set to asc
+    if (adminState.usersSortColumn === column) {
+        adminState.usersSortDir = adminState.usersSortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+        adminState.usersSortColumn = column;
+        adminState.usersSortDir = 'asc';
+    }
+
+    // Update header classes
+    updateSortHeaders();
+
+    // Sort and re-render
+    sortUsers();
+    renderUsersTable();
+}
+
+function updateSortHeaders() {
+    document.querySelectorAll('.admin-table th.sortable').forEach(th => {
+        th.classList.remove('asc', 'desc');
+        if (th.dataset.sort === adminState.usersSortColumn) {
+            th.classList.add(adminState.usersSortDir);
+        }
+    });
+}
+
+function sortUsers() {
+    const column = adminState.usersSortColumn;
+    const dir = adminState.usersSortDir;
+    const multiplier = dir === 'asc' ? 1 : -1;
+
+    adminState.users.sort((a, b) => {
+        let aVal = a[column];
+        let bVal = b[column];
+
+        // Handle null/undefined
+        if (aVal == null) aVal = '';
+        if (bVal == null) bVal = '';
+
+        // Handle dates
+        if (column === 'created_at') {
+            aVal = new Date(aVal).getTime();
+            bVal = new Date(bVal).getTime();
+        }
+        // Handle numbers
+        else if (column === 'credits') {
+            aVal = Number(aVal) || 0;
+            bVal = Number(bVal) || 0;
+        }
+        // Handle strings
+        else if (typeof aVal === 'string') {
+            aVal = aVal.toLowerCase();
+            bVal = bVal.toLowerCase();
+        }
+
+        if (aVal < bVal) return -1 * multiplier;
+        if (aVal > bVal) return 1 * multiplier;
+        return 0;
+    });
+}
+
+// ==================== Animated Numbers ====================
+
+function animateValue(element, start, end, duration = 800) {
+    if (!element || isNaN(end)) return;
+
+    const startTime = performance.now();
+    const isPrice = element.textContent.startsWith('$');
+
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Easing function (ease-out cubic)
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(start + (end - start) * easeOut);
+
+        element.textContent = isPrice ? `$${formatNumber(current)}` : formatNumber(current);
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+
+    requestAnimationFrame(update);
+}
+
+// ==================== Last Updated Timestamp ====================
+
+function updateLastUpdated(section) {
+    adminState.lastUpdated[section] = new Date();
+    updateLastUpdatedDisplay(section);
+}
+
+function updateLastUpdatedDisplay(section) {
+    const element = elements[`${section}LastUpdated`];
+    if (!element || !adminState.lastUpdated[section]) return;
+
+    element.textContent = `Updated ${formatRelativeTime(adminState.lastUpdated[section])}`;
+}
+
+function formatRelativeTime(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+
+    if (seconds < 10) return 'just now';
+    if (seconds < 60) return `${seconds}s ago`;
+
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+
+    return formatDate(date);
+}
+
+// Update timestamps every minute
+setInterval(() => {
+    Object.keys(adminState.lastUpdated).forEach(section => {
+        if (adminState.lastUpdated[section]) {
+            updateLastUpdatedDisplay(section);
+        }
+    });
+}, 60000);
+
+// ==================== Selection & Bulk Actions ====================
+
+function toggleUserSelection(userId, isSelected) {
+    if (isSelected) {
+        adminState.selectedUsers.add(userId);
+    } else {
+        adminState.selectedUsers.delete(userId);
+    }
+    updateBulkActionsBar();
+
+    // Update select all checkbox state
+    const allCheckboxes = document.querySelectorAll('.user-checkbox');
+    const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
+    if (elements.selectAllUsers) {
+        elements.selectAllUsers.checked = allChecked && allCheckboxes.length > 0;
+    }
+}
+
+function updateBulkActionsBar() {
+    const count = adminState.selectedUsers.size;
+    if (elements.selectedCount) {
+        elements.selectedCount.textContent = count;
+    }
+    if (elements.bulkActionsBar) {
+        elements.bulkActionsBar.style.display = count > 0 ? 'flex' : 'none';
+    }
+}
+
+function clearSelection() {
+    adminState.selectedUsers.clear();
+    document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = false);
+    if (elements.selectAllUsers) elements.selectAllUsers.checked = false;
+    updateBulkActionsBar();
+}
+
+async function bulkSetTier(tierId) {
+    const count = adminState.selectedUsers.size;
+    if (count === 0) return;
+
+    if (!confirm(`Set ${count} user(s) to ${tierId} tier?`)) return;
+
+    // Add loading state to bulk action buttons
+    const bulkButtons = document.querySelectorAll('.bulk-actions .btn');
+    bulkButtons.forEach(btn => btn.classList.add('loading'));
+
+    try {
+        showToast('info', 'Processing...', `Updating ${count} users`);
+
+        const promises = Array.from(adminState.selectedUsers).map(userId =>
+            ngSupabase.client.rpc('admin_update_user', {
+                p_user_id: userId,
+                p_tier_id: tierId
+            })
+        );
+
+        await Promise.all(promises);
+
+        showToast('success', 'Updated', `${count} users set to ${tierId}`);
+        clearSelection();
+        loadUsers();
+        loadDashboardData();
+    } catch (err) {
+        console.error('Bulk tier update failed:', err);
+        showToast('error', 'Error', 'Some updates may have failed');
+    } finally {
+        bulkButtons.forEach(btn => btn.classList.remove('loading'));
+    }
+}
+
+async function bulkAddCredits() {
+    const count = adminState.selectedUsers.size;
+    if (count === 0) return;
+
+    const amount = prompt(`Add credits to ${count} users.\nEnter amount:`);
+    if (!amount || isNaN(parseInt(amount)) || parseInt(amount) <= 0) return;
+
+    const credits = parseInt(amount);
+    if (!confirm(`Add ${credits} credits to ${count} user(s)?`)) return;
+
+    // Add loading state to bulk action buttons
+    const bulkButtons = document.querySelectorAll('.bulk-actions .btn');
+    bulkButtons.forEach(btn => btn.classList.add('loading'));
+
+    try {
+        showToast('info', 'Processing...', `Adding credits to ${count} users`);
+
+        const promises = Array.from(adminState.selectedUsers).map(userId =>
+            ngSupabase.client.rpc('admin_update_user', {
+                p_user_id: userId,
+                p_credit_amount: credits
+            })
+        );
+
+        await Promise.all(promises);
+
+        showToast('success', 'Updated', `Added ${credits} credits to ${count} users`);
+        clearSelection();
+        loadUsers();
+    } catch (err) {
+        console.error('Bulk credits update failed:', err);
+        showToast('error', 'Error', 'Some updates may have failed');
+    } finally {
+        bulkButtons.forEach(btn => btn.classList.remove('loading'));
+    }
+}
+
+// ==================== Pagination Info ====================
+
+function updatePaginationInfo(container, page, total, perPage) {
+    if (!container) return;
+
+    if (total === 0) {
+        container.textContent = '';
+        return;
+    }
+
+    const start = (page - 1) * perPage + 1;
+    const end = Math.min(page * perPage, total);
+    container.textContent = `Showing ${start}-${end} of ${total}`;
+}
+
+// ==================== Items Per Page ====================
+
+function changeItemsPerPage(value) {
+    const newValue = parseInt(value, 10);
+    if (isNaN(newValue) || !ITEMS_PER_PAGE_OPTIONS.includes(newValue)) return;
+
+    adminState.itemsPerPage = newValue;
+
+    // Update all select dropdowns to match
+    document.querySelectorAll('.items-per-page-select').forEach(select => {
+        select.value = newValue.toString();
+    });
+
+    // Reset to page 1 and reload data
+    adminState.usersPage = 1;
+    adminState.auditPage = 1;
+
+    // Reload the current section
+    loadUsers();
+    loadAuditLogs();
+}
+
+// ==================== Copy Email ====================
+
+async function copyEmail(email, button) {
+    if (!email) return;
+
+    try {
+        await navigator.clipboard.writeText(email);
+
+        // Visual feedback
+        const originalHTML = button.innerHTML;
+        button.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>`;
+        button.classList.add('copied');
+
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.classList.remove('copied');
+        }, 1500);
+    } catch (err) {
+        console.error('Failed to copy:', err);
+    }
+}
+
+// ==================== Refresh Section ====================
+
+async function refreshSection(sectionId) {
+    const btn = document.querySelector(`#section-${sectionId} .btn-icon`);
+    if (btn) {
+        btn.classList.add('spinning');
+    }
+
+    try {
+        switch (sectionId) {
+            case 'users':
+                await loadUsers();
+                break;
+            case 'subscriptions':
+                await loadSubscriptions();
+                break;
+            case 'usage':
+                // Destroy existing charts and reload
+                if (adminState.charts.usage) {
+                    adminState.charts.usage.destroy();
+                    adminState.charts.usage = null;
+                }
+                if (adminState.charts.studios) {
+                    adminState.charts.studios.destroy();
+                    adminState.charts.studios = null;
+                }
+                if (adminState.charts.models) {
+                    adminState.charts.models.destroy();
+                    adminState.charts.models = null;
+                }
+                await loadUsageData();
+                break;
+            case 'audit':
+                await loadAuditLogs();
+                break;
+            case 'overview':
+                await loadDashboardData();
+                break;
+        }
+        showToast('success', 'Refreshed', `${capitalizeFirst(sectionId)} data updated`);
+    } catch (err) {
+        console.error('Refresh failed:', err);
+        showToast('error', 'Refresh Failed', err.message);
+    } finally {
+        if (btn) {
+            btn.classList.remove('spinning');
+        }
+    }
+}
+
 // Make functions available globally
 window.showSection = showSection;
 window.openUserModal = openUserModal;
 window.closeUserModal = closeUserModal;
 window.changeTier = changeTier;
 window.addCreditsToUser = addCreditsToUser;
+window.toggleUserSelection = toggleUserSelection;
+window.clearSelection = clearSelection;
+window.bulkSetTier = bulkSetTier;
+window.bulkAddCredits = bulkAddCredits;
+window.copyEmail = copyEmail;
+window.refreshSection = refreshSection;
+window.clearFilters = clearFilters;
 // CMS functions
 window.saveHomepageSection = saveHomepageSection;
 window.openGalleryModal = openGalleryModal;

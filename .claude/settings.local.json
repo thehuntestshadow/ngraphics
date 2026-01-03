@@ -33,7 +33,16 @@
       "Bash(psql:*)",
       "Bash(for:*)",
       "Bash(if:*)",
-      "mcp__plugin_serena_serena__replace_content"
+      "mcp__plugin_serena_serena__replace_content",
+      "Bash(do)",
+      "Bash(then)",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(uvx --help:*)",
+      "Bash(uvx:*)",
+      "mcp__plugin_supabase_supabase__list_projects",
+      "mcp__plugin_supabase_supabase__apply_migration",
+      "mcp__plugin_supabase_supabase__list_migrations"
     ]
   }
 }

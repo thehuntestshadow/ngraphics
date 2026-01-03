@@ -151,6 +151,9 @@ async function init() {
     // Setup upload area
     setupUploadArea();
 
+    // Setup product selector
+    initProductSelector();
+
     // Initial feature/benefit
     addFeature('', false);
     addBenefit('');
@@ -332,6 +335,96 @@ function renderImagePreviews() {
 
 function updateImageCount() {
     elements.imageCount.textContent = `(${state.productImages.length}/${state.maxImages})`;
+}
+
+// ============================================
+// PRODUCT SELECTOR
+// ============================================
+function initProductSelector() {
+    const container = document.getElementById('productSelectorContainer');
+    if (!container || typeof ProductSelector === 'undefined') return;
+
+    new ProductSelector({
+        container,
+        onSelect: loadProductData
+    });
+}
+
+async function loadProductData(product) {
+    // Clear existing images
+    state.productImages = [];
+
+    // Load primary image
+    if (product._primaryImageData) {
+        const id = Date.now() + Math.random().toString(36).substr(2, 9);
+        const thumbnail = await createThumbnail(product._primaryImageData, 150);
+        state.productImages.push({
+            id,
+            base64: product._primaryImageData,
+            thumbnail,
+            file: null
+        });
+    }
+
+    // Load additional images
+    if (product._additionalImageData?.length) {
+        for (const imageData of product._additionalImageData) {
+            if (state.productImages.length >= state.maxImages) break;
+            const id = Date.now() + Math.random().toString(36).substr(2, 9);
+            const thumbnail = await createThumbnail(imageData, 150);
+            state.productImages.push({
+                id,
+                base64: imageData,
+                thumbnail,
+                file: null
+            });
+        }
+    }
+
+    renderImagePreviews();
+    updateImageCount();
+
+    // Set product title and category
+    if (product.name) {
+        elements.productTitle.value = product.name;
+        state.productTitle = product.name;
+    }
+    if (product.category) {
+        elements.productCategory.value = product.category;
+        state.productCategory = product.category;
+    }
+
+    // Clear and set features
+    state.features = [];
+    elements.featuresList.innerHTML = '';
+    if (product.features?.length) {
+        for (const feature of product.features) {
+            if (typeof feature === 'string') {
+                addFeature(feature, false);
+            } else if (feature.text) {
+                addFeature(feature.text, feature.starred || false);
+            }
+        }
+    } else {
+        addFeature('', false);
+    }
+
+    // Clear and set benefits
+    state.benefits = [];
+    elements.benefitsList.innerHTML = '';
+    if (product.benefits?.length) {
+        for (const benefit of product.benefits) {
+            if (typeof benefit === 'string') {
+                addBenefit(benefit);
+            } else if (benefit.text) {
+                addBenefit(benefit.text);
+            }
+        }
+    } else {
+        addBenefit('');
+    }
+
+    SharedUI.toast(`Loaded: ${product.name}`);
 }
 
 // ============================================

@@ -380,6 +380,15 @@ class AccountMenu {
                     </div>
 
                     <div class="account-dropdown-section">
+                        <button class="account-dropdown-item" id="productsBtn">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                <path d="M14 17h7m-3.5-3.5v7"/>
+                            </svg>
+                            <span>Products</span>
+                        </button>
                         <button class="account-dropdown-item" id="syncNowBtn">
                             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="23 4 23 10 17 10"/>
@@ -457,6 +466,12 @@ class AccountMenu {
                     SharedUI.toast('Sync failed', 'error');
                 }
             }
+        });
+
+        // Products - navigate to products page
+        this.container.querySelector('#productsBtn').addEventListener('click', () => {
+            this._closeDropdown();
+            window.location.href = 'products.html';
         });
 
         // Settings - navigate to settings page

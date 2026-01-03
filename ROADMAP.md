@@ -46,16 +46,37 @@ Active development roadmap for HEFAISTOS. For historical changes see [CHANGELOG.
 
 | Task | Progress | Notes |
 |------|----------|-------|
-| Admin panel polish | 80% | Gallery thumbnails, toggles fixed |
-| Real usage analytics | 0% | Replace placeholder charts |
-| Table sorting | 0% | Click-to-sort columns |
+| Admin panel polish | 100% | All quick wins completed |
+| Table UX polish | 100% | Sorting, striping, sticky headers |
+| Real usage analytics | 100% | Generations table + RPC functions |
+| Mobile table cards | 100% | Responsive card view for all tables |
+
+### Recently Completed
+
+- [x] Admin: Real usage analytics (generations table, RPC functions)
+- [x] Admin: Charts use real data (trends, studios, models)
+- [x] Admin: Mobile card view for tables (Users, Subscriptions, Audit)
+- [x] Admin: Items-per-page selector (20/50/100)
+- [x] Admin: Click-to-sort table columns (Users table)
+- [x] Admin: Table row striping for readability
+- [x] Admin: Sticky table headers
+- [x] Admin: Column width optimization
+- [x] Admin: Clear filters button (visible when filters active)
+- [x] Admin: Loading spinners on action buttons
+- [x] Admin: Animated stat card numbers (count-up on load)
+- [x] Admin: Last updated timestamps per section
+- [x] Admin: Keyboard shortcut hints in modals
+- [x] Admin: Title tooltips for truncated text
+- [x] Admin: Pagination info ("Showing 1-20 of 150")
+- [x] Admin: Refresh button per section
+- [x] Admin: Copy email button
+- [x] Admin: Bulk user actions (select all, set tier, add credits)
 
 ### Up Next
 
-1. Admin: Pagination info ("Showing 1-20 of 150")
-2. Admin: Refresh button per section
-3. Admin: Copy email button
-4. Admin: Bulk user actions
+1. E2E tests for critical flows
+2. Skeleton loading states
+3. Additional admin panel polish (as needed)
 
 ### Blockers
 
@@ -126,7 +147,6 @@ None currently.
 | Hardcoded tier prices | admin.js:434 | Flexibility | Easy |
 | No error retry UI | API failures | UX | Medium |
 | Browser confirm() | Delete actions | UX | Easy |
-| Placeholder usage data | admin.js charts | Accuracy | Medium |
 | Missing ARIA labels | Icon buttons | Accessibility | Easy |
 
 ---

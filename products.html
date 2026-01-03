@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - HEFAISTOS</title>
+    <script>if(localStorage.getItem('ngraphics_theme')==='light')document.documentElement.setAttribute('data-theme','light')</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="products.css">
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+    <script src="auth-ui.js"></script>
+</head>
+<body>
+    <!-- Noise overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Gradient orbs for atmosphere -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <a href="index.html" class="logo-link">
+                    <span class="logo-title">HEFAISTOS</span>
+                </a>
+            </div>
+            <div class="page-title-center">
+                <span class="page-title-text">Products</span>
+            </div>
+            <div class="header-controls">
+                <a href="dashboard.html" class="dashboard-link" title="Dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <div id="accountContainer"></div>
+                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="products-page">
+        <!-- Not Logged In State -->
+        <div class="products-not-logged-in" id="notLoggedIn" style="display: none;">
+            <div class="not-logged-in-content">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <line x1="12" y1="8" x2="12" y2="16"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+                <h2>Sign in to manage products</h2>
+                <p>Create a product library to auto-fill studios with your product information.</p>
+                <button class="btn-primary" id="signInBtn">Sign In</button>
+            </div>
+        </div>
+
+        <!-- Main Products Layout -->
+        <div class="products-layout" id="productsLayout">
+            <!-- Sidebar -->
+            <aside class="products-sidebar">
+                <div class="sidebar-section">
+                    <button class="btn-primary add-product-btn" id="addProductBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Add Product
+                    </button>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Categories</h3>
+                    <nav class="category-nav" id="categoryNav">
+                        <!-- Dynamically populated by JavaScript -->
+                        <div class="categories-loading">
+                            <div class="loading-spinner small"></div>
+                        </div>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <div class="products-content">
+                <!-- Toolbar -->
+                <div class="products-toolbar">
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="Search products...">
+                    </div>
+                    <div class="sort-wrapper">
+                        <select id="sortSelect">
+                            <option value="recent">Recently Used</option>
+                            <option value="created">Date Added</option>
+                            <option value="name">Name A-Z</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="products-grid" id="productsGrid">
+                    <!-- Products populated by JS -->
+                </div>
+
+                <!-- Empty State -->
+                <div class="products-empty" id="emptyState" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <line x1="12" y1="8" x2="12" y2="16"/>
+                        <line x1="8" y1="12" x2="16" y2="12"/>
+                    </svg>
+                    <h3>No products yet</h3>
+                    <p>Add your first product to get started. Products can be loaded into any studio.</p>
+                    <button class="btn-primary" id="emptyAddBtn">Add Product</button>
+                </div>
+
+                <!-- Loading State -->
+                <div class="products-loading" id="loadingState" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>Loading products...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Product Modal -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal-content product-modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Product</h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Left Column: Images -->
+                <div class="modal-images-column">
+                    <div class="product-images-section">
+                        <div class="primary-image-upload" id="primaryImageUpload">
+                            <div class="upload-placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <polyline points="21 15 16 10 5 21"/>
+                                </svg>
+                                <span>Primary Image</span>
+                                <span class="upload-hint">Click or drag</span>
+                            </div>
+                            <img class="upload-preview" id="primaryPreview" style="display: none;">
+                            <button class="remove-image-btn" id="removePrimary" style="display: none;">&times;</button>
+                            <input type="file" id="primaryInput" accept="image/*" hidden>
+                        </div>
+                        <div class="additional-images-grid">
+                            <div class="additional-image-upload" id="additionalUpload1">
+                                <div class="upload-placeholder small">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                </div>
+                                <img class="upload-preview" id="additionalPreview1" style="display: none;">
+                                <button class="remove-image-btn" id="removeAdditional1" style="display: none;">&times;</button>
+                                <input type="file" id="additionalInput1" accept="image/*" hidden>
+                            </div>
+                            <div class="additional-image-upload" id="additionalUpload2">
+                                <div class="upload-placeholder small">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                </div>
+                                <img class="upload-preview" id="additionalPreview2" style="display: none;">
+                                <button class="remove-image-btn" id="removeAdditional2" style="display: none;">&times;</button>
+                                <input type="file" id="additionalInput2" accept="image/*" hidden>
+                            </div>
+                            <div class="additional-image-upload" id="additionalUpload3">
+                                <div class="upload-placeholder small">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                </div>
+                                <img class="upload-preview" id="additionalPreview3" style="display: none;">
+                                <button class="remove-image-btn" id="removeAdditional3" style="display: none;">&times;</button>
+                                <input type="file" id="additionalInput3" accept="image/*" hidden>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Analyze Button -->
+                    <button class="btn-secondary analyze-btn" id="analyzeBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                        <span>Auto-Analyze</span>
+                        <span class="btn-loading-text">Analyzing...</span>
+                    </button>
+                </div>
+
+                <!-- Right Column: Form -->
+                <div class="modal-form-column">
+                    <form id="productForm" class="product-form">
+                        <div class="form-group">
+                            <label for="productName">Product Name *</label>
+                            <input type="text" id="productName" required placeholder="e.g., Wireless Bluetooth Headphones">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="productCategory">Category *</label>
+                                <select id="productCategory" required>
+                                    <!-- Dynamically populated by JavaScript -->
+                                    <option value="">Loading categories...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="productSku">SKU</label>
+                                <input type="text" id="productSku" placeholder="e.g., WBH-001">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="productDescription">Description</label>
+                            <textarea id="productDescription" rows="2" placeholder="Brief product description..."></textarea>
+                        </div>
+
+                        <!-- Features Section (Collapsible) -->
+                        <div class="collapsible-section" id="featuresSection">
+                            <div class="collapsible-header" id="featuresHeader">
+                                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                                <span class="section-title">Features</span>
+                                <span class="section-count" id="featuresCount">0</span>
+                            </div>
+                            <div class="collapsible-content" id="featuresContent">
+                                <div class="features-list" id="featuresList"></div>
+                                <button type="button" class="btn-add-item" id="addFeatureBtn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    Add Feature
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Benefits Section (Collapsible) -->
+                        <div class="collapsible-section" id="benefitsSection">
+                            <div class="collapsible-header" id="benefitsHeader">
+                                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                                <span class="section-title">Benefits</span>
+                                <span class="section-count" id="benefitsCount">0</span>
+                            </div>
+                            <div class="collapsible-content" id="benefitsContent">
+                                <div class="benefits-list" id="benefitsList"></div>
+                                <button type="button" class="btn-add-item" id="addBenefitBtn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    Add Benefit
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="form-group">
+                            <label for="productTags">Tags <span class="label-hint">(comma-separated)</span></label>
+                            <input type="text" id="productTags" placeholder="e.g., wireless, premium, bestseller">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelBtn">Cancel</button>
+                <button class="btn-primary" id="saveProductBtn">
+                    <span>Save Product</span>
+                    <span class="btn-loading-text">Saving...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-content delete-modal">
+            <div class="modal-header">
+                <h2>Delete Product</h2>
+                <button class="modal-close" id="deleteModalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="deleteProductName"></strong>?</p>
+                <p class="delete-warning">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="deleteCancelBtn">Cancel</button>
+                <button class="btn-danger" id="deleteConfirmBtn">
+                    <span>Delete</span>
+                    <span class="btn-loading-text">Deleting...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div class="modal-overlay" id="categoryModal">
+        <div class="modal-content category-modal">
+            <div class="modal-header">
+                <h2>Add Category</h2>
+                <button class="modal-close" id="categoryModalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="categoryNameInput">Category Name</label>
+                    <input type="text" id="categoryNameInput" placeholder="e.g., Handmade Crafts" maxlength="50">
+                    <p class="form-hint">Create a custom category for your products</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelCategoryBtn">Cancel</button>
+                <button class="btn-primary" id="saveCategoryBtn">
+                    <span>Create Category</span>
+                    <span class="btn-loading-text">Creating...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <span>HEFAISTOS</span>
+            <span class="footer-divider">&bullet;</span>
+            <span>Powered by OpenRouter AI</span>
+        </div>
+    </footer>
+
+    <script src="i18n.js"></script>
+    <script src="shared.js"></script>
+    <script src="api.js"></script>
+    <script src="products.js"></script>
+</body>
+</html>

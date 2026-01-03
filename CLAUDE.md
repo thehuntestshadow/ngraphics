@@ -140,6 +140,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 | Model Video | `model-video.html`, `model-video.js`, `model-video.css` | Animate model photos with motion and camera effects |
 | Dashboard | `dashboard.html`, `dashboard.js`, `dashboard.css` | Analytics, storage management, quick access to recent work |
 | Settings | `settings.html`, `settings.js`, `settings.css` | User settings: profile, billing, API keys, appearance, language, data |
+| Products | `products.html`, `products.js`, `products.css` | Saved product profiles with images, features, benefits for studio autofill |
 | Admin | `admin.html`, `admin.js`, `admin.css` | User management, analytics, system administration (admin only) |
 | Documentation | `docs.html`, `docs.css` | User documentation |
 
@@ -158,6 +159,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `supabase-storage.js` - Supabase-first storage with IndexedDB caching (source of truth for history/favorites)
 - `offline-queue.js` - Offline write queue (IndexedDB queue for operations when offline)
 - `studio-bootstrap.js` - Shared studio initialization (auth gating, storage setup, keyboard shortcuts)
+- `product-selector.js` - Reusable dropdown component for loading saved products into studios
 - `cloud-sync.js` - DEPRECATED: Legacy sync manager, replaced by SupabaseStorage
 - `onboarding.js` - First-time user guidance tour (landing and studio tours)
 
@@ -865,6 +867,43 @@ Central hub for analytics, storage management, and quick access.
 - Quick access grid with recent thumbnails
 - Storage management: per-studio usage, Export All, Clear Old Items
 - Activity table with filtering by studio
+
+---
+
+## Products (`products.html` + `products.js`)
+
+Centralized product profile management for auto-filling studio fields.
+
+### Features
+- Save product profiles with images (primary + 3 additional), descriptions, features, benefits
+- Category-based organization with sidebar filters
+- AI-powered image analysis to auto-extract product details
+- Product selector dropdown in studios for quick loading
+- Search products by name, description, or category
+
+### Database Schema
+```sql
+products (
+    id UUID, user_id UUID, name TEXT, sku TEXT, category TEXT,
+    description TEXT, features JSONB, benefits JSONB,
+    primary_image_path TEXT, image_paths JSONB, thumbnail_path TEXT,
+    tags JSONB, is_archived BOOLEAN, created_at, updated_at, last_used_at
+)
+```
+
+### Product Selector Component
+Reusable dropdown (`product-selector.js`) integrated into:
+- Copywriter (images, title, category, features, benefits)
+- Models (images)
+- Lifestyle (images)
+- Bundle (adds product to first empty slot)
+- Infographics (images, features, benefits)
+
+### Key Functions
+- `ngSupabase.getProducts()` - List products with filters
+- `ngSupabase.createProduct()` - Create with image upload
+- `ngSupabase.updateProduct()` - Update fields/images
+- `ngSupabase.searchProducts()` - Search by name/description
 
 ---
 

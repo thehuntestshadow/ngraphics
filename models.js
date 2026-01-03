@@ -2376,6 +2376,98 @@ function updateCostEstimator() {
 }
 
 // ============================================
+// PRODUCT SELECTOR
+// ============================================
+function initProductSelector() {
+    const container = document.getElementById('productSelectorContainer');
+    if (!container || typeof ProductSelector === 'undefined') return;
+
+    new ProductSelector({
+        container: container,
+        onSelect: loadProductData
+    });
+}
+
+/**
+ * Load product data from saved product into studio
+ */
+async function loadProductData(product) {
+    // Clear existing images
+    clearAllImages();
+
+    // Load primary image
+    if (product._primaryImageData) {
+        await handleSlotUpload(0, product._primaryImageData);
+    }
+
+    // Load additional images
+    if (product._additionalImageData?.length) {
+        for (let i = 0; i < Math.min(product._additionalImageData.length, 3); i++) {
+            await handleSlotUpload(i + 1, product._additionalImageData[i]);
+        }
+    }
+
+    // Set product description if available
+    if (product.description && elements.productDescription) {
+        elements.productDescription.value = product.description;
+        state.productDescription = product.description;
+    }
+
+    // Map category to product type if possible
+    const categoryToType = {
+        'clothing': 'clothing',
+        'jewelry': 'jewelry',
+        'electronics': 'handheld',
+        'beauty': 'handheld',
+        'home': 'handheld',
+        'sports': 'handheld',
+        'toys': 'handheld',
+        'health': 'handheld',
+        'food': 'handheld',
+        'office': 'handheld',
+        'pet': 'handheld',
+        'automotive': 'handheld'
+    };
+
+    if (product.category && categoryToType[product.category]) {
+        const productType = categoryToType[product.category];
+        state.productType = productType;
+
+        // Update UI button
+        const typeButtons = document.querySelectorAll('[data-product-type]');
+        typeButtons.forEach(btn => {
+            btn.classList.toggle('selected', btn.dataset.productType === productType);
+        });
+    }
+
+    // Show success message
+    if (typeof SharedUI !== 'undefined') {
+        SharedUI.toast(`Loaded: ${product.name}`, 'success');
+    }
+}
+
+/**
+ * Clear all product images
+ */
+function clearAllImages() {
+    state.productImages = [null, null, null, null];
+    state.uploadedImageBase64 = null;
+
+    const slots = document.querySelectorAll('.product-upload-slot');
+    slots.forEach((slot, index) => {
+        const empty = slot.querySelector('.slot-empty');
+        const filled = slot.querySelector('.slot-filled');
+        const img = slot.querySelector('.slot-image');
+
+        if (empty) empty.style.display = 'flex';
+        if (filled) filled.style.display = 'none';
+        if (img) img.src = '';
+    });
+
+    updateProductBadges();
+}
+
+// ============================================
 // INITIALIZATION
 // ============================================
 let initialized = false;
@@ -2418,6 +2510,9 @@ async function init() {
     // Initialize preset selector and cost estimator
     initPresetSelector();
     initCostEstimator();
+
+    // Initialize product selector
+    initProductSelector();
 
     // Initialize onboarding tour for first-time visitors
     if (typeof OnboardingTour !== 'undefined') {

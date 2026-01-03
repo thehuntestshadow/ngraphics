@@ -14,7 +14,7 @@ The settings page (`settings.html`) provides a dedicated space for users to mana
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Header: HEFAISTOS | Settings | [Dashboard] [Theme]             │
+│  Header: HEFAISTOS | Settings | [Dashboard] [Account] [Theme]   │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────────────────────────────────┐   │
 │  │ Sidebar Nav │  │  Content Area                           │   │
@@ -33,26 +33,29 @@ The settings page (`settings.html`) provides a dedicated space for users to mana
 ## Sections
 
 ### 1. Profile
-- **Display Name**: Editable text field with loading state on save
-- **Email**: Read-only (from auth provider)
-- **Save Changes**: Updates profile via Supabase
+- **Display Name**: Editable text field
+- **Email**: Read-only (from Supabase auth)
+- **Save Profile**: Updates profile via `ngSupabase.updateProfile()`
 
 ### 2. Usage & Billing
-- **Plan Badge**: Shows current subscription tier (Free/Pro)
-- **Reset Date**: Shows "Resets in X days" countdown
-- **Generation Usage**: Progress bar with used/limit (warning at 70%, danger at 90%)
-- **Credits Balance**: If applicable
-- **Upgrade Button**: Links to pricing.html (free users)
+- **Plan Badge**: Shows current tier (FREE/PRO)
+- **Reset Date**: "Resets in X days" countdown
+- **Monthly Generations**: Progress bar with used/limit
+  - Warning state at 70%
+  - Danger state at 90%
+- **Credits Balance**: Shown if credits > 0
+- **Upgrade to Pro**: Link to pricing.html (free users)
 - **Manage Subscription**: Opens Stripe billing portal (pro users)
 
 ### 3. API Keys
 - **Luma AI Key**: For video generation in Model Video studio
-- **Show/Hide Toggle**: Password visibility toggle
-- **Test Connection**: Validates API key with Luma API (with loading spinner)
-- **Save Keys**: Stores in localStorage
+  - Password input with show/hide toggle
+  - Test button to validate key against Luma API
+  - Stored in localStorage
+- **Save API Key**: Persists to localStorage
 
 ### 4. Appearance
-- **Theme Toggle**: Three options:
+- **Theme Toggle**: Three-button toggle:
   - **Dark**: Force dark mode
   - **Light**: Force light mode
   - **System**: Follow OS preference (auto-updates on system change)
@@ -62,36 +65,39 @@ The settings page (`settings.html`) provides a dedicated space for users to mana
 - **Generation Language**: Dropdown for AI-generated content language
 - Languages displayed as: "Native (English)" e.g., "Deutsch (German)"
 - Supported: EN, RO, DE, FR, ES, IT, PT, NL, PL, CS
+- Interface change requires page refresh
 
-### 6. Data & Storage
+### 6. Data & Sync
 - **Cloud Sync Toggle**: Enable/disable automatic sync
-- **Last Sync**: Timestamp of last successful sync
-- **Sync Now**: Manual sync trigger with loading spinner
+- **Sync Status**: Shows last sync timestamp or "Never synced"
+- **Sync Now**: Manual sync trigger with loading state
 
 ### 7. Danger Zone
-- **Clear All History**: Removes generation history from all studios
-- **Clear All Favorites**: Removes saved favorites from all studios
+- **Clear All History**: Removes history from all 19 studios
+- **Clear All Favorites**: Removes favorites from all studios
 - **Delete Account**: Permanently deletes account and all data
-- All actions require confirmation dialogs (double confirmation for delete)
+- All actions use custom confirm dialogs (double confirmation for delete)
 
 ## URL Navigation
 
-The page supports hash-based navigation for direct linking to sections:
+Hash-based navigation for direct linking:
 
-- `/settings.html` - Default (Profile)
-- `/settings.html#profile` - Profile section
-- `/settings.html#billing` - Usage & Billing
-- `/settings.html#api-keys` - API Keys
-- `/settings.html#appearance` - Appearance
-- `/settings.html#language` - Language
-- `/settings.html#data` - Data & Storage
-- `/settings.html#danger` - Danger Zone
+| URL | Section |
+|-----|---------|
+| `/settings.html` | Profile (default) |
+| `/settings.html#profile` | Profile |
+| `/settings.html#billing` | Usage & Billing |
+| `/settings.html#api-keys` | API Keys |
+| `/settings.html#appearance` | Appearance |
+| `/settings.html#language` | Language |
+| `/settings.html#data` | Data & Sync |
+| `/settings.html#danger` | Danger Zone |
 
 ## Access Control
 
-- **No Auth Gate**: The page handles its own auth state
-- **Not Logged In**: Shows a login prompt instead of settings
-- **Logged In**: Shows full settings interface
+- **No Auth Gate**: Page handles its own auth state via `ngSupabase`
+- **Not Logged In**: Shows login prompt with Sign In / Create Account buttons
+- **Logged In**: Shows full settings interface with sidebar navigation
 
 ## Storage Keys
 
@@ -104,62 +110,80 @@ The page supports hash-based navigation for direct linking to sections:
 | `cloud_sync_enabled` | Cloud sync toggle state |
 | `last_sync_time` | Timestamp of last sync |
 | `theme` | Current theme (dark/light/system) |
+| `ngraphics_theme` | Theme for initial flash prevention |
 
 ## Dependencies
 
-- `config.js` - API URLs
-- `supabase.js` - Auth and profile management
-- `auth-ui.js` - AccountMenu, AuthUI classes
-- `i18n.js` - Language settings
-- `shared.js` - SharedTheme, SharedUI utilities
-- `cloud-sync.js` - Optional, for sync functionality
+| File | Purpose |
+|------|---------|
+| `config.js` | API URLs (SUPABASE_URL) |
+| `supabase.js` | Auth, profile management, usage data |
+| `auth-ui.js` | AccountMenu component |
+| `i18n.js` | LANGUAGES array, language settings |
+| `shared.js` | SharedTheme, SharedUI utilities |
+
+Optional (checked with typeof):
+- `cloudSync` - For sync functionality
+- `ImageStore` - For clearing IndexedDB history
+
+## Studios List
+
+The danger zone actions affect these 19 studios:
+
+```javascript
+const STUDIOS = [
+    'ngraphics', 'model_studio', 'bundle_studio', 'lifestyle_studio',
+    'copywriter', 'packaging', 'comparison_generator', 'size_visualizer',
+    'faq_generator', 'background_studio', 'badge_generator', 'feature_cards',
+    'size_chart', 'aplus_generator', 'product_variants', 'social_studio',
+    'export_center', 'ad_creative', 'model_video'
+];
+```
 
 ## Mobile Responsiveness
 
-At 768px and below:
-- Sidebar becomes horizontal tabs with icons only
+**At 768px and below:**
+- Sidebar becomes horizontal scrollable tabs
+- Icons only (text hidden)
 - Sections stack vertically
 - Full-width buttons
-- Touch-friendly toggle switches
 
-At 480px and below:
+**At 480px and below:**
 - Reduced padding
 - Smaller font sizes
-- Stacked buttons
+- Stacked form elements
 
 ## Keyboard Shortcuts
 
-- **Escape**: Navigate back to dashboard
+| Key | Action |
+|-----|--------|
+| Escape | Navigate to dashboard |
 
-## UI Components
+## CSS Architecture
+
+### Section Display
+Sections use class-based visibility:
+- `.settings-section` - Hidden by default (`display: none`)
+- `.settings-section.active` - Visible (`display: block`)
+
+**Important**: `settings.css` uses `.settings-page .settings-content` selector to override the global `.settings-content { display: none }` rule from `styles.css` (which is used for collapsible dropdowns on studio pages).
 
 ### Loading States
-Buttons use the `.btn-loading` class during async operations:
-- Shows a spinning indicator
-- Disables pointer events
-- Reduces opacity
-
-```css
-.btn-loading {
-    position: relative;
-    pointer-events: none;
-    opacity: 0.7;
-}
-```
-
-Helper function:
+Buttons use `.btn-loading` class during async operations:
 ```javascript
 setButtonLoading(button, isLoading, originalText)
 ```
 
-### Section Display
-Sections use CSS class-based visibility instead of inline styles:
-- `.settings-section` - Hidden by default (`display: none`)
-- `.settings-section.active` - Visible (`display: block`)
-
 ### Theme System
-The System theme option follows OS preference:
+System theme follows OS preference with real-time listener:
 ```javascript
-window.matchMedia('(prefers-color-scheme: dark)').matches
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ...)
 ```
-Listens for real-time changes when System theme is active.
+
+## Known Issues
+
+None currently.
+
+---
+
+*Updated: January 2026*

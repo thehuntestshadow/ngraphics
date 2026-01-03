@@ -4950,6 +4950,60 @@ function showRating(generationId, model, style) {
 }
 
 // ============================================
+// PRODUCT SELECTOR
+// ============================================
+function initProductSelector() {
+    const container = document.getElementById('productSelectorContainer');
+    if (!container || typeof ProductSelector === 'undefined') return;
+
+    new ProductSelector({
+        container,
+        onSelect: loadProductData
+    });
+}
+
+async function loadProductData(product) {
+    // Load primary image
+    if (product._primaryImageData) {
+        state.uploadedImageBase64 = product._primaryImageData;
+        elements.previewImg.src = product._primaryImageData;
+        elements.imagePreview.classList.add('visible');
+        elements.uploadArea.style.display = 'none';
+    }
+
+    // Clear and set characteristics (features)
+    elements.characteristicsList.innerHTML = '';
+    if (product.features?.length) {
+        for (const feature of product.features) {
+            if (typeof feature === 'string') {
+                addCharacteristic(feature, false);
+            } else if (feature.text) {
+                addCharacteristic(feature.text, feature.starred || false);
+            }
+        }
+    }
+
+    // Clear and set benefits
+    elements.benefitsList.innerHTML = '';
+    if (product.benefits?.length) {
+        for (const benefit of product.benefits) {
+            if (typeof benefit === 'string') {
+                addBenefit(benefit);
+            } else if (benefit.text) {
+                addBenefit(benefit.text);
+            }
+        }
+    }
+
+    // Set product name if there's a title field
+    if (product.name && elements.productName) {
+        elements.productName.value = product.name;
+    }
+
+    SharedUI.toast(`Loaded: ${product.name}`);
+}
+
+// ============================================
 // INITIALIZATION
 // ============================================
 let initialized = false;
@@ -4976,6 +5030,9 @@ async function init() {
     setupCharacteristicsHandlers();
     setupBenefitsHandlers();
     setupEventListeners();
+
+    // Setup product selector
+    initProductSelector();
 
     // Setup keyboard shortcuts
     SharedKeyboard.setup({

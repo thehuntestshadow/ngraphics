@@ -787,6 +787,439 @@ class SupabaseClient {
         return publicUrl;
     }
 
+    // ==================== Products Methods ====================
+
+    /**
+     * Get all products for current user
+     * @param {Object} options - { category?, archived?, limit?, offset? }
+     * @returns {Promise<Array>} Products array
+     */
+    async getProducts(options = {}) {
+        if (!this.isAuthenticated) return [];
+        await this.init();
+
+        let query = this._client
+            .from('products')
+            .select('*')
+            .eq('user_id', this._user.id)
+            .order('last_used_at', { ascending: false, nullsFirst: false })
+            .order('created_at', { ascending: false });
+
+        if (options.archived !== undefined) {
+            query = query.eq('is_archived', options.archived);
+        } else {
+            query = query.eq('is_archived', false);
+        }
+
+        if (options.category) {
+            query = query.eq('category', options.category);
+        }
+
+        if (options.limit) {
+            query = query.limit(options.limit);
+        }
+
+        if (options.offset) {
+            query = query.range(options.offset, options.offset + (options.limit || 50) - 1);
+        }
+
+        const { data, error } = await query;
+        if (error) {
+            console.error('[Supabase] getProducts error:', error);
+            return [];
+        }
+        return data || [];
+    }
+
+    /**
+     * Get single product by ID
+     * @param {string} productId - Product UUID
+     * @returns {Promise<Object|null>}
+     */
+    async getProduct(productId) {
+        if (!this.isAuthenticated) return null;
+        await this.init();
+
+        const { data, error } = await this._client
+            .from('products')
+            .select('*')
+            .eq('id', productId)
+            .eq('user_id', this._user.id)
+            .single();
+
+        if (error) {
+            console.error('[Supabase] getProduct error:', error);
+            return null;
+        }
+        return data;
+    }
+
+    /**
+     * Create new product
+     * @param {Object} product - Product data
+     * @param {Object} imageData - { primaryImage, additionalImages[], thumbnail }
+     * @returns {Promise<Object>} Created product
+     */
+    async createProduct(product, imageData = {}) {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        const productId = crypto.randomUUID();
+        const imagePaths = await this._uploadProductImages(productId, imageData);
+
+        const { data, error } = await this._client
+            .from('products')
+            .insert({
+                id: productId,
+                user_id: this._user.id,
+                name: product.name,
+                sku: product.sku || null,
+                category: product.category,
+                description: product.description || '',
+                features: product.features || [],
+                benefits: product.benefits || [],
+                tags: product.tags || [],
+                primary_image_path: imagePaths.primary || null,
+                image_paths: imagePaths.additional || [],
+                thumbnail_path: imagePaths.thumbnail || null
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    }
+
+    /**
+     * Update existing product
+     * @param {string} productId - Product UUID
+     * @param {Object} updates - Fields to update
+     * @param {Object} newImageData - Optional new images
+     * @returns {Promise<Object>} Updated product
+     */
+    async updateProduct(productId, updates, newImageData = null) {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        const updateData = { ...updates };
+
+        if (newImageData) {
+            const imagePaths = await this._uploadProductImages(productId, newImageData);
+            if (imagePaths.primary) updateData.primary_image_path = imagePaths.primary;
+            if (imagePaths.additional?.length) updateData.image_paths = imagePaths.additional;
+            if (imagePaths.thumbnail) updateData.thumbnail_path = imagePaths.thumbnail;
+        }
+
+        const { data, error } = await this._client
+            .from('products')
+            .update(updateData)
+            .eq('id', productId)
+            .eq('user_id', this._user.id)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    }
+
+    /**
+     * Delete product and associated images
+     * @param {string} productId - Product UUID
+     */
+    async deleteProduct(productId) {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        const product = await this.getProduct(productId);
+        if (product) {
+            const paths = [
+                product.primary_image_path,
+                product.thumbnail_path,
+                ...(product.image_paths || [])
+            ].filter(Boolean);
+
+            for (const path of paths) {
+                try {
+                    await this.storage().remove([path]);
+                } catch (e) {
+                    console.warn('[Supabase] Failed to delete product image:', path);
+                }
+            }
+        }
+
+        const { error } = await this._client
+            .from('products')
+            .delete()
+            .eq('id', productId)
+            .eq('user_id', this._user.id);
+
+        if (error) throw error;
+    }
+
+    /**
+     * Mark product as recently used (updates last_used_at)
+     * @param {string} productId - Product UUID
+     */
+    async touchProduct(productId) {
+        if (!this.isAuthenticated) return;
+        await this.init();
+
+        await this._client
+            .from('products')
+            .update({ last_used_at: new Date().toISOString() })
+            .eq('id', productId)
+            .eq('user_id', this._user.id);
+    }
+
+    /**
+     * Search products by name or description
+     * @param {string} query - Search query
+     * @returns {Promise<Array>}
+     */
+    async searchProducts(query) {
+        if (!this.isAuthenticated) return [];
+        await this.init();
+
+        const { data, error } = await this._client
+            .from('products')
+            .select('*')
+            .eq('user_id', this._user.id)
+            .eq('is_archived', false)
+            .or(`name.ilike.%${query}%,description.ilike.%${query}%`)
+            .order('last_used_at', { ascending: false, nullsFirst: false })
+            .limit(20);
+
+        if (error) return [];
+        return data || [];
+    }
+
+    /**
+     * Get product image public URL
+     * @param {string} path - Storage path
+     * @returns {string|null}
+     */
+    getProductImageUrl(path) {
+        if (!path) return null;
+        const { data } = this.storage().getPublicUrl(path);
+        return data?.publicUrl || null;
+    }
+
+    /**
+     * Upload product images to storage
+     * @private
+     */
+    async _uploadProductImages(productId, imageData) {
+        const basePath = `${this._user.id}/products/${productId}`;
+        const paths = { additional: [] };
+        const storage = this.storage();
+
+        // Upload primary image
+        if (imageData.primaryImage) {
+            try {
+                const blob = await this._dataUrlToBlob(imageData.primaryImage);
+                const ext = this._getImageExtension(blob.type);
+                const path = `${basePath}/primary.${ext}`;
+                const { error } = await storage.upload(path, blob, {
+                    contentType: blob.type,
+                    upsert: true
+                });
+                if (!error) paths.primary = path;
+            } catch (e) {
+                console.warn('[Supabase] Failed to upload primary image:', e.message);
+            }
+        }
+
+        // Upload thumbnail
+        if (imageData.thumbnail) {
+            try {
+                const blob = await this._dataUrlToBlob(imageData.thumbnail);
+                const ext = this._getImageExtension(blob.type);
+                const path = `${basePath}/thumb.${ext}`;
+                const { error } = await storage.upload(path, blob, {
+                    contentType: blob.type,
+                    upsert: true
+                });
+                if (!error) paths.thumbnail = path;
+            } catch (e) {
+                console.warn('[Supabase] Failed to upload thumbnail:', e.message);
+            }
+        }
+
+        // Upload additional images
+        if (imageData.additionalImages?.length) {
+            for (let i = 0; i < imageData.additionalImages.length; i++) {
+                try {
+                    const blob = await this._dataUrlToBlob(imageData.additionalImages[i]);
+                    const ext = this._getImageExtension(blob.type);
+                    const path = `${basePath}/image_${i + 1}.${ext}`;
+                    const { error } = await storage.upload(path, blob, {
+                        contentType: blob.type,
+                        upsert: true
+                    });
+                    if (!error) paths.additional.push(path);
+                } catch (e) {
+                    console.warn(`[Supabase] Failed to upload additional image ${i}:`, e.message);
+                }
+            }
+        }
+
+        return paths;
+    }
+
+    async _dataUrlToBlob(dataUrl) {
+        const response = await fetch(dataUrl);
+        return response.blob();
+    }
+
+    _getImageExtension(mimeType) {
+        const map = {
+            'image/png': 'png',
+            'image/jpeg': 'jpg',
+            'image/webp': 'webp',
+            'image/gif': 'gif'
+        };
+        return map[mimeType] || 'png';
+    }
+
+    // ==================== User Categories Methods ====================
+
+    /**
+     * Get all categories for current user
+     * @returns {Promise<Array>} Categories array sorted by display_order
+     */
+    async getCategories() {
+        if (!this.isAuthenticated) return [];
+        await this.init();
+
+        const { data, error } = await this._client
+            .from('user_categories')
+            .select('*')
+            .eq('user_id', this._user.id)
+            .order('display_order', { ascending: true });
+
+        if (error) {
+            console.error('[Supabase] getCategories error:', error);
+            return [];
+        }
+        return data || [];
+    }
+
+    /**
+     * Create a new category
+     * @param {Object} category - { name, icon?, color? }
+     * @returns {Promise<Object>} Created category
+     */
+    async createCategory(category) {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        // Generate slug from name
+        const slug = category.name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '');
+
+        // Get max display_order
+        const { data: existing } = await this._client
+            .from('user_categories')
+            .select('display_order')
+            .eq('user_id', this._user.id)
+            .order('display_order', { ascending: false })
+            .limit(1);
+
+        const maxOrder = existing?.[0]?.display_order || 0;
+
+        const { data, error } = await this._client
+            .from('user_categories')
+            .insert({
+                user_id: this._user.id,
+                name: category.name.trim(),
+                slug,
+                icon: category.icon || null,
+                color: category.color || null,
+                display_order: maxOrder + 1
+            })
+            .select()
+            .single();
+
+        if (error) {
+            if (error.code === '23505') {
+                throw new Error('Category already exists');
+            }
+            throw error;
+        }
+        return data;
+    }
+
+    /**
+     * Update an existing category
+     * @param {string} categoryId - Category UUID
+     * @param {Object} updates - { name?, icon?, color?, display_order? }
+     * @returns {Promise<Object>} Updated category
+     */
+    async updateCategory(categoryId, updates) {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        const updateData = { ...updates };
+
+        // Regenerate slug if name changed
+        if (updates.name) {
+            updateData.slug = updates.name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+        }
+
+        const { data, error } = await this._client
+            .from('user_categories')
+            .update(updateData)
+            .eq('id', categoryId)
+            .eq('user_id', this._user.id)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    }
+
+    /**
+     * Delete a category
+     * @param {string} categoryId - Category UUID
+     */
+    async deleteCategory(categoryId) {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        const { error } = await this._client
+            .from('user_categories')
+            .delete()
+            .eq('id', categoryId)
+            .eq('user_id', this._user.id);
+
+        if (error) throw error;
+    }
+
+    /**
+     * Get category by slug
+     * @param {string} slug - Category slug
+     * @returns {Promise<Object|null>}
+     */
+    async getCategoryBySlug(slug) {
+        if (!this.isAuthenticated) return null;
+        await this.init();
+
+        const { data, error } = await this._client
+            .from('user_categories')
+            .select('*')
+            .eq('user_id', this._user.id)
+            .eq('slug', slug)
+            .single();
+
+        if (error) return null;
+        return data;
+    }
+
     // ==================== Database Helpers ====================
 
     /**

@@ -178,12 +178,11 @@ serve(async (req) => {
     monthStart.setHours(0, 0, 0, 0)
     const monthStr = monthStart.toISOString().split('T')[0]
 
-    // Insert usage record
-    supabase.from('usage').insert({
-      user_id: user.id,
-      studio: studio || 'unknown',
-      model: openrouterPayload.model || 'unknown',
-      tokens_used: result.usage?.total_tokens || 0
+    // Log generation for analytics
+    supabase.rpc('log_generation', {
+      p_user_id: user.id,
+      p_studio: studio || 'unknown',
+      p_model: openrouterPayload.model || null
     }).then(() => {})
 
     // Increment monthly counter

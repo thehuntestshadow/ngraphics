@@ -1372,6 +1372,31 @@ function setupEventListeners() {
 }
 
 // ============================================
+// PRODUCT SELECTOR
+// ============================================
+function initProductSelector() {
+    const container = document.getElementById('productSelectorContainer');
+    if (!container || typeof ProductSelector === 'undefined') return;
+
+    new ProductSelector({
+        container,
+        onSelect: loadProductData
+    });
+}
+
+async function loadProductData(product) {
+    // Load primary image
+    if (product._primaryImageData) {
+        state.uploadedImageBase64 = product._primaryImageData;
+        elements.previewImg.src = product._primaryImageData;
+        elements.imagePreview.style.display = 'block';
+        elements.uploadArea.style.display = 'none';
+
+        SharedUI.toast(`Loaded: ${product.name}`);
+    }
+}
+
+// ============================================
 // INITIALIZATION
 // ============================================
 
@@ -1403,6 +1428,9 @@ async function init() {
 
     // Setup event listeners
     setupEventListeners();
+
+    // Setup product selector
+    initProductSelector();
 
     // Load and render persisted data
     state.history = history.getAll();
