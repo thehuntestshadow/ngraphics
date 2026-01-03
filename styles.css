@@ -4756,6 +4756,16 @@ button:disabled,
 }
 /* .footer-shortcut kbd inherits from base kbd styles */
 
+.footer-legal {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-legal:hover {
+    color: var(--text-primary);
+}
+
 /* ============================================
    PRODUCT COPY SECTION
    ============================================ */
@@ -6132,6 +6142,38 @@ textarea:focus-visible {
 .toast-close:hover {
     background: var(--bg-hover);
     color: var(--text-primary);
+}
+
+/* Toast with retry button */
+.toast-with-retry {
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.toast-retry {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+    margin-left: auto;
+}
+
+.toast-retry:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.toast-retry svg {
+    flex-shrink: 0;
 }
 
 /* ============================================

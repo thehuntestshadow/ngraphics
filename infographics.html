@@ -38,7 +38,7 @@
                     <span>Dashboard</span>
                 </a>
                 <div id="accountContainer"></div>
-                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode" aria-label="Toggle light/dark mode">
                     <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                     </svg>
@@ -1334,7 +1334,7 @@
     <div class="lightbox" id="lightbox">
         <div class="lightbox-backdrop"></div>
         <div class="lightbox-content">
-            <button class="lightbox-close" id="lightboxClose">
+            <button class="lightbox-close" aria-label="Close lightbox" id="lightboxClose">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"/>
                     <line x1="6" y1="6" x2="18" y2="18"/>
@@ -1360,7 +1360,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title" id="modalTitle">Infographic</h3>
-                <button class="modal-close" id="closeModal">
+                <button class="modal-close" id="closeModal" aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18"/>
                         <line x1="6" y1="6" x2="18" y2="18"/>
@@ -1396,7 +1396,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">Favorite</h3>
-                <button class="modal-close" id="closeFavoritesModal">
+                <button class="modal-close" id="closeFavoritesModal" aria-label="Close favorites modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18"/>
                         <line x1="6" y1="6" x2="18" y2="18"/>
@@ -1494,6 +1494,9 @@
             <span>Powered by OpenRouter AI</span>
             <span class="footer-divider">•</span>
             <span class="footer-shortcut"><kbd>Ctrl</kbd>+<kbd>D</kbd> Download</span>
+            <span class="footer-divider">•</span>
+            <a href="privacy.html" class="footer-legal">Privacy</a>
+            <a href="terms.html" class="footer-legal">Terms</a>
         </div>
     </footer>
 

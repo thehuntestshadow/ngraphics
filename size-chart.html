@@ -47,7 +47,7 @@
                     <span>Dashboard</span>
                 </a>
                 <div id="accountContainer"></div>
-                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode" aria-label="Toggle light/dark mode">
                     <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                     </svg>
@@ -278,7 +278,7 @@
                             <div class="section-label" data-tooltip="Use a specific seed for reproducible results.">Seed</div>
                             <div class="seed-row">
                                 <input type="number" id="seedInput" class="input-field" placeholder="Random">
-                                <button class="btn-icon" id="randomSeedBtn" title="Generate random seed">
+                                <button class="btn-icon" id="randomSeedBtn" title="Generate random seed" aria-label="Generate random seed">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M21 2v6h-6M3 12a9 9 0 0115-6.7L21 8M3 22v-6h6M21 12a9 9 0 01-15 6.7L3 16"/>
                                     </svg>
@@ -422,7 +422,7 @@
 
     <!-- Lightbox -->
     <div class="lightbox hidden" id="lightbox">
-        <button class="lightbox-close" id="lightboxClose">&times;</button>
+        <button class="lightbox-close" aria-label="Close lightbox" id="lightboxClose">&times;</button>
         <div class="lightbox-content">
             <img id="lightboxImage" alt="Full size preview">
         </div>
@@ -450,7 +450,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>All Favorites</h3>
-                <button class="modal-close" id="closeFavoritesModal">&times;</button>
+                <button class="modal-close" id="closeFavoritesModal" aria-label="Close favorites modal">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="favorites-modal-grid" id="favoritesModalGrid">
@@ -465,6 +465,9 @@
         <div class="footer-content">
             <span class="keyboard-hint"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> Generate</span>
             <span class="keyboard-hint"><kbd>Ctrl</kbd>+<kbd>D</kbd> Download</span>
+            <span class="footer-divider">•</span>
+            <a href="privacy.html" class="footer-legal">Privacy</a>
+            <a href="terms.html" class="footer-legal">Terms</a>
         </div>
     </footer>
 

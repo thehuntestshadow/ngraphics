@@ -37,7 +37,7 @@
                     <span>Dashboard</span>
                 </a>
                 <div id="accountContainer"></div>
-                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+                <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode" aria-label="Toggle light/dark mode">
                     <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                     </svg>
@@ -382,7 +382,7 @@
     </main>
 
     <div class="lightbox" id="lightbox">
-        <button class="lightbox-close" id="lightboxClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        <button class="lightbox-close" aria-label="Close lightbox" id="lightboxClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         <img id="lightboxImage" alt="Full size image">
         <button class="lightbox-download" id="lightboxDownload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button>
     </div>
@@ -390,7 +390,7 @@
     <div class="modal favorites-modal" id="favoritesModal">
         <div class="modal-backdrop"></div>
         <div class="modal-content">
-            <div class="modal-header"><h3 class="modal-title">Favorite</h3><button class="modal-close" id="closeFavoritesModal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+            <div class="modal-header"><h3 class="modal-title">Favorite</h3><button class="modal-close" id="closeFavoritesModal" aria-label="Close favorites modal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
             <div class="modal-body">
                 <div class="favorite-preview-container"><img src="" alt="Favorite preview" id="favoritePreviewImg"><div class="favorite-variants" id="favoriteVariants" style="display: none;"></div></div>
                 <div class="favorite-details">
@@ -431,6 +431,9 @@
             <span>Powered by OpenRouter AI</span>
             <span class="footer-divider">•</span>
             <span class="footer-shortcut"><kbd>Ctrl</kbd>+<kbd>D</kbd> Download</span>
+            <span class="footer-divider">•</span>
+            <a href="privacy.html" class="footer-legal">Privacy</a>
+            <a href="terms.html" class="footer-legal">Terms</a>
         </div>
     </footer>
 </body>
