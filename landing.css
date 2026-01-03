@@ -315,12 +315,33 @@
     text-decoration: none;
     color: inherit;
     transition: all 0.3s ease;
+    position: relative;
+}
+
+.studio-card::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 18px;
+    padding: 2px;
+    background: transparent;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
 }
 
 .studio-card:hover {
-    border-color: var(--accent);
+    border-color: transparent;
     transform: translateY(-4px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.studio-card:hover::before {
+    opacity: 1;
 }
 
 .studio-icon {
@@ -358,6 +379,31 @@
 .studio-category:nth-child(4) .studio-card:nth-child(2) .studio-icon { background: linear-gradient(135deg, var(--apple-indigo), var(--apple-blue)); }
 .studio-category:nth-child(4) .studio-card:nth-child(3) .studio-icon { background: linear-gradient(135deg, var(--apple-pink), var(--apple-orange)); }
 .studio-category:nth-child(4) .studio-card:nth-child(4) .studio-icon { background: linear-gradient(135deg, var(--apple-purple), var(--apple-pink)); }
+
+/* Gradient hover borders matching icons */
+.studio-category:nth-child(1) .studio-card:nth-child(1)::before { background: linear-gradient(135deg, var(--apple-blue), var(--apple-teal)); }
+.studio-category:nth-child(1) .studio-card:nth-child(2)::before { background: linear-gradient(135deg, var(--apple-purple), var(--apple-pink)); }
+.studio-category:nth-child(1) .studio-card:nth-child(3)::before { background: linear-gradient(135deg, var(--apple-green), var(--apple-teal)); }
+.studio-category:nth-child(1) .studio-card:nth-child(4)::before { background: linear-gradient(135deg, var(--apple-orange), var(--apple-yellow)); }
+.studio-category:nth-child(1) .studio-card:nth-child(5)::before { background: linear-gradient(135deg, var(--apple-pink), var(--apple-red)); }
+.studio-category:nth-child(1) .studio-card:nth-child(6)::before { background: linear-gradient(135deg, var(--apple-indigo), var(--apple-purple)); }
+
+.studio-category:nth-child(2) .studio-card:nth-child(1)::before { background: linear-gradient(135deg, var(--apple-red), var(--apple-orange)); }
+.studio-category:nth-child(2) .studio-card:nth-child(2)::before { background: linear-gradient(135deg, var(--apple-teal), var(--apple-blue)); }
+.studio-category:nth-child(2) .studio-card:nth-child(3)::before { background: linear-gradient(135deg, var(--apple-yellow), var(--apple-orange)); }
+.studio-category:nth-child(2) .studio-card:nth-child(4)::before { background: linear-gradient(135deg, var(--apple-green), var(--apple-yellow)); }
+.studio-category:nth-child(2) .studio-card:nth-child(5)::before { background: linear-gradient(135deg, var(--apple-purple), var(--apple-indigo)); }
+.studio-category:nth-child(2) .studio-card:nth-child(6)::before { background: linear-gradient(135deg, var(--apple-pink), var(--apple-purple)); }
+
+.studio-category:nth-child(3) .studio-card:nth-child(1)::before { background: linear-gradient(135deg, var(--apple-orange), var(--apple-red)); }
+.studio-category:nth-child(3) .studio-card:nth-child(2)::before { background: linear-gradient(135deg, var(--apple-blue), var(--apple-indigo)); }
+.studio-category:nth-child(3) .studio-card:nth-child(3)::before { background: linear-gradient(135deg, var(--apple-green), var(--apple-teal)); }
+.studio-category:nth-child(3) .studio-card:nth-child(4)::before { background: linear-gradient(135deg, var(--apple-yellow), var(--apple-green)); }
+
+.studio-category:nth-child(4) .studio-card:nth-child(1)::before { background: linear-gradient(135deg, var(--apple-teal), var(--apple-green)); }
+.studio-category:nth-child(4) .studio-card:nth-child(2)::before { background: linear-gradient(135deg, var(--apple-indigo), var(--apple-blue)); }
+.studio-category:nth-child(4) .studio-card:nth-child(3)::before { background: linear-gradient(135deg, var(--apple-pink), var(--apple-orange)); }
+.studio-category:nth-child(4) .studio-card:nth-child(4)::before { background: linear-gradient(135deg, var(--apple-purple), var(--apple-pink)); }
 
 .studio-icon svg {
     width: 24px;
