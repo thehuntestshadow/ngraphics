@@ -479,19 +479,21 @@ async function fetchProductImages(product) {
     if (product.primary_image_path) {
         try {
             const url = ngSupabase.getProductImageUrl(product.primary_image_path);
-            imageData.primary = await urlToBase64(url);
+            imageData.primaryImage = await urlToBase64(url);
+            // Generate thumbnail from primary image
+            imageData.thumbnail = await createThumbnail(imageData.primaryImage);
         } catch (e) {
             console.warn('Failed to fetch primary image:', e);
         }
     }
 
     if (product.image_paths?.length) {
-        imageData.additional = [];
+        imageData.additionalImages = [];
         for (const path of product.image_paths) {
             try {
                 const url = ngSupabase.getProductImageUrl(path);
                 const base64 = await urlToBase64(url);
-                imageData.additional.push(base64);
+                imageData.additionalImages.push(base64);
             } catch (e) {
                 console.warn('Failed to fetch additional image:', e);
             }
