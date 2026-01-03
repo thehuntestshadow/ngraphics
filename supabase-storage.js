@@ -3,6 +3,12 @@
  * HEFAISTOS - Supabase-First Storage
  * Primary storage layer with Supabase as source of truth, IndexedDB as cache
  *
+ * SECURITY: All database operations are protected by Supabase Row Level Security (RLS).
+ * RLS policies on 'history' and 'favorites' tables enforce that:
+ *   - Users can only SELECT/INSERT/UPDATE/DELETE their own rows
+ *   - user_id must match auth.uid() for all operations
+ * This prevents IDOR vulnerabilities - no client-side ownership checks are needed.
+ *
  * Usage:
  *   const storage = new SupabaseStorage('infographics', 'history');
  *   await storage.add(item, imageData);
@@ -105,29 +111,31 @@ class SupabaseStorage {
     async add(metadata, imageData = {}) {
         const item = this._createItem(metadata, imageData);
 
-        if (navigator.onLine && AuthGate.isAuthenticated()) {
-            // Online: Save to Supabase first, then cache
-            try {
-                await this._saveToSupabase(item, imageData);
-                await this._saveToCache(item, imageData);
-                this._items.unshift(item);
-                this._enforceMaxItems();
-                this._emit('itemAdded', item);
-                return item;
-            } catch (error) {
-                console.error('[SupabaseStorage] Failed to save to Supabase:', error);
-                // Fall through to offline handling
-            }
+        // Offline path: Save to cache and queue for later sync
+        if (!navigator.onLine || !AuthGate.isAuthenticated()) {
+            await this._saveToCache(item, imageData, { syncStatus: 'pending' });
+            await this._queueOfflineWrite('add', item, imageData);
+            this._items.unshift(item);
+            this._enforceMaxItems();
+            this._emit('itemAdded', item);
+            return item;
         }
 
-        // Offline or error: Save to cache and queue for later
-        await this._saveToCache(item, imageData, { syncStatus: 'pending' });
-        await this._queueOfflineWrite('add', item, imageData);
-        this._items.unshift(item);
-        this._enforceMaxItems();
-        this._emit('itemAdded', item);
-
-        return item;
+        // Online path: Save to Supabase first (source of truth)
+        // Only add to _items AFTER successful save to prevent data loss
+        try {
+            await this._saveToSupabase(item, imageData);
+            await this._saveToCache(item, imageData);
+            this._items.unshift(item);
+            this._enforceMaxItems();
+            this._emit('itemAdded', item);
+            return item;
+        } catch (error) {
+            console.error('[SupabaseStorage] Failed to save to Supabase:', error);
+            // Don't silently fall back to offline - throw so caller knows save failed
+            // Caller can retry or show error to user
+            throw new Error(`Failed to save: ${error.message}`);
+        }
     }
 
     /**
@@ -536,14 +544,19 @@ class SupabaseStorage {
 
     /**
      * Save item to Supabase
+     *
+     * SECURITY: Row Level Security (RLS) policies on 'history' and 'favorites' tables
+     * ensure users can only insert rows where user_id matches their auth.uid().
+     * No client-side ownership check needed - enforced at database level.
      */
     async _saveToSupabase(item, imageData) {
         await ngSupabase.init();
         const userId = ngSupabase.user.id;
 
-        // Upload images
-        const cloudPaths = await this._uploadImages(userId, item.id, imageData);
+        // Upload images (throws if main image fails)
+        const { paths: cloudPaths, failures } = await this._uploadImages(userId, item.id, imageData);
         item._cloudPaths = cloudPaths;
+        item._uploadFailures = failures.length > 0 ? failures : undefined;
 
         // Prepare row data
         const row = {
@@ -597,6 +610,9 @@ class SupabaseStorage {
 
     /**
      * Delete item from Supabase
+     *
+     * SECURITY: RLS policies ensure users can only delete their own rows.
+     * The .eq('user_id', userId) clause is for clarity; RLS enforces this regardless.
      */
     async _deleteFromSupabase(id, cloudPaths) {
         await ngSupabase.init();
@@ -631,6 +647,9 @@ class SupabaseStorage {
 
     /**
      * Update item in Supabase
+     *
+     * SECURITY: RLS policies ensure users can only update their own rows.
+     * The .eq('user_id', userId) clause is for clarity; RLS enforces this regardless.
      */
     async _updateInSupabase(id, updates) {
         await ngSupabase.init();
@@ -646,15 +665,17 @@ class SupabaseStorage {
 
     /**
      * Upload images to Supabase storage
+     * @returns {Promise<{paths: Object, failures: string[]}>}
      */
     async _uploadImages(userId, itemId, imageData) {
-        if (!imageData) return {};
+        if (!imageData) return { paths: {}, failures: [] };
 
         const storage = ngSupabase.storage();
         const basePath = `${userId}/${this.type}/${this.studioName}/${itemId}`;
         const paths = {};
+        const failures = [];
 
-        // Upload main image
+        // Upload main image - this is critical, throw if it fails
         if (imageData.imageUrl) {
             try {
                 const blob = await this._dataUrlToBlob(imageData.imageUrl);
@@ -664,13 +685,18 @@ class SupabaseStorage {
                     contentType: blob.type,
                     upsert: true
                 });
-                if (!error) paths.main = path;
+                if (error) {
+                    // Main image failure is critical - throw to caller
+                    throw new Error(`Main image upload failed: ${error.message}`);
+                }
+                paths.main = path;
             } catch (e) {
-                console.warn('[SupabaseStorage] Failed to upload main image:', e.message);
+                console.error('[SupabaseStorage] Failed to upload main image:', e.message);
+                throw e; // Re-throw - main image is required
             }
         }
 
-        // Upload thumbnail
+        // Upload thumbnail - non-critical, track failure
         if (imageData.thumbnail) {
             try {
                 const blob = await this._dataUrlToBlob(imageData.thumbnail);
@@ -680,13 +706,19 @@ class SupabaseStorage {
                     contentType: blob.type,
                     upsert: true
                 });
-                if (!error) paths.thumbnail = path;
+                if (error) {
+                    failures.push(`thumbnail: ${error.message}`);
+                    console.warn('[SupabaseStorage] Thumbnail upload failed:', error.message);
+                } else {
+                    paths.thumbnail = path;
+                }
             } catch (e) {
+                failures.push(`thumbnail: ${e.message}`);
                 console.warn('[SupabaseStorage] Failed to upload thumbnail:', e.message);
             }
         }
 
-        // Upload variants
+        // Upload variants - non-critical, track failures
         if (imageData.imageUrls && imageData.imageUrls.length > 1) {
             paths.variants = [];
             for (let i = 1; i < imageData.imageUrls.length; i++) {
@@ -698,14 +730,25 @@ class SupabaseStorage {
                         contentType: blob.type,
                         upsert: true
                     });
-                    if (!error) paths.variants.push(path);
+                    if (error) {
+                        failures.push(`variant_${i}: ${error.message}`);
+                        console.warn(`[SupabaseStorage] Variant ${i} upload failed:`, error.message);
+                    } else {
+                        paths.variants.push(path);
+                    }
                 } catch (e) {
+                    failures.push(`variant_${i}: ${e.message}`);
                     console.warn(`[SupabaseStorage] Failed to upload variant ${i}:`, e.message);
                 }
             }
         }
 
-        return paths;
+        // Log summary if there were non-critical failures
+        if (failures.length > 0) {
+            console.warn(`[SupabaseStorage] Upload completed with ${failures.length} non-critical failure(s):`, failures);
+        }
+
+        return { paths, failures };
     }
 
     /**

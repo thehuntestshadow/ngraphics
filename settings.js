@@ -64,11 +64,6 @@ function initElements() {
         interfaceLanguage: document.getElementById('interfaceLanguage'),
         generationLanguage: document.getElementById('generationLanguage'),
 
-        // Data & Storage
-        cloudSyncToggle: document.getElementById('cloudSyncToggle'),
-        syncStatus: document.getElementById('syncStatus'),
-        syncNowBtn: document.getElementById('syncNowBtn'),
-
         // Danger Zone
         clearHistoryBtn: document.getElementById('clearHistoryBtn'),
         clearFavoritesBtn: document.getElementById('clearFavoritesBtn'),
@@ -169,9 +164,6 @@ async function loadUserData() {
 
         // Load language settings
         loadLanguageSettings();
-
-        // Load sync settings
-        loadSyncSettings();
 
     } catch (error) {
         console.error('Error loading user data:', error);
@@ -357,7 +349,7 @@ function renderUsageCard(usage) {
 
 async function openBillingPortal() {
     try {
-        const response = await fetch(`${window.SUPABASE_URL}/functions/v1/create-portal-session`, {
+        const response = await fetch(`${CONFIG.SUPABASE_URL}/functions/v1/create-portal-session`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -367,6 +359,20 @@ async function openBillingPortal() {
                 return_url: window.location.href
             })
         });
+
+        // Check response status before parsing JSON
+        if (!response.ok) {
+            // Try to parse JSON error first for better messages
+            let errorMessage = `HTTP ${response.status}`;
+            try {
+                const errorData = await response.json();
+                errorMessage += `: ${errorData.message || errorData.error || 'Unknown error'}`;
+            } catch {
+                const errorText = await response.text();
+                errorMessage += `: ${errorText || 'Unknown error'}`;
+            }
+            throw new Error(errorMessage);
+        }
 
         const data = await response.json();
 
@@ -476,25 +482,44 @@ function updateThemeButtons() {
     });
 }
 
+// Track system theme listener to prevent memory leak
+let _systemThemeListener = null;
+const _systemThemeQuery = window.matchMedia?.('(prefers-color-scheme: dark)');
+
 function setTheme(theme) {
+    // Remove existing system theme listener to prevent memory leak
+    if (_systemThemeListener && _systemThemeQuery) {
+        _systemThemeQuery.removeEventListener('change', _systemThemeListener);
+        _systemThemeListener = null;
+    }
+
     if (theme === 'system') {
         // Use system preference
         localStorage.setItem('theme', 'system');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const prefersDark = _systemThemeQuery?.matches;
         document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
 
         // Listen for system theme changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        _systemThemeListener = (e) => {
             if (localStorage.getItem('theme') === 'system') {
                 document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
             }
-        });
+        };
+        _systemThemeQuery?.addEventListener('change', _systemThemeListener);
     } else {
         localStorage.setItem('theme', theme);
         document.documentElement.setAttribute('data-theme', theme);
     }
     updateThemeButtons();
 }
+
+// Clean up system theme listener on page unload to prevent memory leak
+window.addEventListener('beforeunload', () => {
+    if (_systemThemeListener && _systemThemeQuery) {
+        _systemThemeQuery.removeEventListener('change', _systemThemeListener);
+        _systemThemeListener = null;
+    }
+});
 
 // ============================================
 // 9. LANGUAGE
@@ -543,73 +568,7 @@ function setGenerationLanguage(lang) {
 }
 
 // ============================================
-// 10. DATA & STORAGE
-// ============================================
-
-function loadSyncSettings() {
-    const syncEnabled = localStorage.getItem('cloud_sync_enabled') === 'true';
-
-    if (elements.cloudSyncToggle) {
-        elements.cloudSyncToggle.checked = syncEnabled;
-    }
-
-    updateSyncStatus();
-}
-
-function toggleCloudSync(enabled) {
-    localStorage.setItem('cloud_sync_enabled', enabled.toString());
-
-    if (enabled && typeof cloudSync !== 'undefined') {
-        cloudSync.enable();
-    } else if (typeof cloudSync !== 'undefined') {
-        cloudSync.disable();
-    }
-
-    updateSyncStatus();
-}
-
-function updateSyncStatus() {
-    if (!elements.syncStatus) return;
-
-    const lastSync = localStorage.getItem('last_sync_time');
-    const syncEnabled = localStorage.getItem('cloud_sync_enabled') === 'true';
-
-    if (!syncEnabled) {
-        elements.syncStatus.textContent = 'Sync disabled';
-    } else if (lastSync) {
-        const date = new Date(parseInt(lastSync));
-        elements.syncStatus.textContent = `Last synced: ${date.toLocaleString()}`;
-    } else {
-        elements.syncStatus.textContent = 'Never synced';
-    }
-}
-
-async function syncNow() {
-    if (typeof cloudSync === 'undefined') {
-        showToast('Cloud sync not available', 'error');
-        return;
-    }
-
-    try {
-        setButtonLoading(elements.syncNowBtn, true);
-
-        await cloudSync.sync();
-
-        localStorage.setItem('last_sync_time', Date.now().toString());
-        updateSyncStatus();
-
-        showToast('Sync completed', 'success');
-
-    } catch (error) {
-        console.error('Sync error:', error);
-        showToast('Sync failed', 'error');
-    } finally {
-        setButtonLoading(elements.syncNowBtn, false);
-    }
-}
-
-// ============================================
-// 11. DANGER ZONE
+// 10. DANGER ZONE
 // ============================================
 
 async function clearAllHistory() {
@@ -687,7 +646,7 @@ async function deleteAccount() {
 
     try {
         // Call Supabase function to delete account
-        const response = await fetch(`${window.SUPABASE_URL}/functions/v1/delete-account`, {
+        const response = await fetch(`${CONFIG.SUPABASE_URL}/functions/v1/delete-account`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -811,12 +770,6 @@ function setupEventListeners() {
     elements.generationLanguage?.addEventListener('change', (e) => {
         setGenerationLanguage(e.target.value);
     });
-
-    // Data & Storage
-    elements.cloudSyncToggle?.addEventListener('change', (e) => {
-        toggleCloudSync(e.target.checked);
-    });
-    elements.syncNowBtn?.addEventListener('click', syncNow);
 
     // Danger Zone
     elements.clearHistoryBtn?.addEventListener('click', clearAllHistory);

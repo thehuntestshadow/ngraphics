@@ -201,7 +201,8 @@ function setupEventListeners() {
     });
 
     // CMS Gallery filters
-    elements.gallerySearch?.addEventListener('input', debounce(() => renderGalleryTable(), 300));
+    // Use 500ms debounce to reduce DOM updates for large galleries
+    elements.gallerySearch?.addEventListener('input', debounce(() => renderGalleryTable(), 500));
     elements.galleryStudioFilter?.addEventListener('change', () => renderGalleryTable());
 
     // CMS FAQ filters
@@ -257,6 +258,149 @@ function setupEventListeners() {
             }
         });
     });
+
+    // Event delegation for data-action buttons (security: avoids inline onclick handlers)
+    document.addEventListener('click', async (e) => {
+        const actionEl = e.target.closest('[data-action]');
+        if (!actionEl) return;
+
+        const action = actionEl.dataset.action;
+        const id = actionEl.dataset.id;
+        const userId = actionEl.dataset.userId;
+
+        switch (action) {
+            case 'copy-email': {
+                const emailEl = actionEl.closest('.email-cell')?.querySelector('.email-text');
+                if (emailEl) {
+                    await copyEmail(emailEl.textContent, actionEl);
+                }
+                break;
+            }
+            case 'open-user':
+                if (userId) openUserModal(userId);
+                break;
+            case 'change-tier': {
+                const tier = actionEl.dataset.tier;
+                if (userId && tier) changeTier(userId, tier);
+                break;
+            }
+            case 'add-credits':
+                if (userId) addCreditsToUser(userId);
+                break;
+            case 'move-gallery': {
+                const direction = actionEl.dataset.direction;
+                if (id && direction) moveGalleryItem(id, direction);
+                break;
+            }
+            case 'edit-gallery':
+                if (id) editGalleryItem(id);
+                break;
+            case 'delete-gallery':
+                if (id) deleteGalleryItem(id);
+                break;
+            case 'edit-faq':
+                if (id) editFAQItem(id);
+                break;
+            case 'delete-faq':
+                if (id) deleteFAQItem(id);
+                break;
+            // Section navigation
+            case 'refresh-section': {
+                const section = actionEl.dataset.section;
+                if (section) refreshSection(section);
+                break;
+            }
+            case 'show-section': {
+                const section = actionEl.dataset.section;
+                if (section) showSection(section);
+                break;
+            }
+            // Bulk actions
+            case 'bulk-set-tier': {
+                const tier = actionEl.dataset.tier;
+                if (tier) bulkSetTier(tier);
+                break;
+            }
+            case 'bulk-add-credits':
+                bulkAddCredits();
+                break;
+            case 'clear-selection':
+                clearSelection();
+                break;
+            // CMS actions
+            case 'save-homepage-section': {
+                const section = actionEl.dataset.section;
+                if (section) saveHomepageSection(section);
+                break;
+            }
+            case 'open-json-editor':
+                openJSONEditor();
+                break;
+            case 'close-json-editor':
+                closeJSONEditor();
+                break;
+            case 'save-json-content':
+                saveJSONContent();
+                break;
+            // Gallery modal
+            case 'open-gallery-modal':
+                openGalleryModal();
+                break;
+            case 'close-gallery-modal':
+                closeGalleryModal();
+                break;
+            // FAQ modal
+            case 'open-faq-modal':
+                openFAQModal();
+                break;
+            case 'close-faq-modal':
+                closeFAQModal();
+                break;
+            // User modal
+            case 'close-user-modal':
+                closeUserModal();
+                break;
+        }
+    });
+
+    // Event delegation for form submissions
+    document.addEventListener('submit', (e) => {
+        const form = e.target.closest('form[data-action]');
+        if (!form) return;
+
+        e.preventDefault();
+        const action = form.dataset.action;
+
+        switch (action) {
+            case 'save-gallery-item':
+                saveGalleryItem(e);
+                break;
+            case 'save-faq-item':
+                saveFAQItem(e);
+                break;
+        }
+    });
+
+    // Event delegation for checkbox/select changes
+    document.addEventListener('change', (e) => {
+        const actionEl = e.target.closest('[data-action]');
+        if (!actionEl) return;
+
+        const action = actionEl.dataset.action;
+        const id = actionEl.dataset.id;
+
+        switch (action) {
+            case 'toggle-gallery-active':
+                if (id) toggleGalleryActive(id, actionEl.checked);
+                break;
+            case 'toggle-faq-active':
+                if (id) toggleFAQActive(id, actionEl.checked);
+                break;
+            case 'change-items-per-page':
+                changeItemsPerPage(actionEl.value);
+                break;
+        }
+    });
 }
 
 // Debounce helper
@@ -298,12 +442,33 @@ function updateThemeIcons() {
     if (lightIcon) lightIcon.style.display = isLight ? 'block' : 'none';
 }
 
-// Audit logging helper
+/**
+ * Audit logging helper
+ *
+ * SECURITY: If this function ever writes to database for later UI rendering,
+ * all string values in the details object must be sanitized. Currently logs
+ * to console only, so sanitization is not strictly required.
+ *
+ * @param {string} action - Action name (should be from known set)
+ * @param {string} targetUserId - Target user UUID
+ * @param {Object} details - Additional context (will be sanitized if needed)
+ */
 async function logAdminAction(action, targetUserId, details = {}) {
     try {
+        // Sanitize string values in details for defense in depth
+        const sanitizedDetails = {};
+        for (const [key, value] of Object.entries(details)) {
+            if (typeof value === 'string') {
+                // Limit length and remove control characters
+                sanitizedDetails[key] = value.slice(0, 500).replace(/[\x00-\x1F\x7F]/g, '');
+            } else {
+                sanitizedDetails[key] = value;
+            }
+        }
+
         // This would insert into admin_audit_log via RPC if needed
         // For now, the admin_update_user RPC already logs actions
-        console.log('[Admin Action]', action, targetUserId, details);
+        console.log('[Admin Action]', action, targetUserId, sanitizedDetails);
     } catch (err) {
         console.error('Failed to log admin action:', err);
     }
@@ -315,26 +480,45 @@ function showToast(type, title, message = '', duration = 4000) {
     const existing = document.querySelector('.admin-toast');
     if (existing) existing.remove();
 
-    const icons = {
+    // Create toast element using DOM methods for security
+    const toast = document.createElement('div');
+    toast.className = `admin-toast ${type}`;
+
+    // Icon container (static SVG is safe)
+    const iconDiv = document.createElement('div');
+    iconDiv.className = 'admin-toast-icon';
+    const iconSvg = {
         success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
         error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
         info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
     };
+    iconDiv.innerHTML = iconSvg[type] || iconSvg.info;
 
-    const toast = document.createElement('div');
-    toast.className = `admin-toast ${type}`;
-    toast.innerHTML = `
-        <div class="admin-toast-icon">${icons[type] || icons.info}</div>
-        <div class="admin-toast-content">
-            <div class="admin-toast-title">${escapeHtml(title)}</div>
-            ${message ? `<div class="admin-toast-message">${escapeHtml(message)}</div>` : ''}
-        </div>
-        <button class="admin-toast-close" onclick="this.parentElement.remove()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-        </button>
-    `;
+    // Content container with textContent (XSS-safe)
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'admin-toast-content';
+
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'admin-toast-title';
+    titleDiv.textContent = title; // textContent is XSS-safe
+    contentDiv.appendChild(titleDiv);
+
+    if (message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'admin-toast-message';
+        messageDiv.textContent = message; // textContent is XSS-safe
+        contentDiv.appendChild(messageDiv);
+    }
+
+    // Close button with event listener (no inline onclick)
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'admin-toast-close';
+    closeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    closeBtn.addEventListener('click', () => toast.remove());
+
+    toast.appendChild(iconDiv);
+    toast.appendChild(contentDiv);
+    toast.appendChild(closeBtn);
 
     document.body.appendChild(toast);
 
@@ -352,11 +536,11 @@ function showToast(type, title, message = '', duration = 4000) {
 
 async function checkAdminAccess() {
     try {
-        // Wait for Supabase to fully initialize
-        await new Promise(resolve => {
+        // Wait for Supabase to fully initialize (with timeout handling)
+        const initialized = await new Promise(resolve => {
             const check = () => {
                 if (window.ngSupabase?.initialized) {
-                    resolve();
+                    resolve(true);
                     return true;
                 }
                 return false;
@@ -366,13 +550,25 @@ async function checkAdminAccess() {
                 const interval = setInterval(() => {
                     if (check()) clearInterval(interval);
                 }, 100);
-                // Timeout after 5 seconds
+                // Timeout after 5 seconds - resolve with false to indicate timeout
                 setTimeout(() => {
                     clearInterval(interval);
-                    resolve();
+                    if (!window.ngSupabase?.initialized) {
+                        console.error('[Admin] Supabase initialization timeout');
+                        resolve(false);
+                    } else {
+                        resolve(true);
+                    }
                 }, 5000);
             }
         });
+
+        // Handle initialization timeout
+        if (!initialized) {
+            console.error('[Admin] Failed to initialize, redirecting...');
+            window.location.href = 'index.html';
+            return;
+        }
 
         if (!window.ngSupabase?.isAuthenticated) {
             console.log('Not authenticated, redirecting...');
@@ -534,7 +730,7 @@ async function loadRecentUsers() {
                     <td><span class="tier-badge ${user.tier_id || 'free'}">${user.tier_id || 'Free'}</span></td>
                     <td><span class="status-badge ${user.subscription_status || 'active'}">${user.subscription_status || 'Active'}</span></td>
                     <td>${formatDate(user.created_at)}</td>
-                    <td><button class="action-btn secondary" onclick="openUserModal('${user.id}')">View</button></td>
+                    <td><button class="action-btn secondary" data-action="open-user" data-user-id="${user.id}">View</button></td>
                 </tr>
             `).join('');
 
@@ -611,7 +807,7 @@ function renderUsersTable(users = adminState.users) {
                 <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}" ${adminState.selectedUsers.has(user.id) ? 'checked' : ''} onchange="toggleUserSelection('${user.id}', this.checked)"></td>
                 <td class="email-cell">
                     <span class="email-text" title="${escapeHtml(user.email || '')}">${escapeHtml(user.email || 'N/A')}</span>
-                    <button class="copy-btn" onclick="copyEmail('${escapeHtml(user.email || '')}', this)" title="Copy email">
+                    <button class="copy-btn" data-action="copy-email" title="Copy email">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
                             <rect x="9" y="9" width="13" height="13" rx="2"/>
                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
@@ -623,7 +819,7 @@ function renderUsersTable(users = adminState.users) {
                 <td>${user.credit_balance ?? 0}</td>
                 <td><span class="status-badge ${user.subscription_status || 'active'}">${capitalizeFirst(user.subscription_status || 'active')}</span></td>
                 <td>${formatDate(user.created_at)}</td>
-                <td><button class="action-btn secondary" onclick="openUserModal('${user.id}')">Manage</button></td>
+                <td><button class="action-btn secondary" data-action="open-user" data-user-id="${user.id}">Manage</button></td>
             </tr>
         `).join('');
 
@@ -672,7 +868,7 @@ function renderUsersCards(users = adminState.users) {
                         Select
                     </label>
                     <div class="admin-card-actions">
-                        <button class="action-btn secondary" onclick="openUserModal('${user.id}')">Manage</button>
+                        <button class="action-btn secondary" data-action="open-user" data-user-id="${user.id}">Manage</button>
                     </div>
                 </div>
             </div>
@@ -705,7 +901,7 @@ function renderSubscriptionsCards(subs = adminState.subscriptions) {
                 </div>
                 <div class="admin-card-footer">
                     <div class="admin-card-actions">
-                        <button class="action-btn secondary" onclick="openUserModal('${sub.user_id}')">View User</button>
+                        <button class="action-btn secondary" data-action="open-user" data-user-id="${sub.user_id}">View User</button>
                     </div>
                 </div>
             </div>
@@ -766,7 +962,7 @@ async function loadSubscriptions() {
                     <td>${formatDate(sub.created_at)}</td>
                     <td>${sub.current_period_end ? formatDate(sub.current_period_end) : '-'}</td>
                     <td><code style="font-size:0.75rem">-</code></td>
-                    <td><button class="action-btn secondary" onclick="openUserModal('${sub.user_id}')">View User</button></td>
+                    <td><button class="action-btn secondary" data-action="open-user" data-user-id="${sub.user_id}">View User</button></td>
                 </tr>
             `).join('');
 
@@ -1107,16 +1303,16 @@ async function openUserModal(userId) {
             <div class="actions-section">
                 <h3>Administrative Actions</h3>
                 <div class="action-group">
-                    <button class="action-btn primary" onclick="changeTier('${userId}', 'pro')">Set Pro</button>
-                    <button class="action-btn primary" onclick="changeTier('${userId}', 'business')">Set Business</button>
-                    <button class="action-btn secondary" onclick="changeTier('${userId}', 'free')">Set Free</button>
+                    <button class="action-btn primary" data-action="change-tier" data-user-id="${userId}" data-tier="pro">Set Pro</button>
+                    <button class="action-btn primary" data-action="change-tier" data-user-id="${userId}" data-tier="business">Set Business</button>
+                    <button class="action-btn secondary" data-action="change-tier" data-user-id="${userId}" data-tier="free">Set Free</button>
                 </div>
 
                 <h3 style="margin-top: 1rem">Add Credits</h3>
                 <div class="credit-input-group">
                     <input type="number" id="creditAmount" placeholder="Amount" min="1" value="50">
                     <input type="text" id="creditReason" placeholder="Reason (optional)">
-                    <button class="action-btn primary" onclick="addCreditsToUser('${userId}')">Add Credits</button>
+                    <button class="action-btn primary" data-action="add-credits" data-user-id="${userId}">Add Credits</button>
                 </div>
             </div>
         `;
@@ -1134,8 +1330,22 @@ function closeUserModal() {
 }
 
 // Admin Actions
+const VALID_TIERS = ['free', 'pro', 'business'];
+const MAX_CREDIT_AMOUNT = 10000;
+
 async function changeTier(userId, tierId) {
-    if (!confirm(`Change user's subscription to ${tierId}?`)) return;
+    // Input validation
+    if (!userId || typeof userId !== 'string' || !userId.match(/^[0-9a-f-]{36}$/i)) {
+        showToast('error', 'Invalid Request', 'Invalid user ID');
+        return;
+    }
+    if (!VALID_TIERS.includes(tierId)) {
+        showToast('error', 'Invalid Request', 'Invalid tier selected');
+        return;
+    }
+
+    // tierId is already validated against VALID_TIERS, but escape for defense in depth
+    if (!confirm(`Change user's subscription to ${escapeHtml(tierId)}?`)) return;
 
     // Find and add loading state to clicked button
     const buttons = document.querySelectorAll('.action-group .action-btn');
@@ -1166,10 +1376,21 @@ async function changeTier(userId, tierId) {
 }
 
 async function addCreditsToUser(userId) {
+    // Input validation for userId
+    if (!userId || typeof userId !== 'string' || !userId.match(/^[0-9a-f-]{36}$/i)) {
+        showToast('error', 'Invalid Request', 'Invalid user ID');
+        return;
+    }
+
     const amount = parseInt(document.getElementById('creditAmount')?.value) || 0;
 
     if (amount <= 0) {
         showToast('error', 'Invalid Amount', 'Please enter a valid credit amount');
+        return;
+    }
+
+    if (amount > MAX_CREDIT_AMOUNT) {
+        showToast('error', 'Invalid Amount', `Credit amount cannot exceed ${MAX_CREDIT_AMOUNT}`);
         return;
     }
 
@@ -1405,15 +1626,23 @@ async function loadCMSGallery() {
     }
 }
 
+// Handle gallery image load error safely (avoids inline innerHTML in onerror)
+function handleGalleryImageError(img) {
+    img.onerror = null;
+    img.style.display = 'none';
+    const placeholder = document.createElement('div');
+    placeholder.className = 'gallery-thumb-placeholder';
+    placeholder.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+    img.parentElement.appendChild(placeholder);
+}
+
 // Generate thumbnail HTML with fallback placeholder
 function getGalleryThumbHTML(imageUrl) {
-    const placeholderSVG = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50' fill='%23666'%3E%3Crect width='50' height='50' fill='%23222'/%3E%3Cpath d='M15 32l7-9 5 6 7-9 7 9v3H8v-3z' fill='%23444'/%3E%3Ccircle cx='17' cy='17' r='4' fill='%23444'/%3E%3C/svg%3E`;
-
     if (!imageUrl) {
         return `<div class="gallery-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
     }
 
-    return `<img src="${escapeHtml(imageUrl)}" alt="" class="gallery-thumb" onerror="this.onerror=null;this.style.display='none';this.parentElement.innerHTML='<div class=\\'gallery-thumb-placeholder\\'><svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'/><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'/><polyline points=\\'21 15 16 10 5 21\\'/></svg></div>'">`;
+    return `<img src="${escapeHtml(imageUrl)}" alt="" class="gallery-thumb" onerror="handleGalleryImageError(this)">`;
 }
 
 function renderGalleryTable() {
@@ -1443,20 +1672,20 @@ function renderGalleryTable() {
                 <td><span class="studio-tag">${escapeHtml(item.studio_label)}</span></td>
                 <td>
                     <div class="order-controls">
-                        <button class="order-btn" onclick="moveGalleryItem('${item.id}', 'up')" title="Move up">↑</button>
+                        <button class="order-btn" data-action="move-gallery" data-id="${item.id}" data-direction="up" title="Move up">↑</button>
                         <span>${item.sort_order}</span>
-                        <button class="order-btn" onclick="moveGalleryItem('${item.id}', 'down')" title="Move down">↓</button>
+                        <button class="order-btn" data-action="move-gallery" data-id="${item.id}" data-direction="down" title="Move down">↓</button>
                     </div>
                 </td>
                 <td>
                     <label class="admin-toggle">
-                        <input type="checkbox" ${item.is_active ? 'checked' : ''} onchange="toggleGalleryActive('${item.id}', this.checked)">
+                        <input type="checkbox" ${item.is_active ? 'checked' : ''} data-action="toggle-gallery-active" data-id="${item.id}">
                         <span class="admin-toggle-track"></span>
                     </label>
                 </td>
                 <td>
-                    <button class="action-btn secondary" onclick="editGalleryItem('${item.id}')">Edit</button>
-                    <button class="action-btn danger" onclick="deleteGalleryItem('${item.id}')">Delete</button>
+                    <button class="action-btn secondary" data-action="edit-gallery" data-id="${item.id}">Edit</button>
+                    <button class="action-btn danger" data-action="delete-gallery" data-id="${item.id}">Delete</button>
                 </td>
             </tr>
         `).join('');
@@ -1653,13 +1882,13 @@ function renderFAQTable() {
                 <td>${item.sort_order}</td>
                 <td>
                     <label class="admin-toggle">
-                        <input type="checkbox" ${item.is_active ? 'checked' : ''} onchange="toggleFAQActive('${item.id}', this.checked)">
+                        <input type="checkbox" ${item.is_active ? 'checked' : ''} data-action="toggle-faq-active" data-id="${item.id}">
                         <span class="admin-toggle-track"></span>
                     </label>
                 </td>
                 <td>
-                    <button class="action-btn secondary" onclick="editFAQItem('${item.id}')">Edit</button>
-                    <button class="action-btn danger" onclick="deleteFAQItem('${item.id}')">Delete</button>
+                    <button class="action-btn secondary" data-action="edit-faq" data-id="${item.id}">Edit</button>
+                    <button class="action-btn danger" data-action="delete-faq" data-id="${item.id}">Delete</button>
                 </td>
             </tr>
         `).join('');

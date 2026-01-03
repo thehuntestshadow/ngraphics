@@ -42,7 +42,17 @@
       "Bash(uvx:*)",
       "mcp__plugin_supabase_supabase__list_projects",
       "mcp__plugin_supabase_supabase__apply_migration",
-      "mcp__plugin_supabase_supabase__list_migrations"
+      "mcp__plugin_supabase_supabase__list_migrations",
+      "Skill(dead-code)",
+      "Bash(do grep -h '^\\\\.' \"$file\")",
+      "Bash(__NEW_LINE__ echo \"=== Searching for openDB usage ===\")",
+      "Bash(__NEW_LINE__ echo -e \"\\\\n=== Searching for formatTimeAgo usage ===\")",
+      "Bash(__NEW_LINE__ echo -e \"\\\\n=== Searching for formatRelativeTime usage ===\")",
+      "Bash(__NEW_LINE__ echo -e \"\\\\n=== Searching for capitalizeFirst usage ===\")",
+      "Bash(__NEW_LINE__ echo -e \"\\\\n=== Searching for capitalize usage \\(as distinct function\\) ===\")",
+      "Bash(__NEW_LINE__ echo -e \"\\\\n=== Checking what uses the capitalize function in faq-generator ===\")",
+      "mcp__plugin_supabase_supabase__execute_sql",
+      "mcp__plugin_supabase_supabase__list_tables"
     ]
   }
 }

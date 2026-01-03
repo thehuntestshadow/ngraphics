@@ -26,7 +26,8 @@ const state = {
     benefits: [],
     isAnalyzing: false,
     isSaving: false,
-    deleteProductId: null
+    deleteProductId: null,
+    imageLoadControllers: []  // AbortControllers for cancelling image loads
 };
 
 let elements = {};
@@ -163,10 +164,13 @@ function renderCategorySidebar() {
     const categoryNav = elements.categoryNav;
     if (!categoryNav) return;
 
-    // Calculate counts
+    // Calculate counts in single pass (O(n) instead of O(n*m))
     const counts = { all: state.products.length };
-    state.categories.forEach(cat => {
-        counts[cat.slug] = state.products.filter(p => p.category === cat.slug).length;
+    state.categories.forEach(cat => counts[cat.slug] = 0);
+    state.products.forEach(p => {
+        if (p.category && counts.hasOwnProperty(p.category)) {
+            counts[p.category]++;
+        }
     });
 
     // Render sidebar
@@ -178,7 +182,7 @@ function renderCategorySidebar() {
         ${state.categories.map(cat => `
             <a href="#" class="category-item ${state.currentCategory === cat.slug ? 'active' : ''}" data-category="${cat.slug}">
                 <span class="category-count">${counts[cat.slug] || 0}</span>
-                ${cat.icon ? `<span class="category-icon">${cat.icon}</span>` : ''}
+                ${cat.icon ? `<span class="category-icon">${escapeHtml(cat.icon)}</span>` : ''}
                 ${escapeHtml(cat.name)}
             </a>
         `).join('')}
@@ -264,7 +268,10 @@ async function saveNewCategory() {
     try {
         elements.saveCategoryBtn?.classList.add('loading');
         const newCategory = await ngSupabase.createCategory({ name });
-        state.categories.push(newCategory);
+
+        // Refresh categories from database to ensure consistency
+        // (handles race conditions with other tabs/sessions)
+        state.categories = await ngSupabase.getCategories();
 
         renderCategorySidebar();
         renderCategoryDropdown();
@@ -480,32 +487,50 @@ Important:
             throw new Error('Failed to parse AI response');
         }
 
-        // Populate form fields
-        if (analysis.productTitle) {
-            elements.productName.value = analysis.productTitle;
+        // Validate response structure
+        if (!analysis || typeof analysis !== 'object') {
+            throw new Error('Invalid AI response format');
+        }
+
+        // Helper to sanitize and limit string length
+        const sanitizeString = (val, maxLen = 500) => {
+            if (typeof val !== 'string') return '';
+            return val.slice(0, maxLen).trim();
+        };
+
+        // Populate form fields with validation
+        if (analysis.productTitle && typeof analysis.productTitle === 'string') {
+            elements.productName.value = sanitizeString(analysis.productTitle, 200);
         }
         // Validate category against user's categories
-        if (analysis.productCategory) {
+        if (analysis.productCategory && typeof analysis.productCategory === 'string') {
+            const categoryInput = sanitizeString(analysis.productCategory, 100).toLowerCase();
             const validCategory = state.categories.find(
-                c => c.slug === analysis.productCategory ||
-                     c.name.toLowerCase() === analysis.productCategory.toLowerCase()
+                c => c.slug === categoryInput ||
+                     c.name.toLowerCase() === categoryInput
             );
             if (validCategory) {
                 elements.productCategory.value = validCategory.slug;
             }
         }
-        if (analysis.description) {
-            elements.productDescription.value = analysis.description;
+        if (analysis.description && typeof analysis.description === 'string') {
+            elements.productDescription.value = sanitizeString(analysis.description, 1000);
         }
-        if (analysis.features && Array.isArray(analysis.features)) {
-            state.features = analysis.features.map(f => ({
-                text: typeof f === 'string' ? f : f.text,
-                starred: typeof f === 'object' ? !!f.starred : false
-            }));
+        if (Array.isArray(analysis.features)) {
+            state.features = analysis.features
+                .slice(0, 10) // Limit feature count
+                .map(f => ({
+                    text: sanitizeString(typeof f === 'string' ? f : f?.text, 300),
+                    starred: typeof f === 'object' ? !!f?.starred : false
+                }))
+                .filter(f => f.text); // Remove empty features
             renderFeatures();
         }
-        if (analysis.benefits && Array.isArray(analysis.benefits)) {
-            state.benefits = analysis.benefits.map(b => typeof b === 'string' ? b : b.text || '');
+        if (Array.isArray(analysis.benefits)) {
+            state.benefits = analysis.benefits
+                .slice(0, 10) // Limit benefit count
+                .map(b => sanitizeString(typeof b === 'string' ? b : b?.text, 300))
+                .filter(b => b); // Remove empty benefits
             renderBenefits();
         }
 
@@ -708,6 +733,10 @@ function openModal(productId = null) {
 }
 
 function closeModal() {
+    // Abort any pending image load requests
+    state.imageLoadControllers.forEach(c => c.abort());
+    state.imageLoadControllers = [];
+
     elements.productModal.classList.remove('open');
     document.body.style.overflow = '';
     resetModalState();
@@ -779,6 +808,10 @@ async function populateModalWithProduct(product) {
 }
 
 async function loadImagePreview(path, slot) {
+    // Create AbortController to allow cancellation
+    const controller = new AbortController();
+    state.imageLoadControllers.push(controller);
+
     try {
         const url = ngSupabase.getProductImageUrl(path);
         if (slot === 'primary') {
@@ -787,7 +820,7 @@ async function loadImagePreview(path, slot) {
             elements.removePrimary.style.display = 'flex';
             elements.primaryImageUpload.querySelector('.upload-placeholder').style.display = 'none';
             // Fetch and convert to base64 for saving
-            const response = await fetch(url);
+            const response = await fetch(url, { signal: controller.signal });
             const blob = await response.blob();
             state.primaryImage = await blobToDataUrl(blob);
         } else {
@@ -799,12 +832,15 @@ async function loadImagePreview(path, slot) {
             removeBtn.style.display = 'flex';
             upload.querySelector('.upload-placeholder').style.display = 'none';
             // Fetch and convert to base64
-            const response = await fetch(url);
+            const response = await fetch(url, { signal: controller.signal });
             const blob = await response.blob();
             state.additionalImages[slot - 1] = await blobToDataUrl(blob);
         }
     } catch (e) {
-        console.warn('Failed to load image preview:', e);
+        // Ignore abort errors, log others
+        if (e.name !== 'AbortError') {
+            console.warn('Failed to load image preview:', e);
+        }
     }
 }
 

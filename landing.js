@@ -221,8 +221,41 @@ function renderCTASection(cta) {
 
     const ctaLink = document.querySelector('.final-cta .hero-cta');
     if (ctaLink && cta.button_link) {
-        ctaLink.setAttribute('href', cta.button_link);
+        const safeUrl = sanitizeUrl(cta.button_link);
+        if (safeUrl) {
+            ctaLink.setAttribute('href', safeUrl);
+        }
     }
+}
+
+/**
+ * Sanitize URL to prevent XSS via javascript: and other dangerous protocols
+ */
+function sanitizeUrl(url) {
+    if (!url || typeof url !== 'string') return null;
+    const trimmed = url.trim().toLowerCase();
+    // Block dangerous protocols
+    if (trimmed.startsWith('javascript:') ||
+        trimmed.startsWith('data:') ||
+        trimmed.startsWith('vbscript:')) {
+        console.warn('[Landing] Blocked dangerous URL:', url.slice(0, 50));
+        return null;
+    }
+    // Allow relative URLs, http, https, mailto, tel
+    if (trimmed.startsWith('/') ||
+        trimmed.startsWith('#') ||
+        trimmed.startsWith('http://') ||
+        trimmed.startsWith('https://') ||
+        trimmed.startsWith('mailto:') ||
+        trimmed.startsWith('tel:')) {
+        return url;
+    }
+    // For other URLs, only allow if they look like relative paths
+    if (!trimmed.includes(':')) {
+        return url;
+    }
+    console.warn('[Landing] Blocked unknown protocol URL:', url.slice(0, 50));
+    return null;
 }
 
 /**

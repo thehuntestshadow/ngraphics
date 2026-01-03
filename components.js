@@ -1300,17 +1300,3 @@ customElements.define('image-grid', ImageGrid);
 })();
 
 
-// ============================================
-// EXPORT FOR USE
-// ============================================
-window.NGComponents = {
-    UploadArea,
-    CollapsibleSection,
-    ModalDialog,
-    OptionGroup,
-    SliderInput,
-    TagInput,
-    LoadingSpinner,
-    ToastNotification,
-    ImageGrid
-};

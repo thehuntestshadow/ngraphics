@@ -17,6 +17,7 @@ class AuthUI {
         this._modal = null;
         this._isOpen = false;
         this._currentMode = 'login';
+        this._escHandler = null;
     }
 
     /**
@@ -53,6 +54,12 @@ class AuthUI {
      * Hide auth modal
      */
     hide() {
+        // Clean up escape key listener to prevent memory leak
+        if (this._escHandler) {
+            document.removeEventListener('keydown', this._escHandler);
+            this._escHandler = null;
+        }
+
         if (this._modal) {
             this._modal.classList.remove('visible');
             setTimeout(() => {
@@ -176,14 +183,13 @@ class AuthUI {
         // Close button
         this._modal.querySelector('.auth-modal-close').addEventListener('click', () => this.hide());
 
-        // Escape key
-        const escHandler = (e) => {
+        // Escape key - store reference for cleanup in hide()
+        this._escHandler = (e) => {
             if (e.key === 'Escape' && this._isOpen) {
                 this.hide();
-                document.removeEventListener('keydown', escHandler);
             }
         };
-        document.addEventListener('keydown', escHandler);
+        document.addEventListener('keydown', this._escHandler);
 
         // Switch between login/signup
         this._modal.querySelector('.auth-switch-btn').addEventListener('click', (e) => {
@@ -313,21 +319,39 @@ class AccountMenu {
 
         this.container = container;
         this._dropdownOpen = false;
+        this._outsideClickHandler = null;
+        this._unsubscribeAuth = null;
         this._init();
     }
 
     _init() {
         this.render();
 
-        // Listen for auth changes
-        ngSupabase.on('authChange', () => this.render());
+        // Listen for auth changes - store unsubscribe function returned by on()
+        this._unsubscribeAuth = ngSupabase.on('authChange', () => this.render());
 
-        // Close dropdown on outside click
-        document.addEventListener('click', (e) => {
+        // Close dropdown on outside click (store reference for cleanup)
+        this._outsideClickHandler = (e) => {
             if (!this.container.contains(e.target)) {
                 this._closeDropdown();
             }
-        });
+        };
+        document.addEventListener('click', this._outsideClickHandler);
+    }
+
+    /**
+     * Clean up event listeners to prevent memory leaks
+     * Call this when the AccountMenu is no longer needed
+     */
+    destroy() {
+        if (this._outsideClickHandler) {
+            document.removeEventListener('click', this._outsideClickHandler);
+            this._outsideClickHandler = null;
+        }
+        if (this._unsubscribeAuth) {
+            this._unsubscribeAuth();
+            this._unsubscribeAuth = null;
+        }
     }
 
     render() {

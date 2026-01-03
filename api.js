@@ -224,6 +224,8 @@ class APIClient {
         this._usageCacheTime = 0;
         /** @type {number} */
         this._usageCacheTTL = 30000; // 30 seconds
+        /** @type {Set<string>} Track optimistic increments per request to prevent race conditions */
+        this._optimisticIncrements = new Set();
 
         // Proxy configuration
         /** @type {string} */
@@ -438,6 +440,40 @@ class APIClient {
     invalidateUsageCache() {
         this._cachedUsage = null;
         this._usageCacheTime = 0;
+    }
+
+    /**
+     * Optimistically increment cached usage count before request
+     * Tracks by request ID to prevent race conditions with concurrent requests
+     * @param {string} requestId - Unique request identifier
+     */
+    _optimisticIncrementUsage(requestId) {
+        if (this._cachedUsage && !this._cachedUsage.isUnlimited) {
+            this._cachedUsage.generationsUsed++;
+            this._optimisticIncrements.add(requestId);
+        }
+    }
+
+    /**
+     * Decrement cached usage on request failure
+     * Only decrements if this specific request was tracked
+     * @param {string} requestId - Unique request identifier
+     */
+    _optimisticDecrementUsage(requestId) {
+        if (this._optimisticIncrements.has(requestId)) {
+            this._optimisticIncrements.delete(requestId);
+            if (this._cachedUsage && !this._cachedUsage.isUnlimited && this._cachedUsage.generationsUsed > 0) {
+                this._cachedUsage.generationsUsed--;
+            }
+        }
+    }
+
+    /**
+     * Clear optimistic increment tracking for a successful request
+     * @param {string} requestId - Unique request identifier
+     */
+    _clearOptimisticIncrement(requestId) {
+        this._optimisticIncrements.delete(requestId);
     }
 
     // ========================================
@@ -710,6 +746,11 @@ class APIClient {
                 throw new APIError('Please sign in to generate images', 'AUTH_REQUIRED', { retryable: false });
             }
             if (access.reason === 'SUBSCRIPTION_REQUIRED') {
+                // Show upgrade modal to prompt subscription instead of just failing
+                const usage = await this._getUsageWithCache();
+                if (typeof SharedUI !== 'undefined' && SharedUI.showUpgradeModal) {
+                    await SharedUI.showUpgradeModal(usage || { tier: 'free', generationsLimit: 0, generationsUsed: 0 });
+                }
                 throw new APIError('Subscription required to generate images', 'SUBSCRIPTION_REQUIRED', { retryable: false });
             }
             throw new APIError('Access denied', 'AUTH_ERROR', { retryable: false });
@@ -737,6 +778,10 @@ class APIClient {
         const controller = new AbortController();
         const reqId = requestId || `req-${Date.now()}-${Math.random().toString(36).slice(2)}`;
         this.abortControllers.set(reqId, controller);
+
+        // Optimistically increment usage to prevent visual race condition
+        // Track by request ID to handle concurrent requests correctly
+        this._optimisticIncrementUsage(reqId);
 
         // Notify request start
         if (this.onRequestStart) {
@@ -786,6 +831,9 @@ class APIClient {
 
                     this.stats.successfulRequests++;
 
+                    // Clear optimistic increment tracking (request succeeded)
+                    this._clearOptimisticIncrement(reqId);
+
                     // Invalidate usage cache and check for warning
                     this.invalidateUsageCache();
                     this._checkUsageWarning();
@@ -824,6 +872,8 @@ class APIClient {
 
             // All retries exhausted
             this.stats.failedRequests++;
+            // Revert optimistic increment on failure (tracked by request ID)
+            this._optimisticDecrementUsage(reqId);
             throw lastError;
 
         } finally {

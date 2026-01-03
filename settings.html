@@ -109,14 +109,6 @@
                     </svg>
                     <span>Language</span>
                 </a>
-                <a href="#data" class="settings-nav-item" data-section="data">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="23 4 23 10 17 10"/>
-                        <polyline points="1 20 1 14 7 14"/>
-                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-                    </svg>
-                    <span>Data & Sync</span>
-                </a>
                 <a href="#danger" class="settings-nav-item settings-nav-danger" data-section="danger">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
@@ -256,36 +248,6 @@
                                 <!-- Populated by JS -->
                             </select>
                             <span class="settings-hint">Text in generated images and AI content</span>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Data & Sync Section -->
-                <section id="data" class="settings-section">
-                    <div class="settings-section-header">
-                        <h2>Data & Sync</h2>
-                        <p>Manage cloud synchronization</p>
-                    </div>
-                    <div class="settings-section-body">
-                        <div class="settings-form-group settings-form-inline">
-                            <label for="syncEnabled">Enable cloud sync</label>
-                            <label class="settings-switch">
-                                <input type="checkbox" id="cloudSyncToggle">
-                                <span class="settings-switch-slider"></span>
-                            </label>
-                        </div>
-                        <div class="settings-sync-status">
-                            <span id="syncStatus">Last synced: Never</span>
-                        </div>
-                        <div class="settings-actions">
-                            <button class="btn-secondary" id="syncNowBtn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="23 4 23 10 17 10"/>
-                                    <polyline points="1 20 1 14 7 14"/>
-                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-                                </svg>
-                                Sync Now
-                            </button>
                         </div>
                     </div>
                 </section>

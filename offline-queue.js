@@ -24,6 +24,7 @@ class OfflineQueue {
         this._initPromise = null;
         this._isProcessing = false;
         this._listeners = new Set();
+        this.maxQueueSize = 50; // Prevent unbounded queue growth
 
         // Listen for online/offline events
         if (typeof window !== 'undefined') {
@@ -74,6 +75,15 @@ class OfflineQueue {
      */
     async enqueue(operation) {
         await this.init();
+
+        // Prevent unbounded queue growth - reject if at capacity
+        const currentCount = await this.getCount();
+        if (currentCount >= this.maxQueueSize) {
+            const error = new Error(`Offline queue is full (${this.maxQueueSize} items). Please connect to sync pending changes.`);
+            console.warn('[OfflineQueue] Queue full, rejecting operation:', operation.type);
+            this._emit('queueFull', { count: currentCount, operation });
+            throw error;
+        }
 
         const fullOperation = {
             id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -240,53 +250,58 @@ class OfflineQueue {
         this._isProcessing = true;
         this._emit('flushStart');
 
-        const pending = await this.getAll();
         let processed = 0;
         let failed = 0;
 
-        console.log(`[OfflineQueue] Processing ${pending.length} pending operations`);
+        try {
+            const pending = await this.getAll();
 
-        for (const op of pending) {
-            if (op.status === 'failed') {
-                // Skip permanently failed operations
-                continue;
-            }
+            console.log(`[OfflineQueue] Processing ${pending.length} pending operations`);
 
-            try {
-                await this.update(op.id, { status: 'processing' });
-                const success = await processor(op);
-
-                if (success) {
-                    await this.remove(op.id);
-                    processed++;
-                    console.log(`[OfflineQueue] Processed: ${op.type} ${op.studioId}`);
-                } else {
-                    throw new Error('Processor returned false');
+            for (const op of pending) {
+                if (op.status === 'failed') {
+                    // Skip permanently failed operations
+                    continue;
                 }
-            } catch (error) {
-                console.error(`[OfflineQueue] Failed to process ${op.id}:`, error);
 
-                const newRetries = op.retries + 1;
-                if (newRetries >= 3) {
-                    // Mark as permanently failed
-                    await this.update(op.id, {
-                        status: 'failed',
-                        retries: newRetries,
-                        error: error.message
-                    });
-                    failed++;
-                } else {
-                    // Increment retry count
-                    await this.update(op.id, {
-                        status: 'pending',
-                        retries: newRetries
-                    });
+                try {
+                    await this.update(op.id, { status: 'processing' });
+                    const success = await processor(op);
+
+                    if (success) {
+                        await this.remove(op.id);
+                        processed++;
+                        console.log(`[OfflineQueue] Processed: ${op.type} ${op.studioId}`);
+                    } else {
+                        throw new Error('Processor returned false');
+                    }
+                } catch (error) {
+                    console.error(`[OfflineQueue] Failed to process ${op.id}:`, error);
+
+                    const newRetries = op.retries + 1;
+                    if (newRetries >= 3) {
+                        // Mark as permanently failed
+                        await this.update(op.id, {
+                            status: 'failed',
+                            retries: newRetries,
+                            error: error.message
+                        });
+                        failed++;
+                    } else {
+                        // Increment retry count
+                        await this.update(op.id, {
+                            status: 'pending',
+                            retries: newRetries
+                        });
+                    }
                 }
             }
+        } catch (outerError) {
+            console.error('[OfflineQueue] Flush failed:', outerError);
+        } finally {
+            this._isProcessing = false;
+            this._emit('flushComplete', { processed, failed });
         }
-
-        this._isProcessing = false;
-        this._emit('flushComplete', { processed, failed });
 
         console.log(`[OfflineQueue] Flush complete: ${processed} processed, ${failed} failed`);
         return { processed, failed };
@@ -322,10 +337,13 @@ class OfflineQueue {
      * Add event listener
      * @param {string} event
      * @param {Function} callback
+     * @returns {Function} Unsubscribe function
      */
     on(event, callback) {
-        this._listeners.add({ event, callback });
-        return () => this._listeners.delete({ event, callback });
+        // Store reference to the same object for proper cleanup
+        const listener = { event, callback };
+        this._listeners.add(listener);
+        return () => this._listeners.delete(listener);
     }
 
     /**
