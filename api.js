@@ -517,9 +517,27 @@ class APIClient {
      * @returns {Promise<Response>}
      */
     async _makeProxyRequest(body, signal) {
-        const accessToken = ngSupabase.session?.access_token;
+        // Refresh session if needed to ensure valid token
+        let accessToken = ngSupabase.session?.access_token;
         if (!accessToken) {
             throw new APIError('Not authenticated', 'AUTH_ERROR', { retryable: false });
+        }
+
+        // Check if token might be expired (refresh if less than 60s remaining)
+        const expiresAt = ngSupabase.session?.expires_at;
+        if (expiresAt && (expiresAt * 1000 - Date.now()) < 60000) {
+            try {
+                console.log('[API] Token expiring soon, refreshing session...');
+                const { data, error } = await ngSupabase._client.auth.refreshSession();
+                if (error) {
+                    console.warn('[API] Session refresh failed:', error.message);
+                } else if (data?.session) {
+                    accessToken = data.session.access_token;
+                    console.log('[API] Session refreshed successfully');
+                }
+            } catch (e) {
+                console.warn('[API] Session refresh error:', e);
+            }
         }
 
         const response = await fetch(this._proxyUrl, {
@@ -807,6 +825,22 @@ class APIClient {
                     // Handle non-OK responses
                     if (!response.ok) {
                         const error = await this.parseErrorResponse(response);
+
+                        // On 401, try to refresh session and retry once
+                        if (response.status === 401 && attempt === 0 && typeof ngSupabase !== 'undefined') {
+                            console.log('[API] Got 401, attempting session refresh...');
+                            try {
+                                const { data, error: refreshError } = await ngSupabase._client.auth.refreshSession();
+                                if (!refreshError && data?.session) {
+                                    console.log('[API] Session refreshed, retrying request...');
+                                    continue; // Retry with new token
+                                } else {
+                                    console.warn('[API] Session refresh failed:', refreshError?.message);
+                                }
+                            } catch (e) {
+                                console.warn('[API] Session refresh error:', e);
+                            }
+                        }
 
                         // Retry if appropriate
                         if (error.retryable && attempt < maxAttempts - 1) {

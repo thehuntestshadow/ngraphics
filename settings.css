@@ -56,17 +56,17 @@
 }
 
 .settings-nav-danger {
-    color: var(--danger);
+    color: var(--error);
 }
 
 .settings-nav-danger:hover {
     background: rgba(255, 69, 58, 0.1);
-    color: var(--danger);
+    color: var(--error);
 }
 
 .settings-nav-danger.active {
     background: rgba(255, 69, 58, 0.15);
-    color: var(--danger);
+    color: var(--error);
 }
 
 /* Content Area */
@@ -265,7 +265,7 @@
     padding: 12px 24px;
     font-size: 0.9rem;
     font-weight: 500;
-    background: var(--danger);
+    background: var(--error);
     color: white;
     border: none;
     border-radius: var(--radius-md);
@@ -282,8 +282,8 @@
     font-size: 0.9rem;
     font-weight: 500;
     background: transparent;
-    color: var(--danger);
-    border: 1px solid var(--danger);
+    color: var(--error);
+    border: 1px solid var(--error);
     border-radius: var(--radius-md);
     cursor: pointer;
     transition: all var(--duration-fast);
@@ -515,7 +515,7 @@
 }
 
 .settings-usage-bar-fill.danger {
-    background: var(--danger);
+    background: var(--error);
 }
 
 .settings-usage-upgrade {
@@ -534,7 +534,7 @@
 }
 
 .settings-section-danger .settings-section-header h2 {
-    color: var(--danger);
+    color: var(--error);
 }
 
 .danger-action {

@@ -205,7 +205,7 @@
 }
 
 .slot-remove:hover {
-    background: var(--danger);
+    background: var(--error);
 }
 
 .slot-badge {

@@ -56,7 +56,8 @@
       "Bash(__NEW_LINE__ echo \"\")",
       "Skill(security)",
       "Bash(do if [ -f \"$file\" ])",
-      "Bash(then echo \"=== $file ===\" grep -A8 '<footer class=\"\"site-footer\"\">' \"$file\")"
+      "Bash(then echo \"=== $file ===\" grep -A8 '<footer class=\"\"site-footer\"\">' \"$file\")",
+      "Bash(# Find all CSS variables used but potentially undefined # Extract all var\\(--xxx\\) usages and check which ones are defined in :root grep -roh \"\"var\\(--[a-z0-9-]*\\)\"\" --include=\"\"*.css\"\")"
     ]
   }
 }

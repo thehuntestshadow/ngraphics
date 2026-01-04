@@ -446,7 +446,7 @@ async function duplicateProduct(productId) {
         // 2. Fetch source images as base64
         const imageData = await fetchProductImages(source);
 
-        // 3. Create duplicate with modified name
+        // 3. Prepare duplicate data (don't save to DB yet)
         const duplicate = {
             name: `${source.name} (copy)`,
             sku: source.sku ? `${source.sku}-copy` : '',
@@ -457,14 +457,13 @@ async function duplicateProduct(productId) {
             tags: source.tags || []
         };
 
-        // 4. Create new product with images
-        const newProduct = await ngSupabase.createProduct(duplicate, imageData);
+        // 4. Hide loading, show grid
+        elements.loadingState.style.display = 'none';
+        elements.productsGrid.style.display = 'grid';
 
-        showToast('Product duplicated', 'success');
-
-        // 5. Reload products and open duplicate in edit mode
-        await loadProducts();
-        editProduct(newProduct.id);
+        // 5. Open modal in "new product" mode with pre-populated data
+        // Product will only be created when user clicks Save
+        openModalWithData(duplicate, imageData);
     } catch (error) {
         console.error('Duplicate error:', error);
         elements.loadingState.style.display = 'none';
@@ -824,6 +823,59 @@ function openModal(productId = null) {
         elements.modalTitle.textContent = 'Add Product';
     }
 
+    elements.productModal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+// Open modal in "Add New" mode but pre-populated with data (for duplication)
+function openModalWithData(productData, imageData) {
+    // Open in "new product" mode (no editingProductId)
+    state.editingProductId = null;
+    resetModalState();
+
+    // Set title
+    elements.modalTitle.textContent = 'Add Product';
+
+    // Populate form fields
+    elements.productName.value = productData.name || '';
+    elements.productCategory.value = productData.category || '';
+    elements.productSku.value = productData.sku || '';
+    elements.productDescription.value = productData.description || '';
+    elements.productTags.value = (productData.tags || []).join(', ');
+
+    // Populate features and benefits
+    state.features = productData.features || [];
+    state.benefits = productData.benefits || [];
+    renderFeatures();
+    renderBenefits();
+
+    // Populate primary image
+    if (imageData.primaryImage) {
+        state.primaryImage = imageData.primaryImage;
+        elements.primaryPreview.src = imageData.primaryImage;
+        elements.primaryPreview.style.display = 'block';
+        elements.removePrimary.style.display = 'flex';
+        elements.primaryImageUpload.querySelector('.upload-placeholder').style.display = 'none';
+    }
+
+    // Populate additional images
+    if (imageData.additionalImages?.length) {
+        imageData.additionalImages.forEach((img, i) => {
+            if (img && i < 3) {
+                state.additionalImages[i] = img;
+                const slot = i + 1;
+                const preview = document.getElementById(`additionalPreview${slot}`);
+                const removeBtn = document.getElementById(`removeAdditional${slot}`);
+                const upload = document.getElementById(`additionalUpload${slot}`);
+                preview.src = img;
+                preview.style.display = 'block';
+                removeBtn.style.display = 'flex';
+                upload.querySelector('.upload-placeholder').style.display = 'none';
+            }
+        });
+    }
+
+    // Open modal
     elements.productModal.classList.add('open');
     document.body.style.overflow = 'hidden';
 }

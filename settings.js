@@ -694,7 +694,7 @@ function showToast(message, type = 'info') {
             left: 50%;
             transform: translateX(-50%);
             padding: 12px 24px;
-            background: ${type === 'error' ? 'var(--danger)' : type === 'success' ? 'var(--apple-green)' : 'var(--bg-tertiary)'};
+            background: ${type === 'error' ? 'var(--error)' : type === 'success' ? 'var(--apple-green)' : 'var(--bg-tertiary)'};
             color: white;
             border-radius: var(--radius-md);
             z-index: 10000;
