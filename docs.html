@@ -72,7 +72,7 @@
                         <ul class="nav-list">
                             <li><a href="#introduction">Introduction</a></li>
                             <li><a href="#quick-start">Quick Start Guide</a></li>
-                            <li><a href="#api-setup">API Setup</a></li>
+                            <li><a href="#api-setup">Subscription & Credits</a></li>
                         </ul>
                     </div>
                     <div class="nav-section">
@@ -259,8 +259,8 @@
                             <div class="step">
                                 <div class="step-number">1</div>
                                 <div class="step-content">
-                                    <h3>Enter Your API Key</h3>
-                                    <p>Scroll to the bottom of the configuration panel and expand "API & Model Settings". Paste your OpenRouter API key and click "Save".</p>
+                                    <h3>Sign In to Your Account</h3>
+                                    <p>Click "Sign In" in the header to create an account or log in. A subscription is required to generate images.</p>
                                 </div>
                             </div>
                             <div class="step">
@@ -302,21 +302,21 @@
                     </div>
                 </section>
 
-                <!-- API Setup -->
+                <!-- Subscription -->
                 <section id="api-setup" class="docs-section">
                     <div class="section-header">
                         <span class="section-number">03</span>
-                        <h1>API Setup</h1>
+                        <h1>Subscription & Credits</h1>
                     </div>
                     <div class="section-body">
-                        <p>HEFAISTOS uses OpenRouter to access various AI image generation models. Here's how to set it up:</p>
+                        <p>HEFAISTOS uses a credit-based subscription system. Each generation uses credits based on the complexity and model used.</p>
 
-                        <h2>Getting an OpenRouter API Key</h2>
+                        <h2>Getting Started</h2>
                         <ol class="numbered-list">
-                            <li>Visit <a href="https://openrouter.ai" target="_blank">openrouter.ai</a> and create an account</li>
-                            <li>Navigate to the API Keys section in your dashboard</li>
-                            <li>Create a new API key with appropriate permissions</li>
-                            <li>Copy the key (it starts with <code>sk-or-</code>)</li>
+                            <li>Create an account by clicking "Sign In" in the header</li>
+                            <li>Choose a subscription plan from the <a href="pricing.html">Pricing</a> page</li>
+                            <li>Your credits are added automatically each billing cycle</li>
+                            <li>Track usage in your <a href="dashboard.html">Dashboard</a></li>
                         </ol>
 
                         <div class="callout callout-info">
@@ -327,13 +327,13 @@
                                 </svg>
                             </div>
                             <div class="callout-content">
-                                <h4>API Key Security</h4>
-                                <p>Your API key is stored locally in your browser and never sent to any server other than OpenRouter. It persists across sessions for convenience.</p>
+                                <h4>Credit Usage</h4>
+                                <p>Different studios and options use different amounts of credits. Higher quality settings and more variations use more credits per generation.</p>
                             </div>
                         </div>
 
-                        <h2>Available AI Models</h2>
-                        <p>HEFAISTOS supports multiple AI models, each with different strengths:</p>
+                        <h2>AI Models</h2>
+                        <p>HEFAISTOS uses multiple AI models optimized for different tasks:</p>
 
                         <table class="docs-table">
                             <thead>
@@ -346,16 +346,16 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><strong>Gemini 2.0 Flash</strong></td>
-                                    <td>Fast iterations, general use</td>
+                                    <td><strong>Gemini 3 Pro</strong></td>
+                                    <td>Image generation, editing</td>
                                     <td>Fast</td>
-                                    <td>Good</td>
+                                    <td>Excellent</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>GPT-4o</strong></td>
-                                    <td>Complex layouts, text accuracy</td>
-                                    <td>Medium</td>
-                                    <td>Excellent</td>
+                                    <td><strong>Gemini 2.0 Flash</strong></td>
+                                    <td>Text analysis, fast iterations</td>
+                                    <td>Very Fast</td>
+                                    <td>Good</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Flux</strong></td>
@@ -364,10 +364,10 @@
                                     <td>Excellent</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Riverflow</strong></td>
-                                    <td>Artistic styles</td>
+                                    <td><strong>Recraft</strong></td>
+                                    <td>Vector graphics, icons</td>
                                     <td>Medium</td>
-                                    <td>Good</td>
+                                    <td>Excellent</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -2147,12 +2147,11 @@
                         <h1>Settings</h1>
                     </div>
                     <div class="section-body">
-                        <p class="lead">Configure your account, API, appearance, and data preferences.</p>
+                        <p class="lead">Configure your account, appearance, and data preferences.</p>
                         <h2>Sections</h2>
                         <ul class="bullet-list">
                             <li><strong>Profile:</strong> Name, email, avatar</li>
                             <li><strong>Billing:</strong> Subscription plan, usage, invoices</li>
-                            <li><strong>API Keys:</strong> OpenRouter API key management</li>
                             <li><strong>Appearance:</strong> Theme (light/dark), language</li>
                             <li><strong>Data:</strong> Export data, clear cache, delete account</li>
                         </ul>
@@ -2326,20 +2325,26 @@
                 <!-- Troubleshooting -->
                 <section id="troubleshooting" class="docs-section">
                     <div class="section-header">
-                        <span class="section-number">43</span>
+                        <span class="section-number">61</span>
                         <h1>Troubleshooting</h1>
                     </div>
                     <div class="section-body">
                         <div class="troubleshoot-item">
-                            <h3>API Key Error (401)</h3>
-                            <p><strong>Cause:</strong> Invalid or expired API key</p>
-                            <p><strong>Solution:</strong> Check your OpenRouter API key is correct and has available credits</p>
+                            <h3>Authentication Error (401)</h3>
+                            <p><strong>Cause:</strong> Not signed in or session expired</p>
+                            <p><strong>Solution:</strong> Sign in to your account or refresh the page to restore your session</p>
+                        </div>
+
+                        <div class="troubleshoot-item">
+                            <h3>Out of Credits</h3>
+                            <p><strong>Cause:</strong> Your subscription credits have been used up</p>
+                            <p><strong>Solution:</strong> Wait for your next billing cycle or upgrade your subscription plan</p>
                         </div>
 
                         <div class="troubleshoot-item">
                             <h3>Rate Limit Error (429)</h3>
                             <p><strong>Cause:</strong> Too many requests in a short time</p>
-                            <p><strong>Solution:</strong> Wait a few minutes and try again, or upgrade your OpenRouter plan</p>
+                            <p><strong>Solution:</strong> Wait a few minutes and try again</p>
                         </div>
 
                         <div class="troubleshoot-item">
