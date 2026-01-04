@@ -891,6 +891,12 @@ function closeModal() {
 }
 
 function resetModalState() {
+    // Abort any pending image load requests to prevent memory leaks
+    if (state.imageLoadControllers) {
+        state.imageLoadControllers.forEach(c => c.abort());
+        state.imageLoadControllers = [];
+    }
+
     state.primaryImage = null;
     state.additionalImages = [null, null, null];
     state.features = [];

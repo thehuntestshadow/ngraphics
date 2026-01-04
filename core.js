@@ -1022,6 +1022,9 @@ class VirtualScroller {
         window.removeEventListener('resize', this._boundOnResize);
         this.wrapper.remove();
         this.wrapper = null;
+        // Clear bound handler references to allow GC
+        this._boundOnScroll = null;
+        this._boundOnResize = null;
     }
 }
 

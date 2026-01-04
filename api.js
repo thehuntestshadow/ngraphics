@@ -449,8 +449,11 @@ class APIClient {
      */
     _optimisticIncrementUsage(requestId) {
         if (this._cachedUsage && !this._cachedUsage.isUnlimited) {
-            this._cachedUsage.generationsUsed++;
-            this._optimisticIncrements.add(requestId);
+            // Check Set membership before incrementing to prevent race condition
+            if (!this._optimisticIncrements.has(requestId)) {
+                this._cachedUsage.generationsUsed++;
+                this._optimisticIncrements.add(requestId);
+            }
         }
     }
 
