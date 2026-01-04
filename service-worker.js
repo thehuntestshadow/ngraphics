@@ -3,7 +3,7 @@
  * Handles caching, offline support, and background sync
  */
 
-const CACHE_VERSION = 'v43';
+const CACHE_VERSION = 'v44';
 const CACHE_NAME = `hefaistos-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
@@ -85,7 +85,10 @@ const CACHE_STRATEGIES = {
                 cache.put(request, responseToCache);
             }
             return response;
-        }).catch(() => null);
+        }).catch(() => {
+            // Return offline response if fetch fails and no cache
+            return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
+        });
 
         return cached || fetchPromise;
     }
