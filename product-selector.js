@@ -16,6 +16,7 @@ class ProductSelector {
         this.products = [];
         this._isOpen = false;
         this._selectedProduct = null;
+        this._outsideClickHandler = null;
 
         this._init();
     }
@@ -144,12 +145,13 @@ class ProductSelector {
             this._toggle();
         });
 
-        // Close on outside click
-        document.addEventListener('click', (e) => {
+        // Close on outside click - store reference for cleanup
+        this._outsideClickHandler = (e) => {
             if (!this.container.contains(e.target)) {
                 this._close();
             }
-        });
+        };
+        document.addEventListener('click', this._outsideClickHandler);
 
         // Search
         let searchTimeout;
@@ -299,6 +301,16 @@ class ProductSelector {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    /**
+     * Clean up event listeners to prevent memory leaks
+     */
+    destroy() {
+        if (this._outsideClickHandler) {
+            document.removeEventListener('click', this._outsideClickHandler);
+            this._outsideClickHandler = null;
+        }
     }
 }
 

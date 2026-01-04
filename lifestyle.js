@@ -615,7 +615,13 @@ Choose based on what would look most natural and appealing for this specific pro
         // Auto-generate if enabled
         if (state.autoMode) {
             updateLoadingStatus('Generating lifestyle photo...');
-            await generateLifestylePhoto();
+            try {
+                await generateLifestylePhoto();
+            } catch (genError) {
+                console.error('Auto-generation failed:', genError);
+                hideLoading();
+                showError(genError.message || 'Failed to generate lifestyle photo');
+            }
         } else {
             showSuccess('Scene settings suggested based on your product!');
         }
@@ -624,7 +630,13 @@ Choose based on what would look most natural and appealing for this specific pro
         // Still try to generate with defaults if auto mode
         if (state.autoMode) {
             updateLoadingStatus('Generating lifestyle photo...');
-            await generateLifestylePhoto();
+            try {
+                await generateLifestylePhoto();
+            } catch (genError) {
+                console.error('Auto-generation failed:', genError);
+                hideLoading();
+                showError(genError.message || 'Failed to generate lifestyle photo');
+            }
         }
     }
 }

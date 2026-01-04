@@ -621,12 +621,16 @@ async function generateBundle() {
         { type: 'text', text: prompt }
     ];
 
-    // Add all product images
+    // Add all product images (skip any with missing image data)
     state.products.forEach((product, index) => {
-        messageContent.push({
-            type: 'image_url',
-            image_url: { url: product.imageBase64 }
-        });
+        if (product.imageBase64) {
+            messageContent.push({
+                type: 'image_url',
+                image_url: { url: product.imageBase64 }
+            });
+        } else {
+            console.warn(`Product ${index} missing imageBase64, skipping`);
+        }
     });
 
     const requestBody = {
@@ -733,12 +737,14 @@ Keep the same overall composition and style, but apply the requested adjustments
         { type: 'image_url', image_url: { url: state.generatedImageUrl } }
     ];
 
-    // Add product images for reference
-    state.products.forEach(product => {
-        messageContent.push({
-            type: 'image_url',
-            image_url: { url: product.imageBase64 }
-        });
+    // Add product images for reference (skip any with missing image data)
+    state.products.forEach((product, index) => {
+        if (product.imageBase64) {
+            messageContent.push({
+                type: 'image_url',
+                image_url: { url: product.imageBase64 }
+            });
+        }
     });
 
     const requestBody = {
