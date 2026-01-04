@@ -25,7 +25,7 @@ Active development roadmap for HEFAISTOS. For historical changes see [CHANGELOG.
 
 **Version**: 4.2 (Jan 2026)
 **Live URL**: https://hefaistos.xyz
-**Studios**: 20 production-ready tools
+**Studios**: 19 production-ready tools
 **Infrastructure**: Supabase Auth + Stripe payments live
 
 ### Platform Health

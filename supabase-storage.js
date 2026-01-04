@@ -44,6 +44,40 @@ const STUDIO_MAP_REVERSE = Object.fromEntries(
 );
 
 /**
+ * Sanitize a path component to prevent directory traversal
+ * Removes ../ sequences, leading slashes, and other dangerous characters
+ * @param {string} str - Path component to sanitize
+ * @returns {string} Sanitized path component
+ */
+function sanitizePathComponent(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/\.\./g, '')      // Remove .. sequences
+        .replace(/^\/+/, '')        // Remove leading slashes
+        .replace(/\/+/g, '-')       // Replace remaining slashes with dashes
+        .replace(/[<>:"|?*]/g, '-') // Remove Windows-forbidden chars
+        .trim();
+}
+
+/**
+ * Safely extract error message from any error type
+ * Handles Error objects, Supabase errors, strings, and objects
+ * @param {any} error - Error to extract message from
+ * @returns {string} Human-readable error message
+ */
+function getErrorMessage(error) {
+    if (!error) return 'Unknown error';
+    if (typeof error === 'string') return error;
+    if (error.message) return error.message;
+    if (error.error) return typeof error.error === 'string' ? error.error : 'Unknown error';
+    try {
+        return String(error);
+    } catch {
+        return 'Unknown error';
+    }
+}
+
+/**
  * @typedef {Object} StorageItem
  * @property {number} id - Unique item ID (timestamp-based)
  * @property {string} timestamp - ISO timestamp
@@ -134,7 +168,7 @@ class SupabaseStorage {
             console.error('[SupabaseStorage] Failed to save to Supabase:', error);
             // Don't silently fall back to offline - throw so caller knows save failed
             // Caller can retry or show error to user
-            throw new Error(`Failed to save: ${error.message}`);
+            throw new Error(`Failed to save: ${getErrorMessage(error)}`);
         }
     }
 
@@ -671,7 +705,11 @@ class SupabaseStorage {
         if (!imageData) return { paths: {}, failures: [] };
 
         const storage = ngSupabase.storage();
-        const basePath = `${userId}/${this.type}/${this.studioName}/${itemId}`;
+        // Sanitize all path components to prevent directory traversal
+        const safeUserId = sanitizePathComponent(userId);
+        const safeStudioName = sanitizePathComponent(this.studioName);
+        const safeItemId = sanitizePathComponent(String(itemId));
+        const basePath = `${safeUserId}/${this.type}/${safeStudioName}/${safeItemId}`;
         const paths = {};
         const failures = [];
 
@@ -687,7 +725,7 @@ class SupabaseStorage {
                 });
                 if (error) {
                     // Main image failure is critical - throw to caller
-                    throw new Error(`Main image upload failed: ${error.message}`);
+                    throw new Error(`Main image upload failed: ${getErrorMessage(error)}`);
                 }
                 paths.main = path;
             } catch (e) {
@@ -707,14 +745,16 @@ class SupabaseStorage {
                     upsert: true
                 });
                 if (error) {
-                    failures.push(`thumbnail: ${error.message}`);
-                    console.warn('[SupabaseStorage] Thumbnail upload failed:', error.message);
+                    const errorMsg = getErrorMessage(error);
+                    failures.push(`thumbnail: ${errorMsg}`);
+                    console.warn('[SupabaseStorage] Thumbnail upload failed:', errorMsg);
                 } else {
                     paths.thumbnail = path;
                 }
             } catch (e) {
-                failures.push(`thumbnail: ${e.message}`);
-                console.warn('[SupabaseStorage] Failed to upload thumbnail:', e.message);
+                const errorMsg = getErrorMessage(e);
+                failures.push(`thumbnail: ${errorMsg}`);
+                console.warn('[SupabaseStorage] Failed to upload thumbnail:', errorMsg);
             }
         }
 
@@ -731,14 +771,16 @@ class SupabaseStorage {
                         upsert: true
                     });
                     if (error) {
-                        failures.push(`variant_${i}: ${error.message}`);
-                        console.warn(`[SupabaseStorage] Variant ${i} upload failed:`, error.message);
+                        const errorMsg = getErrorMessage(error);
+                        failures.push(`variant_${i}: ${errorMsg}`);
+                        console.warn(`[SupabaseStorage] Variant ${i} upload failed:`, errorMsg);
                     } else {
                         paths.variants.push(path);
                     }
                 } catch (e) {
-                    failures.push(`variant_${i}: ${e.message}`);
-                    console.warn(`[SupabaseStorage] Failed to upload variant ${i}:`, e.message);
+                    const errorMsg = getErrorMessage(e);
+                    failures.push(`variant_${i}: ${errorMsg}`);
+                    console.warn(`[SupabaseStorage] Failed to upload variant ${i}:`, errorMsg);
                 }
             }
         }

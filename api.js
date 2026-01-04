@@ -609,7 +609,7 @@ class APIClient {
             image: result.image,
             images: result.images || [result.image],
             text: result.text,
-            seed: result.seed || seed,
+            seed: result.seed ?? seed,
             model
         };
     }
@@ -701,10 +701,10 @@ class APIClient {
         const results = [];
         const errors = [];
 
-        // Generate seeds if not provided
+        // Generate seeds if not provided (using crypto for better randomness)
         const variationSeeds = seeds || Array.from(
             { length: count },
-            () => Math.floor(Math.random() * 999999999)
+            () => crypto.getRandomValues(new Uint32Array(1))[0] % 999999999
         );
 
         // Create all requests
@@ -794,7 +794,7 @@ class APIClient {
 
         // Create abort controller for this request
         const controller = new AbortController();
-        const reqId = requestId || `req-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const reqId = requestId || crypto.randomUUID();
         this.abortControllers.set(reqId, controller);
 
         // Optimistically increment usage to prevent visual race condition

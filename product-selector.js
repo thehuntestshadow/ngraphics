@@ -119,15 +119,15 @@ class ProductSelector {
         this.list.innerHTML = products.map(p => `
             <div class="product-selector-item" data-id="${p.id}">
                 ${p.thumbnail_path
-                    ? `<img src="${ngSupabase.getProductImageUrl(p.thumbnail_path)}" alt="" class="product-thumb" loading="lazy">`
-                    : `<div class="product-thumb-placeholder">
+        ? `<img src="${ngSupabase.getProductImageUrl(p.thumbnail_path)}" alt="" class="product-thumb" loading="lazy">`
+        : `<div class="product-thumb-placeholder">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                             <rect x="3" y="3" width="18" height="18" rx="2"/>
                             <circle cx="8.5" cy="8.5" r="1.5"/>
                             <polyline points="21 15 16 10 5 21"/>
                         </svg>
                     </div>`
-                }
+}
                 <div class="product-item-info">
                     <span class="product-item-name">${this._escapeHtml(p.name)}</span>
                     <span class="product-item-category">${this._escapeHtml(p.category)}</span>

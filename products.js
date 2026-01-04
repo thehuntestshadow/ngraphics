@@ -643,15 +643,15 @@ function renderProducts() {
         <div class="product-card" data-id="${product.id}">
             <div class="product-image">
                 ${product.thumbnail_path
-                    ? `<img src="${ngSupabase.getProductImageUrl(product.thumbnail_path)}" alt="${escapeHtml(product.name)}" loading="lazy">`
-                    : `<div class="product-placeholder">
+        ? `<img src="${ngSupabase.getProductImageUrl(product.thumbnail_path)}" alt="${escapeHtml(product.name)}" loading="lazy">`
+        : `<div class="product-placeholder">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                             <rect x="3" y="3" width="18" height="18" rx="2"/>
                             <circle cx="8.5" cy="8.5" r="1.5"/>
                             <polyline points="21 15 16 10 5 21"/>
                         </svg>
                     </div>`
-                }
+}
             </div>
             <div class="product-info">
                 <h3 class="product-name">${escapeHtml(product.name)}</h3>

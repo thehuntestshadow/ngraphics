@@ -1650,7 +1650,7 @@ function handleGalleryImageError(img) {
 // Generate thumbnail HTML with fallback placeholder
 function getGalleryThumbHTML(imageUrl) {
     if (!imageUrl) {
-        return `<div class="gallery-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
+        return '<div class="gallery-thumb-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
     }
 
     return `<img src="${escapeHtml(imageUrl)}" alt="" class="gallery-thumb" onerror="handleGalleryImageError(this)">`;
@@ -2111,14 +2111,12 @@ function sortUsers() {
         if (column === 'created_at') {
             aVal = new Date(aVal).getTime();
             bVal = new Date(bVal).getTime();
-        }
-        // Handle numbers
-        else if (column === 'credits') {
+        } else if (column === 'credits') {
+            // Handle numbers
             aVal = Number(aVal) || 0;
             bVal = Number(bVal) || 0;
-        }
-        // Handle strings
-        else if (typeof aVal === 'string') {
+        } else if (typeof aVal === 'string') {
+            // Handle strings
             aVal = aVal.toLowerCase();
             bVal = bVal.toLowerCase();
         }
@@ -2357,7 +2355,7 @@ async function copyEmail(email, button) {
 
         // Visual feedback
         const originalHTML = button.innerHTML;
-        button.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>`;
+        button.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>';
         button.classList.add('copied');
 
         setTimeout(() => {

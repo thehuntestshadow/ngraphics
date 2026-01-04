@@ -183,7 +183,10 @@ class AuthUI {
         // Close button
         this._modal.querySelector('.auth-modal-close').addEventListener('click', () => this.hide());
 
-        // Escape key - store reference for cleanup in hide()
+        // Escape key - remove existing handler first to prevent duplicates
+        if (this._escHandler) {
+            document.removeEventListener('keydown', this._escHandler);
+        }
         this._escHandler = (e) => {
             if (e.key === 'Escape' && this._isOpen) {
                 this.hide();
@@ -317,10 +320,17 @@ class AccountMenu {
     constructor(container) {
         if (!container) return;
 
+        // Clean up any existing instance on this container to prevent memory leaks
+        if (container._accountMenuInstance) {
+            container._accountMenuInstance.destroy();
+        }
+        container._accountMenuInstance = this;
+
         this.container = container;
         this._dropdownOpen = false;
         this._outsideClickHandler = null;
         this._unsubscribeAuth = null;
+        this._boundBeforeUnload = null;
         this._init();
     }
 
@@ -337,6 +347,10 @@ class AccountMenu {
             }
         };
         document.addEventListener('click', this._outsideClickHandler);
+
+        // Auto-cleanup on page unload to prevent memory leaks
+        this._boundBeforeUnload = () => this.destroy();
+        window.addEventListener('beforeunload', this._boundBeforeUnload);
     }
 
     /**
@@ -351,6 +365,14 @@ class AccountMenu {
         if (this._unsubscribeAuth) {
             this._unsubscribeAuth();
             this._unsubscribeAuth = null;
+        }
+        if (this._boundBeforeUnload) {
+            window.removeEventListener('beforeunload', this._boundBeforeUnload);
+            this._boundBeforeUnload = null;
+        }
+        // Clear reference from container
+        if (this.container && this.container._accountMenuInstance === this) {
+            this.container._accountMenuInstance = null;
         }
     }
 

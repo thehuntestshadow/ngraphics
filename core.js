@@ -728,6 +728,7 @@ class RequestDeduplicator {
         this.pending = new Map();
         this.cache = new Map();
         this.cacheMaxAge = 5 * 60 * 1000; // 5 minutes
+        this.cacheMaxSize = 100; // LRU cache max entries
     }
 
     /**
@@ -743,6 +744,24 @@ class RequestDeduplicator {
     }
 
     /**
+     * Evict oldest entries if cache exceeds max size (LRU eviction)
+     */
+    _evictOldest() {
+        // Ensure cacheMaxSize is valid to prevent infinite loops
+        if (this.cacheMaxSize < 1) this.cacheMaxSize = 1;
+        if (this.cache.size <= this.cacheMaxSize) return;
+
+        // Convert to array, sort by timestamp (oldest first), evict excess
+        const entries = [...this.cache.entries()]
+            .sort((a, b) => a[1].timestamp - b[1].timestamp);
+
+        const toEvict = entries.slice(0, this.cache.size - this.cacheMaxSize);
+        for (const [key] of toEvict) {
+            this.cache.delete(key);
+        }
+    }
+
+    /**
      * Deduplicated fetch - returns same promise for identical concurrent requests
      */
     async fetch(url, options = {}, fetchFn = fetch) {
@@ -752,6 +771,8 @@ class RequestDeduplicator {
         if (options.cache !== false) {
             const cached = this.cache.get(key);
             if (cached && Date.now() - cached.timestamp < this.cacheMaxAge) {
+                // Update timestamp for LRU (move to "recently used")
+                cached.timestamp = Date.now();
                 return cached.data;
             }
         }
@@ -772,6 +793,8 @@ class RequestDeduplicator {
                         data,
                         timestamp: Date.now()
                     });
+                    // Evict oldest entries if cache is too large
+                    this._evictOldest();
                 }
 
                 return data;
@@ -835,6 +858,10 @@ class VirtualScroller {
         this.containerWidth = 0;
         this.actualColumns = 1;
 
+        // Store bound handlers for cleanup
+        this._boundOnScroll = this._onScroll.bind(this);
+        this._boundOnResize = this._onResize.bind(this);
+
         this._init();
     }
 
@@ -856,9 +883,9 @@ class VirtualScroller {
         this.wrapper.appendChild(this.content);
         this.container.appendChild(this.wrapper);
 
-        // Bind events
-        this.wrapper.addEventListener('scroll', this._onScroll.bind(this));
-        window.addEventListener('resize', this._onResize.bind(this));
+        // Bind events using stored handlers
+        this.wrapper.addEventListener('scroll', this._boundOnScroll);
+        window.addEventListener('resize', this._boundOnResize);
 
         this._calculateDimensions();
     }
@@ -989,8 +1016,12 @@ class VirtualScroller {
      * Destroy and cleanup
      */
     destroy() {
-        window.removeEventListener('resize', this._onResize.bind(this));
+        // Guard against double-destroy
+        if (!this.wrapper) return;
+        this.wrapper.removeEventListener('scroll', this._boundOnScroll);
+        window.removeEventListener('resize', this._boundOnResize);
         this.wrapper.remove();
+        this.wrapper = null;
     }
 }
 

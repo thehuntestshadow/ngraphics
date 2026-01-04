@@ -864,6 +864,14 @@ class SupabaseClient {
         if (!this.isAuthenticated) throw new Error('Not authenticated');
         await this.init();
 
+        // Validate required fields
+        if (!product.name?.trim()) {
+            throw new Error('Product name is required');
+        }
+        if (!product.category?.trim()) {
+            throw new Error('Product category is required');
+        }
+
         const productId = crypto.randomUUID();
         const imagePaths = await this._uploadProductImages(productId, imageData);
 

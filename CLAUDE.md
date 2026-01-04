@@ -143,6 +143,8 @@ The application consists of multiple pages, each with its own JS file, sharing c
 | Products | `products.html`, `products.js`, `products.css` | Saved product profiles with images, features, benefits for studio autofill |
 | Admin | `admin.html`, `admin.js`, `admin.css` | User management, analytics, system administration (admin only) |
 | Documentation | `docs.html`, `docs.css` | User documentation |
+| Privacy Policy | `privacy.html`, `docs.css` | Legal privacy policy page |
+| Terms of Service | `terms.html`, `docs.css` | Legal terms of service page |
 
 ### Shared Resources
 - `styles.css` - Base styles, CSS variables, theming, common components, mobile optimization
@@ -156,6 +158,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `service-worker.js` - Service Worker for caching and offline support
 - `supabase.js` - Supabase client wrapper (auth, profiles, usage tracking, CMS)
 - `auth-ui.js` - Authentication UI (login/signup modal, account menu, AuthGate for auth-required pages)
+- `config.js` - Environment configuration (Supabase, Stripe keys, tier pricing, feature flags)
 - `supabase-storage.js` - Supabase-first storage with IndexedDB caching (source of truth for history/favorites)
 - `offline-queue.js` - Offline write queue (IndexedDB queue for operations when offline)
 - `studio-bootstrap.js` - Shared studio initialization (auth gating, storage setup, keyboard shortcuts)
@@ -169,12 +172,18 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `ROADMAP.md` - Active roadmap (current sprint, quarterly goals, metrics)
 - `BACKLOG.md` - Prioritized feature backlog with effort estimates
 - `IDEAS.md` - Unvalidated ideas parking lot
+- `IDEAS_INNOVATIVE.md` - Transformative/paradigm-shift concepts
 - `CHANGELOG.md` - Version history and completed features
 - `UI_PATTERNS.md` - HTML/CSS patterns for consistent UI
 - `API_REFERENCE.md` - Code examples for shared infrastructure
 - `TESTING.md` - Testing guide (visual tests, performance, hooks)
 - `ADMIN_PAGE.md` - Admin panel documentation and future improvements
 - `SETTINGS_PAGE.md` - Settings page documentation and sections
+- `STUDIO.md` - Philosophy and patterns for studio pages
+- `COMMERCIAL.md` - Business model and commercial strategy
+- `SECURITY.md` - Security configuration and measures
+- `CONVERSION_ANALYSIS.md` - Conversion funnel analysis and improvements
+- `USABILITY_ANALYSIS.md` - UX analysis and recommendations
 
 ## API Integration
 
