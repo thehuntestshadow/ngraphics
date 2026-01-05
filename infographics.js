@@ -2485,15 +2485,15 @@ DESIGN REQUIREMENTS:
     }
 
     // Add features with emphasis info
-    prompt += 'PRODUCT FEATURES:\nDisplay each feature with an icon. Use the EXACT text provided - do not expand, rephrase, or add words.\n\n';
+    prompt += 'PRODUCT FEATURES (for your reference only - DO NOT write "Product Features" as a heading in the image):\nDisplay each feature with an icon. Use the EXACT text provided - do not expand, rephrase, or add words.\n\n';
 
     if (primaryFeatures.length > 0) {
-        prompt += 'PRIMARY FEATURES (display larger/more prominent):\n';
+        prompt += 'PRIMARY (display larger/more prominent - DO NOT write this label in the image):\n';
         primaryFeatures.forEach(f => {
             const iconHint = f.icon !== 'auto' && f.icon !== 'none' ? ` [icon: ${f.icon}]` : '';
             prompt += `★ "${f.text}"${iconHint}\n`;
         });
-        prompt += '\nSECONDARY FEATURES:\n';
+        prompt += '\nSECONDARY (DO NOT write this label in the image):\n';
     }
 
     characteristics.filter(c => !c.isPrimary).forEach(c => {
@@ -2516,7 +2516,7 @@ DESIGN REQUIREMENTS:
 
     // Add benefits to prompt if any
     if (benefits.length > 0) {
-        prompt += 'PRODUCT BENEFITS (customer value propositions - display these separately from features):\n';
+        prompt += 'PRODUCT BENEFITS (for your reference only - DO NOT write "Product Benefits" as a heading in the image - display these separately from features):\n';
         benefits.forEach(b => {
             prompt += `✓ "${b}"\n`;
         });
