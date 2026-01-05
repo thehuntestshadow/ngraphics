@@ -602,7 +602,7 @@ class SharedHistory {
         return item;
     }
 
-    async _createThumbnail(imageUrl, maxSize = 150) {
+    async _createThumbnail(imageUrl, maxSize = 300) {
         if (!imageUrl) return null;
         return new Promise((resolve) => {
             const img = new Image();
@@ -622,7 +622,7 @@ class SharedHistory {
                     return;
                 }
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                resolve(canvas.toDataURL('image/jpeg', 0.7));
+                resolve(canvas.toDataURL('image/jpeg', 0.85));
             };
             img.onerror = () => resolve(null);
             img.src = imageUrl;
@@ -1232,7 +1232,7 @@ class SharedFavorites {
         return item;
     }
 
-    async _createThumbnail(imageUrl, maxSize = 150) {
+    async _createThumbnail(imageUrl, maxSize = 300) {
         if (!imageUrl) return null;
         return new Promise((resolve) => {
             const img = new Image();
@@ -1252,7 +1252,7 @@ class SharedFavorites {
                     return;
                 }
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                resolve(canvas.toDataURL('image/jpeg', 0.7));
+                resolve(canvas.toDataURL('image/jpeg', 0.85));
             };
             img.onerror = () => resolve(null);
             img.src = imageUrl;

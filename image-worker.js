@@ -127,13 +127,13 @@ async function compressImage({ imageData, options = {} }) {
 // ============================================
 // THUMBNAIL CREATION
 // ============================================
-async function createThumbnail({ imageData, size = 150 }) {
+async function createThumbnail({ imageData, size = 300 }) {
     return compressImage({
         imageData,
         options: {
             maxWidth: size,
             maxHeight: size,
-            quality: 0.7,
+            quality: 0.85,
             format: 'image/webp'
         }
     });
