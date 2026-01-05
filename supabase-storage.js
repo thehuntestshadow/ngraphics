@@ -518,7 +518,7 @@ class SupabaseStorage {
         // First, try to load from cache
         const cacheKeys = await this.cache.getAllKeys();
         const prefix = `${this.type}_`;
-        const itemKeys = cacheKeys.filter(k => k.startsWith(prefix));
+        const itemKeys = cacheKeys.filter(k => typeof k === 'string' && k.startsWith(prefix));
 
         // Load cached metadata
         const cachedItems = [];

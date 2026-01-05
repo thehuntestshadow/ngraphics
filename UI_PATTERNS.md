@@ -716,6 +716,128 @@ Always use the pattern `{studioId}_auto_mode`:
 
 ---
 
+## Product Selector (Multi-Select Mode)
+
+The ProductSelector component (`product-selector.js`) supports a multi-select mode for batch operations. When enabled, products have checkboxes and the dropdown stays open for multiple selections.
+
+### Usage
+
+```javascript
+// Single-select (default) - dropdown closes after selection
+const selector = new ProductSelector({
+    container: document.getElementById('productSelectorContainer'),
+    onSelect: (product) => loadProduct(product)
+});
+
+// Multi-select mode - dropdown stays open, checkboxes shown
+const batchSelector = new ProductSelector({
+    container: document.getElementById('batchProductSelectorContainer'),
+    multiSelect: true,
+    onSelectionChange: (products) => updateBatchQueue(products)
+});
+```
+
+### Trigger Text
+
+| Mode | Empty State | With Selection |
+|------|-------------|----------------|
+| Single | "Load Product" | `{productName}` |
+| Multi | "Select Products" | "N product(s) selected" |
+
+### Checkbox Styling
+
+When `multiSelect: true`, products render with checkboxes:
+
+```css
+.product-selector-item .product-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+.product-selector-item.selected {
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+```
+
+### Methods
+
+| Method | Description |
+|--------|-------------|
+| `getSelectedProducts()` | Returns array of selected products (multi-select) |
+| `getSelectedProduct()` | Returns single selected product |
+| `clearSelection()` | Deselects all, resets trigger text |
+| `reset()` | Alias for clearSelection |
+
+---
+
+## Batch Mode UI
+
+For studios that support batch processing (e.g., Model Studio), use this pattern to show a queue of items with status badges.
+
+### Structure
+
+```html
+<!-- Batch queue grid -->
+<div class="batch-queue" id="batchQueue">
+    <div class="batch-item pending">
+        <img src="thumbnail.jpg" class="batch-item-thumb">
+        <span class="batch-item-status">pending</span>
+        <span class="batch-item-name">Product Name</span>
+    </div>
+</div>
+
+<!-- Batch controls -->
+<div class="batch-controls">
+    <span id="batchStatus">0 / 5 completed</span>
+    <div class="batch-progress-bar">
+        <div class="batch-progress-fill" style="width: 40%"></div>
+    </div>
+    <button class="btn-secondary" id="clearBatchBtn">Clear All</button>
+    <button class="btn-primary" id="startBatchBtn">Generate All (5)</button>
+</div>
+
+<!-- Download button (shown when complete) -->
+<button id="downloadBatchZipBtn" class="btn-primary" style="display: none;">
+    Download All as ZIP
+</button>
+```
+
+### Status Classes
+
+| Class | State | Visual |
+|-------|-------|--------|
+| `.pending` | Not started | Gray badge |
+| `.processing` | In progress | Blue badge + spinner |
+| `.completed` | Success | Green badge + checkmark |
+| `.failed` | Error | Red badge + X |
+
+### CSS Pattern
+
+```css
+.batch-queue {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+}
+
+.batch-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.batch-item.processing { opacity: 0.7; }
+.batch-item.completed { border: 2px solid var(--success); }
+.batch-item.failed { border: 2px solid var(--error); }
+```
+
+---
+
 ## Basic Settings Collapsible
 
 Hides basic options (Scene, Mood, Time, etc.) behind a collapsible section. Uses the same pattern as Advanced Options but collapsed by default for a cleaner initial experience.

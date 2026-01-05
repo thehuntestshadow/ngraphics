@@ -99,6 +99,22 @@
                         </label>
                     </div>
 
+                    <!-- Batch Mode Toggle -->
+                    <div class="batch-mode-row">
+                        <button type="button" class="batch-mode-toggle" id="batchModeToggle" title="Batch generate from saved products">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"/>
+                                <rect x="14" y="3" width="7" height="7"/>
+                                <rect x="3" y="14" width="7" height="7"/>
+                                <rect x="14" y="14" width="7" height="7"/>
+                            </svg>
+                            <span>Batch Mode</span>
+                        </button>
+                    </div>
+
+                    <!-- Single Mode Container (standard product upload) -->
+                    <div id="singleModeContainer">
+
                     <!-- Product Upload (Multiple Images) -->
                     <div class="config-section">
                         <div class="section-label" data-tooltip="Upload product images that the model will wear, hold, or showcase. Add multiple angles for better results.">
@@ -209,6 +225,59 @@
                         </div>
                         <p class="upload-hint">Add multiple angles of the same product for better accuracy</p>
                     </div>
+                    </div><!-- End singleModeContainer -->
+
+                    <!-- Batch Mode Container (hidden by default) -->
+                    <div id="batchModeContainer" style="display: none;">
+                        <div class="config-section">
+                            <div class="section-label">
+                                <span class="label-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="7" height="7"/>
+                                        <rect x="14" y="3" width="7" height="7"/>
+                                        <rect x="3" y="14" width="7" height="7"/>
+                                        <rect x="14" y="14" width="7" height="7"/>
+                                    </svg>
+                                </span>
+                                Select Products for Batch
+                                <span class="label-hint">(same settings applied to all)</span>
+                            </div>
+
+                            <!-- Multi-select Product Selector -->
+                            <div id="batchProductSelectorContainer"></div>
+
+                            <!-- Batch Queue Display -->
+                            <div class="batch-queue" id="batchQueue">
+                                <div class="batch-empty">
+                                    <p>Select products above to add to batch</p>
+                                </div>
+                            </div>
+
+                            <!-- Batch Controls -->
+                            <div class="batch-controls" id="batchControls" style="display: none;">
+                                <div class="batch-progress">
+                                    <span class="batch-status" id="batchStatus">0 / 0 processed</span>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" id="batchProgressFill"></div>
+                                    </div>
+                                </div>
+                                <div class="batch-actions">
+                                    <button type="button" class="btn-secondary btn-sm" id="clearBatchBtn">Clear All</button>
+                                    <button type="button" class="btn-primary btn-sm" id="startBatchBtn">Generate All</button>
+                                </div>
+                            </div>
+
+                            <!-- Download ZIP (appears after completion) -->
+                            <button type="button" class="btn-success batch-download-btn" id="downloadBatchZipBtn" style="display: none;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                    <polyline points="7,10 12,15 17,10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Download All as ZIP
+                            </button>
+                        </div>
+                    </div><!-- End batchModeContainer -->
 
                     <!-- Basic Settings (Collapsible) -->
                     <div class="advanced-section" id="basicSection">
@@ -645,7 +714,8 @@
                             <div class="option-group">
                                 <label class="option-label" data-tooltip="Light source and mood. Studio is even, Golden Hour is warm, Dramatic creates shadows.">Lighting</label>
                                 <select class="select-field select-sm" id="lighting">
-                                    <option value="studio" selected>Studio</option>
+                                    <option value="auto" selected>Auto</option>
+                                    <option value="studio">Studio</option>
                                     <option value="natural">Natural Daylight</option>
                                     <option value="golden">Golden Hour</option>
                                     <option value="soft">Soft / Diffused</option>
@@ -957,9 +1027,17 @@
 
                     <!-- Result Display -->
                     <div class="output-result" id="resultContainer">
-                        <!-- Single Image -->
-                        <div class="result-image-wrap">
-                            <img id="resultImage" class="result-image" alt="Generated model photo">
+                        <!-- Result Images Container (for positioning overlay buttons) -->
+                        <div class="result-images-container">
+                            <!-- Single Image -->
+                            <div class="result-image-wrap">
+                                <img id="resultImage" class="result-image" alt="Generated model photo">
+                            </div>
+
+                            <!-- Multiple Results Grid -->
+                            <div class="result-grid" id="resultGrid"></div>
+
+                            <!-- Overlay Buttons (work for both single and multiple) -->
                             <button class="btn-favorite" id="favoriteBtn" title="Save to favorites">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -974,9 +1052,6 @@
                             </button>
                             <div class="image-info-overlay" id="imageInfoOverlay" style="display: none;"></div>
                         </div>
-
-                        <!-- Multiple Results Grid -->
-                        <div class="result-grid" id="resultGrid"></div>
 
                         <!-- Actions -->
                         <div class="result-actions">

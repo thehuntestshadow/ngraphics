@@ -13,9 +13,12 @@ class ProductSelector {
     constructor(options) {
         this.container = options.container;
         this.onSelect = options.onSelect || (() => {});
+        this.onSelectionChange = options.onSelectionChange || (() => {}); // Multi-select callback
+        this.multiSelect = options.multiSelect || false; // Enable multi-select mode
         this.products = [];
         this._isOpen = false;
         this._selectedProduct = null;
+        this._selectedProducts = []; // For multi-select mode
         this._outsideClickHandler = null;
 
         this._init();
@@ -37,7 +40,7 @@ class ProductSelector {
                         <rect x="3" y="14" width="7" height="7" rx="1"/>
                         <path d="M14 17h7m-3.5-3.5v7"/>
                     </svg>
-                    <span class="trigger-text">Load Product</span>
+                    <span class="trigger-text">${this.multiSelect ? 'Select Products' : 'Load Product'}</span>
                     <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="6 9 12 15 18 9"/>
                     </svg>
@@ -117,8 +120,16 @@ class ProductSelector {
             return;
         }
 
-        this.list.innerHTML = products.map(p => `
-            <div class="product-selector-item" data-id="${p.id}">
+        this.list.innerHTML = products.map(p => {
+            const isSelected = this.multiSelect && this._selectedProducts.some(sp => sp.id === p.id);
+            return `
+            <div class="product-selector-item ${isSelected ? 'selected' : ''}" data-id="${p.id}">
+                ${this.multiSelect ? `
+                    <label class="product-checkbox">
+                        <input type="checkbox" ${isSelected ? 'checked' : ''}>
+                        <span class="checkbox-mark"></span>
+                    </label>
+                ` : ''}
                 ${p.thumbnail_path
         ? `<img src="${ngSupabase.getProductImageUrl(p.thumbnail_path)}" alt="" class="product-thumb" loading="lazy">`
         : `<div class="product-thumb-placeholder">
@@ -134,7 +145,7 @@ class ProductSelector {
                     <span class="product-item-category">${this._escapeHtml(p.category)}</span>
                 </div>
             </div>
-        `).join('');
+        `}).join('');
     }
 
     _attachEvents() {
@@ -178,23 +189,30 @@ class ProductSelector {
             if (!item) return;
 
             const productId = item.dataset.id;
-            const product = await ngSupabase.getProduct(productId);
 
-            if (product) {
-                // Mark as recently used
-                await ngSupabase.touchProduct(productId);
+            if (this.multiSelect) {
+                // Multi-select mode: toggle selection
+                await this._toggleProductSelection(productId, item);
+            } else {
+                // Single-select mode: existing behavior
+                const product = await ngSupabase.getProduct(productId);
 
-                // Update UI
-                this._selectedProduct = product;
-                this.triggerText.textContent = product.name;
-                this.trigger.classList.add('has-selection');
+                if (product) {
+                    // Mark as recently used
+                    await ngSupabase.touchProduct(productId);
 
-                // Load product images from storage
-                await this._loadProductImages(product);
+                    // Update UI
+                    this._selectedProduct = product;
+                    this.triggerText.textContent = product.name;
+                    this.trigger.classList.add('has-selection');
 
-                // Call the onSelect callback
-                this.onSelect(product);
-                this._close();
+                    // Load product images from storage
+                    await this._loadProductImages(product);
+
+                    // Call the onSelect callback
+                    this.onSelect(product);
+                    this._close();
+                }
             }
         });
 
@@ -246,6 +264,51 @@ class ProductSelector {
         });
     }
 
+    /**
+     * Toggle product selection in multi-select mode
+     */
+    async _toggleProductSelection(productId, item) {
+        const existingIndex = this._selectedProducts.findIndex(p => p.id === productId);
+
+        if (existingIndex >= 0) {
+            // Deselect: remove from array
+            this._selectedProducts.splice(existingIndex, 1);
+            item.classList.remove('selected');
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            if (checkbox) checkbox.checked = false;
+        } else {
+            // Select: fetch full product data and add to array
+            const product = await ngSupabase.getProduct(productId);
+            if (product) {
+                await ngSupabase.touchProduct(productId);
+                await this._loadProductImages(product);
+                this._selectedProducts.push(product);
+                item.classList.add('selected');
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                if (checkbox) checkbox.checked = true;
+            }
+        }
+
+        this._updateTriggerText();
+        this.onSelectionChange([...this._selectedProducts]);
+    }
+
+    /**
+     * Update trigger button text for multi-select mode
+     */
+    _updateTriggerText() {
+        if (!this.multiSelect) return;
+
+        const count = this._selectedProducts.length;
+        if (count === 0) {
+            this.triggerText.textContent = 'Select Products';
+            this.trigger.classList.remove('has-selection');
+        } else {
+            this.triggerText.textContent = `${count} product${count > 1 ? 's' : ''} selected`;
+            this.trigger.classList.add('has-selection');
+        }
+    }
+
     _toggle() {
         this._isOpen ? this._close() : this._open();
     }
@@ -275,8 +338,25 @@ class ProductSelector {
      */
     reset() {
         this._selectedProduct = null;
-        this.triggerText.textContent = 'Load Product';
+        this._selectedProducts = [];
+        this.triggerText.textContent = this.multiSelect ? 'Select Products' : 'Load Product';
         this.trigger.classList.remove('has-selection');
+        this._renderList(this.products);
+    }
+
+    /**
+     * Clear all selections (alias for reset, multi-select friendly)
+     */
+    clearSelection() {
+        this.reset();
+        this.onSelectionChange([]);
+    }
+
+    /**
+     * Get all selected products (multi-select mode)
+     */
+    getSelectedProducts() {
+        return [...this._selectedProducts];
     }
 
     /**

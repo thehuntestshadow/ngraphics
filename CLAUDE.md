@@ -162,7 +162,7 @@ The application consists of multiple pages, each with its own JS file, sharing c
 - `supabase-storage.js` - Supabase-first storage with IndexedDB caching (source of truth for history/favorites)
 - `offline-queue.js` - Offline write queue (IndexedDB queue for operations when offline)
 - `studio-bootstrap.js` - Shared studio initialization (auth gating, storage setup, keyboard shortcuts)
-- `product-selector.js` - Reusable dropdown component for loading saved products into studios
+- `product-selector.js` - Reusable dropdown component for loading saved products into studios (supports multi-select mode)
 - `cloud-sync.js` - DEPRECATED: Legacy sync manager, replaced by SupabaseStorage
 - `onboarding.js` - First-time user guidance tour (landing and studio tours)
 
@@ -398,6 +398,25 @@ Generate AI model photos with products (person wearing/holding product).
 - **Quality**: Depth of Field, Color Grading, Skin Retouch, Composition, Quality Level, Realism
 - **Technical**: Lens, Film Grain, Contrast, Product Focus
 - **Collage Mode**: Multi-angle collages (2/3/4/6 angles), Face toggle
+
+### Batch Generation
+Generate model photos for multiple products at once with the same settings.
+
+- **Toggle**: Batch Mode button switches between single/batch modes
+- **Multi-Select**: ProductSelector with checkboxes for selecting multiple products
+- **Queue Display**: Grid showing selected products with status badges (pending/processing/completed/failed)
+- **Per-Product Data**: Each product uses its own images, title, and description
+- **Shared Settings**: Model appearance, lighting, scene, etc. apply to all products
+- **Processing**: Sequential generation with 500ms delay between requests
+- **Download**: ZIP file containing all generated images via `SharedDownload.downloadAsZip()`
+
+Key batch functions:
+- `toggleBatchMode()`: Switch between single/batch UI
+- `initBatchProductSelector()`: Create multi-select ProductSelector
+- `handleBatchSelectionChange()`: Build queue from selections
+- `startBatchProcessing()`: Sequential generation loop
+- `generateForBatchProduct()`: Generate using product's data + shared settings
+- `downloadBatchAsZip()`: Download all completed images as ZIP
 
 ---
 

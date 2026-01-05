@@ -1033,6 +1033,42 @@
     object-fit: cover;
 }
 
+/* Result Images Container - positions overlay buttons for both single and multi-image */
+.result-images-container {
+    position: relative;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.result-images-container .btn-favorite {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+}
+
+.result-images-container .btn-image-info {
+    position: absolute;
+    top: 12px;
+    right: 60px;
+    z-index: 10;
+}
+
+.result-images-container .image-info-overlay {
+    position: absolute;
+    top: 60px;
+    right: 12px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    max-width: 300px;
+    border: 1px solid var(--border-default);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .scene-grid {
@@ -1056,4 +1092,309 @@
     .style-select-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* ============================================
+   BATCH MODE STYLES
+   ============================================ */
+
+/* Batch Mode Toggle Row */
+.batch-mode-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+}
+
+.batch-mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.batch-mode-toggle:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+}
+
+.batch-mode-toggle.active {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border-color: var(--accent);
+}
+
+.batch-mode-toggle svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Batch Queue Grid */
+.batch-queue {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+    min-height: 100px;
+}
+
+.batch-empty {
+    grid-column: 1 / -1;
+    padding: 32px;
+    text-align: center;
+    color: var(--text-muted);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--border-default);
+}
+
+.batch-empty p {
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+/* Batch Item */
+.batch-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--bg-tertiary);
+    border: 2px solid transparent;
+    transition: all var(--duration-fast);
+}
+
+.batch-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.batch-item-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    color: var(--text-muted);
+}
+
+.batch-item-placeholder svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Batch Item Status States */
+.batch-item.pending {
+    opacity: 0.7;
+}
+
+.batch-item.processing {
+    border-color: var(--accent);
+}
+
+.batch-item.completed {
+    border-color: var(--success);
+}
+
+.batch-item.failed {
+    border-color: var(--error);
+}
+
+/* Batch Item Overlay */
+.batch-item-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity var(--duration-fast);
+}
+
+.batch-item:hover .batch-item-overlay,
+.batch-item.processing .batch-item-overlay,
+.batch-item.completed .batch-item-overlay,
+.batch-item.failed .batch-item-overlay {
+    opacity: 1;
+}
+
+.batch-item-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.batch-item-view {
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--duration-fast);
+}
+
+.batch-item-view:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.batch-item-view svg {
+    width: 20px;
+    height: 20px;
+    color: white;
+}
+
+.batch-item-status {
+    font-size: 10px;
+    color: white;
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+/* Batch Item Name */
+.batch-item-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    font-size: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Batch Controls */
+.batch-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+}
+
+.batch-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.batch-status {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.progress-bar {
+    height: 6px;
+    background: var(--bg-surface);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.batch-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+/* Batch Download Button */
+.batch-download-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: white;
+    background: var(--success);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.batch-download-btn:hover {
+    background: color-mix(in srgb, var(--success) 90%, black);
+}
+
+.batch-download-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* ProductSelector Checkbox (for multi-select mode) */
+.product-selector-item .product-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-right: 8px;
+}
+
+.product-selector-item .product-checkbox input {
+    display: none;
+}
+
+.product-selector-item .checkbox-mark {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border-default);
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.15s;
+}
+
+.product-selector-item .product-checkbox input:checked + .checkbox-mark {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.product-selector-item .product-checkbox input:checked + .checkbox-mark::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.product-selector-item.selected {
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
 }

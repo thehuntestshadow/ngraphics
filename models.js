@@ -33,7 +33,7 @@ const state = {
     scene: 'studio',
     photoStyle: 'editorial',
     pose: 'natural',
-    lighting: 'studio',
+    lighting: 'auto',
     cameraAngle: 'eye-level',
     expression: 'neutral',
     aspectRatio: '4:5',
@@ -63,7 +63,13 @@ const state = {
     selectedFavoriteImages: null,
     lastSeed: null,
     // Style reference
-    styleReferenceBase64: null
+    styleReferenceBase64: null,
+    // Batch mode
+    batchMode: false,
+    batchQueue: [], // Array of { id, product, name, thumbnail, status, result, error }
+    batchProcessing: false,
+    batchProgress: { current: 0, total: 0 },
+    batchProductSelector: null
 };
 
 // Storage instances
@@ -196,7 +202,20 @@ function initElements() {
         styleStrengthValue: document.getElementById('styleStrengthValue'),
 
         // API Status
-        apiStatus: document.getElementById('apiStatus')
+        apiStatus: document.getElementById('apiStatus'),
+
+        // Batch Mode
+        batchModeToggle: document.getElementById('batchModeToggle'),
+        singleModeContainer: document.getElementById('singleModeContainer'),
+        batchModeContainer: document.getElementById('batchModeContainer'),
+        batchProductSelectorContainer: document.getElementById('batchProductSelectorContainer'),
+        batchQueue: document.getElementById('batchQueue'),
+        batchControls: document.getElementById('batchControls'),
+        batchStatus: document.getElementById('batchStatus'),
+        batchProgressFill: document.getElementById('batchProgressFill'),
+        clearBatchBtn: document.getElementById('clearBatchBtn'),
+        startBatchBtn: document.getElementById('startBatchBtn'),
+        downloadBatchZipBtn: document.getElementById('downloadBatchZipBtn')
     };
 }
 
@@ -334,7 +353,7 @@ function handleSlotUpload(slotIndex, file) {
         };
 
         // Remove existing image at this slot if any
-        state.productImages = state.productImages.filter(img => img.slotIndex !== slotIndex);
+        state.productImages = state.productImages.filter(img => img && img.slotIndex !== slotIndex);
         state.productImages.push(imageData);
         state.productImages.sort((a, b) => a.slotIndex - b.slotIndex);
 
@@ -741,6 +760,7 @@ function generatePrompt() {
 
     // Lighting descriptions
     const lightingDesc = {
+        auto: '',
         studio: 'professional studio lighting setup, clean and even',
         natural: 'natural daylight, bright and even',
         golden: 'warm golden hour lighting with soft orange tones',
@@ -1232,7 +1252,8 @@ function showResult(imageUrl) {
     }
 
     elements.resultImage.src = imageUrl;
-    elements.resultImage.style.display = 'block';
+    // Show single image wrapper, hide grid
+    elements.resultImage.parentElement.style.display = 'block';
     elements.resultGrid.style.display = 'none';
     elements.resultContainer.classList.add('visible');
     state.generatedImageUrl = imageUrl;
@@ -1258,7 +1279,8 @@ function showMultipleResults(imageUrls) {
         return;
     }
 
-    elements.resultImage.style.display = 'none';
+    // Hide single image wrapper, show grid
+    elements.resultImage.parentElement.style.display = 'none';
     elements.resultGrid.style.display = 'grid';
     elements.resultGrid.className = `result-grid grid-${validUrls.length}`;
 
@@ -1897,6 +1919,324 @@ function handleStyleReferenceUpload(file) {
 }
 
 // ============================================
+// BATCH MODE FUNCTIONS
+// ============================================
+
+/**
+ * Toggle between single and batch mode
+ */
+function toggleBatchMode() {
+    state.batchMode = !state.batchMode;
+
+    elements.batchModeToggle?.classList.toggle('active', state.batchMode);
+
+    if (elements.singleModeContainer) {
+        elements.singleModeContainer.style.display = state.batchMode ? 'none' : 'block';
+    }
+    if (elements.batchModeContainer) {
+        elements.batchModeContainer.style.display = state.batchMode ? 'block' : 'none';
+    }
+
+    // Initialize batch product selector on first switch
+    if (state.batchMode && !state.batchProductSelector) {
+        initBatchProductSelector();
+    }
+}
+
+/**
+ * Initialize multi-select ProductSelector for batch mode
+ */
+function initBatchProductSelector() {
+    if (!elements.batchProductSelectorContainer || typeof ProductSelector === 'undefined') return;
+
+    state.batchProductSelector = new ProductSelector({
+        container: elements.batchProductSelectorContainer,
+        multiSelect: true,
+        onSelectionChange: handleBatchSelectionChange
+    });
+}
+
+/**
+ * Handle batch product selection changes
+ */
+function handleBatchSelectionChange(selectedProducts) {
+    // Convert products to batch queue items
+    state.batchQueue = selectedProducts.map(product => ({
+        id: product.id,
+        product: product,
+        name: product.name,
+        thumbnail: product.thumbnail_path
+            ? ngSupabase.getProductImageUrl(product.thumbnail_path)
+            : null,
+        status: 'pending',
+        result: null,
+        error: null
+    }));
+
+    renderBatchQueue();
+    updateBatchControls();
+}
+
+/**
+ * Render the batch queue grid
+ */
+function renderBatchQueue() {
+    if (!elements.batchQueue) return;
+
+    if (state.batchQueue.length === 0) {
+        elements.batchQueue.innerHTML = `
+            <div class="batch-empty">
+                <p>Select products above to add to batch</p>
+            </div>
+        `;
+        return;
+    }
+
+    elements.batchQueue.innerHTML = state.batchQueue.map(item => `
+        <div class="batch-item ${item.status}" data-id="${item.id}">
+            ${item.thumbnail
+        ? `<img src="${item.thumbnail}" alt="${item.name}">`
+        : `<div class="batch-item-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                    </div>`
+}
+            <div class="batch-item-overlay">
+                ${item.status === 'processing' ? '<div class="batch-item-spinner"></div>' : ''}
+                ${item.status === 'completed' ? `
+                    <button class="batch-item-view" data-action="view-batch-result" data-id="${item.id}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                ` : ''}
+                <span class="batch-item-status">${item.status}</span>
+            </div>
+            <span class="batch-item-name">${item.name}</span>
+        </div>
+    `).join('');
+}
+
+/**
+ * Update batch control buttons and progress
+ */
+function updateBatchControls() {
+    if (!elements.batchControls) return;
+
+    const hasItems = state.batchQueue.length > 0;
+    elements.batchControls.style.display = hasItems ? 'flex' : 'none';
+
+    const completed = state.batchQueue.filter(i => i.status === 'completed').length;
+    const failed = state.batchQueue.filter(i => i.status === 'failed').length;
+    const total = state.batchQueue.length;
+
+    if (elements.batchStatus) {
+        elements.batchStatus.textContent = state.batchProcessing
+            ? `Processing ${state.batchProgress.current} / ${state.batchProgress.total}...`
+            : `${completed} / ${total} completed${failed > 0 ? ` (${failed} failed)` : ''}`;
+    }
+
+    if (elements.batchProgressFill) {
+        const progress = total > 0 ? (completed / total) * 100 : 0;
+        elements.batchProgressFill.style.width = `${progress}%`;
+    }
+
+    if (elements.startBatchBtn) {
+        const pending = state.batchQueue.filter(i => i.status === 'pending').length;
+        elements.startBatchBtn.disabled = pending === 0 || state.batchProcessing;
+        elements.startBatchBtn.textContent = state.batchProcessing
+            ? 'Processing...'
+            : `Generate All (${pending})`;
+    }
+
+    // Show download ZIP button when all complete
+    if (elements.downloadBatchZipBtn) {
+        const allComplete = state.batchQueue.every(i => i.status === 'completed' || i.status === 'failed');
+        const hasResults = state.batchQueue.some(i => i.status === 'completed');
+        elements.downloadBatchZipBtn.style.display = (allComplete && hasResults) ? 'flex' : 'none';
+    }
+}
+
+/**
+ * Start batch processing
+ */
+async function startBatchProcessing() {
+    if (state.batchProcessing) return;
+
+    const pending = state.batchQueue.filter(i => i.status === 'pending');
+    if (pending.length === 0) return;
+
+    state.batchProcessing = true;
+    state.batchProgress = { current: 0, total: pending.length };
+    updateBatchControls();
+
+    for (const item of pending) {
+        if (!state.batchProcessing) break; // Allow cancellation
+
+        state.batchProgress.current++;
+        item.status = 'processing';
+        renderBatchQueue();
+        updateBatchControls();
+
+        try {
+            const result = await generateForBatchProduct(item.product);
+            item.status = 'completed';
+            item.result = result;
+
+            // Add to history with product name
+            await addToHistoryWithName(result, item.name);
+        } catch (error) {
+            item.status = 'failed';
+            item.error = error.message;
+            console.error(`Batch item ${item.name} failed:`, error);
+        }
+
+        renderBatchQueue();
+        updateBatchControls();
+
+        // Rate limiting delay (500ms between requests)
+        if (state.batchProcessing && pending.indexOf(item) < pending.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+    }
+
+    state.batchProcessing = false;
+    updateBatchControls();
+
+    const completed = state.batchQueue.filter(i => i.status === 'completed').length;
+    const failed = state.batchQueue.filter(i => i.status === 'failed').length;
+
+    if (failed === 0) {
+        SharedUI.toast(`Batch complete! ${completed} model photos generated.`, 'success');
+    } else {
+        SharedUI.toast(`Batch complete: ${completed} succeeded, ${failed} failed.`, 'warning');
+    }
+}
+
+/**
+ * Generate for a single batch product using current settings + product's own data
+ */
+async function generateForBatchProduct(product) {
+    // Get product images
+    const productImages = [];
+    if (product._primaryImageData) {
+        productImages.push(product._primaryImageData);
+    }
+    if (product._additionalImageData?.length) {
+        productImages.push(...product._additionalImageData);
+    }
+
+    if (productImages.length === 0) {
+        throw new Error('Product has no images');
+    }
+
+    // Temporarily override state with product's own data
+    const originalDescription = elements.productDescription?.value || '';
+    if (elements.productDescription) {
+        elements.productDescription.value = product.description || product.name;
+    }
+
+    // Generate prompt (uses shared settings + product description)
+    const prompt = generatePrompt();
+
+    // Restore original state
+    if (elements.productDescription) {
+        elements.productDescription.value = originalDescription;
+    }
+
+    // Build message content
+    const messageContent = [
+        { type: 'text', text: prompt }
+    ];
+
+    for (const imgBase64 of productImages) {
+        messageContent.push({ type: 'image_url', image_url: { url: imgBase64 } });
+    }
+
+    // Add style reference if present
+    if (state.styleReferenceBase64) {
+        messageContent.push({ type: 'image_url', image_url: { url: state.styleReferenceBase64 } });
+    }
+
+    const requestBody = {
+        model: DEFAULT_MODEL,
+        messages: [{ role: 'user', content: messageContent }],
+        modalities: ['image', 'text'],
+        max_tokens: 4096,
+        seed: Math.floor(Math.random() * 999999999)
+    };
+
+    const imageUrl = await makeGenerationRequest(requestBody);
+
+    // Record cost
+    SharedCostEstimator.recordCost(DEFAULT_MODEL, 1, 'modelStudio', prompt.length);
+
+    return imageUrl;
+}
+
+/**
+ * Add to history with custom name
+ */
+async function addToHistoryWithName(imageUrl, productName) {
+    const history = new SharedHistory(`${STUDIO_ID}_history`, 20);
+    await history.add(imageUrl, {
+        imageUrls: [imageUrl],
+        productName: productName,
+        imageCount: 1
+    });
+}
+
+/**
+ * Download batch results as ZIP
+ */
+async function downloadBatchAsZip() {
+    const completedItems = state.batchQueue.filter(i => i.status === 'completed' && i.result);
+
+    if (completedItems.length === 0) {
+        SharedUI.toast('No completed images to download', 'warning');
+        return;
+    }
+
+    try {
+        const images = completedItems.map((item, index) => ({
+            url: item.result,
+            name: `${item.name.replace(/[^a-zA-Z0-9]/g, '_')}_model_${index + 1}.png`
+        }));
+
+        await SharedDownload.downloadAsZip({
+            images,
+            filename: `hefaistos-model-batch-${Date.now()}`
+        });
+
+        SharedUI.toast('ZIP downloaded successfully!', 'success');
+    } catch (error) {
+        console.error('ZIP download failed:', error);
+        SharedUI.toast('Failed to create ZIP file', 'error');
+    }
+}
+
+/**
+ * Clear batch queue and reset
+ */
+function clearBatch() {
+    if (state.batchProcessing) {
+        state.batchProcessing = false;
+    }
+    state.batchQueue = [];
+    state.batchProgress = { current: 0, total: 0 };
+
+    // Reset product selector
+    state.batchProductSelector?.clearSelection();
+
+    renderBatchQueue();
+    updateBatchControls();
+}
+
+// ============================================
 // EVENT LISTENERS
 // ============================================
 function setupEventListeners() {
@@ -2198,9 +2538,9 @@ function setupEventListeners() {
             } else {
                 const info = {
                     seed: state.lastSeed,
-                    model: elements.model.value,
+                    model: DEFAULT_MODEL,
                     dimensions: elements.aspectRatio?.value || '4:5',
-                    style: elements.photoStyle?.value || 'Commercial',
+                    style: state.photoStyle || 'editorial',
                     variations: state.generatedImages?.length || 1
                 };
                 imageInfoOverlay.innerHTML = SharedImageInfo.createOverlay(info).innerHTML;
@@ -2209,6 +2549,23 @@ function setupEventListeners() {
             }
         });
     }
+
+    // Batch mode events
+    elements.batchModeToggle?.addEventListener('click', toggleBatchMode);
+    elements.clearBatchBtn?.addEventListener('click', clearBatch);
+    elements.startBatchBtn?.addEventListener('click', startBatchProcessing);
+    elements.downloadBatchZipBtn?.addEventListener('click', downloadBatchAsZip);
+
+    // Event delegation for batch item actions
+    elements.batchQueue?.addEventListener('click', (e) => {
+        const viewBtn = e.target.closest('[data-action="view-batch-result"]');
+        if (viewBtn) {
+            const item = state.batchQueue.find(i => i.id === viewBtn.dataset.id);
+            if (item?.result && elements.lightbox && elements.lightboxImage) {
+                SharedLightbox.open(elements.lightbox, elements.lightboxImage, item.result);
+            }
+        }
+    });
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
@@ -2423,22 +2780,44 @@ async function loadProductData(product) {
     // Clear existing images
     clearAllImages();
 
+    // Helper to load a data URL into a slot
+    async function loadImageToSlot(slotIndex, dataUrl) {
+        const thumbnail = await createThumbnail(dataUrl, 200);
+        const imageData = {
+            slotIndex,
+            imageBase64: dataUrl,
+            thumbnail,
+            analyzed: false
+        };
+        state.productImages = state.productImages.filter(img => img && img.slotIndex !== slotIndex);
+        state.productImages.push(imageData);
+        state.productImages.sort((a, b) => a.slotIndex - b.slotIndex);
+
+        if (slotIndex === 0) {
+            state.uploadedImageBase64 = dataUrl;
+        }
+        renderSlotFilled(slotIndex, thumbnail);
+    }
+
     // Load primary image
     if (product._primaryImageData) {
-        await handleSlotUpload(0, product._primaryImageData);
+        await loadImageToSlot(0, product._primaryImageData);
     }
 
     // Load additional images
     if (product._additionalImageData?.length) {
         for (let i = 0; i < Math.min(product._additionalImageData.length, 3); i++) {
-            await handleSlotUpload(i + 1, product._additionalImageData[i]);
+            await loadImageToSlot(i + 1, product._additionalImageData[i]);
         }
     }
 
-    // Set product description if available
-    if (product.description && elements.productDescription) {
-        elements.productDescription.value = product.description;
-        state.productDescription = product.description;
+    // Set product description - use description as primary, name as fallback
+    if (elements.productDescription) {
+        const desc = product.description || product.name || '';
+        if (desc) {
+            elements.productDescription.value = desc;
+            state.productDescription = desc;
+        }
     }
 
     // Map category to product type if possible
@@ -2491,8 +2870,6 @@ function clearAllImages() {
         if (filled) filled.style.display = 'none';
         if (img) img.src = '';
     });
-
-    updateProductBadges();
 }
 
 // ============================================

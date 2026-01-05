@@ -71,6 +71,8 @@ Active development roadmap for HEFAISTOS. For historical changes see [CHANGELOG.
 - [x] Admin: Refresh button per section
 - [x] Admin: Copy email button
 - [x] Admin: Bulk user actions (select all, set tier, add credits)
+- [x] Model Studio: Batch generation (multi-select products, same settings, ZIP download)
+- [x] ProductSelector: Multi-select mode with checkboxes
 
 ### Up Next
 

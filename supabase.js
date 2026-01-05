@@ -1113,8 +1113,8 @@ class SupabaseClient {
     }
 
     /**
-     * Create a new category
-     * @param {Object} category - { name, icon?, color? }
+     * Create a new category/folder
+     * @param {Object} category - { name, icon?, color?, parentId? }
      * @returns {Promise<Object>} Created category
      */
     async createCategory(category) {
@@ -1127,14 +1127,21 @@ class SupabaseClient {
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/^-|-$/g, '');
 
-        // Get max display_order
-        const { data: existing } = await this._client
+        // Get max display_order for siblings (same parent)
+        const query = this._client
             .from('user_categories')
             .select('display_order')
             .eq('user_id', this._user.id)
             .order('display_order', { ascending: false })
             .limit(1);
 
+        if (category.parentId) {
+            query.eq('parent_id', category.parentId);
+        } else {
+            query.is('parent_id', null);
+        }
+
+        const { data: existing } = await query;
         const maxOrder = existing?.[0]?.display_order || 0;
 
         const { data, error } = await this._client
@@ -1145,6 +1152,7 @@ class SupabaseClient {
                 slug,
                 icon: category.icon || null,
                 color: category.color || null,
+                parent_id: category.parentId || null,
                 display_order: maxOrder + 1
             })
             .select()
@@ -1157,6 +1165,62 @@ class SupabaseClient {
             throw error;
         }
         return data;
+    }
+
+    /**
+     * Alias for createCategory (folder terminology)
+     */
+    async createFolder(folder) {
+        return this.createCategory(folder);
+    }
+
+    /**
+     * Move a folder to a new parent
+     * @param {string} folderId - Folder UUID
+     * @param {string|null} newParentId - New parent folder ID (null = root)
+     */
+    async moveFolder(folderId, newParentId) {
+        if (!this.isAuthenticated) throw new Error('Not authenticated');
+        await this.init();
+
+        const { data, error } = await this._client
+            .from('user_categories')
+            .update({ parent_id: newParentId })
+            .eq('id', folderId)
+            .eq('user_id', this._user.id)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    }
+
+    /**
+     * Get folder with all descendants (for deletion warning)
+     * @param {string} folderId - Folder UUID
+     */
+    async getFolderDescendants(folderId) {
+        if (!this.isAuthenticated) return [];
+        await this.init();
+
+        // Get the folder's path first
+        const { data: folder } = await this._client
+            .from('user_categories')
+            .select('path')
+            .eq('id', folderId)
+            .eq('user_id', this._user.id)
+            .single();
+
+        if (!folder?.path) return [];
+
+        // Find all folders whose path starts with this folder's path
+        const { data } = await this._client
+            .from('user_categories')
+            .select('*')
+            .eq('user_id', this._user.id)
+            .like('path', `${folder.path}/%`);
+
+        return data || [];
     }
 
     /**

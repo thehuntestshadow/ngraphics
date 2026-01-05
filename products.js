@@ -14,8 +14,10 @@
 const state = {
     products: [],
     filteredProducts: [],
-    categories: [],  // Loaded from database
-    currentCategory: 'all',
+    categories: [],  // Loaded from database (now folders)
+    currentCategory: 'all',  // Selected folder slug ('all' = root view)
+    currentFolderId: null,   // Selected folder ID (null = show all)
+    expandedFolders: new Set(),  // IDs of expanded folders in tree
     searchQuery: '',
     sortBy: 'recent',
     editingProductId: null,
@@ -160,57 +162,286 @@ async function loadCategories() {
     }
 }
 
+/**
+ * Build folder tree from flat list
+ */
+function buildFolderTree(folders) {
+    const map = new Map();
+    const roots = [];
+
+    // First pass: create map
+    folders.forEach(f => map.set(f.id, { ...f, children: [] }));
+
+    // Second pass: build tree
+    folders.forEach(f => {
+        const node = map.get(f.id);
+        if (f.parent_id && map.has(f.parent_id)) {
+            map.get(f.parent_id).children.push(node);
+        } else {
+            roots.push(node);
+        }
+    });
+
+    // Sort children by display_order
+    const sortChildren = (nodes) => {
+        nodes.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+        nodes.forEach(n => sortChildren(n.children));
+    };
+    sortChildren(roots);
+
+    return roots;
+}
+
+/**
+ * Count products in folder and all subfolders
+ */
+function countProductsInFolder(folderId, folderMap) {
+    let count = 0;
+    const folder = folderMap.get(folderId);
+    if (!folder) return 0;
+
+    // Count direct products
+    state.products.forEach(p => {
+        if (p.category === folder.slug) count++;
+    });
+
+    // Count in children recursively
+    folder.children?.forEach(child => {
+        count += countProductsInFolder(child.id, folderMap);
+    });
+
+    return count;
+}
+
+/**
+ * Render a single folder item with children
+ */
+function renderFolderItem(folder, depth = 0, folderMap) {
+    const hasChildren = folder.children && folder.children.length > 0;
+    const isExpanded = state.expandedFolders.has(folder.id);
+    const isActive = state.currentFolderId === folder.id;
+    const count = countProductsInFolder(folder.id, folderMap);
+
+    let html = `
+        <div class="folder-item ${isActive ? 'active' : ''}" data-folder-id="${folder.id}" data-slug="${folder.slug}" style="--depth: ${depth}">
+            ${hasChildren ? `
+                <span class="folder-toggle ${isExpanded ? 'expanded' : ''}" data-folder-id="${folder.id}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </span>
+            ` : '<span class="folder-toggle-spacer"></span>'}
+            <span class="folder-icon">${folder.icon || '📁'}</span>
+            <span class="folder-name">${escapeHtml(folder.name)}</span>
+            <span class="folder-count">${count}</span>
+            <button class="folder-menu-btn" data-folder-id="${folder.id}" title="Folder options">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
+                </svg>
+            </button>
+        </div>
+    `;
+
+    // Render children if expanded
+    if (hasChildren && isExpanded) {
+        html += `<div class="folder-children">`;
+        folder.children.forEach(child => {
+            html += renderFolderItem(child, depth + 1, folderMap);
+        });
+        html += `</div>`;
+    }
+
+    return html;
+}
+
 function renderCategorySidebar() {
     const categoryNav = elements.categoryNav;
     if (!categoryNav) return;
 
-    // Calculate counts in single pass (O(n) instead of O(n*m))
-    const counts = { all: state.products.length };
-    state.categories.forEach(cat => counts[cat.slug] = 0);
-    state.products.forEach(p => {
-        if (p.category && counts.hasOwnProperty(p.category)) {
-            counts[p.category]++;
-        }
+    // Build folder tree and map
+    const tree = buildFolderTree(state.categories);
+    const folderMap = new Map();
+    state.categories.forEach(f => folderMap.set(f.id, { ...f, children: [] }));
+    // Rebuild with children
+    tree.forEach(function addToMap(node) {
+        folderMap.set(node.id, node);
+        node.children?.forEach(addToMap);
     });
+
+    // Count all products
+    const totalCount = state.products.length;
 
     // Render sidebar
     categoryNav.innerHTML = `
-        <a href="#" class="category-item ${state.currentCategory === 'all' ? 'active' : ''}" data-category="all">
-            <span class="category-count">${counts.all}</span>
-            All Products
-        </a>
-        ${state.categories.map(cat => `
-            <a href="#" class="category-item ${state.currentCategory === cat.slug ? 'active' : ''}" data-category="${cat.slug}">
-                <span class="category-count">${counts[cat.slug] || 0}</span>
-                ${cat.icon ? `<span class="category-icon">${escapeHtml(cat.icon)}</span>` : ''}
-                ${escapeHtml(cat.name)}
-            </a>
-        `).join('')}
-        <button type="button" class="category-add-btn" id="sidebarAddCategoryBtn">
+        <div class="folder-item root ${state.currentFolderId === null ? 'active' : ''}" data-folder-id="all">
+            <span class="folder-toggle-spacer"></span>
+            <span class="folder-icon">📦</span>
+            <span class="folder-name">All Products</span>
+            <span class="folder-count">${totalCount}</span>
+        </div>
+        ${tree.map(folder => renderFolderItem(folder, 0, folderMap)).join('')}
+        <button type="button" class="folder-add-btn" id="sidebarAddFolderBtn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="5" x2="12" y2="19"/>
                 <line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
-            Add Category
+            New Folder
         </button>
     `;
 
-    // Attach event listeners for category items
-    categoryNav.querySelectorAll('.category-item').forEach(item => {
+    // Attach event listeners
+    attachFolderEventListeners();
+}
+
+function attachFolderEventListeners() {
+    const categoryNav = elements.categoryNav;
+
+    // Folder selection
+    categoryNav.querySelectorAll('.folder-item').forEach(item => {
         item.addEventListener('click', (e) => {
+            // Don't trigger if clicking toggle or menu
+            if (e.target.closest('.folder-toggle') || e.target.closest('.folder-menu-btn')) return;
+
             e.preventDefault();
-            const category = item.dataset.category;
-            state.currentCategory = category;
+            const folderId = item.dataset.folderId;
+
+            if (folderId === 'all') {
+                state.currentFolderId = null;
+                state.currentCategory = 'all';
+            } else {
+                state.currentFolderId = folderId;
+                state.currentCategory = item.dataset.slug;
+            }
+
             applyFilters();
             renderProducts();
             renderCategorySidebar();
         });
     });
 
-    // Add category button listener
-    const addBtn = categoryNav.querySelector('#sidebarAddCategoryBtn');
+    // Folder toggle (expand/collapse)
+    categoryNav.querySelectorAll('.folder-toggle').forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const folderId = toggle.dataset.folderId;
+
+            if (state.expandedFolders.has(folderId)) {
+                state.expandedFolders.delete(folderId);
+            } else {
+                state.expandedFolders.add(folderId);
+            }
+
+            renderCategorySidebar();
+        });
+    });
+
+    // Folder menu buttons
+    categoryNav.querySelectorAll('.folder-menu-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            showFolderContextMenu(btn.dataset.folderId, e);
+        });
+    });
+
+    // Add folder button
+    const addBtn = categoryNav.querySelector('#sidebarAddFolderBtn');
     if (addBtn) {
-        addBtn.addEventListener('click', openCategoryModal);
+        addBtn.addEventListener('click', () => openCategoryModal());
+    }
+}
+
+function showFolderContextMenu(folderId, event) {
+    // Remove existing menu
+    const existing = document.querySelector('.folder-context-menu');
+    if (existing) existing.remove();
+
+    const folder = state.categories.find(c => c.id === folderId);
+    if (!folder) return;
+
+    const menu = document.createElement('div');
+    menu.className = 'folder-context-menu';
+    menu.innerHTML = `
+        <button data-action="add-subfolder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+            Add Subfolder
+        </button>
+        <button data-action="rename">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.85 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            Rename
+        </button>
+        <button data-action="delete" class="danger">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+            Delete
+        </button>
+    `;
+
+    // Position menu
+    const rect = event.target.getBoundingClientRect();
+    menu.style.position = 'fixed';
+    menu.style.top = `${rect.bottom + 4}px`;
+    menu.style.left = `${rect.left}px`;
+
+    document.body.appendChild(menu);
+
+    // Handle actions
+    menu.addEventListener('click', async (e) => {
+        const action = e.target.closest('button')?.dataset.action;
+        menu.remove();
+
+        if (action === 'add-subfolder') {
+            openCategoryModal(folderId);
+        } else if (action === 'rename') {
+            openCategoryModal(null, folder);
+        } else if (action === 'delete') {
+            await deleteFolder(folderId);
+        }
+    });
+
+    // Close on outside click
+    const closeMenu = (e) => {
+        if (!menu.contains(e.target)) {
+            menu.remove();
+            document.removeEventListener('click', closeMenu);
+        }
+    };
+    setTimeout(() => document.addEventListener('click', closeMenu), 0);
+}
+
+async function deleteFolder(folderId) {
+    const folder = state.categories.find(c => c.id === folderId);
+    if (!folder) return;
+
+    // Check for descendants
+    const descendants = await ngSupabase.getFolderDescendants(folderId);
+    const productCount = state.products.filter(p => p.category === folder.slug).length;
+
+    let message = `Delete folder "${folder.name}"?`;
+    if (descendants.length > 0) {
+        message += `\n\nThis will also delete ${descendants.length} subfolder(s).`;
+    }
+    if (productCount > 0) {
+        message += `\n\n${productCount} product(s) will be moved to root.`;
+    }
+
+    if (!confirm(message)) return;
+
+    try {
+        // Move products to root first
+        for (const product of state.products) {
+            if (product.category === folder.slug) {
+                await ngSupabase.updateProduct(product.id, { category: null });
+            }
+        }
+
+        await ngSupabase.deleteCategory(folderId);
+        await loadCategories();
+        await loadProducts();
+        SharedUI.toast('Folder deleted', 'success');
+    } catch (error) {
+        console.error('Delete folder error:', error);
+        SharedUI.showError('Failed to delete folder');
     }
 }
 
@@ -242,11 +473,31 @@ function handleCategoryDropdownChange(e) {
     }
 }
 
-function openCategoryModal() {
+// Track parent folder when creating subfolders
+let categoryModalParentId = null;
+let categoryModalEditingFolder = null;
+
+function openCategoryModal(parentId = null, editingFolder = null) {
     if (!elements.categoryModal) return;
+    categoryModalParentId = parentId;
+    categoryModalEditingFolder = editingFolder;
+
+    // Update modal title
+    const modalTitle = elements.categoryModal.querySelector('.modal-title');
+    if (modalTitle) {
+        if (editingFolder) {
+            modalTitle.textContent = 'Rename Folder';
+        } else if (parentId) {
+            const parent = state.categories.find(c => c.id === parentId);
+            modalTitle.textContent = `New Subfolder in "${parent?.name || 'folder'}"`;
+        } else {
+            modalTitle.textContent = 'New Folder';
+        }
+    }
+
     elements.categoryModal.classList.add('open');
     if (elements.categoryNameInput) {
-        elements.categoryNameInput.value = '';
+        elements.categoryNameInput.value = editingFolder?.name || '';
         elements.categoryNameInput.focus();
     }
     document.body.style.overflow = 'hidden';
@@ -256,33 +507,44 @@ function closeCategoryModal() {
     if (!elements.categoryModal) return;
     elements.categoryModal.classList.remove('open');
     document.body.style.overflow = '';
+    categoryModalParentId = null;
+    categoryModalEditingFolder = null;
 }
 
 async function saveNewCategory() {
     const name = elements.categoryNameInput?.value?.trim();
     if (!name) {
-        showToast('Please enter a category name', 'error');
+        showToast('Please enter a folder name', 'error');
         return;
     }
 
     try {
         elements.saveCategoryBtn?.classList.add('loading');
-        const newCategory = await ngSupabase.createCategory({ name });
 
-        // Refresh categories from database to ensure consistency
-        // (handles race conditions with other tabs/sessions)
+        if (categoryModalEditingFolder) {
+            // Update existing folder
+            await ngSupabase.updateCategory(categoryModalEditingFolder.id, { name });
+        } else {
+            // Create new folder
+            const newCategory = await ngSupabase.createCategory({
+                name,
+                parentId: categoryModalParentId
+            });
+
+            // Auto-select the new category in dropdown if product modal is open
+            if (elements.productCategory && elements.productModal?.classList.contains('open')) {
+                elements.productCategory.value = newCategory.slug;
+            }
+        }
+
+        // Refresh categories from database
         state.categories = await ngSupabase.getCategories();
 
         renderCategorySidebar();
         renderCategoryDropdown();
 
-        // Auto-select the new category in dropdown if modal is open
-        if (elements.productCategory && elements.productModal?.classList.contains('open')) {
-            elements.productCategory.value = newCategory.slug;
-        }
-
         closeCategoryModal();
-        showToast(`Category "${name}" created`, 'success');
+        showToast(categoryModalEditingFolder ? 'Folder renamed' : `Folder "${name}" created`, 'success');
     } catch (error) {
         console.error('Failed to create category:', error);
         showToast(error.message || 'Failed to create category', 'error');

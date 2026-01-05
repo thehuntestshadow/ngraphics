@@ -163,6 +163,198 @@
     color: white;
 }
 
+/* Folder Tree Styles */
+.folder-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    padding-left: calc(10px + var(--depth, 0) * 16px);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.15s ease;
+    position: relative;
+}
+
+.folder-item:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.folder-item.active {
+    background: var(--accent-subtle);
+    color: var(--accent);
+}
+
+.folder-item.root {
+    font-weight: 500;
+}
+
+.folder-toggle {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.folder-toggle:hover {
+    background: var(--bg-tertiary);
+}
+
+.folder-toggle svg {
+    width: 12px;
+    height: 12px;
+    transition: transform 0.15s ease;
+}
+
+.folder-toggle.expanded svg {
+    transform: rotate(90deg);
+}
+
+.folder-toggle-spacer {
+    width: 16px;
+    flex-shrink: 0;
+}
+
+.folder-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.folder-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.folder-count {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    background: var(--bg-tertiary);
+    border-radius: 10px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.folder-item.active .folder-count {
+    background: var(--accent);
+    color: white;
+}
+
+.folder-menu-btn {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    color: var(--text-muted);
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.folder-item:hover .folder-menu-btn {
+    opacity: 1;
+}
+
+.folder-menu-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.folder-menu-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.folder-children {
+    display: block;
+}
+
+.folder-add-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 8px;
+    background: none;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.folder-add-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.folder-add-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Folder Context Menu */
+.folder-context-menu {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    padding: 4px;
+    min-width: 160px;
+    z-index: 1000;
+}
+
+.folder-context-menu button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.folder-context-menu button:hover {
+    background: var(--bg-hover);
+}
+
+.folder-context-menu button.danger {
+    color: var(--error);
+}
+
+.folder-context-menu button.danger:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.folder-context-menu button svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
 /* ============================================
    MAIN CONTENT
    ============================================ */
