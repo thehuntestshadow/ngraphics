@@ -35,6 +35,7 @@ const state = {
     pose: 'natural',
     lighting: 'auto',
     cameraAngle: 'eye-level',
+    modelAngle: 'auto',
     expression: 'neutral',
     aspectRatio: '4:5',
     variations: 1,
@@ -107,6 +108,7 @@ function initElements() {
         modelPose: document.getElementById('modelPose'),
         lighting: document.getElementById('lighting'),
         cameraAngle: document.getElementById('cameraAngle'),
+        modelAngle: document.getElementById('modelAngle'),
         expression: document.getElementById('expression'),
         aspectRatio: document.getElementById('aspectRatio'),
         collageMode: document.getElementById('collageMode'),
@@ -778,6 +780,16 @@ function generatePrompt() {
         high: 'shot from high angle looking down'
     };
 
+    // Model facing direction descriptions
+    const modelAngleDesc = {
+        'auto': '', // Let AI decide
+        'front': 'model facing directly toward the camera',
+        'three-quarter': 'model at three-quarter angle, partially turned',
+        'side': 'model in side profile view',
+        'back': 'model facing away from camera, back view',
+        'over-shoulder': 'over-the-shoulder view looking back'
+    };
+
     // Expression
     const expressionDesc = {
         neutral: 'neutral calm expression',
@@ -1061,7 +1073,7 @@ CRITICAL REQUIREMENTS:
 
 SUBJECT: A ${modelDesc}, ${productTypeDesc[state.productType] || 'with the product'}.
 
-SHOT TYPE: ${shotDesc[state.shotType] || shotDesc['full-body']}, ${angleDesc[state.cameraAngle] || ''}.
+SHOT TYPE: ${shotDesc[state.shotType] || shotDesc['full-body']}, ${angleDesc[state.cameraAngle] || ''}.${state.modelAngle !== 'auto' ? `\n\nMODEL FACING: ${modelAngleDesc[state.modelAngle]}.` : ''}
 
 SETTING: ${sceneDesc[state.scene] || sceneDesc.studio}.
 
@@ -1488,6 +1500,7 @@ function captureCurrentSettings() {
         pose: state.pose,
         lighting: state.lighting,
         cameraAngle: state.cameraAngle,
+        modelAngle: state.modelAngle,
         expression: state.expression,
         aspectRatio: state.aspectRatio,
         variations: state.variations,
@@ -1701,6 +1714,7 @@ function loadFavorite() {
     if (settings.pose) state.pose = settings.pose;
     if (settings.lighting) state.lighting = settings.lighting;
     if (settings.cameraAngle) state.cameraAngle = settings.cameraAngle;
+    if (settings.modelAngle) state.modelAngle = settings.modelAngle;
     if (settings.expression) state.expression = settings.expression;
     if (settings.aspectRatio) state.aspectRatio = settings.aspectRatio;
     if (settings.variations) state.variations = settings.variations;
@@ -1728,6 +1742,7 @@ function loadFavorite() {
     if (elements.modelPose && settings.pose) elements.modelPose.value = settings.pose;
     if (elements.lighting && settings.lighting) elements.lighting.value = settings.lighting;
     if (elements.cameraAngle && settings.cameraAngle) elements.cameraAngle.value = settings.cameraAngle;
+    if (elements.modelAngle && settings.modelAngle) elements.modelAngle.value = settings.modelAngle;
     if (elements.expression && settings.expression) elements.expression.value = settings.expression;
     if (elements.aspectRatio && settings.aspectRatio) elements.aspectRatio.value = settings.aspectRatio;
     if (elements.collageMode && settings.collageMode) elements.collageMode.value = settings.collageMode;
@@ -2354,6 +2369,7 @@ function setupEventListeners() {
     elements.modelPose?.addEventListener('change', (e) => state.pose = e.target.value);
     elements.lighting?.addEventListener('change', (e) => state.lighting = e.target.value);
     elements.cameraAngle?.addEventListener('change', (e) => state.cameraAngle = e.target.value);
+    elements.modelAngle?.addEventListener('change', (e) => state.modelAngle = e.target.value);
     elements.expression?.addEventListener('change', (e) => state.expression = e.target.value);
     elements.aspectRatio?.addEventListener('change', (e) => state.aspectRatio = e.target.value);
     elements.collageMode?.addEventListener('change', (e) => {
@@ -2620,6 +2636,7 @@ function getCurrentSettings() {
         pose: elements.modelPose?.value || state.pose,
         lighting: elements.lighting?.value || state.lighting,
         cameraAngle: elements.cameraAngle?.value || state.cameraAngle,
+        modelAngle: elements.modelAngle?.value || state.modelAngle,
         expression: elements.expression?.value || state.expression,
         aspectRatio: elements.aspectRatio?.value || state.aspectRatio,
         variations: state.variations,
@@ -2656,6 +2673,7 @@ function applySettings(settings) {
     if (settings.pose && elements.modelPose) elements.modelPose.value = settings.pose;
     if (settings.lighting && elements.lighting) elements.lighting.value = settings.lighting;
     if (settings.cameraAngle && elements.cameraAngle) elements.cameraAngle.value = settings.cameraAngle;
+    if (settings.modelAngle && elements.modelAngle) elements.modelAngle.value = settings.modelAngle;
     if (settings.expression && elements.expression) elements.expression.value = settings.expression;
     if (settings.aspectRatio && elements.aspectRatio) elements.aspectRatio.value = settings.aspectRatio;
     if (settings.collageMode && elements.collageMode) elements.collageMode.value = settings.collageMode;
