@@ -200,6 +200,9 @@
 
                         <!-- Batch Upload Container (hidden by default) -->
                         <div class="batch-upload-container" id="batchUploadContainer" style="display: none;">
+                            <!-- Batch Product Selector -->
+                            <div id="batchProductSelectorContainer" class="batch-product-selector"></div>
+                            <p class="batch-or-divider">or upload files directly</p>
                             <div class="batch-upload-zone" id="batchUploadArea">
                                 <div class="upload-content">
                                     <div class="upload-icon">
@@ -233,6 +236,14 @@
                                     </button>
                                 </div>
                             </div>
+                            <button type="button" class="btn-primary btn-download-zip" id="downloadBatchZipBtn" style="display: none;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Download All as ZIP
+                            </button>
                         </div>
                     </div>
 

@@ -365,6 +365,25 @@ Main page for creating product marketing infographics.
 - **Style Reference**: Upload reference image (10-100% influence)
 - **Generation**: Seed control, Negative prompts
 
+### Batch Generation
+Generate infographics for multiple products at once with the same visual settings.
+
+- **Toggle**: Batch Mode button switches between single/batch modes
+- **Hybrid Input**: ProductSelector multi-select OR direct file uploads (can mix both)
+- **Queue Display**: Grid showing selected products/files with status badges (pending/processing/completed/failed)
+- **Per-Product Data**: Each product uses its own images, title, and features/characteristics
+- **Shared Settings**: Layout, colors, visual style, icon style, etc. apply to all products
+- **Processing**: Sequential generation with delay between requests
+- **Download**: ZIP file containing all generated infographics via `SharedDownload.downloadAsZip()`
+
+Key batch functions:
+- `toggleBatchMode()`: Switch between single/batch UI
+- `initBatchProductSelector()`: Create multi-select ProductSelector
+- `handleBatchProductSelection()`: Build queue from selections
+- `startBatchProcessing()`: Sequential generation loop
+- `generateForBatchProduct()`: Generate using product's data + shared settings
+- `downloadBatchAsZip()`: Download all completed images as ZIP
+
 ---
 
 ## Model Studio (`models.html` + `models.js`)

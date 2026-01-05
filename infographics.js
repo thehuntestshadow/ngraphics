@@ -77,7 +77,8 @@ const state = {
     batchMode: false,
     batchQueue: [], // Array of { id, file, imageBase64, status: 'pending'|'processing'|'completed'|'failed', result: null|imageUrl, error: null }
     batchProcessing: false,
-    batchProgress: { current: 0, total: 0 }
+    batchProgress: { current: 0, total: 0 },
+    batchProductSelector: null // ProductSelector instance for batch mode
 };
 
 // Storage instances
@@ -399,6 +400,8 @@ function initElements() {
         batchProgressFill: document.getElementById('batchProgressFill'),
         clearBatchBtn: document.getElementById('clearBatchBtn'),
         startBatchBtn: document.getElementById('startBatchBtn'),
+        batchProductSelectorContainer: document.getElementById('batchProductSelectorContainer'),
+        downloadBatchZipBtn: document.getElementById('downloadBatchZipBtn'),
 
         // Favorites
         favoriteBtn: document.getElementById('favoriteBtn'),
@@ -4681,6 +4684,10 @@ function setupEventListeners() {
         elements.startBatchBtn.addEventListener('click', startBatchProcessing);
     }
 
+    if (elements.downloadBatchZipBtn) {
+        elements.downloadBatchZipBtn.addEventListener('click', downloadBatchAsZip);
+    }
+
     // Event delegation for dynamic elements
     document.addEventListener('click', (e) => {
         const target = e.target.closest('[data-action]');
@@ -4738,6 +4745,11 @@ function toggleBatchMode() {
         }
         elements.generateBtn.disabled = state.batchMode;
     }
+
+    // Initialize batch product selector on first switch
+    if (state.batchMode && !state.batchProductSelector) {
+        initBatchProductSelector();
+    }
 }
 
 async function addFilesToBatch(files) {
@@ -4781,6 +4793,10 @@ function clearBatch() {
     }
     state.batchQueue = [];
     state.batchProgress = { current: 0, total: 0 };
+
+    // Reset product selector
+    state.batchProductSelector?.clearSelection();
+
     renderBatchQueue();
     updateBatchControls();
 }
@@ -4795,7 +4811,7 @@ function renderBatchQueue() {
 
     elements.batchQueue.innerHTML = state.batchQueue.map(item => `
         <div class="batch-item ${item.status}" data-id="${item.id}">
-            <img src="${item.imageBase64}" alt="${item.name}">
+            <img src="${item.thumbnail || item.imageBase64}" alt="${item.name}">
             <div class="batch-item-overlay">
                 ${item.status === 'processing' ? '<div class="batch-item-spinner"></div>' : ''}
                 ${item.status !== 'pending' ? `<span class="batch-item-status">${item.status}</span>` : ''}
@@ -4839,6 +4855,13 @@ function updateBatchControls() {
         const pending = state.batchQueue.filter(i => i.status === 'pending').length;
         elements.startBatchBtn.disabled = pending === 0 || state.batchProcessing;
         elements.startBatchBtn.textContent = state.batchProcessing ? 'Processing...' : `Process All (${pending})`;
+    }
+
+    // Show download ZIP button when all complete
+    if (elements.downloadBatchZipBtn) {
+        const allComplete = state.batchQueue.every(i => i.status === 'completed' || i.status === 'failed');
+        const hasResults = state.batchQueue.some(i => i.status === 'completed');
+        elements.downloadBatchZipBtn.style.display = (allComplete && hasResults && state.batchQueue.length > 0) ? 'flex' : 'none';
     }
 }
 
@@ -4897,7 +4920,12 @@ async function startBatchProcessing() {
 }
 
 async function generateForBatchItem(item) {
-    // Build the prompt using current settings
+    // Handle product-based items (from ProductSelector)
+    if (item.product) {
+        return generateForBatchProduct(item.product);
+    }
+
+    // File-based items: Build the prompt using current settings
     const prompt = generatePrompt();
 
     // Determine seed
@@ -4968,6 +4996,149 @@ function viewBatchResult(id) {
 // Make batch functions globally accessible for inline onclick handlers
 window.removeBatchItem = removeBatchItem;
 window.viewBatchResult = viewBatchResult;
+
+// ============================================
+// BATCH PRODUCT SELECTOR (Multi-select mode)
+// ============================================
+
+/**
+ * Initialize multi-select ProductSelector for batch mode
+ */
+function initBatchProductSelector() {
+    if (!elements.batchProductSelectorContainer || typeof ProductSelector === 'undefined') return;
+
+    state.batchProductSelector = new ProductSelector({
+        container: elements.batchProductSelectorContainer,
+        multiSelect: true,
+        onSelectionChange: handleBatchProductSelection
+    });
+}
+
+/**
+ * Handle batch product selection changes
+ */
+function handleBatchProductSelection(selectedProducts) {
+    // Keep existing file-based items
+    const fileItems = state.batchQueue.filter(item => item.file);
+
+    // Convert products to queue items
+    const productItems = selectedProducts.map(product => ({
+        id: `product-${product.id}`,
+        product: product,
+        name: product.name,
+        thumbnail: product.thumbnail_path
+            ? ngSupabase.getProductImageUrl(product.thumbnail_path)
+            : null,
+        imageBase64: product._primaryImageData,
+        status: 'pending',
+        result: null,
+        error: null
+    }));
+
+    state.batchQueue = [...productItems, ...fileItems];
+    renderBatchQueue();
+    updateBatchControls();
+}
+
+/**
+ * Generate infographic for a product (uses product's own images/title/features)
+ */
+async function generateForBatchProduct(product) {
+    // Get product images
+    const productImages = [];
+    if (product._primaryImageData) productImages.push(product._primaryImageData);
+    if (product._additionalImageData?.length) productImages.push(...product._additionalImageData);
+
+    if (productImages.length === 0) throw new Error('Product has no images');
+
+    // Save original form state
+    const originalTitle = elements.productTitle?.value || '';
+    const originalCharsHtml = elements.characteristicsList?.innerHTML || '';
+
+    // Temporarily set product data
+    if (elements.productTitle && product.name) {
+        elements.productTitle.value = product.name;
+    }
+    if (elements.characteristicsList && product.features?.length) {
+        elements.characteristicsList.innerHTML = '';
+        for (const feature of product.features) {
+            const text = typeof feature === 'string' ? feature : feature.text;
+            const starred = typeof feature === 'object' && feature.starred;
+            if (text) addCharacteristic(text, starred);
+        }
+    }
+
+    // Generate prompt with product's data
+    const prompt = generatePrompt();
+
+    // Restore original form state
+    if (elements.productTitle) elements.productTitle.value = originalTitle;
+    if (elements.characteristicsList) elements.characteristicsList.innerHTML = originalCharsHtml;
+
+    // Build API request
+    const messageContent = [{ type: 'text', text: prompt }];
+    for (const img of productImages) {
+        messageContent.push({ type: 'image_url', image_url: { url: img } });
+    }
+    if (state.styleReferenceBase64) {
+        messageContent.push({ type: 'image_url', image_url: { url: state.styleReferenceBase64 } });
+    }
+
+    const aspectRatio = elements.aspectRatio?.value !== 'auto'
+        ? elements.aspectRatio?.value
+        : undefined;
+
+    const requestBody = {
+        model: DEFAULT_MODEL,
+        messages: [{ role: 'user', content: messageContent }],
+        modalities: ['image', 'text'],
+        seed: Math.floor(Math.random() * 999999999),
+        image_generation: {
+            ...(aspectRatio && { aspect_ratio: aspectRatio })
+        }
+    };
+
+    // Add negative prompt if present
+    if (elements.negativePrompt?.value?.trim()) {
+        requestBody.image_generation.negative_prompt = elements.negativePrompt.value.trim();
+    }
+
+    const result = await api.request('/chat/completions', requestBody, {
+        title: 'AI Product Infographics Generator'
+    });
+
+    if (!result.image) throw new Error('No image in response');
+    return result.image;
+}
+
+/**
+ * Download batch results as ZIP
+ */
+async function downloadBatchAsZip() {
+    const completed = state.batchQueue.filter(i => i.status === 'completed' && i.result);
+
+    if (completed.length === 0) {
+        SharedUI.toast('No completed images to download', 'warning');
+        return;
+    }
+
+    try {
+        const images = completed.map((item, index) => ({
+            url: item.result,
+            name: `${item.name.replace(/[^a-zA-Z0-9]/g, '_')}_infographic_${index + 1}.png`
+        }));
+
+        await SharedDownload.downloadAsZip({
+            images,
+            filename: `hefaistos-infographic-batch-${Date.now()}`
+        });
+
+        SharedUI.toast('ZIP downloaded successfully!', 'success');
+    } catch (error) {
+        console.error('ZIP download failed:', error);
+        SharedUI.toast('Failed to create ZIP file', 'error');
+    }
+}
 
 // ============================================
 // OPTION EXAMPLES
