@@ -4179,8 +4179,8 @@ function setupEventListeners() {
                     title: title,
                     generated: new Date().toISOString(),
                     seed: state.lastSeed,
-                    model: elements.model.value,
-                    style: elements.style.value,
+                    model: DEFAULT_MODEL,
+                    style: elements.infographicStyle?.value || 'auto',
                     aspectRatio: elements.aspectRatio.value,
                     variations: state.generatedImages.length
                 };
@@ -4382,9 +4382,9 @@ function setupEventListeners() {
                 // Update overlay content
                 const info = {
                     seed: state.lastSeed,
-                    model: elements.model.value,
-                    dimensions: elements.aspectRatio.value || 'Auto',
-                    style: elements.style.value,
+                    model: DEFAULT_MODEL,
+                    dimensions: elements.aspectRatio?.value || 'Auto',
+                    style: elements.infographicStyle?.value || 'auto',
                     variations: state.generatedImages?.length || 1
                 };
                 overlay.innerHTML = SharedImageInfo.createOverlay(info).innerHTML;
