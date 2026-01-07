@@ -256,6 +256,10 @@ function initElements() {
         addBenefitBtn: document.getElementById('addBenefitBtn'),
         infographicStyle: document.getElementById('infographicStyle'),
         styleRadios: document.querySelectorAll('input[name="style"]'),
+        customColorPicker: document.getElementById('customColorPicker'),
+        customBgColor: document.getElementById('customBgColor'),
+        customColorValue: document.getElementById('customColorValue'),
+        customStylePreview: document.getElementById('customStylePreview'),
         generateBtn: document.getElementById('generateBtn'),
 
         // Basic Settings (Collapsible)
@@ -2351,7 +2355,8 @@ function generatePrompt() {
         auto: 'Analyze the product colors and create a complementary color scheme. Match the background to harmonize with the product.',
         light: 'Use a clean white or very light background with subtle accents that complement the product colors.',
         dark: 'Use a dark/black background that makes the product stand out. Use light text and accents.',
-        gradient: 'Use a subtle gradient background derived from the product colors. Keep it simple and professional.'
+        gradient: 'Use a subtle gradient background derived from the product colors. Keep it simple and professional.',
+        custom: 'Use a solid COLOR_PLACEHOLDER background. Choose text and accent colors that contrast well with this background.'
     };
 
     // Quality level descriptions
@@ -2424,10 +2429,16 @@ function generatePrompt() {
         flat: 'Use FLAT, MINIMAL icons with solid colors, no gradients or shadows. Simple shapes, clean and modern.',
         outlined: 'Use OUTLINED/STROKE icons with consistent line weight, no fill. Clean technical look.',
         gradient: 'Use GRADIENT/GLOSSY icons with color transitions and shine effects. Sleek and polished.',
+        'detail-closeups': 'Use CIRCULAR CLOSE-UP PHOTOGRAPHS of the product as icons instead of traditional icons. Each feature should have a small circular image showing a zoomed-in detail of the relevant part of the product (texture, material, stitching, fabric weave, seams, edges, craftsmanship details). Style: macro photography, sharp focus, well-lit, cropped into perfect circles. Connect each circular detail image to the main product with thin elegant callout lines.',
         none: 'Do not use any icons - text only for features.'
     };
 
-    const styleDesc = styleDescriptions[style] || styleDescriptions.auto;
+    let styleDesc = styleDescriptions[style] || styleDescriptions.auto;
+    // Replace placeholder with actual color for custom style
+    if (style === 'custom' && elements.customBgColor) {
+        const customColor = elements.customBgColor.value || '#6366f1';
+        styleDesc = styleDesc.replace('COLOR_PLACEHOLDER', customColor);
+    }
     const hasImage = state.multiAngleMode
         ? state.referenceImages.length > 0
         : state.uploadedImageBase64 !== null;
@@ -3218,6 +3229,9 @@ Highlight the most important features with clear labels and visual explanations.
             stylePrompt += ' Use a dark, moody background with dramatic lighting.';
         } else if (mainStyle === 'gradient') {
             stylePrompt += ' Use gradient backgrounds and vibrant colors.';
+        } else if (mainStyle === 'custom') {
+            const customColor = elements.customBgColor ? elements.customBgColor.value : '#6366f1';
+            stylePrompt += ` Use a solid ${customColor} background with complementary colors.`;
         } else if (mainStyle === 'rich') {
             stylePrompt += ' Use rich callouts, colorful accents, and detailed visual elements.';
         }
@@ -4093,12 +4107,31 @@ function setupEventListeners() {
 
     // Theme toggle is handled by SharedTheme.setupToggle() in init()
 
-    // Style radio buttons - sync with hidden select
+    // Style radio buttons - sync with hidden select and show/hide custom color picker
     elements.styleRadios.forEach(radio => {
         radio.addEventListener('change', () => {
             elements.infographicStyle.value = radio.value;
+            // Show/hide custom color picker
+            if (elements.customColorPicker) {
+                elements.customColorPicker.style.display = radio.value === 'custom' ? 'flex' : 'none';
+            }
         });
     });
+
+    // Custom background color picker
+    if (elements.customBgColor) {
+        elements.customBgColor.addEventListener('input', () => {
+            const color = elements.customBgColor.value;
+            // Update color value display
+            if (elements.customColorValue) {
+                elements.customColorValue.textContent = color;
+            }
+            // Update style preview
+            if (elements.customStylePreview) {
+                elements.customStylePreview.style.backgroundColor = color;
+            }
+        });
+    }
 
     // Variations buttons
     document.querySelectorAll('[data-option="variations"]').forEach(btn => {
