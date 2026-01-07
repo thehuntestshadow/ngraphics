@@ -21,6 +21,7 @@ The settings page (`settings.html`) provides a dedicated space for users to mana
 │  │             │  │                                         │   │
 │  │ • Profile   │  │  [Active Section Content]               │   │
 │  │ • Billing   │  │                                         │   │
+│  │ • Analytics │  │                                         │   │
 │  │ • API Keys  │  │                                         │   │
 │  │ • Appearance│  │                                         │   │
 │  │ • Language  │  │                                         │   │
@@ -47,32 +48,45 @@ The settings page (`settings.html`) provides a dedicated space for users to mana
 - **Upgrade to Pro**: Link to pricing.html (free users)
 - **Manage Subscription**: Opens Stripe billing portal (pro users)
 
-### 3. API Keys
+### 3. Analytics & Usage
+- **Overview Cards**: Generations count, favorites, storage usage, API status
+- **Cost Tracker**: Monthly spending breakdown with model costs
+- **Charts Grid**:
+  - Generation Trends (7-day line chart)
+  - Model Usage (doughnut chart)
+  - Studio Breakdown (bar chart)
+  - Quick Access (recent thumbnails grid)
+- **Storage Panel**: Per-studio storage usage, Export All, Clear Old Items
+- **Trash Section**: Recently deleted items with restore/delete options
+- **Activity Table**: Recent activity log with studio filtering
+- **Tabs**: Overview, Infographics, Models, Bundles filters for charts
+
+### 4. API Keys
 - **Luma AI Key**: For video generation in Model Video studio
   - Password input with show/hide toggle
   - Test button to validate key against Luma API
   - Stored in localStorage
 - **Save API Key**: Persists to localStorage
 
-### 4. Appearance
+### 5. Appearance
 - **Theme Toggle**: Three-button toggle:
   - **Dark**: Force dark mode
   - **Light**: Force light mode
   - **System**: Follow OS preference (auto-updates on system change)
 
-### 5. Language
+### 6. Language
 - **Interface Language**: Dropdown for UI language (10 languages)
 - **Generation Language**: Dropdown for AI-generated content language
 - Languages displayed as: "Native (English)" e.g., "Deutsch (German)"
 - Supported: EN, RO, DE, FR, ES, IT, PT, NL, PL, CS
 - Interface change requires page refresh
 
-### 6. Data & Sync
+### 7. Data & Sync
 - **Cloud Sync Toggle**: Enable/disable automatic sync
 - **Sync Status**: Shows last sync timestamp or "Never synced"
 - **Sync Now**: Manual sync trigger with loading state
 
-### 7. Danger Zone
+### 8. Danger Zone
 - **Clear All History**: Removes history from all 19 studios
 - **Clear All Favorites**: Removes favorites from all studios
 - **Delete Account**: Permanently deletes account and all data
@@ -87,6 +101,7 @@ Hash-based navigation for direct linking:
 | `/settings.html` | Profile (default) |
 | `/settings.html#profile` | Profile |
 | `/settings.html#billing` | Usage & Billing |
+| `/settings.html#analytics` | Analytics & Usage |
 | `/settings.html#api-keys` | API Keys |
 | `/settings.html#appearance` | Appearance |
 | `/settings.html#language` | Language |
@@ -120,7 +135,9 @@ Hash-based navigation for direct linking:
 | `supabase.js` | Auth, profile management, usage data |
 | `auth-ui.js` | AccountMenu component |
 | `i18n.js` | LANGUAGES array, language settings |
-| `shared.js` | SharedTheme, SharedUI utilities |
+| `shared.js` | SharedTheme, SharedUI, SharedDashboard, SharedCostEstimator, SharedTrash utilities |
+| `dashboard.css` | Analytics section styles (charts, cards, tables) |
+| `Chart.js` | Chart library for analytics (CDN) |
 
 Optional (checked with typeof):
 - `cloudSync` - For sync functionality

@@ -138,8 +138,8 @@ The application consists of multiple pages, each with its own JS file, sharing c
 | Export Center | `export-center.html`, `export-center.js`, `export-center.css` | Batch resize, compress, watermark, and convert images |
 | Ad Creative | `ad-creative.html`, `ad-creative.js`, `ad-creative.css` | Banner ads for Google, Facebook, Amazon, Instagram |
 | Model Video | `model-video.html`, `model-video.js`, `model-video.css` | Animate model photos with motion and camera effects |
-| Dashboard | `dashboard.html`, `dashboard.js`, `dashboard.css` | Analytics, storage management, quick access to recent work |
-| Settings | `settings.html`, `settings.js`, `settings.css` | User settings: profile, billing, API keys, appearance, language, data |
+| Dashboard | `dashboard.html`, `dashboard.js`, `dashboard.css` | Studio navigation hub with Ready/Beta sections |
+| Settings | `settings.html`, `settings.js`, `settings.css` | User settings, analytics, storage, billing, API keys, appearance, language |
 | Products | `products.html`, `products.js`, `products.css` | Saved product profiles with images, features, benefits for studio autofill |
 | Admin | `admin.html`, `admin.js`, `admin.css` | User management, analytics, system administration (admin only) |
 | Documentation | `docs.html`, `docs.css` | User documentation |
@@ -353,14 +353,14 @@ Main page for creating product marketing infographics.
 - `enhanceImage()`: Client-side auto-levels and contrast adjustment
 
 ### Features
-- Multimodal input, background styles (Auto/Light/Dark/Gradient), generation history
+- Multimodal input, background styles (Auto/Light/Dark/Gradient/Custom with color picker), generation history
 - Favorites with settings/seed for style reuse, benefits section (auto-filled on analysis)
 - Bilingual (English/Romanian), feedback-based adjustment, SEO alt text, watermarks
 - Keyboard shortcuts: Ctrl+Enter generate, Ctrl+D download, Escape close modals
 
 ### Advanced Options
 - **Layout**: Template, Aspect Ratio, Product Focus, Variations (1/2/4)
-- **Visual Style**: Density slider, Font Style, Icon Style, Callout Lines
+- **Visual Style**: Density slider, Font Style, Icon Style (including Detail Close-ups), Callout Lines
 - **Colors**: Color Harmony, Brand Colors
 - **Style Reference**: Upload reference image (10-100% influence)
 - **Generation**: Seed control, Negative prompts
@@ -906,14 +906,19 @@ Uses Luma AI Dream Machine API (separate API key from OpenRouter).
 
 ## Dashboard (`dashboard.html` + `dashboard.js`)
 
-Central hub for analytics, storage management, and quick access.
+Studio navigation hub with organized app categories.
+
+### Sections
+- **Ready**: Production-ready studios (Infographics, Model Studio, Products)
+- **Beta**: Studios in development (Bundle, Lifestyle, Copywriter, etc.)
 
 ### Features
-- Overview cards (generations, favorites, storage, API status)
-- Charts: Generation trends (7-day), model usage, studio breakdown
-- Quick access grid with recent thumbnails
-- Storage management: per-studio usage, Export All, Clear Old Items
-- Activity table with filtering by studio
+- Grid layout with studio cards (icon, name, description)
+- Status badges (Ready/Beta) for each studio
+- Direct links to all 19 studios
+- Theme toggle and account menu in header
+
+Note: Analytics, storage, and activity tracking moved to Settings page.
 
 ---
 
